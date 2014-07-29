@@ -1909,7 +1909,7 @@ void SoFiA::createInterface()
     
     tabOutputFieldDirectory  = new QLineEdit(tabOutputGroupBox1);
     tabOutputFieldDirectory->setObjectName("writeCat.outputDir");
-    tabOutputFieldDirectory->setToolTip("Path to output directory (optional). Defaults to current working directory.");
+    tabOutputFieldDirectory->setToolTip("Path to output directory (optional). Defaults to input cube directory.");
     tabOutputButtonDirectory = new QPushButton(tr("Select..."), tabOutputGroupBox1);
     connect(tabOutputButtonDirectory, SIGNAL(clicked()), this, SLOT(selectOutputDirectory()));
     tabOutputButtonDirectory->setIcon(iconDocumentOpen);
