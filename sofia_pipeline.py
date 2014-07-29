@@ -174,6 +174,10 @@ if Parameters['steps']['doMerge'] and NRdet:
 	
 	objects, mask = linker.link_objects(np_Cube, mask, **Parameters['merge'])
 	
+	if not objects:
+		sys.stderr.write("WARNING: No objects remain after merging. Exiting pipeline.\n")
+		sys.exit()
+	
 	print 'Merging complete'
 	print
 
