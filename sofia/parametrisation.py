@@ -101,6 +101,7 @@ def parametrise(
         'W50': 'chan',
         'W20': 'chan',
         'Wm50': 'chan',
+        'F_Wm50': dunits,
         'ELL_MAJ': 'pix',
         'ELL_MIN': 'pix',
         'ELL_PA': 'deg',

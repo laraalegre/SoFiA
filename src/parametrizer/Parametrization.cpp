@@ -19,6 +19,8 @@ Parametrization::Parametrization()
     centroidZ            = 0.0;
     lineWidthW20         = 0.0;
     lineWidthW50         = 0.0;
+    lineWidthWm50        = 0.0;
+    meanFluxWm50         = 0.0;
     peakFlux             = 0.0;
     totalFlux            = 0.0;
     busyFitSuccess       = 0;
@@ -489,9 +491,10 @@ int Parametrization::measureLineWidth()
     
     //Determine Wₘ₅₀:
     double sum = 0.0;
-    double mean = 0.0;
     double bound90l = 0.0;
     double bound90r = 0.0;
+    lineWidthWm50 = 0.0;
+    meanFluxWm50 = 0.0;
     i = 0;
     
     while(sum < 0.05 * totalFlux and i < spectrum.size())
@@ -505,7 +508,6 @@ int Parametrization::measureLineWidth()
     if(i >= spectrum.size())
     {
         std::cerr << "Error (Parametrization): Calculation of Wm50 failed." << std::endl;
-        lineWidthWm50 = 0.0;
         return 1;
     }
     
@@ -526,54 +528,55 @@ int Parametrization::measureLineWidth()
     if(i < 0)
     {
         std::cerr << "Error (Parametrization): Calculation of Wm50 failed." << std::endl;
-        lineWidthWm50 = 0.0;
         return 1;
     }
     
     bound90r = static_cast<double>(i);
     if(i < spectrum.size() - 1) bound90r += (spectrum[i] - 0.05 * totalFlux) / (spectrum[i] - spectrum[i + 1]);   // Interpolate if not at edge.
     
-    mean = 0.9 * totalFlux / (bound90r - bound90l);
+    meanFluxWm50 = 0.9 * totalFlux / (bound90r - bound90l);
     
-    if(mean <= 0)
+    if(meanFluxWm50 <= 0)
     {
         std::cerr << "Error (Parametrization): Calculation of Wm50 failed." << std::endl;
-        lineWidthWm50 = 0.0;
+        meanFluxWm50 = 0.0;
         return 1;
     }
     
     i = 0;
     
-    while(spectrum[i] < 0.5 * mean and i < spectrum.size()) i++;
+    while(spectrum[i] < 0.5 * meanFluxWm50 and i < spectrum.size()) i++;
     
     if(i >= spectrum.size())
     {
         std::cerr << "Error (Parametrization): Calculation of Wm50 failed." << std::endl;
-        lineWidthWm50 = 0.0;
+        meanFluxWm50 = 0.0;
         return 1;
     }
     
     lineWidthWm50 = static_cast<double>(i);
-    if(i > 0) lineWidthWm50 -= (spectrum[i] - 0.5 * mean) / (spectrum[i] - spectrum[i - 1]);      // Interpolate if not at edge.
+    if(i > 0) lineWidthWm50 -= (spectrum[i] - 0.5 * meanFluxWm50) / (spectrum[i] - spectrum[i - 1]);      // Interpolate if not at edge.
     
     i = spectrum.size() - 1;
     
-    while(spectrum[i] < 0.5 * mean and i >= 0) i--;
+    while(spectrum[i] < 0.5 * meanFluxWm50 and i >= 0) i--;
     
     if(i < 0)
     {
         std::cerr << "Error (Parametrization): Calculation of Wm50 failed." << std::endl;
         lineWidthWm50 = 0.0;
+        meanFluxWm50 = 0.0;
         return 1;
     }
     
     lineWidthWm50 = static_cast<double>(i) - lineWidthWm50;
-    if(i < spectrum.size() - 1) lineWidthWm50 += (spectrum[i] - 0.5 * mean) / (spectrum[i] - spectrum[i + 1]);   // Interpolate if not at edge.
+    if(i < spectrum.size() - 1) lineWidthWm50 += (spectrum[i] - 0.5 * meanFluxWm50) / (spectrum[i] - spectrum[i + 1]);   // Interpolate if not at edge.
     
     if(lineWidthWm50 <= 0)
     {
         std::cerr << "Error (Parametrization): Calculation of Wm50 failed." << std::endl;
         lineWidthWm50 = 0.0;
+        meanFluxWm50 = 0.0;
         return 1;
     }
     
@@ -621,6 +624,7 @@ int Parametrization::writeParameters()
     source->setParameter("W50",      lineWidthW50);
     source->setParameter("W20",      lineWidthW20);
     source->setParameter("Wm50",     lineWidthWm50);
+    source->setParameter("F_Wm50",   meanFluxWm50);
     source->setParameter("F_PEAK",   peakFlux);
     source->setParameter("F_TOT",    totalFlux);
     
