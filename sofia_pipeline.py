@@ -312,6 +312,28 @@ if Parameters['steps']['doParameterise'] and Parameters['steps']['doMerge'] and 
 
 
 
+# ----------------------------------------------------
+# ---- CORRECT COORDINATES IF WORKING ON SUBCUBES ----
+# ----------------------------------------------------
+
+if len(Parameters['import']['subcube']):
+	print "\n--- SoFiA: Correcting positional parameter values for subcube ---"
+	sys.stdout.flush()
+	# list of parameters to correct for X, Y and Z offset
+	corrX=['Xg','Xm','Xmin','Xmax']
+	corrY=['Yg','Ym','Ymin','Ymax']
+	corrZ=['Zg','Zm','Zmin','Zmax','BF_Z']
+
+	if Parameters['import']['subcube'][0]:
+		for pp in corrX:
+			if pp in catParNames: objects[:,list(catParNames).index(pp)]+=Parameters['import']['subcube'][0]
+	if Parameters['import']['subcube'][2]:
+		for pp in corrY:
+			if pp in catParNames: objects[:,list(catParNames).index(pp)]+=Parameters['import']['subcube'][2]
+	if Parameters['import']['subcube'][4]:
+		for pp in corrZ:
+			if pp in catParNames: objects[:,list(catParNames).index(pp)]+=Parameters['import']['subcube'][4]
+
 
 
 # --------------------
