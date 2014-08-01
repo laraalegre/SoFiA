@@ -18,32 +18,38 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None):
 		raise SystemExit(1)
 
 	print 'Loading cube: ' , inFile 
-	f = pyfits.open(inFile)
+	f = pyfits.open(inFile,memmap=True)
 	dict_Header = f[0].header
-	np_Cube = f[0].data
-	
-	f.close
 
-
-	# check whether the number of dimensions is acceptable
+	# check whether the number of dimensions is acceptable and read data accordingly
 	print
 	# the default is three axis
 	if dict_Header['NAXIS'] == 3:
 		print 'The input cube has 3 axes:'
 		print 'type: ', dict_Header['CTYPE1'], dict_Header['CTYPE2'], dict_Header['CTYPE3'] 
 		print 'dimensions: ', dict_Header['NAXIS1'], dict_Header['NAXIS2'], dict_Header['NAXIS3'] 
+		if len(subcube)==6: np_Cube = f[0].data[subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
+		elif not len(subcube): np_Cube = f[0].data
+		else:
+			print 'ERROR: The subcube list must have 6 entries. Only %i given.'%len(subcube)
+			raise SystemExit(1)
 	elif dict_Header['NAXIS'] == 4:
 		if dict_Header['NAXIS4'] != 1:
 			print 'type: ', dict_Header['CTYPE1'], dict_Header['CTYPE2'], dict_Header['CTYPE3'], dict_Header['CTYPE4']  
 			print 'dimensions: ', dict_Header['NAXIS1'], dict_Header['NAXIS2'], dict_Header['NAXIS3'], dict_Header['NAXIS4']  
 			print 'ERROR: The 4th dimension has more than 1 value.'
 			raise SystemExit(1)
-		else: np_Cube=np_Cube[0]
+		else:
+			if len(subcube)==6: np_Cube = f[0].data[0,subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
+			elif not len(subcube): np_Cube = f[0].data[0]
+			else:
+				print 'ERROR: The subcube list must have 6 entries. Only %i given.'%len(subcube)
+				raise SystemExit(1)
 	elif dict_Header['NAXIS'] == 2:
 		print 'WARNING: The input cube has 2 axes, third axis added.'
 		print 'type: ', dict_Header['CTYPE1'], dict_Header['CTYPE2']
 		print 'dimensions: ', dict_Header['NAXIS1'], dict_Header['NAXIS2']
-		np_Cube = [np_Cube]
+		np_Cube = [f[0].data]
 	elif dict_Header['NAXIS'] == 1:
 		print 'ERROR: The input has 1 axis, this is probably a spectrum instead of an 2D/3D image.'
 		print 'type: ', dict_Header['CTYPE1'] 
@@ -52,6 +58,13 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None):
 	else:
 		print 'ERROR: The file has less than 1 or more than 4 dimensions.'
 		raise SystemExit(1)
+		
+	f.close()
+	
+	np_Cube*=dict_Header['bscale']
+	np_Cube+=dict_Header['bzero']
+	# NOTE: the above lines are more memory efficient than
+	#np_Cube=np_Cube*dict_Header['bscale']+dict_Header['bzero']
 		
 	
 	# check whether the axis are in the expected order:
