@@ -9,7 +9,7 @@ import re
 
 
 #def read_data(inFile,weightsFile,maskFile):
-def read_data(inFile, weightsFile, maskFile, weightsFunction = None):
+def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[]):
 	# import the fits file into an numpy array for the cube and a dictionary for the header:
 
 	if os.path.isfile(inFile) == False:
