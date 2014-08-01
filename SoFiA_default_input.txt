@@ -27,6 +27,7 @@ import.inFile                   =
 import.weightsFile              =       
 import.maskFile                 =       
 import.weightsFunction          =       
+import.subcube                  =       []
 
 
 # Flagging module
