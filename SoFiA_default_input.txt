@@ -28,6 +28,7 @@ import.weightsFile              =
 import.maskFile                 =       
 import.weightsFunction          =       
 import.subcube                  =       []
+import.subcubeMode              =       wcs
 
 
 # Flagging module
