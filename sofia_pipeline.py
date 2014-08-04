@@ -341,6 +341,7 @@ if len(Parameters['import']['subcube']):
 # --------------------
 
 if Parameters['steps']['doWriteMask'] and NRdet:
+        print "\n--- SoFiA: Writing mask ---"
 	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.fits'%outroot)
 
 
