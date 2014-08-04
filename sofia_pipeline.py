@@ -87,7 +87,7 @@ else:
 print "\n--- SoFiA: Reading data cube(s) ---"
 sys.stdout.flush()
 
-np_Cube, dict_Header, mask = import_data.read_data(**Parameters['import'])
+np_Cube, dict_Header, mask, subcube = import_data.read_data(**Parameters['import'])
 
 
 # -------------------------
@@ -160,7 +160,7 @@ if not NRdet:
 if Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['import']['weightsFile']:
 	Parameters['import']['weightsFile'] = ''
 	Parameters['import']['maskFile'] = ''
-	np_Cube, dict_Header, bla = import_data.read_data(**Parameters['import'])
+	np_Cube, dict_Header, bla, blabla = import_data.read_data(**Parameters['import'])
 
 
 
@@ -316,7 +316,7 @@ if Parameters['steps']['doParameterise'] and Parameters['steps']['doMerge'] and 
 # ---- CORRECT COORDINATES IF WORKING ON SUBCUBES ----
 # ----------------------------------------------------
 
-if len(Parameters['import']['subcube']):
+if len(subcube) and Parameters['steps']['doMerge'] and NRdet:
 	print "\n--- SoFiA: Correcting positional parameter values for subcube ---"
 	sys.stdout.flush()
 	# list of parameters to correct for X, Y and Z offset
@@ -324,15 +324,15 @@ if len(Parameters['import']['subcube']):
 	corrY=['Yg','Ym','Ymin','Ymax']
 	corrZ=['Zg','Zm','Zmin','Zmax','BF_Z']
 
-	if Parameters['import']['subcube'][0]:
+	if subcube[0]:
 		for pp in corrX:
-			if pp in catParNames: objects[:,list(catParNames).index(pp)]+=Parameters['import']['subcube'][0]
-	if Parameters['import']['subcube'][2]:
+			if pp in catParNames: objects[:,list(catParNames).index(pp)]+=subcube[0]
+	if subcube[2]:
 		for pp in corrY:
-			if pp in catParNames: objects[:,list(catParNames).index(pp)]+=Parameters['import']['subcube'][2]
-	if Parameters['import']['subcube'][4]:
+			if pp in catParNames: objects[:,list(catParNames).index(pp)]+=subcube[2]
+	if subcube[4]:
 		for pp in corrZ:
-			if pp in catParNames: objects[:,list(catParNames).index(pp)]+=Parameters['import']['subcube'][4]
+			if pp in catParNames: objects[:,list(catParNames).index(pp)]+=subcube[4]
 
 
 
