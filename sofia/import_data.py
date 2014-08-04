@@ -28,7 +28,11 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[])
 		print 'The input cube has 3 axes:'
 		print 'type: ', dict_Header['CTYPE1'], dict_Header['CTYPE2'], dict_Header['CTYPE3'] 
 		print 'dimensions: ', dict_Header['NAXIS1'], dict_Header['NAXIS2'], dict_Header['NAXIS3'] 
-		if len(subcube)==6: np_Cube = f[0].data[subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
+		if len(subcube)==6:
+			np_Cube = f[0].data[subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
+			dict_Header['crpix1']-=subcube[0]
+			dict_Header['crpix2']-=subcube[2]
+			dict_Header['crpix3']-=subcube[4]
 		elif not len(subcube): np_Cube = f[0].data
 		else:
 			print 'ERROR: The subcube list must have 6 entries (%i given).'%len(subcube)
@@ -40,7 +44,11 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[])
 			print 'ERROR: The 4th dimension has more than 1 value.'
 			raise SystemExit(1)
 		else:
-			if len(subcube)==6: np_Cube = f[0].data[0,subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
+			if len(subcube)==6:
+				np_Cube = f[0].data[0,subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
+				dict_Header['crpix1']-=subcube[0]
+				dict_Header['crpix2']-=subcube[2]
+				dict_Header['crpix3']-=subcube[4]
 			elif not len(subcube): np_Cube = f[0].data[0]
 			else:
 				print 'ERROR: The subcube list must have 6 entries (%i given). Ignore 4th axis.'%len(subcube)
@@ -49,7 +57,10 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[])
 		print 'WARNING: The input cube has 2 axes, third axis added.'
 		print 'type: ', dict_Header['CTYPE1'], dict_Header['CTYPE2']
 		print 'dimensions: ', dict_Header['NAXIS1'], dict_Header['NAXIS2']
-		if len(subcube)==4: np_Cube = array([f[0].data[subcube[2]:subcube[3],subcube[0]:subcube[1]]])
+		if len(subcube)==4:
+			np_Cube = array([f[0].data[subcube[2]:subcube[3],subcube[0]:subcube[1]]])
+			dict_Header['crpix1']-=subcube[0]
+			dict_Header['crpix2']-=subcube[2]
 		elif not len(subcube): np_Cube = array([f[0].data])
 		else:
 			print 'ERROR: The subcube list must have 4 entries (%i given).'%len(subcube)
