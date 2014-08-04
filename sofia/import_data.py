@@ -8,7 +8,6 @@ import re
 import imp
 
 
-#def read_data(inFile,weightsFile,maskFile):
 def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[], subcubeMode='pix'):
 	# import the fits file into an numpy array for the cube and a dictionary for the header:
 	# the data cube is converted into a 3D array
@@ -18,38 +17,45 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[],
 		print 'Cannot find: ' + inFile
 		raise SystemExit(1)
 
-	if len(subcube) and subcubeMode=='wcs':
-		print 'Calculating subcube boundaries from input WCS centre and radius'
+	if len(subcube):
 		try:
 		    imp.find_module('astropy')
 		    found = True
 		except ImportError: found = False
-		if found:	
+		if found:
 			from astropy import wcs
 			from astropy.io import fits
 			hdulist = fits.open(inFile)
 			header = hdulist[0].header
 			hdulist.close()
-			wcsin = wcs.WCS(header)
-			if header['naxis']==4:
-				subcube=wcsin.wcs_world2pix(array([[subcube[0]-subcube[3],subcube[1]-subcube[4],subcube[2]-subcube[5],0],[subcube[0]+subcube[3],subcube[1]+subcube[4],subcube[2]+subcube[5],0]]),0)[:,:3]
-			else:
-				subcube=wcsin.wcs_world2pix(array([[subcube[0]-subcube[3],subcube[1]-subcube[4],subcube[2]-subcube[5]],[subcube[0]+subcube[3],subcube[1]+subcube[4],subcube[2]+subcube[5]]]),0)
-			subcube=ravel(subcube,order='F')
-			if subcube[0]>subcube[1]: subcube[0],subcube[1]=subcube[1],subcube[0]
-			if subcube[2]>subcube[3]: subcube[2],subcube[3]=subcube[3],subcube[2]
+
+	if (len(subcube)==6 or len(subcube)==4) and subcubeMode=='wcs':
+		print 'Calculating subcube boundaries from input WCS centre and radius'
+		wcsin = wcs.WCS(header)
+		if header['naxis']==4: subcube=wcsin.wcs_world2pix(array([[subcube[0]-subcube[3],subcube[1]-subcube[4],subcube[2]-subcube[5],0],[subcube[0]+subcube[3],subcube[1]+subcube[4],subcube[2]+subcube[5],0]]),0)[:,:3]
+		elif header['naxis']==3: subcube=wcsin.wcs_world2pix(array([[subcube[0]-subcube[3],subcube[1]-subcube[4],subcube[2]-subcube[5]],[subcube[0]+subcube[3],subcube[1]+subcube[4],subcube[2]+subcube[5]]]),0)
+		elif header['naxis']==2: subcube=wcsin.wcs_world2pix(array([[subcube[0]-subcube[2],subcube[1]-subcube[3]],[subcube[0]+subcube[2],subcube[1]+subcube[3]]]),0)
+		subcube=ravel(subcube,order='F')
+		# make sure min pix coord is < max pix coord for all axes
+		if subcube[0]>subcube[1]: subcube[0],subcube[1]=subcube[1],subcube[0]
+		if subcube[2]>subcube[3]: subcube[2],subcube[3]=subcube[3],subcube[2]
+		if len(subcube)==6:
 			if subcube[4]>subcube[5]: subcube[4],subcube[5]=subcube[5],subcube[4]
-			for ss in range(3): subcube[2*ss]=max(0,floor(subcube[2*ss]))
-			for ss in range(3): subcube[1+2*ss]=min(header['naxis%i'%(ss+1)],ceil(subcube[1+2*ss]))
-			subcube=list(subcube.astype(int))
-			print 'Loading subcube of %s defined by [x1 x2 y1 y2 z1 z2] ='%inFile,subcube
-	elif len(subcube) and subcubeMode=='pix':
-		print 'Loading subcube of %s defined by [x1 x2 y1 y2 z1 z2] ='%inFile,subcube
+		# make sure to be within the cube boundaries
+		for ss in range(min(3,header['naxis'])): subcube[2*ss]=max(0,floor(subcube[2*ss]))
+		for ss in range(min(3,header['naxis'])): subcube[1+2*ss]=min(header['naxis%i'%(ss+1)],ceil(subcube[1+2*ss]))
+		subcube=list(subcube.astype(int))
+	elif (len(subcube)==6 or len(subcube)==4) and subcubeMode=='pix':
+		# make sure to be within the cube boundaries
+		for ss in range(min(3,header['naxis'])): subcube[2*ss]=max(0,subcube[2*ss])
+		for ss in range(min(3,header['naxis'])): subcube[1+2*ss]=min(header['naxis%i'%(ss+1)],subcube[1+2*ss])
 	elif len(subcube):
-		print 'FATAL ERROR: import.subcubeMode can only be "pix" or "wcs"'
+		print 'FATAL ERROR: import.subcubeMode can only be "pix" or "wcs", and import.subcube must have 4 or 6 entries.'
 		raise SystemExit(1)
-	else:
-		print 'Loading cube: ' , inFile
+
+	if len(subcube)==4: print 'Loading subcube of %s defined by [x1 x2 y1 y2] ='%inFile,subcube
+	elif len(subcube)==6: print 'Loading subcube of %s defined by [x1 x2 y1 y2 z1 z2] ='%inFile,subcube
+	else: print 'Loading cube: ' , inFile
 	f = pyfits.open(inFile,memmap=True)
 	dict_Header = f[0].header
 
@@ -118,11 +124,8 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[],
 	#if dict_Header['ctype1'][0:2] != 'RA' or dict_Header['ctype2'][0:3] != 'DEC':
 	#	print 'WARNING: the dimensions are not in the expected order'
 	
-
-
 	# the data cube has been loaded
 	print 'The data cube has been loaded'
-
 
 	# apply weights if a weights file exists:
 	if weightsFile:
