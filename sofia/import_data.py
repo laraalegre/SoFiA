@@ -114,10 +114,11 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[],
 		
 	f.close()
 	
-	np_Cube*=dict_Header['bscale']
-	np_Cube+=dict_Header['bzero']
-	# NOTE: the above lines are more memory efficient than
-	#np_Cube=np_Cube*dict_Header['bscale']+dict_Header['bzero']
+	if 'bscale' in dict_Header and 'bzero' in dict_Header:
+		np_Cube*=dict_Header['bscale']
+		np_Cube+=dict_Header['bzero']
+		# NOTE: the above lines are more memory efficient than
+		#np_Cube=np_Cube*dict_Header['bscale']+dict_Header['bzero']
 		
 	
 	# check whether the axis are in the expected order:
