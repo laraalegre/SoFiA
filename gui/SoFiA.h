@@ -200,18 +200,20 @@ private:
     QFormLayout  *tabInputForm1;
     QLineEdit    *tabInputFieldData;
     QPushButton  *tabInputButtonData;
-    QLineEdit    *tabInputFieldWeights;
-    QPushButton  *tabInputButtonWeights;
     QLineEdit    *tabInputFieldMask;
     QPushButton  *tabInputButtonMask;
-    
-    QGroupBox    *tabInputGroupBox2;
-    QFormLayout  *tabInputForm2;
+    QLineEdit    *tabInputFieldWeights;
+    QPushButton  *tabInputButtonWeights;
     QLineEdit    *tabInputFieldWeightsFunction;
     
     QGroupBox    *tabInputGroupBox3;
     QFormLayout  *tabInputForm3;
     QLineEdit    *tabInputFieldFlags;
+    
+    QGroupBox    *tabInputGroupBox4;
+    QFormLayout  *tabInputForm4;
+    QLineEdit    *tabInputFieldSubcube;
+    QComboBox    *tabInputFieldSubcubeMode;
     
     QHBoxLayout  *tabInputLayoutControls;
     QWidget      *tabInputWidgetControls;

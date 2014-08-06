@@ -1270,22 +1270,22 @@ void SoFiA::createInterface()
     
     // Note that additional spaces at the end of the display text for checkboxes 
     // and radio buttons are a workaround for rendering issues under Mac OS X 
-    // whereby the last character of the text was partly cut off.
+    // whereby the last character of the text was partially cut off.
     
     // Set up input tab
     
     tabInputLayout = new QVBoxLayout;
     
-    tabInputGroupBox1 = new QGroupBox(tr("Input files"), tabInput);
-    tabInputGroupBox2 = new QGroupBox(tr("Weights function"), tabInput);
-    tabInputGroupBox3 = new QGroupBox(tr("Initial flagging"), tabInput);
+    tabInputGroupBox1 = new QGroupBox(tr("Input data"), tabInput);
+    tabInputGroupBox3 = new QGroupBox(tr("Data flagging"), tabInput);
     tabInputGroupBox3->setObjectName("steps.doFlag");
     tabInputGroupBox3->setCheckable(true);
     tabInputGroupBox3->setChecked(false);
+    tabInputGroupBox4 = new QGroupBox(tr("Sub-cube"), tabInput);
     
     tabInputForm1 = new QFormLayout;
-    tabInputForm2 = new QFormLayout;
     tabInputForm3 = new QFormLayout;
+    tabInputForm4 = new QFormLayout;
     
     tabInputFieldData  = new QLineEdit(tabInputGroupBox1);
     tabInputFieldData->setObjectName("import.inFile");
@@ -1316,6 +1316,10 @@ void SoFiA::createInterface()
     tabInputLayoutWeights->setContentsMargins(0, 0, 0, 0);
     tabInputWidgetWeights->setLayout(tabInputLayoutWeights);
     
+    tabInputFieldWeightsFunction = new QLineEdit(tabInputGroupBox1);
+    tabInputFieldWeightsFunction->setObjectName("import.weightsFunction");
+    tabInputFieldWeightsFunction->setToolTip("Analytic function describing data weights (optional)");
+    
     tabInputFieldMask  = new QLineEdit(tabInputGroupBox1);
     tabInputFieldMask->setObjectName("import.maskFile");
     tabInputFieldMask->setToolTip("Name of mask cube (optional)");
@@ -1331,8 +1335,9 @@ void SoFiA::createInterface()
     tabInputWidgetMask->setLayout(tabInputLayoutMask);
     
     tabInputForm1->addRow(tr("Data cube:"), tabInputWidgetData);
-    tabInputForm1->addRow(tr("Weights cube:"), tabInputWidgetWeights);
     tabInputForm1->addRow(tr("Mask cube:"), tabInputWidgetMask);
+    tabInputForm1->addRow(tr("Weights cube:"), tabInputWidgetWeights);
+    tabInputForm1->addRow(tr("Weights function:"), tabInputFieldWeightsFunction);
     
     tabInputButtonNext = new QPushButton(tr("Next"), tabInput);
     tabInputButtonNext->setIcon(iconGoNextView);
@@ -1347,13 +1352,6 @@ void SoFiA::createInterface()
     
     tabInputGroupBox1->setLayout(tabInputForm1);
     
-    tabInputFieldWeightsFunction = new QLineEdit(tabInputGroupBox2);
-    tabInputFieldWeightsFunction->setObjectName("import.weightsFunction");
-    tabInputFieldWeightsFunction->setToolTip("Analytic function describing data weights (optional)");
-    
-    tabInputForm2->addRow(tr("Function:"), tabInputFieldWeightsFunction);
-    tabInputGroupBox2->setLayout(tabInputForm2);
-    
     tabInputFieldFlags = new QLineEdit(tabInputGroupBox3);
     tabInputFieldFlags->setObjectName("flag.regions");
     tabInputFieldFlags->setToolTip("Pixel/channel ranges to be flagged (optional)");
@@ -1361,8 +1359,21 @@ void SoFiA::createInterface()
     tabInputForm3->addRow(tr("Range:"), tabInputFieldFlags);
     tabInputGroupBox3->setLayout(tabInputForm3);
     
+    tabInputFieldSubcube = new QLineEdit(tabInputGroupBox4);
+    tabInputFieldSubcube->setObjectName("import.subcube");
+    tabInputFieldSubcube->setToolTip("Define sub-cube range to be used (optional)");
+    tabInputFieldSubcubeMode = new QComboBox(tabInputGroupBox4);
+    tabInputFieldSubcubeMode->setObjectName("import.subcubeMode");
+    tabInputFieldSubcubeMode->setToolTip("Range given in pixels (pix) or world coordinates (wcs)");
+    tabInputFieldSubcubeMode->addItem(tr("pix"));
+    tabInputFieldSubcubeMode->addItem(tr("wcs"));
+    
+    tabInputForm4->addRow(tr("Range:"), tabInputFieldSubcube);
+    tabInputForm4->addRow(tr("Mode:"), tabInputFieldSubcubeMode);
+    tabInputGroupBox4->setLayout(tabInputForm4);
+    
     tabInputLayout->addWidget(tabInputGroupBox1);
-    tabInputLayout->addWidget(tabInputGroupBox2);
+    tabInputLayout->addWidget(tabInputGroupBox4);
     tabInputLayout->addWidget(tabInputGroupBox3);
     tabInputLayout->addStretch();
     tabInputLayout->addWidget(tabInputWidgetControls);
