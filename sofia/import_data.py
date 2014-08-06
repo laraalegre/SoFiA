@@ -46,6 +46,12 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[],
 		for ss in range(min(3,header['naxis'])): subcube[1+2*ss]=min(header['naxis%i'%(ss+1)],ceil(subcube[1+2*ss]))
 		subcube=list(subcube.astype(int))
 	elif (len(subcube)==6 or len(subcube)==4) and subcubeMode=='pix':
+		# make sure pixel coordinates are integers
+		for ss in subcube:
+			if type(ss)!=int:
+				print 'FATAL ERROR: when subcubeMode = "pix" the subcube must be defined by a set of integer pixel coordinates'
+				print '  The %i-th coordinate has the wrong type'%(subcube.index(ss))
+				raise SystemExit(1)
 		# make sure to be within the cube boundaries
 		for ss in range(min(3,header['naxis'])): subcube[2*ss]=max(0,subcube[2*ss])
 		for ss in range(min(3,header['naxis'])): subcube[1+2*ss]=min(header['naxis%i'%(ss+1)],subcube[1+2*ss])
