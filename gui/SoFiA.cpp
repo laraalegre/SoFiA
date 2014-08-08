@@ -343,7 +343,7 @@ int SoFiA::setFields()
         if(parameters.contains(w->objectName()))      // Only existing parameters will get updated!
         {
             //int index = w->findText(parameters.value(w->objectName()));
-            int index = w->findData(QVariant(QString(parameters.value(w->objectName()))));
+            int index = w->findData(QVariant(parameters.value(w->objectName())));
             if(index >= 0) w->setCurrentIndex(index);
         }
     }
