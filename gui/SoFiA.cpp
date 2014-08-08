@@ -195,6 +195,7 @@ int SoFiA::updateVariables()
     
     QList<QLineEdit*> widgetLineEdit = tabs->findChildren<QLineEdit*>();
     
+    // WARNING: 'foreach()' is not a C++ statement, but a Qt macro!
     foreach(QLineEdit *w, widgetLineEdit)
     {
         if(parameters.contains(w->objectName()))      // Only existing parameters will get updated!
@@ -219,7 +220,8 @@ int SoFiA::updateVariables()
     {
         if(parameters.contains(w->objectName()))      // Only existing parameters will get updated!
         {
-            parameters.insert(w->objectName(), w->currentText());
+            //parameters.insert(w->objectName(), w->currentText());
+            parameters.insert(w->objectName(), (w->itemData(w->currentIndex())).toString());
         }
     }
     
@@ -340,7 +342,8 @@ int SoFiA::setFields()
     {
         if(parameters.contains(w->objectName()))      // Only existing parameters will get updated!
         {
-            int index = w->findText(parameters.value(w->objectName()));
+            //int index = w->findText(parameters.value(w->objectName()));
+            int index = w->findData(QVariant(QString(parameters.value(w->objectName()))));
             if(index >= 0) w->setCurrentIndex(index);
         }
     }
@@ -1361,12 +1364,12 @@ void SoFiA::createInterface()
     
     tabInputFieldSubcube = new QLineEdit(tabInputGroupBox4);
     tabInputFieldSubcube->setObjectName("import.subcube");
-    tabInputFieldSubcube->setToolTip("Define sub-cube range to be used (optional)");
+    tabInputFieldSubcube->setToolTip(tr("Define sub-cube range to be used (optional)"));
     tabInputFieldSubcubeMode = new QComboBox(tabInputGroupBox4);
     tabInputFieldSubcubeMode->setObjectName("import.subcubeMode");
-    tabInputFieldSubcubeMode->setToolTip("Range given in pixels (pix) or world coordinates (wcs)");
-    tabInputFieldSubcubeMode->addItem(tr("pix"));
-    tabInputFieldSubcubeMode->addItem(tr("wcs"));
+    tabInputFieldSubcubeMode->setToolTip(tr("Range given in pixels or world coordinates"));
+    tabInputFieldSubcubeMode->addItem(tr("Pixels"), QVariant(QString("pix")));
+    tabInputFieldSubcubeMode->addItem(tr("World coordinates"), QVariant(QString("wcs")));
     
     tabInputForm4->addRow(tr("Range:"), tabInputFieldSubcube);
     tabInputForm4->addRow(tr("Mode:"), tabInputFieldSubcubeMode);
@@ -1416,17 +1419,17 @@ void SoFiA::createInterface()
     
     tabInFilterFieldKernel = new QComboBox(tabInFilterGroupBox1);
     tabInFilterFieldKernel->setObjectName("smooth.kernel");
-    tabInFilterFieldKernel->addItem(tr("gaussian"));
-    tabInFilterFieldKernel->addItem(tr("boxcar"));
-    tabInFilterFieldKernel->addItem(tr("median"));
+    tabInFilterFieldKernel->addItem(tr("Gaussian"), QVariant(QString("gaussian")));
+    tabInFilterFieldKernel->addItem(tr("Boxcar"), QVariant(QString("boxcar")));
+    tabInFilterFieldKernel->addItem(tr("Median"), QVariant(QString("median")));
     
     tabInFilterFieldBorder = new QComboBox(tabInFilterGroupBox1);
     tabInFilterFieldBorder->setObjectName("smooth.edgeMode");
-    tabInFilterFieldBorder->addItem(tr("constant"));
-    tabInFilterFieldBorder->addItem(tr("reflect"));
-    tabInFilterFieldBorder->addItem(tr("mirror"));
-    tabInFilterFieldBorder->addItem(tr("nearest"));
-    tabInFilterFieldBorder->addItem(tr("wrap"));
+    tabInFilterFieldBorder->addItem(tr("Constant"), QVariant(QString("constant")));
+    tabInFilterFieldBorder->addItem(tr("Reflect"), QVariant(QString("reflect")));
+    tabInFilterFieldBorder->addItem(tr("Mirror"), QVariant(QString("mirror")));
+    tabInFilterFieldBorder->addItem(tr("Nearest"), QVariant(QString("nearest")));
+    tabInFilterFieldBorder->addItem(tr("Wrap"), QVariant(QString("wrap")));
     
     tabInFilterForm1->addRow(tr("Kernel:"), tabInFilterFieldKernel);
     tabInFilterForm1->addRow(tr("Edge:"), tabInFilterFieldBorder);
@@ -1461,9 +1464,9 @@ void SoFiA::createInterface()
     
     tabInFilterFieldStatistic = new QComboBox(tabInFilterGroupBox2);
     tabInFilterFieldStatistic->setObjectName("scaleNoise.statistic");
-    tabInFilterFieldStatistic->addItem(tr("mad"));
-    tabInFilterFieldStatistic->addItem(tr("std"));
-    tabInFilterFieldStatistic->addItem(tr("negative"));
+    tabInFilterFieldStatistic->addItem(tr("Gaussian fit to negative fluxes"), QVariant(QString("negative")));
+    tabInFilterFieldStatistic->addItem(tr("Median absolute deviation"), QVariant(QString("mad")));
+    tabInFilterFieldStatistic->addItem(tr("Standard deviation"), QVariant(QString("std")));
     
     tabInFilterForm2->addRow(tr("Statistic:"), tabInFilterFieldStatistic);
     tabInFilterForm2->addRow(tr("Edge X:"), tabInFilterFieldEdgeX);
@@ -1526,22 +1529,22 @@ void SoFiA::createInterface()
     
     tabSourceFindingFieldEdgeMode = new QComboBox(tabSourceFindingGroupBox1);
     tabSourceFindingFieldEdgeMode->setObjectName("SCfind.edgeMode");
-    tabSourceFindingFieldEdgeMode->addItem(tr("constant"));
-    tabSourceFindingFieldEdgeMode->addItem(tr("reflect"));
-    tabSourceFindingFieldEdgeMode->addItem(tr("mirror"));
-    tabSourceFindingFieldEdgeMode->addItem(tr("nearest"));
-    tabSourceFindingFieldEdgeMode->addItem(tr("wrap"));
+    tabSourceFindingFieldEdgeMode->addItem(tr("Constant"), QVariant(QString("constant")));
+    tabSourceFindingFieldEdgeMode->addItem(tr("Reflect"), QVariant(QString("reflect")));
+    tabSourceFindingFieldEdgeMode->addItem(tr("Mirror"), QVariant(QString("mirror")));
+    tabSourceFindingFieldEdgeMode->addItem(tr("Nearest"), QVariant(QString("nearest")));
+    tabSourceFindingFieldEdgeMode->addItem(tr("Wrap"), QVariant(QString("wrap")));
     
     tabSourceFindingFieldRmsMode = new QComboBox(tabSourceFindingGroupBox1);
     tabSourceFindingFieldRmsMode->setObjectName("SCfind.rmsMode");
-    tabSourceFindingFieldRmsMode->addItem(tr("negative"));
-    tabSourceFindingFieldRmsMode->addItem(tr("mad"));
-    tabSourceFindingFieldRmsMode->addItem(tr("std"));
+    tabSourceFindingFieldRmsMode->addItem(tr("Gaussian fit to negative fluxes"), QVariant(QString("negative")));
+    tabSourceFindingFieldRmsMode->addItem(tr("Median absolute deviation"), QVariant(QString("mad")));
+    tabSourceFindingFieldRmsMode->addItem(tr("Standard deviation"), QVariant(QString("std")));
     
     tabSourceFindingFieldKunit = new QComboBox(tabSourceFindingGroupBox1);
     tabSourceFindingFieldKunit->setObjectName("SCfind.kernelUnit");
-    tabSourceFindingFieldKunit->addItem(tr("pixel"));
-    tabSourceFindingFieldKunit->addItem(tr("world"));
+    tabSourceFindingFieldKunit->addItem(tr("Pixels"), QVariant(QString("pixel")));
+    tabSourceFindingFieldKunit->addItem(tr("World coordinates"), QVariant(QString("world")));
     
     tabSourceFindingFieldKernels = new QTextEdit(tabSourceFindingGroupBox1);
     tabSourceFindingFieldKernels->setObjectName("SCfind.kernels");
@@ -1580,14 +1583,14 @@ void SoFiA::createInterface()
     
     tabSourceFindingFieldClipMethod = new QComboBox(tabSourceFindingGroupBox2);
     tabSourceFindingFieldClipMethod->setObjectName("threshold.clipMethod");
-    tabSourceFindingFieldClipMethod->addItem(tr("relative"));
-    tabSourceFindingFieldClipMethod->addItem(tr("absolute"));
+    tabSourceFindingFieldClipMethod->addItem(tr("Relative"), QVariant(QString("relative")));
+    tabSourceFindingFieldClipMethod->addItem(tr("Absolute"), QVariant(QString("absolute")));
     
     tabSourceFindingFieldRmsMode2 = new QComboBox(tabSourceFindingGroupBox2);
     tabSourceFindingFieldRmsMode2->setObjectName("threshold.rmsMode");
-    tabSourceFindingFieldRmsMode2->addItem(tr("negative"));
-    tabSourceFindingFieldRmsMode2->addItem(tr("mad"));
-    tabSourceFindingFieldRmsMode2->addItem(tr("std"));
+    tabSourceFindingFieldRmsMode2->addItem(tr("Gaussian fit to negative fluxes"), QVariant(QString("negative")));
+    tabSourceFindingFieldRmsMode2->addItem(tr("Median absolute deviation"), QVariant(QString("mad")));
+    tabSourceFindingFieldRmsMode2->addItem(tr("Standard deviation"), QVariant(QString("std")));
     
     tabSourceFindingForm2->addRow(tr("Threshold:"), tabSourceFindingFieldThreshold2);
     tabSourceFindingForm2->addRow(tr("Clip mode:"), tabSourceFindingFieldClipMethod);

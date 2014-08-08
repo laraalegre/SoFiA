@@ -41,7 +41,16 @@
         <td>SCfind.edgeMode</td>
         <td>string</td>
         <td><b>constant</b>, reflect, mirror, nearest, wrap</td>
-        <td>Behaviour near the edge of the cube.</td>
+        <td>
+          Behaviour near the edge of the cube:
+          <ul>
+            <li><i>constant</i>: assume constant value of 0</li>
+            <li><i>nearest</i>: assume constant value equal to edge pixel</li>
+            <li><i>reflect</i>: mirror values at edge, thereby including the edge pixel itself</li>
+            <li><i>mirror</i>: mirror values at position of outermost pixel, thereby excluding the edge pixel itself</li>
+            <li><i>wrap</i>: copy values from opposite edge of the array</li>
+          </ul>
+        </td>
       </tr>
       <tr>
         <td>SCfind.rmsMode</td>
