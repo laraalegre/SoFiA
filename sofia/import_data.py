@@ -32,9 +32,11 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[],
 	if (len(subcube)==6 or len(subcube)==4) and subcubeMode=='wcs':
 		print 'Calculating subcube boundaries from input WCS centre and radius'
 		wcsin = wcs.WCS(header)
-		if header['naxis']==4: subcube=wcsin.wcs_world2pix(array([[subcube[0]-subcube[3],subcube[1]-subcube[4],subcube[2]-subcube[5],0],[subcube[0]+subcube[3],subcube[1]+subcube[4],subcube[2]+subcube[5],0]]),0)[:,:3]
-		elif header['naxis']==3: subcube=wcsin.wcs_world2pix(array([[subcube[0]-subcube[3],subcube[1]-subcube[4],subcube[2]-subcube[5]],[subcube[0]+subcube[3],subcube[1]+subcube[4],subcube[2]+subcube[5]]]),0)
-		elif header['naxis']==2: subcube=wcsin.wcs_world2pix(array([[subcube[0]-subcube[2],subcube[1]-subcube[3]],[subcube[0]+subcube[2],subcube[1]+subcube[3]]]),0)
+		# calculate cos(Dec) correction for RA range
+		if wcsin.wcs.cunit[0]=='deg' and wcsin.wcs.cunit[1]=='deg': corrfact=cos(subcube[1]/180*pi)
+		if header['naxis']==4: subcube=wcsin.wcs_world2pix(array([[subcube[0]-subcube[3]/corrfact,subcube[1]-subcube[4],subcube[2]-subcube[5],0],[subcube[0]+subcube[3]/corrfact,subcube[1]+subcube[4],subcube[2]+subcube[5],0]]),0)[:,:3]
+		elif header['naxis']==3: subcube=wcsin.wcs_world2pix(array([[subcube[0]-subcube[3]/corrfact,subcube[1]-subcube[4],subcube[2]-subcube[5]],[subcube[0]+subcube[3]/corrfact,subcube[1]+subcube[4],subcube[2]+subcube[5]]]),0)
+		elif header['naxis']==2: subcube=wcsin.wcs_world2pix(array([[subcube[0]-subcube[2]/corrfact,subcube[1]-subcube[3]],[subcube[0]+subcube[2]/corrfact,subcube[1]+subcube[3]]]),0)
 		subcube=ravel(subcube,order='F')
 		# make sure min pix coord is < max pix coord for all axes
 		if subcube[0]>subcube[1]: subcube[0],subcube[1]=subcube[1],subcube[0]
