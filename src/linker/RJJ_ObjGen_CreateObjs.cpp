@@ -4769,7 +4769,7 @@ long int CreateObjects(double * data_vals, long int * flag_vals, int size_x, int
     if((detections[obj_batch][(o - (obj_batch * obj_limit))].Get_srep_size(0) >= 0) && (detections[obj_batch][(o - (obj_batch * obj_limit))].Get_srep_update() == -1)){
       
       // update progress on display
-      while(progress <= (((double) (i + 1) / ((double) obj)))){ std::cout << "*"; std::cout.flush(); progress+=0.05; }  
+      while(progress <= (((double) (o + 1) / ((double) obj)))){ std::cout << "*"; std::cout.flush(); progress+=0.05; }  
       continue; 
 	
     }
