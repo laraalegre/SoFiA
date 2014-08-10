@@ -153,8 +153,9 @@ print
 # Check whether any voxel is detected
 NRdet = (mask > 0).sum()
 if not NRdet:
-	print 'WARNING: No voxels detected!'
+	print 'WARNING: No voxels detected! EXITING pipeline.'
 	print 
+	sys.exit()
 
 # Reload original data cube for parameterisation if it has been changed
 if Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['import']['weightsFile']:
