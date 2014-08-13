@@ -2,7 +2,7 @@
 
 # import default python libraries
 from numpy import *
-from pylab import *
+#from pylab import *
 from scipy import *
 import numpy as np
 import math as mt
