@@ -181,7 +181,6 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[],
 			print 'Weights cube loaded and applied.'
 	
 	elif weightsFunction:
-		# WARNING: This entire implementation is currently seriously flawed for the reasons given further down!
 		# WARNING: I'm not sure if there is a safe way to properly implement multiplication of a data array 
 		# WARNING: with a user-specified function in Python without the need for a whitelist, nested loops, 
 		# WARNING: or the creation of multiple copies of the cube.
@@ -202,23 +201,32 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[],
 				print "       Please check your input."
 				raise SystemExit(1)
 		
-		z, y, x = indices(np_Cube.shape)
-		# WARNING: This is crazy, as it will create three additional copies of the entire cube in memory!!!
-		#          In C you would have three nested loops, but that doesn't work in Python because it's too slow... :-(
-		
-		try:
-			# NOTE: eval() should be safe now as we don't allow for non-whitelisted sequences...
-			np_Cube *= eval(str(weightsFunction))
-			# WARNING: There is no check here whether the expression to be evaluated is actually valid,
-			#          e.g. SoFiA will crash if the weights function is sqrt(-1). 'try' doesn't catch this!
-			#          Even if we set np.seterr(all='raise'), we still run into problems with expressions 
-			#          that are valid but not floating-point numbers, e.g. sqrt((1,2)).
-		except:
-			print "ERROR: Failed to evaluate weights function:"
-			print "       %s"%weightsFunction
-			print "       Please check your input."
-			raise SystemExit(1)
-		
+		# hardcoded number of weights chunks
+		Nz=50
+		# check that the number of weights z-chunks is at most equal to the total nr of chans
+		Nz=min(Nz,np_Cube.shape[0])
+		# calculate the size of each chunk along the Z axis (rounding to integer)
+		Lz=int(round(float(np_Cube.shape[0])/Nz))
+		# calculate number of chunks really needed given above rounding
+		Nz=int(ceil(float(np_Cube.shape[0])/Lz))
+		print "Evaluating and applying weights function in %i chunks along the Z axis"%Nz
+		for zz in range(Nz):
+			# last chunk may have different length than the others
+			if zz==Nz-1: z,y,x=indices((np_Cube.shape[0]-Lz*zz,np_Cube.shape[1],np_Cube.shape[2]))
+			else: z,y,x=indices((Lz,np_Cube.shape[1],np_Cube.shape[2]))
+			z+=zz*Lz
+			try:
+				# NOTE: eval() should be safe now as we don't allow for non-whitelisted sequences...
+				np_Cube[z,y,x] *= eval(str(weightsFunction))
+				# WARNING: There is no check here whether the expression to be evaluated is actually valid,
+				#          e.g. SoFiA will crash if the weights function is sqrt(-1). 'try' doesn't catch this!
+				#          Even if we set np.seterr(all='raise'), we still run into problems with expressions 
+				#          that are valid but not floating-point numbers, e.g. sqrt((1,2)).
+			except:
+				print "ERROR: Failed to evaluate weights function:"
+				print "       %s"%weightsFunction
+				print "       Please check your input."
+				raise SystemExit(1)
 		print "Function-weighted cube created.\n"
 
 	if maskFile:
