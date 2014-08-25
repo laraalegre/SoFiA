@@ -106,6 +106,14 @@ basic help is available at this stage.
 Version history
 ---------------
 
+* SoFiA 0.3.2
+  * Released 25/08/2014
+  * Adds several new features, including subcube processing and separate 
+    output directory.
+  * Fixes a bug that limited the number of detected sources to 10,000.
+  * See release notes for details:
+    https://github.com/SoFiA-Admin/SoFiA/releases/tag/v0.3.2
+
 * SoFiA 0.3.1
   * Released 14/07/2014
   * Adds several new features, including weights functions, flagging, and
