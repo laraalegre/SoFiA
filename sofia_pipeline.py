@@ -153,7 +153,7 @@ print
 # Check whether any voxel is detected
 NRdet = (mask > 0).sum()
 if not NRdet:
-	print 'WARNING: No voxels detected! EXITING pipeline.'
+	sys.stderr.write("WARNING: No voxels detected! EXITING pipeline.\n")
 	print 
 	sys.exit()
 
