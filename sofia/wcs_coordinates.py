@@ -9,6 +9,7 @@
 def fix_gipsy_header(header_orig):
 	
 	import math
+	import sys
 	
 	## gipsy keys for spectral axis
 	key_opt = ['FREQ-OHEL','FREQ-OLSR']
@@ -33,7 +34,7 @@ def fix_gipsy_header(header_orig):
 					elif unit.lower()!='m/s':
 						break
 			except:
-				print '  Problem with reference velocity!'
+				sys.stderr.write("WARNING: Problem with reference velocity.\n")
 				break
 			
 			## Convert reference frequency to Hz
@@ -46,7 +47,7 @@ def fix_gipsy_header(header_orig):
 				freq  *= 10**j
 				dfreq *= 10**j
 			except:
-				print '  Problem with reference frequency!'
+				sys.stderr.write("WARNING: Problem with reference frequency.\n")
 				break
 			
 			## Need rest frequency for conversion
@@ -61,7 +62,7 @@ def fix_gipsy_header(header_orig):
 				header['RESTFRQ'] = freq0
 				#foundFreq0
 			except:
-				print '  Rest frequency not found!'
+				sys.stderr.write("WARNING: Rest frequency not found.\n")
 				break
 			
 			## calculate reference frequency in the barycentric system
@@ -129,10 +130,10 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 						break
 				if rafound:
 					if header['crval%i'%(kk+1)]<0:
-						print 'WARNING: adding 360 deg to RA reference value'
+						sys.stderr.write("WARNING: adding 360 deg to RA reference value.\n")
 						header['crval%i'%(kk+1)]+=360
 					elif header['crval%i'%(kk+1)]>360:
-						print 'WARNING: subtracting 360 deg from RA reference value'
+						sys.stderr.write("WARNING: subtracting 360 deg from RA reference value.\n")
 						header['crval%i'%(kk+1)]-=360
 
 				wcsin = wcs.WCS(header)
@@ -149,6 +150,6 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 			print "WCS coordinates added to the catalog."
 				
 		except:
-			print "WARNING: WCS conversion of parameters could not be executed!\n"
+			sys.stderr.write("WARNING: WCS conversion of parameters failed.\n")
 			
 	return(objects, catParNames, catParFormt, catParUnits)

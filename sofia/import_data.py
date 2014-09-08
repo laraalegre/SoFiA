@@ -3,6 +3,7 @@
 # import default python libraries
 import pyfits
 import os
+import sys
 from numpy import *
 import re
 import imp
@@ -13,8 +14,8 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[],
 	# the data cube is converted into a 3D array
 
 	if os.path.isfile(inFile) == False:
-		print 'FATAL ERROR: The specified data cube does not exist.'
-		print 'Cannot find: ' + inFile
+		sys.stderr.write("ERROR: The specified data cube does not exist.\n")
+		sys.stderr.write("       Cannot find: " + inFile + "\n")
 		raise SystemExit(1)
 
 	if len(subcube):
@@ -51,14 +52,14 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[],
 		# make sure pixel coordinates are integers
 		for ss in subcube:
 			if type(ss)!=int:
-				print 'FATAL ERROR: when subcubeMode = "pix" the subcube must be defined by a set of integer pixel coordinates'
-				print '  The %i-th coordinate has the wrong type'%(subcube.index(ss))
+				sys.stderr.write("ERROR: When subcubeMode = pix the subcube must be defined by a set of integer pixel coordinates.\n")
+				sys.stderr.write("       The %i-th coordinate has the wrong type.\n" % subcube.index(ss))
 				raise SystemExit(1)
 		# make sure to be within the cube boundaries
 		for ss in range(min(3,header['naxis'])): subcube[2*ss]=max(0,subcube[2*ss])
 		for ss in range(min(3,header['naxis'])): subcube[1+2*ss]=min(header['naxis%i'%(ss+1)],subcube[1+2*ss])
 	elif len(subcube):
-		print 'FATAL ERROR: import.subcubeMode can only be "pix" or "wcs", and import.subcube must have 4 or 6 entries.'
+		sys.stderr.write("ERROR: import.subcubeMode can only be \'pix\' or \'wcs\', and import.subcube must have 4 or 6 entries.\n")
 		raise SystemExit(1)
 
 	if len(subcube)==4: print 'Loading subcube of %s defined by [x1 x2 y1 y2] ='%inFile,subcube
@@ -81,13 +82,13 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[],
 			dict_Header['crpix3']-=subcube[4]
 		elif not len(subcube): np_Cube = f[0].data
 		else:
-			print 'ERROR: The subcube list must have 6 entries (%i given).'%len(subcube)
+			sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given).\n" % len(subcube))
 			raise SystemExit(1)
 	elif dict_Header['NAXIS'] == 4:
 		if dict_Header['NAXIS4'] != 1:
 			print 'type: ', dict_Header['CTYPE1'], dict_Header['CTYPE2'], dict_Header['CTYPE3'], dict_Header['CTYPE4']  
 			print 'dimensions: ', dict_Header['NAXIS1'], dict_Header['NAXIS2'], dict_Header['NAXIS3'], dict_Header['NAXIS4']  
-			print 'ERROR: The 4th dimension has more than 1 value.'
+			sys.stderr.write("ERROR: The size of the 4th dimension is > 1.\n")
 			raise SystemExit(1)
 		else:
 			if len(subcube)==6:
@@ -97,10 +98,10 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[],
 				dict_Header['crpix3']-=subcube[4]
 			elif not len(subcube): np_Cube = f[0].data[0]
 			else:
-				print 'ERROR: The subcube list must have 6 entries (%i given). Ignore 4th axis.'%len(subcube)
+				sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given). Ignore 4th axis.\n" % len(subcube))
 				raise SystemExit(1)
 	elif dict_Header['NAXIS'] == 2:
-		print 'WARNING: The input cube has 2 axes, third axis added.'
+		sys.stderr.write("WARNING: The input cube has 2 axes, third axis added.\n")
 		print 'type: ', dict_Header['CTYPE1'], dict_Header['CTYPE2']
 		print 'dimensions: ', dict_Header['NAXIS1'], dict_Header['NAXIS2']
 		if len(subcube)==4:
@@ -109,15 +110,15 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[],
 			dict_Header['crpix2']-=subcube[2]
 		elif not len(subcube): np_Cube = array([f[0].data])
 		else:
-			print 'ERROR: The subcube list must have 4 entries (%i given).'%len(subcube)
+			sys.stderr.write("ERROR: The subcube list must have 4 entries (%i given).\n" % len(subcube))
 			raise SystemExit(1)
 	elif dict_Header['NAXIS'] == 1:
-		print 'ERROR: The input has 1 axis, this is probably a spectrum instead of an 2D/3D image.'
-		print 'type: ', dict_Header['CTYPE1'] 
-		print 'dimensions: ', dict_Header['NAXIS1']
+		sys.stderr.write("ERROR: The input has 1 axis, this is probably a spectrum instead of an 2D/3D image.\n")
+		sys.stderr.write("       Type: " + str(dict_Header['CTYPE1']) + "\n")
+		sys.stderr.write("       Dimensions: " + str(dict_Header['NAXIS1']) + "\n")
 		raise SystemExit(1)
 	else:
-		print 'ERROR: The file has less than 1 or more than 4 dimensions.'
+		sys.stderr.write("ERROR: The file has less than 1 or more than 4 dimensions.\n")
 		raise SystemExit(1)
 		
 	f.close()
@@ -131,7 +132,7 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[],
 	
 	# check whether the axis are in the expected order:
 	#if dict_Header['ctype1'][0:2] != 'RA' or dict_Header['ctype2'][0:3] != 'DEC':
-	#	print 'WARNING: the dimensions are not in the expected order'
+	#	sys.stderr.write("WARNING: The dimensions are not in the expected order.\n")
 	
 	# the data cube has been loaded
 	print 'The data cube has been loaded'
@@ -140,8 +141,8 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[],
 	if weightsFile:
 		# check whether the weights cube exists:
 		if os.path.isfile(weightsFile) == False:
-			print 'FATAL ERROR: The defined weights cube does not exist.'
-			print 'Cannot find: ' + weightsFile
+			sys.stderr.write("ERROR: The defined weights cube does not exist.\n")
+			sys.stderr.write("       Cannot find: " + weightsFile + "\n")
 			raise SystemExit(1)
 
 		else:
@@ -156,25 +157,25 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[],
 				else: np_Cube*=f[0].data
 			elif dict_Weights_header['NAXIS']==4:
 				if dict_Weights_header['NAXIS4']!=1:
-					print 'ERROR: The 4th dimension has more than 1 value.'
+					sys.stderr.write("ERROR: The 4th dimension has more than 1 value.\n")
 					raise SystemExit(1)
 				else:
-					print 'WARNING: The weights cube has 4 axes; first axis ignored.'
+					sys.stderr.write("WARNING: The weights cube has 4 axes; first axis ignored.\n")
 					if len(subcube)==6: np_Cube*=f[0].data[0,subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
 					else: np_Cube*=f[0].data[0]
 			elif dict_Weights_header['NAXIS']==2:
-				print 'WARNING: The weights cube has 2 axes; third axis added.'
+				sys.stderr.write("WARNING: The weights cube has 2 axes; third axis added.\n")
 				if len(subcube)==6 or len(subcube)==4: np_Cube*=array([f[0].data[subcube[2]:subcube[3],subcube[0]:subcube[1]]])
 				else: np_Cube*=array([f[0].data])
 			elif dict_Weights_header['NAXIS']==1:
-				print 'WARNING: The weights cube has 1 axis; interpreted as third axis; first and second axes added.'
+				sys.stderr.write("WARNING: The weights cube has 1 axis; interpreted as third axis; first and second axes added.\n")
 				if len(subcube)==6: np_Cube*=reshape(f[0].data[subcube[4]:subcube[5]],(-1,1,1))
 				elif not len(subcube): np_Cube*=reshape(f[0].data,(-1,1,1))
 				else:
-					print 'ERROR: The subcube list must have 6 entries (%i given).'%len(subcube)
+					sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given).\n" % len(subcube))
 					raise SystemExit(1)
 			else:
-				print 'ERROR: The weights cube has less than 1 or more than 4 dimensions.'
+				sys.stderr.write("ERROR: The weights cube has less than 1 or more than 4 dimensions.\n")
 				raise SystemExit(1)
 
 			f.close()
@@ -196,9 +197,9 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[],
 		# Check for non-whitelisted sequences:
 		for keyword in keywordsFound:
 			if keyword not in whitelist:
-				print "ERROR: Unsupported keyword/function found in weights function:"
-				print "       %s"%weightsFunction
-				print "       Please check your input."
+				sys.stderr.write("ERROR: Unsupported keyword/function found in weights function:\n")
+				sys.stderr.write("         %s\n" % weightsFunction)
+				sys.stderr.write("       Please check your input.\n")
 				raise SystemExit(1)
 		
 		# hardcoded number of weights chunks
@@ -223,17 +224,17 @@ def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[],
 				#          Even if we set np.seterr(all='raise'), we still run into problems with expressions 
 				#          that are valid but not floating-point numbers, e.g. sqrt((1,2)).
 			except:
-				print "ERROR: Failed to evaluate weights function:"
-				print "       %s"%weightsFunction
-				print "       Please check your input."
+				sys.stderr.write("ERROR: Failed to evaluate weights function:\n")
+				sys.stderr.write("         %s\n" % weightsFunction)
+				sys.stderr.write("       Please check your input.\n")
 				raise SystemExit(1)
 		print "Function-weighted cube created.\n"
 
 	if maskFile:
 		# check whether the mask cube exists:
 		if os.path.isfile(maskFile) == False:
-			print 'FATAL ERROR: The specified mask cube does not exist.'
-			print 'Cannot find: ' + maskFile
+			sys.stderr.write("ERROR: The specified mask cube does not exist.\n")
+			sys.stderr.write("       Cannot find: " + maskFile + "\n")
 			#print 'WARNING: Program continues, without using input mask'
 			#mask=zeros(np_Cube.shape)
 			raise SystemExit(1)

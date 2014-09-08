@@ -87,10 +87,10 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 	Nneg=neg.sum()
 
 	if not Npos:
-		print 'FATAL ERROR: no positive sources found; cannot proceed'
+		sys.stderr.write("ERROR: no positive sources found; cannot proceed.\n")
 		exit()
 	elif not Nneg:
-		print 'FATAL ERROR: no negative sources found; cannot proceed'
+		sys.stderr.write("ERROR: no negative sources found; cannot proceed.\n")
 		exit()
 
 	# get array of relevant source parameters and set what to plot

@@ -63,7 +63,7 @@ def smooth(indata, type, kern_px, kern_py, kern_pz):
     #elif type == "m":
     #    outdata=ndimage.filters.median_filter(input=indata, size=(kern_pz, kern_px, kern_py))
     else:
-        print "FATAL: smoothing type not recognized"
+        sys.stderr.write("ERROR: Smoothing type not recognized.\n")
         sys.exit()
     
     return outdata

@@ -25,7 +25,7 @@ def smooth(indata, kernel, edgeMode, kernelX, kernelY, kernelZ):
 	print 'Start smoothing cube'
 	
 	if (kernelX + kernelY + kernelZ) == 0:
-		print 'WARNING: All the smoothing kernels are set to zero; no smoothing is applied'
+		sys.stderr.write("WARNING: All the smoothing kernels are set to zero; no smoothing is applied.\n")
 		outdata = indata
 	else:
 		if type == "g" or kernel == "gaussian":
@@ -40,7 +40,7 @@ def smooth(indata, kernel, edgeMode, kernelX, kernelY, kernelZ):
 			outdata=ndimage.filters.uniform_filter(indata, size=(kernelZ,kernelX,kernelY), mode=edgeMode)
 		elif type == "m" or kernel == "median":
 			if kernelX == 0 or kernelY == 0 or kernelZ == 0:
-				print 'WARNING: cannot determine median over kernel length zero; no smoothing is applied'
+				sys.stderr.write("WARNING: cannot determine median over kernel length zero; no smoothing is applied.\n")
 				outdata = indata
 			else:
 				print 'The smoothing type is: Median'
@@ -48,8 +48,8 @@ def smooth(indata, kernel, edgeMode, kernelX, kernelY, kernelZ):
 				print 'The edge is handled as:', edgeMode
 				outdata=ndimage.filters.median_filter(indata, size=(kernelZ,kernelX,kernelY), mode=edgeMode)
 		else:
-			print "FATAL: smoothing type not recognized!"
-			print "WARNING: The program continues without applying any smoothing!"
+			sys.stderr.write("ERROR: Smoothing type not recognised.\n")
+			sys.stderr.write("       The program continues without applying any smoothing.\n")
 			outdata = indata
 
 	return outdata

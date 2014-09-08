@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import numpy as np
+import sys
 
 
 def flag(cube,regions):
@@ -20,7 +21,7 @@ def flag(cube,regions):
 			print 'Cube has been flagged'
 
 		except:
-			print 'WARNING: Flagging did not succeed. Please check the dimensions of your cube and filters!'
+			sys.stderr.write("WARNING: Flagging did not succeed. Please check the dimensions of your cube and filters.\n")
 		
 			
 	return cube
