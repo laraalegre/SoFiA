@@ -38,6 +38,7 @@ flag.regions                    =       []
 
 # Smoothing module
 
+writeCat.compress               =       false
 smooth.kernel                   =       gaussian
 smooth.edgeMode                 =       constant
 smooth.kernelX                  =       3.0
