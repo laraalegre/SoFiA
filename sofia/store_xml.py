@@ -64,6 +64,7 @@ def make_xml_from_array(
     catfmt,
     store_pars,
     outname,
+    compress
     ):
     print 'Store the results to xml file: ', outname
     top = Element('VOTABLE')
@@ -105,8 +106,12 @@ def make_xml_from_array(
                 td = SubElement(tr, 'TD')
                 index = list(cathead).index(par)
                 td.text = (catfmt[index] % obj[index]).strip()
-
-    f1 = open(outname, 'w+')
+    
+    if compress:
+      import gzip
+      f1 = gzip.open(outname+'.gz','wb')
+    else:
+      f1 = open(outname, 'w+')
     f1.write(prettify(top))
     f1.close
 

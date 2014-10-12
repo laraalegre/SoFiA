@@ -5,7 +5,7 @@ from numpy import *
 import numpy as np
 
 
-def make_ascii(objects, store_pars, outname):
+def make_ascii(objects, store_pars, outname,compress):
     print 'Store the results to ascii file: ', outname
     f1 = open(outname, 'w+')
     f1.write('# SoFia catalogue\n')
@@ -49,6 +49,7 @@ def make_ascii_from_array(
     catfmt,
     store_pars,
     outname,
+    compress
     ):
     print 'Store the results to ascii file: ', outname
     header = 'SoFia catalogue\n'
@@ -90,6 +91,8 @@ def make_ascii_from_array(
         outputFormat = ''
         for i in range(0, len(catfmt)):
             outputFormat += catfmt[i] + ' '
+        if compress:
+	  outname += '.gz'
         np.savetxt(outname, np.array(objects), fmt=outputFormat, header=header)
     else:
 
@@ -103,6 +106,8 @@ def make_ascii_from_array(
             for par in store_pars:
                 index = list(cathead).index(par)
                 tmpObjects[-1].append(obj[index])
+        if compress:
+	  outname += '.gz'
         np.savetxt(outname, np.array(tmpObjects), fmt=outputFormat, header=header)
 
 

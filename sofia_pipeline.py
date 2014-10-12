@@ -343,7 +343,7 @@ if len(subcube) and Parameters['steps']['doMerge'] and NRdet:
 
 if Parameters['steps']['doWriteMask'] and NRdet:
         print "\n--- SoFiA: Writing mask ---"
-	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.fits'%outroot)
+	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.fits'%outroot,Parameters['writeCat']['compress'])
 
 
 
@@ -355,7 +355,7 @@ if Parameters['steps']['doMom0'] or Parameters['steps']['doMom1']:
 	print "\n--- SoFiA: Writing moment-0 map ---"
 	sys.stdout.flush()
 	debug = 0
-	mom0_Image = writemoment.writeMoment0(np_Cube, mask, outroot, debug, dict_Header)
+	mom0_Image = writemoment.writeMoment0(np_Cube, mask, outroot, debug, dict_Header,Parameters['writeCat']['compress'])
 
 
 
@@ -367,7 +367,7 @@ if Parameters['steps']['doMom1'] and NRdet:
 	print "\n--- SoFiA: Writing moment-1 map ---"
 	sys.stdout.flush()
 	debug = 0
-	writemoment.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image)
+	writemoment.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image,Parameters['writeCat']['compress'])
 
 
 
@@ -380,7 +380,7 @@ if Parameters['steps']['doCubelets'] and Parameters['steps']['doMerge'] and NRde
 	sys.stdout.flush()
 	objects = np.array(objects)
 	cathead = np.array(catParNames)
-	cubelets.writeSubcube(np_Cube, dict_Header, mask, objects, cathead, outroot)
+	cubelets.writeSubcube(np_Cube, dict_Header, mask, objects, cathead, outroot,Parameters['writeCat']['compress'])
 
 
 
@@ -403,10 +403,10 @@ if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge'] and NRde
 	print "\n--- SoFiA: Writing output catalogue ---"
 	sys.stdout.flush()
 	if Parameters['writeCat']['writeXML'] and Parameters['steps']['doMerge'] and NRdet:
-		store_xml.make_xml_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'],outroot + '_cat.xml')
+		store_xml.make_xml_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'],outroot + '_cat.xml',Parameters['writeCat']['compress'])
 		#store_xml.make_xml(results, outroot + '_cat.xml')
 	if Parameters['writeCat']['writeASCII'] and Parameters['steps']['doMerge'] and NRdet:
-		store_ascii.make_ascii_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outroot+'_cat.ascii')
+		store_ascii.make_ascii_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outroot+'_cat.ascii',Parameters['writeCat']['compress'])
 		#store_ascii.make_ascii(results, Parameters['writeCat']['parameters'], outroot + '_cat.ascii')
 
 

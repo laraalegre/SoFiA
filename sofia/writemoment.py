@@ -21,7 +21,7 @@ def recursion(dictionary,optionsList,optionsDepth,counter=0):
     optionsList[len(optionsList)-1]+='='+str(dictionary)
     counter = 0
 
-def writeMoment0(datacube,maskcube,filename,debug,header):
+def writeMoment0(datacube,maskcube,filename,debug,header,compress):
   print 'Writing moment-0' # in units of header['bunit']*km/s
   #m0=np.nan_to_num(datacube*maskcube.astype(bool)).sum(axis=0)
   m0 = datacube*maskcube.astype(bool)
@@ -43,10 +43,14 @@ def writeMoment0(datacube,maskcube,filename,debug,header):
   del(hdu.header['cdelt3'])
   del(hdu.header['ctype3'])
   if debug: hdu.writeto('%s_mom0.debug.fits'%filename,clobber=True)
-  else: hdu.writeto('%s_mom0.fits'%filename,clobber=True)
+  else: 
+    name = '%s_mom0.fits'%filename
+    if compress:
+	  name += '.gz'
+    hdu.writeto(name,clobber=True)
   return m0
 
-def writeMoment1(datacube,maskcube,filename,debug,header,m0):
+def writeMoment1(datacube,maskcube,filename,debug,header,m0,compress):
   print 'Writing moment-1'
   # create array of axis3 coordinates
   m1=(np.arange(datacube.shape[0]).reshape((datacube.shape[0],1,1))*np.ones(datacube.shape)-header['crpix3']+1)*header['cdelt3']+header['crval3'] # in axis3 units
@@ -69,4 +73,8 @@ def writeMoment1(datacube,maskcube,filename,debug,header,m0):
   del(hdu.header['cdelt3'])
   del(hdu.header['ctype3'])
   if debug: hdu.writeto('%s_mom1.debug.fits'%filename,clobber=True)
-  else: hdu.writeto('%s_mom1.fits'%filename,clobber=True)
+  else: 
+    name = '%s_mom1.fits'%filename
+    if compress:
+	  name += '.gz'
+    hdu.writeto(name,clobber=True)

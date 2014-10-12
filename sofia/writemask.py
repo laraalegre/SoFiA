@@ -21,7 +21,7 @@ def recursion(dictionary,optionsList,optionsDepth,counter=0):
     counter = 0
 
 
-def writeMask(cube,header,dictionary,filename):
+def writeMask(cube,header,dictionary,filename,compress):
   header.add_history('SOURCE FINDING')
   optionsList = []
   optionsDepth = []
@@ -49,4 +49,6 @@ def writeMask(cube,header,dictionary,filename):
   #hdulist = pyfits.HDUList([hdu])
   #name = os.path.splitext(filename)[0] + '_mask.fits'
   name = filename
+  if compress:
+	  name += '.gz'
   hdu.writeto(name,clobber=True)
