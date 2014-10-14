@@ -7,7 +7,7 @@ import math
 from scipy.ndimage import map_coordinates
 
 
-def writeSubcube(cube,header,mask,objects,cathead,outroot):
+def writeSubcube(cube,header,mask,objects,cathead,outroot,compress):
     
     # strip path variable to get the file name and the directory separately
     splitroot = outroot.split('/')
@@ -95,6 +95,8 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot):
 	hdu = pyfits.PrimaryHDU(data=subcube,header=header)
 	hdulist = pyfits.HDUList([hdu])
 	name = outputDir+cubename+'_'+str(int(obj[0]))+'.fits'
+	if compress:
+	  name += '.gz'
 	hdulist.writeto(name,clobber=True)
 	hdulist.close()
 	
@@ -143,6 +145,8 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot):
 	hdu = pyfits.PrimaryHDU(data=submask.astype('int16'),header=header)
 	hdulist = pyfits.HDUList([hdu])
 	name = outputDir+cubename+'_'+str(int(obj[0]))+'_mask.fits'
+	if compress:
+	  name += '.gz'
 	hdulist.writeto(name,clobber=True)
 	hdulist.close()
 	
@@ -169,6 +173,8 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot):
 	del(hdu.header['cdelt3'])
 	del(hdu.header['ctype3'])
 	name = outputDir+cubename+'_'+str(int(obj[0]))+'_mom0.fits'
+	if compress:
+	  name += '.gz'
 	hdu.writeto(name,clobber=True)
 	
 	
@@ -192,6 +198,8 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot):
 	del(hdu.header['cdelt3'])
 	del(hdu.header['ctype3'])
 	name = outputDir+cubename+'_'+str(int(obj[0]))+'_mom1.fits'
+	if compress:
+	  name += '.gz'
 	hdu.writeto(name,clobber=True)
 	
 	
@@ -216,11 +224,17 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot):
         del(hdu.header['cdelt3'])
         del(hdu.header['ctype3'])
         name = outputDir+cubename+'_'+str(int(obj[0]))+'_mom2.fits'
+        if compress:
+	  name += '.gz'
         hdu.writeto(name,clobber=True)
 	
 	# spectra
 	spec = np.nansum(subcube*submask,axis=(1,2))
-	f = open(outputDir+cubename+'_'+str(int(obj[0]))+'_spec.txt', 'w')
+	if compress:
+	  import gzip
+	  f = gzip.open(outputDir+cubename+'_'+str(int(obj[0]))+'_spec.txt.gz', 'wb')
+	else:
+	  f = open(outputDir+cubename+'_'+str(int(obj[0]))+'_spec.txt', 'w')
 	#f.write('# '+specTypeX+' ('+specUnitX+')'+'  '+specTypeY+' ('+specUnitY+')\n')
 	for i in range(0,len(spec)):
 	  xspec = cValZ + (i+ZminNew-cPixZ) * dZ
