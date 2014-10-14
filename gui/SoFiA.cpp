@@ -1225,6 +1225,7 @@ void SoFiA::showCatalogue()
 void SoFiA::createInterface()
 {
     // Load icons
+    // ----------
     
     QIcon iconSoFiA;
     iconSoFiA.addFile(QString(":/icons/32/SoFiA.png"), QSize(32, 32));
@@ -1245,28 +1246,30 @@ void SoFiA::createInterface()
     QIcon iconHelpAbout       = QIcon::fromTheme("help-about", QIcon(":/icons/22/help-about.png"));
     
     // Create main widget that contains everything else
+    // ------------------------------------------------
     
     widgetMain = new QWidget(this);
     
     // Set up tabs
+    // -----------
     
     tabs = new QTabWidget(widgetMain);
     
-    tabInput = new QWidget(tabs);
-    tabInFilter = new QWidget(tabs);
-    tabSourceFinding = new QWidget(tabs);
-    tabMerging = new QWidget(tabs);
+    tabInput           = new QWidget(tabs);
+    tabInFilter        = new QWidget(tabs);
+    tabSourceFinding   = new QWidget(tabs);
+    tabMerging         = new QWidget(tabs);
     tabParametrisation = new QWidget(tabs);
-    tabOutFilter = new QWidget(tabs);
-    tabOutput = new QWidget(tabs);
+    tabOutFilter       = new QWidget(tabs);
+    tabOutput          = new QWidget(tabs);
     
-    tabs->addTab(tabInput, tr("Input"));
-    tabs->addTab(tabInFilter, tr("Input Filter"));
-    tabs->addTab(tabSourceFinding, tr("Source Finding"));
-    tabs->addTab(tabMerging, tr("Merging"));
+    tabs->addTab(tabInput,           tr("Input"));
+    tabs->addTab(tabInFilter,        tr("Input Filter"));
+    tabs->addTab(tabSourceFinding,   tr("Source Finding"));
+    tabs->addTab(tabMerging,         tr("Merging"));
     tabs->addTab(tabParametrisation, tr("Parametrisation"));
-    tabs->addTab(tabOutFilter, tr("Output Filter"));
-    tabs->addTab(tabOutput, tr("Output"));
+    tabs->addTab(tabOutFilter,       tr("Output Filter"));
+    tabs->addTab(tabOutput,          tr("Output"));
     
     tabs->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
     tabs->setUsesScrollButtons(false);
@@ -1276,19 +1279,13 @@ void SoFiA::createInterface()
     // whereby the last character of the text was partially cut off.
     
     // Set up input tab
+    // ----------------
     
     tabInputLayout = new QVBoxLayout;
     
+    // input files
     tabInputGroupBox1 = new QGroupBox(tr("Input data"), tabInput);
-    tabInputGroupBox3 = new QGroupBox(tr("Data flagging"), tabInput);
-    tabInputGroupBox3->setObjectName("steps.doFlag");
-    tabInputGroupBox3->setCheckable(true);
-    tabInputGroupBox3->setChecked(false);
-    tabInputGroupBox4 = new QGroupBox(tr("Sub-cube"), tabInput);
-    
     tabInputForm1 = new QFormLayout;
-    tabInputForm3 = new QFormLayout;
-    tabInputForm4 = new QFormLayout;
     
     tabInputFieldData  = new QLineEdit(tabInputGroupBox1);
     tabInputFieldData->setObjectName("import.inFile");
@@ -1304,6 +1301,20 @@ void SoFiA::createInterface()
     tabInputLayoutData->addWidget(tabInputButtonData);
     tabInputLayoutData->setContentsMargins(0, 0, 0, 0);
     tabInputWidgetData->setLayout(tabInputLayoutData);
+    
+    tabInputFieldMask  = new QLineEdit(tabInputGroupBox1);
+    tabInputFieldMask->setObjectName("import.maskFile");
+    tabInputFieldMask->setToolTip("Name of mask cube (optional)");
+    tabInputButtonMask = new QPushButton(tr("Select..."), tabInputGroupBox1);
+    connect(tabInputButtonMask, SIGNAL(clicked()), this, SLOT(selectInputMaskFile()));
+    tabInputButtonMask->setIcon(iconDocumentOpen);
+    
+    tabInputWidgetMask = new QWidget(tabInputGroupBox1);
+    tabInputLayoutMask = new QHBoxLayout;
+    tabInputLayoutMask->addWidget(tabInputFieldMask);
+    tabInputLayoutMask->addWidget(tabInputButtonMask);
+    tabInputLayoutMask->setContentsMargins(0, 0, 0, 0);
+    tabInputWidgetMask->setLayout(tabInputLayoutMask);
     
     tabInputFieldWeights  = new QLineEdit(tabInputGroupBox1);
     tabInputFieldWeights->setObjectName("import.weightsFile");
@@ -1323,44 +1334,15 @@ void SoFiA::createInterface()
     tabInputFieldWeightsFunction->setObjectName("import.weightsFunction");
     tabInputFieldWeightsFunction->setToolTip("Analytic function describing data weights (optional)");
     
-    tabInputFieldMask  = new QLineEdit(tabInputGroupBox1);
-    tabInputFieldMask->setObjectName("import.maskFile");
-    tabInputFieldMask->setToolTip("Name of mask cube (optional)");
-    tabInputButtonMask = new QPushButton(tr("Select..."), tabInputGroupBox1);
-    connect(tabInputButtonMask, SIGNAL(clicked()), this, SLOT(selectInputMaskFile()));
-    tabInputButtonMask->setIcon(iconDocumentOpen);
-    
-    tabInputWidgetMask = new QWidget(tabInputGroupBox1);
-    tabInputLayoutMask = new QHBoxLayout;
-    tabInputLayoutMask->addWidget(tabInputFieldMask);
-    tabInputLayoutMask->addWidget(tabInputButtonMask);
-    tabInputLayoutMask->setContentsMargins(0, 0, 0, 0);
-    tabInputWidgetMask->setLayout(tabInputLayoutMask);
-    
     tabInputForm1->addRow(tr("Data cube:"), tabInputWidgetData);
     tabInputForm1->addRow(tr("Mask cube:"), tabInputWidgetMask);
     tabInputForm1->addRow(tr("Weights cube:"), tabInputWidgetWeights);
     tabInputForm1->addRow(tr("Weights function:"), tabInputFieldWeightsFunction);
-    
-    tabInputButtonNext = new QPushButton(tr("Next"), tabInput);
-    tabInputButtonNext->setIcon(iconGoNextView);
-    connect(tabInputButtonNext, SIGNAL(clicked()), this, SLOT(displayNextTab()));
-    tabInputLayoutControls = new QHBoxLayout();
-    tabInputLayoutControls->setContentsMargins(0, 0, 0, 0);
-    tabInputLayoutControls->setSpacing(0);
-    tabInputLayoutControls->addStretch();
-    tabInputLayoutControls->addWidget(tabInputButtonNext);
-    tabInputWidgetControls = new QWidget(tabInput);
-    tabInputWidgetControls->setLayout(tabInputLayoutControls);
-    
     tabInputGroupBox1->setLayout(tabInputForm1);
     
-    tabInputFieldFlags = new QLineEdit(tabInputGroupBox3);
-    tabInputFieldFlags->setObjectName("flag.regions");
-    tabInputFieldFlags->setToolTip("Pixel/channel ranges to be flagged (optional)");
-    
-    tabInputForm3->addRow(tr("Range:"), tabInputFieldFlags);
-    tabInputGroupBox3->setLayout(tabInputForm3);
+    // sub-cube
+    tabInputGroupBox4 = new QGroupBox(tr("Sub-cube"), tabInput);
+    tabInputForm4 = new QFormLayout;
     
     tabInputFieldSubcube = new QLineEdit(tabInputGroupBox4);
     tabInputFieldSubcube->setObjectName("import.subcube");
@@ -1375,6 +1357,32 @@ void SoFiA::createInterface()
     tabInputForm4->addRow(tr("Mode:"), tabInputFieldSubcubeMode);
     tabInputGroupBox4->setLayout(tabInputForm4);
     
+    // flagging
+    tabInputGroupBox3 = new QGroupBox(tr("Data flagging"), tabInput);
+    tabInputGroupBox3->setObjectName("steps.doFlag");
+    tabInputGroupBox3->setCheckable(true);
+    tabInputGroupBox3->setChecked(false);
+    tabInputForm3 = new QFormLayout;
+    
+    tabInputFieldFlags = new QLineEdit(tabInputGroupBox3);
+    tabInputFieldFlags->setObjectName("flag.regions");
+    tabInputFieldFlags->setToolTip("Pixel/channel ranges to be flagged (optional)");
+    
+    tabInputForm3->addRow(tr("Range:"), tabInputFieldFlags);
+    tabInputGroupBox3->setLayout(tabInputForm3);
+    
+    // controls
+    tabInputButtonNext = new QPushButton(tr("Next"), tabInput);
+    tabInputButtonNext->setIcon(iconGoNextView);
+    connect(tabInputButtonNext, SIGNAL(clicked()), this, SLOT(displayNextTab()));
+    tabInputLayoutControls = new QHBoxLayout();
+    tabInputLayoutControls->setContentsMargins(0, 0, 0, 0);
+    tabInputLayoutControls->setSpacing(0);
+    tabInputLayoutControls->addStretch();
+    tabInputLayoutControls->addWidget(tabInputButtonNext);
+    tabInputWidgetControls = new QWidget(tabInput);
+    tabInputWidgetControls->setLayout(tabInputLayoutControls);
+    
     tabInputLayout->addWidget(tabInputGroupBox1);
     tabInputLayout->addWidget(tabInputGroupBox4);
     tabInputLayout->addWidget(tabInputGroupBox3);
@@ -1385,6 +1393,7 @@ void SoFiA::createInterface()
     
     
     // Set up input filter tab
+    // -----------------------
     
     tabInFilterLayout = new QVBoxLayout;
     
@@ -1397,6 +1406,20 @@ void SoFiA::createInterface()
     tabInFilterGroupBox1->setChecked(false);
     
     tabInFilterForm1 = new QFormLayout;
+    
+    tabInFilterFieldKernel = new QComboBox(tabInFilterGroupBox1);
+    tabInFilterFieldKernel->setObjectName("smooth.kernel");
+    tabInFilterFieldKernel->addItem(tr("Gaussian"), QVariant(QString("gaussian")));
+    tabInFilterFieldKernel->addItem(tr("Boxcar"), QVariant(QString("boxcar")));
+    tabInFilterFieldKernel->addItem(tr("Median"), QVariant(QString("median")));
+    
+    tabInFilterFieldBorder = new QComboBox(tabInFilterGroupBox1);
+    tabInFilterFieldBorder->setObjectName("smooth.edgeMode");
+    tabInFilterFieldBorder->addItem(tr("Constant"), QVariant(QString("constant")));
+    tabInFilterFieldBorder->addItem(tr("Reflect"), QVariant(QString("reflect")));
+    tabInFilterFieldBorder->addItem(tr("Mirror"), QVariant(QString("mirror")));
+    tabInFilterFieldBorder->addItem(tr("Nearest"), QVariant(QString("nearest")));
+    tabInFilterFieldBorder->addItem(tr("Wrap"), QVariant(QString("wrap")));
     
     tabInFilterFieldSmoothingSpatialLon  = new QLineEdit(tabInFilterGroupBox1);
     tabInFilterFieldSmoothingSpatialLon->setObjectName("smooth.kernelX");
@@ -1417,20 +1440,6 @@ void SoFiA::createInterface()
     tabInFilterFieldSmoothingSpectral->setMaximumWidth(100);
     connect(tabInFilterFieldSmoothingSpectral, SIGNAL(editingFinished()), this, SLOT(updateFields()));
     
-    tabInFilterFieldKernel = new QComboBox(tabInFilterGroupBox1);
-    tabInFilterFieldKernel->setObjectName("smooth.kernel");
-    tabInFilterFieldKernel->addItem(tr("Gaussian"), QVariant(QString("gaussian")));
-    tabInFilterFieldKernel->addItem(tr("Boxcar"), QVariant(QString("boxcar")));
-    tabInFilterFieldKernel->addItem(tr("Median"), QVariant(QString("median")));
-    
-    tabInFilterFieldBorder = new QComboBox(tabInFilterGroupBox1);
-    tabInFilterFieldBorder->setObjectName("smooth.edgeMode");
-    tabInFilterFieldBorder->addItem(tr("Constant"), QVariant(QString("constant")));
-    tabInFilterFieldBorder->addItem(tr("Reflect"), QVariant(QString("reflect")));
-    tabInFilterFieldBorder->addItem(tr("Mirror"), QVariant(QString("mirror")));
-    tabInFilterFieldBorder->addItem(tr("Nearest"), QVariant(QString("nearest")));
-    tabInFilterFieldBorder->addItem(tr("Wrap"), QVariant(QString("wrap")));
-    
     tabInFilterForm1->addRow(tr("Kernel:"), tabInFilterFieldKernel);
     tabInFilterForm1->addRow(tr("Edge:"), tabInFilterFieldBorder);
     tabInFilterForm1->addRow(tr("Scale X:"), tabInFilterFieldSmoothingSpatialLon);
@@ -1445,6 +1454,12 @@ void SoFiA::createInterface()
     tabInFilterGroupBox2->setChecked(false);
     
     tabInFilterForm2 = new QFormLayout;
+    
+    tabInFilterFieldStatistic = new QComboBox(tabInFilterGroupBox2);
+    tabInFilterFieldStatistic->setObjectName("scaleNoise.statistic");
+    tabInFilterFieldStatistic->addItem(tr("Gaussian fit to negative fluxes"), QVariant(QString("negative")));
+    tabInFilterFieldStatistic->addItem(tr("Median absolute deviation"), QVariant(QString("mad")));
+    tabInFilterFieldStatistic->addItem(tr("Standard deviation"), QVariant(QString("std")));
     
     tabInFilterFieldEdgeX  = new QSpinBox(tabInFilterGroupBox2);
     tabInFilterFieldEdgeX->setObjectName("scaleNoise.edgeX");
@@ -1461,12 +1476,6 @@ void SoFiA::createInterface()
     tabInFilterFieldEdgeZ->setMaximumWidth(100);
     tabInFilterFieldEdgeZ->setMinimum(0);
     tabInFilterFieldEdgeZ->setMaximum(100);
-    
-    tabInFilterFieldStatistic = new QComboBox(tabInFilterGroupBox2);
-    tabInFilterFieldStatistic->setObjectName("scaleNoise.statistic");
-    tabInFilterFieldStatistic->addItem(tr("Gaussian fit to negative fluxes"), QVariant(QString("negative")));
-    tabInFilterFieldStatistic->addItem(tr("Median absolute deviation"), QVariant(QString("mad")));
-    tabInFilterFieldStatistic->addItem(tr("Standard deviation"), QVariant(QString("std")));
     
     tabInFilterForm2->addRow(tr("Statistic:"), tabInFilterFieldStatistic);
     tabInFilterForm2->addRow(tr("Edge X:"), tabInFilterFieldEdgeX);
@@ -1507,6 +1516,7 @@ void SoFiA::createInterface()
     
     
     // Set up source finding tab
+    // -------------------------
     
     tabSourceFindingLayout = new QVBoxLayout;
     
@@ -1621,6 +1631,7 @@ void SoFiA::createInterface()
     
     
     // Set up merging tab
+    // ------------------
     
     tabMergingLayout = new QVBoxLayout;
     
@@ -1693,6 +1704,7 @@ void SoFiA::createInterface()
     
     
     // Set up parametrisation tab
+    // --------------------------
     
     tabParametrisationLayout = new QVBoxLayout;
     
@@ -1777,6 +1789,7 @@ void SoFiA::createInterface()
     
     
     // Set up output filter tab
+    // ------------------------
     
     tabOutFilterLayout = new QVBoxLayout;
     
@@ -1909,6 +1922,7 @@ void SoFiA::createInterface()
     tabOutFilter->setLayout(tabOutFilterLayout);
     
     // Set up output tab
+    // -----------------
     
     tabOutputLayout = new QVBoxLayout;
     
@@ -2146,6 +2160,7 @@ void SoFiA::createInterface()
     tabOutput->setLayout(tabOutputLayout);
     
     // Set up output widget
+    // --------------------
     
     widgetOutput = new QWidget(widgetMain);
     
@@ -2183,6 +2198,7 @@ void SoFiA::createInterface()
     widgetOutput->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     
     // Assemble main widget
+    // --------------------
     
     layoutMain = new QVBoxLayout();
     layoutMain->addWidget(tabs);
@@ -2200,6 +2216,7 @@ void SoFiA::createInterface()
     this->addDockWidget(Qt::TopDockWidgetArea, dockWidgetOutput);
     
     // Set up actions
+    // --------------
     
     actionOpen = new QAction(tr("Open..."), this);
     actionOpen->setShortcuts(QKeySequence::Open);
@@ -2261,6 +2278,7 @@ void SoFiA::createInterface()
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(aboutSoFiA()));
     
     // Set up toolbar
+    // --------------
     
     toolBar = new QToolBar(tr("Toolbar"), this);
     toolBar->addAction(actionDefault);
@@ -2277,6 +2295,7 @@ void SoFiA::createInterface()
     toolBar->toggleViewAction()->setText(tr("Show Toolbar"));
     
     // Set up menu
+    // -----------
     
     menuFile = new QMenu(tr("&File"), this);
     menuFile->addAction(actionDefault);
@@ -2313,11 +2332,13 @@ void SoFiA::createInterface()
     this->menuBar()->addMenu(menuHelp);
     
     // Set up status bar
+    // -----------------
     
     this->statusBar()->setSizeGripEnabled(false);
     this->statusBar()->showMessage("");
     
     // Set up main window
+    // ------------------
     
     this->addToolBar(Qt::TopToolBarArea, toolBar);
     this->setWindowTitle(tr("SoFiA"));
