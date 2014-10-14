@@ -1981,6 +1981,11 @@ void SoFiA::createInterface()
     tabOutputButtonCubelets->setChecked(false);
     tabOutputButtonCubelets->setToolTip(tr("Create cubelet for each source"));
     
+    tabOutputButtonCompress = new QCheckBox(tr("gzip "), tabOutputGroupBox1);
+    tabOutputButtonCompress->setObjectName("writeCat.compress");
+    tabOutputButtonCompress->setChecked(false);
+    tabOutputButtonCompress->setToolTip(tr("Use gzip to compress all output files"));
+    
     tabOutputWidgetProducts = new QWidget(tabOutputGroupBox1);
     tabOutputLayoutProducts = new QHBoxLayout();
     tabOutputLayoutProducts->setContentsMargins(0, 0, 0, 0);
@@ -1996,6 +2001,7 @@ void SoFiA::createInterface()
     tabOutputForm1->addRow(tr("Output directory:"), tabOutputWidgetDirectory);
     tabOutputForm1->addRow(tr("Catalogue:"), tabOutputWidgetFormat);
     tabOutputForm1->addRow(tr("Data products:"), tabOutputWidgetProducts);
+    tabOutputForm1->addRow(tr("Compression:"), tabOutputButtonCompress);
     
     tabOutputGroupBox2 = new QGroupBox(tr("Output parameters"), tabOutput);
     tabOutputGroupBox2->setEnabled(true);

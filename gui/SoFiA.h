@@ -385,6 +385,7 @@ private:
     QCheckBox    *tabOutputButtonASCII;
     QCheckBox    *tabOutputButtonXML;
     QCheckBox    *tabOutputButtonSQL;
+    QCheckBox    *tabOutputButtonCompress;
     
     QGroupBox    *tabOutputGroupBox2;
     QFormLayout  *tabOutputForm2;
