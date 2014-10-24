@@ -47,15 +47,16 @@ HelpBrowser::HelpBrowser(const QString &path, const QString &page, QWidget *pare
     
     textBrowser = new QTextBrowser(this);
     
-    buttonHome  = new QPushButton(tr("Home"), this);
-    buttonHome->setShortcut(Qt::Key_Home);
-    buttonHome->setIcon(iconGoHome);
-    
     buttonBack  = new QPushButton(tr("Back"), this);
+    buttonBack->setShortcut(QKeySequence::Back);
     buttonBack->setIcon(iconGoPrevious);
     
+    buttonHome  = new QPushButton(tr("Home"), this);
+    buttonHome->setShortcut(Qt::ALT + Qt::Key_Home);
+    buttonHome->setIcon(iconGoHome);
+    
     buttonClose = new QPushButton(tr("Close"), this);
-    buttonClose->setShortcut(Qt::Key_Escape);
+    buttonClose->setShortcut(QKeySequence::Close);
     buttonClose->setIcon(iconDialogClose);
     
     QHBoxLayout *layoutButtons = new QHBoxLayout;
