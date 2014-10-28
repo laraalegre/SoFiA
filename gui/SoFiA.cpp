@@ -1187,20 +1187,30 @@ void SoFiA::pipelineProcessError(QProcess::ProcessError error)
 
 void SoFiA::showCatalogue()
 {
-    QString filename = tabOutputFieldBaseName->text();
-    filename = filename.trimmed();
+    QString filename = (tabOutputFieldBaseName->text()).trimmed();
+    QString dirname = (tabOutputFieldDirectory->text()).trimmed();
     
+    QString fullFilePath = (tabInputFieldData->text()).trimmed();
+    QString separator    = QString("/");                                       // WARNING: This might only work on Unix/Linux systems!
+    int     separatorPos = fullFilePath.lastIndexOf(separator) + 1;
+    
+    // Determine file name:
     if(filename.isEmpty() or filename.contains("/") or filename.contains("\\") or filename == "." or filename == "..")
     {
-        filename = tabInputFieldData->text();
-        if((filename.toLower()).endsWith(".fits") and filename.size() > 5)
-        {
-            filename = filename.left(filename.size() - 5);
-        }
+        if(separatorPos > 0) filename = fullFilePath.right(fullFilePath.size() - separatorPos);
+        else filename = fullFilePath;
     }
-    
+    if((filename.toLower()).endsWith(".fits") and filename.size() > 5) filename = filename.left(filename.size() - 5);
     filename.append("_cat.xml");
     
+    // Determine directory name:
+    if(dirname.isEmpty() and separatorPos > 0) dirname = fullFilePath.left(separatorPos);
+    if(not (dirname.isEmpty() or dirname.endsWith("/"))) dirname.append("/");
+    
+    // Concatenate directory and file names:
+    filename.prepend(dirname);
+    
+    // Load catalogue:
     if(spreadsheet->loadCatalog(filename))
     {
         QString messageText = tr("<p>Failed to load source catalogue:</p><p>\"%1\"</p>").arg(filename);
@@ -1716,7 +1726,7 @@ void SoFiA::createInterface()
     
     tabParametrisationButtonMaskOpt = new QCheckBox(tr("Optimise mask "), tabParametrisationGroupBox1);
     tabParametrisationButtonMaskOpt->setObjectName("parameters.optimiseMask");
-    tabParametrisationButtonMaskOpt->setToolTip("Run mask optimisation algorithm to improve parametrisation");
+    tabParametrisationButtonMaskOpt->setToolTip("Run mask optimisation algorithm to improve flux measurement");
     tabParametrisationButtonMaskOpt->setEnabled(true);
     tabParametrisationButtonMaskOpt->setChecked(true);
     tabParametrisationButtonBusyFunction = new QCheckBox(tr("Fit Busy Function "), tabParametrisationGroupBox1);
