@@ -13,12 +13,12 @@ from functions import *
 
 # a function to a simple threshold filter and write out a mask:
 
-def filter(mask,cube,header,clipMethod,threshold,rmsMode,verbose):
+def filter(mask, cube, header, clipMethod, threshold, rmsMode, verbose):
 	if clipMethod == 'relative':
 		# determine the clip level
 		# Measure noise in original cube
 		# rms = GetRMS(cube,rmsmode=rmsMode,zoomx=1,zoomy=1,zoomz=100000,verb=verbose,nrbins=100000)
-		rms = GetRMS(cube,rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
+		rms = GetRMS(cube, rmsMode=rmsMode, zoomx=1, zoomy=1, zoomz=1, verbose=verbose)
 		print 'Estimated rms = ', rms
 		clip = threshold * rms
 	if clipMethod == 'absolute':

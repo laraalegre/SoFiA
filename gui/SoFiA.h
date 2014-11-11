@@ -56,6 +56,7 @@
     #include <QtGui/QMainWindow>
     #include <QtGui/QWidget>
     #include <QtGui/QDockWidget>
+    #include <QtGui/QToolBox>
     #include <QtGui/QStyle>
     #include <QtGui/QMenuBar>
     #include <QtGui/QToolBar>
@@ -78,6 +79,7 @@
     #include <QtWidgets/QMainWindow>
     #include <QtWidgets/QWidget>
     #include <QtWidgets/QDockWidget>
+    #include <QtWidgets/QToolBox>
     #include <QtWidgets/QStyle>
     #include <QtWidgets/QMenuBar>
     #include <QtWidgets/QToolBar>
@@ -224,10 +226,9 @@ private:
     
     // Input filter tab
     
-    QVBoxLayout  *tabInFilterLayout;
+    QToolBox     *toolBoxIF;
     
-    QWidget      *tabInFilterWidget2;
-    QHBoxLayout  *tabInFilterLayout2;
+    QVBoxLayout  *tabInFilterLayout;
     
     QGroupBox    *tabInFilterGroupBox1;
     QFormLayout  *tabInFilterForm1;
@@ -246,6 +247,14 @@ private:
     QSpinBox     *tabInFilterFieldEdgeZ;
     QComboBox    *tabInFilterFieldStatistic;
     
+    QGroupBox    *tabInFilterGroupBox3;
+    QFormLayout  *tabInFilterForm3;
+    QLineEdit    *tabInFilterField2d1dThreshold;
+    QSpinBox     *tabInFilterField2d1dScaleXY;
+    QSpinBox     *tabInFilterField2d1dScaleZ;
+    QSpinBox     *tabInFilterField2d1dIterations;
+    QCheckBox    *tabInFilterField2d1dPositivity;
+    
     QHBoxLayout  *tabInFilterLayoutControls;
     QWidget      *tabInFilterWidgetControls;
     QPushButton  *tabInFilterButtonPrev;
@@ -254,6 +263,8 @@ private:
     
     
     // Source finding tab
+    
+    QToolBox     *toolBoxSF;
     
     QVBoxLayout  *tabSourceFindingLayout;
     

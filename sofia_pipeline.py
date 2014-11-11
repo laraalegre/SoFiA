@@ -12,6 +12,7 @@ from sofia import readoptions
 from sofia import import_data
 from sofia import sigma_cube
 from sofia import pyfind
+from sofia import wavelet_finder
 from sofia import addrel
 from sofia import threshold_filter
 from sofia import smooth_cube
@@ -112,6 +113,15 @@ if Parameters['steps']['doSmooth']:
 if Parameters['steps']['doScaleNoise']:
 	np_Cube = sigma_cube.sigma_scale(np_Cube, **Parameters['scaleNoise'])
 
+# --- WAVELET ---       
+if Parameters['steps']['doWavelet']:
+        print 'Running wavelet filter'
+        # WARNING: There is a lot of time and memory overhead from transposing the cube forth and back!
+        # WARNING: This will need to be addressed in the future.
+        np_Cube = np.transpose(np_Cube, axes=[2, 1, 0])
+        np_Cube = wavelet_finder.denoise_2d1d(np_Cube, **Parameters['wavelet'])
+        np_Cube = np.transpose(np_Cube, axes=[2, 1, 0])
+
 
 
 # -----------------
@@ -130,11 +140,6 @@ if Parameters['steps']['doSCfind']:
 	print 'Running S+C filter'
 	pyfind_mask = pyfind.SCfinder(np_Cube, dict_Header, **Parameters['SCfind'])
 	mask = mask + pyfind_mask
-
-# --- WAVELET ---	
-if Parameters['steps']['doWavelet']:
-	print 'Running wavelet filter'
-	# still to be added
 
 # --- CNHI ---	
 if Parameters['steps']['doCNHI']:

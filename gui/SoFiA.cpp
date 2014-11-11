@@ -1405,12 +1405,11 @@ void SoFiA::createInterface()
     // Set up input filter tab
     // -----------------------
     
+    toolBoxIF = new QToolBox(tabInFilter);
+    
     tabInFilterLayout = new QVBoxLayout;
     
-    tabInFilterWidget2 = new QWidget(tabInFilter);
-    tabInFilterLayout2 = new QHBoxLayout;
-    
-    tabInFilterGroupBox1 = new QGroupBox(tr("Smoothing"), tabInFilter);
+    tabInFilterGroupBox1 = new QGroupBox(tr("enable"), toolBoxIF);
     tabInFilterGroupBox1->setObjectName("steps.doSmooth");
     tabInFilterGroupBox1->setCheckable(true);
     tabInFilterGroupBox1->setChecked(false);
@@ -1458,7 +1457,7 @@ void SoFiA::createInterface()
     
     
     
-    tabInFilterGroupBox2 = new QGroupBox(tr("Noise scaling"), tabInFilter);
+    tabInFilterGroupBox2 = new QGroupBox(tr("enable"), toolBoxIF);
     tabInFilterGroupBox2->setObjectName("steps.doScaleNoise");
     tabInFilterGroupBox2->setCheckable(true);
     tabInFilterGroupBox2->setChecked(false);
@@ -1493,6 +1492,50 @@ void SoFiA::createInterface()
     tabInFilterForm2->addRow(tr("Edge Z:"), tabInFilterFieldEdgeZ);
     
     
+    
+    tabInFilterGroupBox3 = new QGroupBox(tr("enable"), toolBoxIF);
+    tabInFilterGroupBox3->setObjectName("steps.doWavelet");
+    tabInFilterGroupBox3->setCheckable(true);
+    tabInFilterGroupBox3->setChecked(false);
+    
+    tabInFilterForm3 = new QFormLayout;
+    
+    tabInFilterField2d1dThreshold = new QLineEdit(tabInFilterGroupBox3);
+    tabInFilterField2d1dThreshold->setObjectName("wavelet.threshold");
+    tabInFilterField2d1dThreshold->setMaximumWidth(100);
+    tabInFilterField2d1dThreshold->setMaxLength(10);
+    
+    tabInFilterField2d1dIterations = new QSpinBox(tabInFilterGroupBox3);
+    tabInFilterField2d1dIterations->setObjectName("wavelet.iterations");
+    tabInFilterField2d1dIterations->setMaximumWidth(100);
+    tabInFilterField2d1dIterations->setMinimum(1);
+    tabInFilterField2d1dIterations->setMaximum(50);
+    
+    tabInFilterField2d1dScaleXY = new QSpinBox(tabInFilterGroupBox3);
+    tabInFilterField2d1dScaleXY->setObjectName("wavelet.scaleXY");
+    tabInFilterField2d1dScaleXY->setMaximumWidth(100);
+    tabInFilterField2d1dScaleXY->setMinimum(-1);
+    tabInFilterField2d1dScaleXY->setMaximum(50);
+    
+    tabInFilterField2d1dScaleZ = new QSpinBox(tabInFilterGroupBox3);
+    tabInFilterField2d1dScaleZ->setObjectName("wavelet.scaleZ");
+    tabInFilterField2d1dScaleZ->setMaximumWidth(100);
+    tabInFilterField2d1dScaleZ->setMinimum(-1);
+    tabInFilterField2d1dScaleZ->setMaximum(50);
+    
+    tabInFilterField2d1dPositivity = new QCheckBox(tr("enable "), tabInFilterGroupBox3);
+    tabInFilterField2d1dPositivity->setObjectName("wavelet.positivity");
+    tabInFilterField2d1dPositivity->setToolTip("Only include positive wavelet components");
+    tabInFilterField2d1dPositivity->setChecked(false);
+    
+    tabInFilterForm3->addRow(tr("Threshold:"), tabInFilterField2d1dThreshold);
+    tabInFilterForm3->addRow(tr("Iterations:"), tabInFilterField2d1dIterations);
+    tabInFilterForm3->addRow(tr("Scale XY:"), tabInFilterField2d1dScaleXY);
+    tabInFilterForm3->addRow(tr("Scale Z:"), tabInFilterField2d1dScaleZ);
+    tabInFilterForm3->addRow(tr("Positivity:"), tabInFilterField2d1dPositivity);
+    tabInFilterGroupBox3->setLayout(tabInFilterForm3);
+    
+    
     tabInFilterButtonPrev = new QPushButton(tr("Previous"), tabInFilter);
     tabInFilterButtonPrev->setIcon(iconGoPreviousView);
     connect(tabInFilterButtonPrev, SIGNAL(clicked()), this, SLOT(displayPrevTab()));
@@ -1508,14 +1551,13 @@ void SoFiA::createInterface()
     tabInFilterWidgetControls = new QWidget(tabInFilter);
     tabInFilterWidgetControls->setLayout(tabInFilterLayoutControls);
     
+    toolBoxIF->addItem(tabInFilterGroupBox1, "Smoothing");
+    toolBoxIF->addItem(tabInFilterGroupBox2, "Noise Scaling");
+    toolBoxIF->addItem(tabInFilterGroupBox3, "2D-1D Wavelet Filter");
+    
     tabInFilterGroupBox1->setLayout(tabInFilterForm1);
-    tabInFilterLayout2->addWidget(tabInFilterGroupBox1, 1);
     tabInFilterGroupBox2->setLayout(tabInFilterForm2);
-    tabInFilterLayout2->addWidget(tabInFilterGroupBox2, 1);
-    tabInFilterLayout2->setContentsMargins(0, 0, 0, 0);
-    tabInFilterLayout2->setSpacing(10);
-    tabInFilterWidget2->setLayout(tabInFilterLayout2);
-    tabInFilterLayout->addWidget(tabInFilterWidget2);
+    tabInFilterLayout->addWidget(toolBoxIF);
     tabInFilterLayout->addStretch();
     tabInFilterLayout->addWidget(tabInFilterWidgetControls);
     
@@ -1528,9 +1570,11 @@ void SoFiA::createInterface()
     // Set up source finding tab
     // -------------------------
     
+    toolBoxSF = new QToolBox(tabSourceFinding);
+    
     tabSourceFindingLayout = new QVBoxLayout;
     
-    tabSourceFindingGroupBox1 = new QGroupBox(tr("Smooth + Clip finder"), tabSourceFinding);
+    tabSourceFindingGroupBox1 = new QGroupBox(tr("enable"), toolBoxSF);
     tabSourceFindingGroupBox1->setObjectName("steps.doSCfind");
     tabSourceFindingGroupBox1->setCheckable(true);
     tabSourceFindingGroupBox1->setChecked(true);
@@ -1588,7 +1632,7 @@ void SoFiA::createInterface()
     
     
     
-    tabSourceFindingGroupBox2 = new QGroupBox(tr("Threshold finder"), tabSourceFinding);
+    tabSourceFindingGroupBox2 = new QGroupBox(tr("enable"), toolBoxSF);
     tabSourceFindingGroupBox2->setObjectName("steps.doThreshold");
     tabSourceFindingGroupBox2->setCheckable(true);
     tabSourceFindingGroupBox2->setChecked(false);
@@ -1617,6 +1661,8 @@ void SoFiA::createInterface()
     tabSourceFindingForm2->addRow(tr("RMS mode:"), tabSourceFindingFieldRmsMode2);
     tabSourceFindingGroupBox2->setLayout(tabSourceFindingForm2);
     
+    
+    
     tabSourceFindingButtonPrev = new QPushButton(tr("Previous"), tabSourceFinding);
     tabSourceFindingButtonPrev->setIcon(iconGoPreviousView);
     connect(tabSourceFindingButtonPrev, SIGNAL(clicked()), this, SLOT(displayPrevTab()));
@@ -1632,8 +1678,12 @@ void SoFiA::createInterface()
     tabSourceFindingWidgetControls = new QWidget(tabSourceFinding);
     tabSourceFindingWidgetControls->setLayout(tabSourceFindingLayoutControls);
     
-    tabSourceFindingLayout->addWidget(tabSourceFindingGroupBox1);
-    tabSourceFindingLayout->addWidget(tabSourceFindingGroupBox2);
+    toolBoxSF->addItem(tabSourceFindingGroupBox1, "Smooth + Clip Finder");
+    toolBoxSF->addItem(tabSourceFindingGroupBox2, "Threshold Finder");
+    
+    //tabSourceFindingLayout->addWidget(tabSourceFindingGroupBox1);
+    //tabSourceFindingLayout->addWidget(tabSourceFindingGroupBox2);
+    tabSourceFindingLayout->addWidget(toolBoxSF);
     tabSourceFindingLayout->addStretch();
     tabSourceFindingLayout->addWidget(tabSourceFindingWidgetControls);
     tabSourceFinding->setLayout(tabSourceFindingLayout);

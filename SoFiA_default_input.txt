@@ -66,6 +66,15 @@ SCfind.kernelUnit               =       pixel
 SCfind.verbose                  =       true
 
 
+# 2D-1D wavelet finder module
+
+wavelet.threshold               =       5.0
+wavelet.scaleXY                 =       -1
+wavelet.scaleZ                  =       -1
+wavelet.positivity              =       false
+wavelet.iterations              =       3
+
+
 # Threshold finder module
 
 threshold.threshold             =       4.0

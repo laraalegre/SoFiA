@@ -72,6 +72,13 @@ linker_src_files = [
     ]
 linker_src = [linker_src_base + f for f in linker_src_files]
 
+# 2D1D wavelet finder code
+wavelet_src_base = 'src/wavelet/'
+wavelet_src_files = [
+    'wavelet.c'
+    ]
+wavelet_src = [wavelet_src_base + f for f in wavelet_src_files]
+
 # Interface to the parametrization code
 parametrizer_src_base = 'src/parametrizer/'
 parametrizer_src_files = [
@@ -99,6 +106,12 @@ setup(
             'linker',
             linker_src,
             extra_compile_args=['-O3'],
+            include_dirs=include_dirs),
+        Extension(
+            'wavelet',
+            wavelet_src,
+            extra_compile_args=['-O3'],
+            extra_link_args=['-fopenmp'],
             include_dirs=include_dirs),
         Extension(
             'cparametrizer',
