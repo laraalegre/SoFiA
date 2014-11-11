@@ -1464,6 +1464,24 @@ void SoFiA::createInterface()
     
     tabInFilterForm2 = new QFormLayout;
     
+    tabInFilterWidgetScaleXYZ = new QWidget(tabInFilterGroupBox2);
+    tabInFilterLayoutScaleXYZ = new QHBoxLayout;
+    tabInFilterFieldScaleX = new QCheckBox(tr("X "), tabInFilterWidgetScaleXYZ);
+    tabInFilterFieldScaleX->setObjectName("scaleNoise.scaleX");
+    tabInFilterFieldScaleX->setChecked(false);
+    tabInFilterFieldScaleY = new QCheckBox(tr("Y "), tabInFilterWidgetScaleXYZ);
+    tabInFilterFieldScaleY->setObjectName("scaleNoise.scaleY");
+    tabInFilterFieldScaleY->setChecked(false);
+    tabInFilterFieldScaleZ = new QCheckBox(tr("Z "), tabInFilterWidgetScaleXYZ);
+    tabInFilterFieldScaleZ->setObjectName("scaleNoise.scaleZ");
+    tabInFilterFieldScaleZ->setChecked(true);
+    tabInFilterLayoutScaleXYZ->setContentsMargins(0, 0, 0, 0);
+    tabInFilterLayoutScaleXYZ->setSpacing(0);
+    tabInFilterLayoutScaleXYZ->addWidget(tabInFilterFieldScaleX);
+    tabInFilterLayoutScaleXYZ->addWidget(tabInFilterFieldScaleY);
+    tabInFilterLayoutScaleXYZ->addWidget(tabInFilterFieldScaleZ);
+    tabInFilterWidgetScaleXYZ->setLayout(tabInFilterLayoutScaleXYZ);
+    
     tabInFilterFieldStatistic = new QComboBox(tabInFilterGroupBox2);
     tabInFilterFieldStatistic->setObjectName("scaleNoise.statistic");
     tabInFilterFieldStatistic->addItem(tr("Gaussian fit to negative fluxes"), QVariant(QString("negative")));
@@ -1486,6 +1504,7 @@ void SoFiA::createInterface()
     tabInFilterFieldEdgeZ->setMinimum(0);
     tabInFilterFieldEdgeZ->setMaximum(100);
     
+    tabInFilterForm2->addRow(tr("Dimensions:"), tabInFilterWidgetScaleXYZ);
     tabInFilterForm2->addRow(tr("Statistic:"), tabInFilterFieldStatistic);
     tabInFilterForm2->addRow(tr("Edge X:"), tabInFilterFieldEdgeX);
     tabInFilterForm2->addRow(tr("Edge Y:"), tabInFilterFieldEdgeY);

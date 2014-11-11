@@ -240,12 +240,15 @@ private:
     
     QGroupBox    *tabInFilterGroupBox2;
     QFormLayout  *tabInFilterForm2;
-    QHBoxLayout  *tabInFilterLayoutSigma;
-    QWidget      *tabInFilterWidgetSigma;
     QSpinBox     *tabInFilterFieldEdgeX;
     QSpinBox     *tabInFilterFieldEdgeY;
     QSpinBox     *tabInFilterFieldEdgeZ;
     QComboBox    *tabInFilterFieldStatistic;
+    QHBoxLayout  *tabInFilterLayoutScaleXYZ;
+    QWidget      *tabInFilterWidgetScaleXYZ;
+    QCheckBox    *tabInFilterFieldScaleX;
+    QCheckBox    *tabInFilterFieldScaleY;
+    QCheckBox    *tabInFilterFieldScaleZ;
     
     QGroupBox    *tabInFilterGroupBox3;
     QFormLayout  *tabInFilterForm3;
