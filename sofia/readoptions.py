@@ -84,7 +84,6 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "SCfind.kernelUnit": "string", \
                  "SCfind.verbose": "bool", \
                  "wavelet.threshold": "float", \
-                 "wavelet.reconThreshold": "float", \
                  "wavelet.scaleXY": "int", \
                  "wavelet.scaleZ": "int", \
                  "wavelet.positivity": "bool", \
