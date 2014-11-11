@@ -47,7 +47,10 @@ smooth.kernelZ                  =       3.0
 
 # Noise scaling module
 
-scaleNoise.statistic            =       mad
+scaleNoise.statistic             =       mad
+scaleX                                  =      False
+scaleY                                 =       False
+scaleZ                                  =      True
 scaleNoise.edgeX                =       0
 scaleNoise.edgeY                =       0
 scaleNoise.edgeZ                =       0
