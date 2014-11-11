@@ -192,7 +192,7 @@ if Parameters['steps']['doMerge'] and NRdet:
 	print 'Merging complete'
 	print
 	
-        NRdet = len(objects)
+	NRdet = len(objects)
 
 
 
