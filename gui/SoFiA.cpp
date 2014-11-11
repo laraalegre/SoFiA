@@ -2057,6 +2057,10 @@ void SoFiA::createInterface()
     tabOutputLayoutFormat->addStretch();
     tabOutputWidgetFormat->setLayout(tabOutputLayoutFormat);
     
+    tabOutputButtonFilteredCube = new QCheckBox(tr("Filtered cube "), tabOutputGroupBox1);
+    tabOutputButtonFilteredCube->setObjectName("steps.doWriteFilteredCube");
+    tabOutputButtonFilteredCube->setToolTip(tr("Data cube after applying input filters"));
+    tabOutputButtonFilteredCube->setChecked(false);
     tabOutputButtonMask = new QCheckBox(tr("Mask "), tabOutputGroupBox1);
     tabOutputButtonMask->setObjectName("steps.doWriteMask");
     tabOutputButtonMask->setToolTip(tr("Source mask cube"));
@@ -2083,6 +2087,7 @@ void SoFiA::createInterface()
     tabOutputLayoutProducts = new QHBoxLayout();
     tabOutputLayoutProducts->setContentsMargins(0, 0, 0, 0);
     tabOutputLayoutProducts->setSpacing(10);
+    tabOutputLayoutProducts->addWidget(tabOutputButtonFilteredCube);
     tabOutputLayoutProducts->addWidget(tabOutputButtonMask);
     tabOutputLayoutProducts->addWidget(tabOutputButtonMom0);
     tabOutputLayoutProducts->addWidget(tabOutputButtonMom1);

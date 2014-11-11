@@ -13,6 +13,7 @@ steps.doCNHI                    =       false
 steps.doMerge                   =       true
 steps.doReliability             =       false
 steps.doParameterise            =       true
+steps.doWriteFilteredCube       =       false
 steps.doWriteMask               =       false
 steps.doWriteCat                =       true
 steps.doMom0                    =       false

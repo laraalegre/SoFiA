@@ -384,6 +384,7 @@ private:
     
     QHBoxLayout  *tabOutputLayoutProducts;
     QWidget      *tabOutputWidgetProducts;
+    QCheckBox    *tabOutputButtonFilteredCube;
     QCheckBox    *tabOutputButtonMask;
     QCheckBox    *tabOutputButtonMom0;
     QCheckBox    *tabOutputButtonMom1;

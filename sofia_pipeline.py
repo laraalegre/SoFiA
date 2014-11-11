@@ -16,6 +16,7 @@ from sofia import wavelet_finder
 from sofia import addrel
 from sofia import threshold_filter
 from sofia import smooth_cube
+from sofia import write_filtered_cube
 from sofia import writemask
 from sofia import writemoment
 from sofia import linker
@@ -109,11 +110,11 @@ if Parameters['steps']['doSmooth']:
 # ---- RFI ----
 
 
-# ---- SIGMA CUBE ---- 
+# ---- SIGMA CUBE ----
 if Parameters['steps']['doScaleNoise']:
 	np_Cube = sigma_cube.sigma_scale(np_Cube, **Parameters['scaleNoise'])
 
-# --- WAVELET ---       
+# --- WAVELET ---
 if Parameters['steps']['doWavelet']:
         print 'Running wavelet filter'
         # WARNING: There is a lot of time and memory overhead from transposing the cube forth and back!
@@ -122,6 +123,10 @@ if Parameters['steps']['doWavelet']:
         np_Cube = wavelet_finder.denoise_2d1d(np_Cube, **Parameters['wavelet'])
         np_Cube = np.transpose(np_Cube, axes=[2, 1, 0])
 
+# --- WRITE FILTERED CUBE ---
+if Parameters['steps']['doWriteFilteredCube'] and (Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']):
+        print "SoFiA: Writing filtered cube"
+        write_filtered_cube.writeFilteredCube(np_Cube, dict_Header, Parameters, '%s_filtered.fits' % outroot, Parameters['writeCat']['compress'])
 
 
 # -----------------
@@ -186,6 +191,8 @@ if Parameters['steps']['doMerge'] and NRdet:
 	
 	print 'Merging complete'
 	print
+	
+        NRdet = len(objects)
 
 
 
@@ -279,6 +286,7 @@ if Parameters['steps']['doMerge'] and NRdet:
 	for i in range(0, len(relObjects)):
         	newRel.append(i + 1)
 	reliable = np.array(newRel)
+	NRdet = objects.shape[0]
 
 
 

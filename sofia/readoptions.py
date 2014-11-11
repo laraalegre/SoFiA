@@ -52,6 +52,7 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "steps.doMerge": "bool", \
                  "steps.doReliability": "bool", \
                  "steps.doParameterise": "bool", \
+                 "steps.doWriteFilteredCube": "bool", \
                  "steps.doWriteMask": "bool", \
                  "steps.doWriteCat": "bool", \
                  "steps.doMom0": "bool", \
