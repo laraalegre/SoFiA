@@ -1521,23 +1521,27 @@ void SoFiA::createInterface()
     
     tabInFilterField2d1dThreshold = new QLineEdit(tabInFilterGroupBox3);
     tabInFilterField2d1dThreshold->setObjectName("wavelet.threshold");
+    tabInFilterField2d1dThreshold->setToolTip(tr("Wavelet reconstruction threshold in multiples of the rms noise"));
     tabInFilterField2d1dThreshold->setMaximumWidth(100);
     tabInFilterField2d1dThreshold->setMaxLength(10);
     
     tabInFilterField2d1dIterations = new QSpinBox(tabInFilterGroupBox3);
     tabInFilterField2d1dIterations->setObjectName("wavelet.iterations");
+    tabInFilterField2d1dIterations->setToolTip(tr("Number of iterations in the reconstruction process"));
     tabInFilterField2d1dIterations->setMaximumWidth(100);
     tabInFilterField2d1dIterations->setMinimum(1);
     tabInFilterField2d1dIterations->setMaximum(50);
     
     tabInFilterField2d1dScaleXY = new QSpinBox(tabInFilterGroupBox3);
     tabInFilterField2d1dScaleXY->setObjectName("wavelet.scaleXY");
+    tabInFilterField2d1dScaleXY->setToolTip(tr("Number of spatial scales used in decomposition"));
     tabInFilterField2d1dScaleXY->setMaximumWidth(100);
     tabInFilterField2d1dScaleXY->setMinimum(-1);
     tabInFilterField2d1dScaleXY->setMaximum(50);
     
     tabInFilterField2d1dScaleZ = new QSpinBox(tabInFilterGroupBox3);
     tabInFilterField2d1dScaleZ->setObjectName("wavelet.scaleZ");
+    tabInFilterField2d1dScaleZ->setToolTip(tr("Number of spectral scales used in decomposition"));
     tabInFilterField2d1dScaleZ->setMaximumWidth(100);
     tabInFilterField2d1dScaleZ->setMinimum(-1);
     tabInFilterField2d1dScaleZ->setMaximum(50);
