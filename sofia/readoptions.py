@@ -74,6 +74,9 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "scaleNoise.edgeX": "int", \
                  "scaleNoise.edgeY": "int", \
                  "scaleNoise.edgeZ": "int", \
+                 "scaleNoise.scaleX": "bool", \
+                 "scaleNoise.scaleY": "bool", \
+                 "scaleNoise.scaleZ": "bool", \
                  "SCfind.threshold": "float", \
                  "SCfind.sizeFilter": "float", \
                  "SCfind.maskScaleXY": "float", \
