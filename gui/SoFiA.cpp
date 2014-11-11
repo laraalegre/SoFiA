@@ -702,6 +702,8 @@ void SoFiA::updateFields()
 {
     // Activate or de-activate fields and buttons
     
+    tabOutputButtonFilteredCube->setEnabled(tabInFilterGroupBox1->isChecked() or tabInFilterGroupBox2->isChecked() or tabInFilterGroupBox3->isChecked());
+    
     tabOutFilterFieldW50Min->setEnabled(tabOutFilterButtonW50->isChecked());
     tabOutFilterFieldW50Max->setEnabled(tabOutFilterButtonW50->isChecked());
     tabOutFilterFieldW20Min->setEnabled(tabOutFilterButtonW20->isChecked());
@@ -1413,6 +1415,7 @@ void SoFiA::createInterface()
     tabInFilterGroupBox1->setObjectName("steps.doSmooth");
     tabInFilterGroupBox1->setCheckable(true);
     tabInFilterGroupBox1->setChecked(false);
+    connect(tabInFilterGroupBox1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     
     tabInFilterForm1 = new QFormLayout;
     
@@ -1461,6 +1464,7 @@ void SoFiA::createInterface()
     tabInFilterGroupBox2->setObjectName("steps.doScaleNoise");
     tabInFilterGroupBox2->setCheckable(true);
     tabInFilterGroupBox2->setChecked(false);
+    connect(tabInFilterGroupBox2, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     
     tabInFilterForm2 = new QFormLayout;
     
@@ -1516,6 +1520,7 @@ void SoFiA::createInterface()
     tabInFilterGroupBox3->setObjectName("steps.doWavelet");
     tabInFilterGroupBox3->setCheckable(true);
     tabInFilterGroupBox3->setChecked(false);
+    connect(tabInFilterGroupBox3, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     
     tabInFilterForm3 = new QFormLayout;
     
