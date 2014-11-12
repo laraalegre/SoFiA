@@ -702,8 +702,10 @@ void SoFiA::updateFields()
 {
     // Activate or de-activate fields and buttons
     
+    // Enable/disable writing of filtered cube when no filters are selected:
     tabOutputButtonFilteredCube->setEnabled(tabInFilterGroupBox1->isChecked() or tabInFilterGroupBox2->isChecked() or tabInFilterGroupBox3->isChecked());
     
+    // Enable output filter fields when respective parameter is selected:
     tabOutFilterFieldW50Min->setEnabled(tabOutFilterButtonW50->isChecked());
     tabOutFilterFieldW50Max->setEnabled(tabOutFilterButtonW50->isChecked());
     tabOutFilterFieldW20Min->setEnabled(tabOutFilterButtonW20->isChecked());
@@ -713,16 +715,24 @@ void SoFiA::updateFields()
     tabOutFilterFieldFintMin->setEnabled(tabOutFilterButtonFint->isChecked());
     tabOutFilterFieldFintMax->setEnabled(tabOutFilterButtonFint->isChecked());
     
+    // Ensure that reliability range is within 0 and 1:
     double n = tabParametrisationFieldRelMin->text().toDouble();
     if(n < 0.0) tabParametrisationFieldRelMin->setText("0.0");
     else if(n > 1.0) tabParametrisationFieldRelMin->setText("1.0");
     
+    // Ensure that wavelet reconstruction threshold is >= 0:
+    n = tabInFilterField2d1dThreshold->text().toDouble();
+    if(n < 0.0) tabInFilterField2d1dThreshold->setText("0.0");
+    
+    // Ensure that S+C source finder threshold is >= 0:
     n = tabSourceFindingFieldThreshold->text().toDouble();
     if(n < 0.0) tabSourceFindingFieldThreshold->setText("0.0");
     
+    // Ensure that threshold source finder threshold is >= 0:
     n = tabSourceFindingFieldThreshold2->text().toDouble();
     if(n < 0.0) tabSourceFindingFieldThreshold2->setText("0.0");
     
+    // Ensure that smoothing lengths are >= 0.0:
     n = tabInFilterFieldSmoothingSpatialLon->text().toDouble();
     if(n < 0.0) tabInFilterFieldSmoothingSpatialLon->setText("0.0");
     n = tabInFilterFieldSmoothingSpatialLat->text().toDouble();
@@ -730,6 +740,7 @@ void SoFiA::updateFields()
     n = tabInFilterFieldSmoothingSpectral->text().toDouble();
     if(n < 0.0) tabInFilterFieldSmoothingSpectral->setText("0.0");
     
+    // Disable output parameter buttons if "all" button is selected:
     tabOutputButtonParameterID->setEnabled(!tabOutputButtonParameterAll->isChecked());
     tabOutputButtonParameterX->setEnabled(!tabOutputButtonParameterAll->isChecked());
     tabOutputButtonParameterY->setEnabled(!tabOutputButtonParameterAll->isChecked());
@@ -1529,6 +1540,7 @@ void SoFiA::createInterface()
     tabInFilterField2d1dThreshold->setToolTip(tr("Wavelet reconstruction threshold in multiples of the rms noise"));
     tabInFilterField2d1dThreshold->setMaximumWidth(100);
     tabInFilterField2d1dThreshold->setMaxLength(10);
+    connect(tabInFilterField2d1dThreshold, SIGNAL(editingFinished()), this, SLOT(updateFields()));
     
     tabInFilterField2d1dIterations = new QSpinBox(tabInFilterGroupBox3);
     tabInFilterField2d1dIterations->setObjectName("wavelet.iterations");
