@@ -60,6 +60,7 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "steps.doMom1": "bool", \
                  "steps.doCubelets": "bool", \
                  "steps.doDebug": "bool", \
+                 "steps.doOptical": "bool", \
                  "import.inFile": "string", \
                  "import.weightsFile": "string", \
                  "import.maskFile": "string", \
