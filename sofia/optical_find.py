@@ -8,9 +8,10 @@ import csv
 import re
 import os
 
-def optical_find(cube,catalogue,spatSize,specSize,outputCat,storeSingleCat):
+def optical_find(cube,catalogue,defaultPars,spatSize,specSize,subcubeMode,outputCat,storeSingleCat):
     # cube: the indput cube
     # catalogue: a source catalogue with RA, DEC and Freq
+    # defaultPars: the parameter file with default parameters
     # spatSize: the spatial size of the subcube (deg)
     # specSize: the spectral size of the subcube (unit of the cube)
     # outputCat: the name of the output catalogue
@@ -41,17 +42,17 @@ def optical_find(cube,catalogue,spatSize,specSize,outputCat,storeSingleCat):
         # define the subregion:
         subcube  = [float(cat[i]['ra']),float(cat[i]['dec']),float(cat[i]['z']),spatSize,spatSize,specSize]
         
-        default_par = 'par_optical.txt'
+        
         new_file = 'temp_optical.txt'
         # replace the relevant parameters in the parameter file
-        f1 = open(default_par,'r')
+        f1 = open(defaultPars,'r')
         f2 = open(new_file,'wt')
         
         for line in f1:
             pattern1 = 'import.subcube '
             subst1 = 'import.subcube = ' + str(subcube) + '\n'          
             pattern2 = 'import.subcubeMode'
-            subst2 = 'import.subcubeMode =  wcs \n'           
+            subst2 = 'import.subcubeMode =  ' + subcubeMode + '\n'           
             pattern3 = 'writeCat.basename'
             subst3 = 'writeCat.basename = ' + cat[i]['id'] + '\n'
             if pattern1 in line:
@@ -102,8 +103,11 @@ def optical_find(cube,catalogue,spatSize,specSize,outputCat,storeSingleCat):
 #catalogue = 'test_cat.csv'
 #cube = 'nancube.fits'
 #outputCat = 'full_cat.txt'
-#spatSize = 0.01
-#specSize = 1e5
+#spatSize = 10
+#specSize = 10
+#subcubeMode = 'pix'
 #storeSingleCat = False
+#defaultPars = 'par_optical.txt'
 
-#optical_find(cube,catalogue,spatSize,specSize,outputCat,storeSingleCat)
+
+#optical_find(cube,catalogue,defaultPars,spatSize,specSize,subcubeMode,outputCat,storeSingleCat)
