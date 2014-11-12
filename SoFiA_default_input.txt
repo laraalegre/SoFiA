@@ -109,6 +109,7 @@ reliability.relThresh           =       0.9
 
 parameters.fitBusyFunction      =       false
 parameters.optimiseMask         =       false
+parameters.dilateMask           =       false
 
 
 # Output module
