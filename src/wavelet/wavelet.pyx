@@ -6,7 +6,7 @@
 DEF ZERO_BOUNDS = False
 DEF WRAP_BOUNDS = True
 # Unless your datacube is CRAZY BIG, 2 threads is enough
-DEF NTHREADS = 2
+#DEF NTHREADS = 2
 
 cimport numpy as np
 import numpy as np
