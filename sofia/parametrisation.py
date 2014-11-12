@@ -7,8 +7,6 @@ import scipy.ndimage as nd
 
 def dilate(cube,mask,dilate_threshold=0.02,dilate_pix_max=10,dilate_chan=1):
     # stops dilating when (flux_new-flux_old)/flux_new < dilate_threshold
-    print "\n--- SoFiA: Dilating masks ---"
-    sys.stdout.flush()
     fluxes=[]
     for mm in range(1,mask.max()+1):
         fluxes.append([])
@@ -21,7 +19,7 @@ def dilate(cube,mask,dilate_threshold=0.02,dilate_pix_max=10,dilate_chan=1):
             if dil>0 and (fluxes[-1][-1]-fluxes[-1][-2])/fluxes[-1][-1]<dilate_threshold: break
         # pick the best dilation kernel for current object and update mask
         dil-=1
-        print 'best dilation = %i pix'%dil
+        print 'Mask dilation of source %i by %i pix and %i chan'%(mm,dil,dilate_chan)
         dd=dil*2+1
         dilstruct=(np.sqrt(((np.indices((dd,dd))-dil)**2).sum(axis=0))<=dil).astype(int)
         dilstruct.resize((1,dilstruct.shape[0],dilstruct.shape[1]))
