@@ -50,17 +50,17 @@
 # IMPORT PYTHON MODULES
 from sys import exit,argv
 import string
-from matplotlib import rc
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 import pyfits
 from os import path
 import numpy as np
 
-rc('text', usetex=True)
-rc('font', family='serif')
-rc('font', serif='Times Roman')
-rc('font', size=18)
+#from matplotlib import rc
+#rc('text', usetex=True)
+#rc('font', family='serif')
+#rc('font', serif='Times Roman')
+#rc('font', size=18)
 
 # START INPUT
 
@@ -113,10 +113,15 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 	pars=np.transpose(pars)
 
 	# axis labels when plotting
-	labs=['log$_\mathrm{10}$ $F_\mathrm{tot}$',
-		  'log$_\mathrm{10}$ $F_\mathrm{max}$',
-		  'log$_\mathrm{10}$ $N_\mathrm{vox}$',
-		  'log$_\mathrm{10}$ $N_\mathrm{chan}$',
+	#labs=['log$_\mathrm{10}$ $F_\mathrm{tot}$',
+	#	  'log$_\mathrm{10}$ $F_\mathrm{max}$',
+	#	  'log$_\mathrm{10}$ $N_\mathrm{vox}$',
+	#	  'log$_\mathrm{10}$ $N_\mathrm{chan}$',
+	#	  ]
+	labs=['log Ftot',
+		  'log Fmax',
+		  'log Nvox',
+		  'log Nchan',
 		  ]
 
 	# axes limits when plotting
@@ -257,11 +262,11 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 			hist(delt,bins=np.arange(delt.min(),delt.max()+0.01,0.01),cumulative=True,histtype='step',normed=True,color='r')
 			xlim(-3,3)
 			ylim(0,1)
-			xlabel('$(P-N)/\sqrt{N+P}$')
+			xlabel('(P-N)/sqrt(N+P)')
 			ylabel('cumulative distribution')
-			legend(('Gaussian ($\sigma=1$)','Gaussian ($\sigma=0.4$)','negative sources'),loc='upper left',prop={'size':15})
+			legend(('Gaussian (sigma=1)','Gaussian (sigma=0.4)','negative sources'),loc='upper left',prop={'size':15})
 			plot([0,0],[0,1],'k--')
-			title('$\sigma$(kde) = %.3f, %.3f, %.3f'%(kernel[0],kernel[1],kernel[2]),fontsize=20)
+			title('sigma(kde) = %.3f, %.3f, %.3f'%(kernel[0],kernel[1],kernel[2]),fontsize=20)
 			show()
 			#savefig('test_scatter.pdf')
 
