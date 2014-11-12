@@ -111,7 +111,6 @@ setup(
             'wavelet',
             wavelet_src,
             extra_compile_args=['-O3'],
-            extra_link_args=['-fopenmp'],
             include_dirs=include_dirs),
         Extension(
             'cparametrizer',
