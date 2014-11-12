@@ -60,9 +60,8 @@ scaleNoise.edgeZ                =       0
 # Optical finder module
 
 optical.catalogue            =
-optical.spatSize               =  10
-optical.specSize              =  10
-optical.subcubeMode      = pix
+optical.spatSize               =  0.01
+optical.specSize              =  1e5
 optical.outputCat            = optical_match.ascii
 optical.storeSingleCat     = false
 

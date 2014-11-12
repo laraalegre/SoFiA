@@ -8,7 +8,7 @@ import csv
 import re
 import os
 
-def optical_find(cube,catalogue,defaultPars,spatSize,specSize,subcubeMode,outputCat,storeSingleCat):
+def optical_find(cube,catalogue,defaultPars,spatSize,specSize,outputCat,storeSingleCat):
     # cube: the indput cube
     # catalogue: a source catalogue with RA, DEC and Freq
     # defaultPars: the parameter file with default parameters
@@ -20,6 +20,7 @@ def optical_find(cube,catalogue,defaultPars,spatSize,specSize,subcubeMode,output
     # catalogue: string
     # spatSize: float
     # specSize: float
+    # subcubeMode: str
     # outputCat: string
     # storeSingleCat: bool
 
@@ -52,7 +53,7 @@ def optical_find(cube,catalogue,defaultPars,spatSize,specSize,subcubeMode,output
             pattern1 = 'import.subcube '
             subst1 = 'import.subcube = ' + str(subcube) + '\n'          
             pattern2 = 'import.subcubeMode'
-            subst2 = 'import.subcubeMode =  ' + subcubeMode + '\n'           
+            subst2 = 'import.subcubeMode =  ' + 'wcs' + '\n'           
             pattern3 = 'writeCat.basename'
             subst3 = 'writeCat.basename = ' + cat[i]['id'] + '\n'
             if pattern1 in line:
@@ -67,10 +68,7 @@ def optical_find(cube,catalogue,defaultPars,spatSize,specSize,subcubeMode,output
         f1.close()    
         f2.close()
 
-        #os.system('pwd')
-        #os.system('less temp_optical.txt')
         os.system('python SoFiA-master/sofia_pipeline.py temp_optical.txt')
-
 
     # merge the output tables:
     f=open(outputCat,'w')
@@ -100,14 +98,13 @@ def optical_find(cube,catalogue,defaultPars,spatSize,specSize,subcubeMode,output
 ##########################
 
 
-#catalogue = 'test_cat.csv'
-#cube = 'nancube.fits'
-#outputCat = 'full_cat.txt'
-#spatSize = 10
-#specSize = 10
-#subcubeMode = 'pix'
-#storeSingleCat = False
-#defaultPars = 'par_optical.txt'
+catalogue = 'test_cat.csv'
+cube = 'nancube.fits'
+outputCat = 'full_cat.txt'
+spatSize = 0.01
+specSize = 1e5
+storeSingleCat = False
+defaultPars = 'par_optical.txt'
 
 
-#optical_find(cube,catalogue,defaultPars,spatSize,specSize,subcubeMode,outputCat,storeSingleCat)
+optical_find(cube,catalogue,defaultPars,spatSize,specSize,outputCat,storeSingleCat)
