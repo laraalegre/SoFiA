@@ -45,6 +45,7 @@ def readPipelineOptions(filename = "pipeline.options"):
     datatypes = {"steps.doFlag": "bool", \
                  "steps.doSmooth": "bool", \
                  "steps.doScaleNoise": "bool", \
+                 "steps.doOptical": "bool", \
                  "steps.doSCfind": "bool", \
                  "steps.doThreshold": "bool", \
                  "steps.doWavelet": "bool", \
