@@ -167,12 +167,6 @@ if not NRdet:
 	print 
 	sys.exit()
 
-# Reload original data cube for parameterisation if it has been changed
-if Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['import']['weightsFile']:
-	Parameters['import']['weightsFile'] = ''
-	Parameters['import']['maskFile'] = ''
-	np_Cube, dict_Header, bla, blabla = import_data.read_data(**Parameters['import'])
-
 
 
 # -----------------
@@ -287,6 +281,18 @@ if Parameters['steps']['doMerge'] and NRdet:
         	newRel.append(i + 1)
 	reliable = np.array(newRel)
 	NRdet = objects.shape[0]
+
+
+
+# -------------------------------------------------------------------------------
+# ---- RELOAD ORIGINAL DATA CUBE FOR PARAMETERISATION IF IT HAS BEEN CHANGED ----
+# -------------------------------------------------------------------------------
+
+if Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['import']['weightsFile'] or Parameters['import']['weightsFunction']:
+	Parameters['import']['weightsFile'] = ''
+	Parameters['import']['maskFile'] = ''
+	Parameters['import']['weightsFunction'] = ''
+	np_Cube, dict_Header, bla, blabla = import_data.read_data(**Parameters['import'])
 
 
 
