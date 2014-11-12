@@ -1802,18 +1802,24 @@ void SoFiA::createInterface()
     tabParametrisationGroupBox1->setChecked(true);
     tabParametrisationForm1 = new QFormLayout;
     
-    tabParametrisationButtonMaskOpt = new QCheckBox(tr("Optimise mask "), tabParametrisationGroupBox1);
+    tabParametrisationButtonMaskOpt = new QCheckBox(tr("Optimise mask (ellipse) "), tabParametrisationGroupBox1);
     tabParametrisationButtonMaskOpt->setObjectName("parameters.optimiseMask");
     tabParametrisationButtonMaskOpt->setToolTip("Run mask optimisation algorithm to improve flux measurement");
     tabParametrisationButtonMaskOpt->setEnabled(true);
-    tabParametrisationButtonMaskOpt->setChecked(true);
+    tabParametrisationButtonMaskOpt->setChecked(false);
+    tabParametrisationButtonDilateMask = new QCheckBox(tr("Optimise mask (dilation) "), tabParametrisationGroupBox1);
+    tabParametrisationButtonDilateMask->setObjectName("parameters.dilateMask");
+    tabParametrisationButtonDilateMask->setToolTip("Dilate source mask to improve flux measurement");
+    tabParametrisationButtonDilateMask->setEnabled(true);
+    tabParametrisationButtonDilateMask->setChecked(false);
     tabParametrisationButtonBusyFunction = new QCheckBox(tr("Fit Busy Function "), tabParametrisationGroupBox1);
     tabParametrisationButtonBusyFunction->setObjectName("parameters.fitBusyFunction");
     tabParametrisationButtonBusyFunction->setToolTip("Parametrise integrated spectrum by fitting Busy Function");
     tabParametrisationButtonBusyFunction->setEnabled(true);
-    tabParametrisationButtonBusyFunction->setChecked(true);
+    tabParametrisationButtonBusyFunction->setChecked(false);
     
     tabParametrisationForm1->addRow(tr(""), tabParametrisationButtonMaskOpt);
+    tabParametrisationForm1->addRow(tr(""), tabParametrisationButtonDilateMask);
     tabParametrisationForm1->addRow(tr(""), tabParametrisationButtonBusyFunction);
     tabParametrisationGroupBox1->setLayout(tabParametrisationForm1);
     

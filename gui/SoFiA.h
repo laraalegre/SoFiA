@@ -325,6 +325,7 @@ private:
     QFormLayout  *tabParametrisationForm1;
     QCheckBox    *tabParametrisationButtonBusyFunction;
     QCheckBox    *tabParametrisationButtonMaskOpt;
+    QCheckBox    *tabParametrisationButtonDilateMask;
     
     QGroupBox    *tabParametrisationGroupBox2;
     QFormLayout  *tabParametrisationForm2;
