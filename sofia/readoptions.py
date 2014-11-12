@@ -66,6 +66,11 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "import.subcubeMode": "string", \
                  "import.subcube": "array", \
                  "flag.regions": "array", \
+                 "optical.catalogue": "string", \
+                 "optical.spatSize": "float", \
+                 "optical.specSize": "float", \
+                 "optical.outputCat": "string", \
+                 "optical.storeSingleCat": "bool", \
                  "smooth.kernel": "string", \
                  "smooth.edgeMode": "string", \
                  "smooth.kernelX": "float", \
