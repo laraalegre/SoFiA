@@ -98,13 +98,13 @@ def optical_find(cube,catalogue,defaultPars,spatSize,specSize,outputCat,storeSin
 ##########################
 
 
-catalogue = 'test_cat.csv'
-cube = 'nancube.fits'
-outputCat = 'full_cat.txt'
-spatSize = 0.01
-specSize = 1e5
-storeSingleCat = False
-defaultPars = 'par_optical.txt'
+#catalogue = 'test_cat.csv'
+#cube = 'nancube.fits'
+#outputCat = 'full_cat.txt'
+#spatSize = 0.01
+#specSize = 1e5
+#storeSingleCat = False
+#defaultPars = 'par_optical.txt'
 
 
-optical_find(cube,catalogue,defaultPars,spatSize,specSize,outputCat,storeSingleCat)
+#optical_find(cube,catalogue,defaultPars,spatSize,specSize,outputCat,storeSingleCat)
