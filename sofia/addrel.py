@@ -48,18 +48,19 @@
 
 
 # IMPORT PYTHON MODULES
-from pylab import *
 from sys import exit,argv
 import string
-from matplotlib import rc
+import matplotlib.pyplot as plt
 import scipy.stats as stats
 import pyfits
 from os import path
-rc('text', usetex=True)
-rc('font', family='serif')
-rc('font', serif='Times Roman')
-rc('font', size=18)
+import numpy as np
 
+#from matplotlib import rc
+#rc('text', usetex=True)
+#rc('font', family='serif')
+#rc('font', serif='Times Roman')
+#rc('font', size=18)
 
 # START INPUT
 
@@ -72,14 +73,14 @@ class gaussian_kde_set_covariance(stats.gaussian_kde):
 		self.covariance = covariance
 		stats.gaussian_kde.__init__(self, dataset)
 	def _compute_covariance(self):
-		self.inv_cov = linalg.inv(self.covariance)
-		self._norm_factor = sqrt(linalg.det(2*pi*self.covariance)) * self.n
+		self.inv_cov = np.linalg.inv(self.covariance)
+		self._norm_factor = np.sqrt(np.linalg.det(2*np.pi*self.covariance)) * self.n
 
 def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCOL=16,parSpace=['ftot','fmax','nrvox'],projections=[[2,0],[2,1],[0,1]],kernel=[0.15,0.05,0.1],doscatter=1,docontour=1,check_kernel=0,dostats=0,saverel=1,relThresh=0.99,Nmin=0,dV=0.2,fMin=0,verb=0):
 	########################################
 	### BUILD ARRAY OF SOURCE PARAMETERS ###
 	########################################
-	
+
 	# get position of positive and negative sources
 	pos=data[:,ftotCOL]>0
 	neg=data[:,ftotCOL]<=0
@@ -104,18 +105,23 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 	### SET PARAMETERS TO WORK WITH AND GRIDDING/PLOTTNG FOR EACH ###
 	#################################################################
 
-	pars=concatenate((log10(eval(parSpace[0])),
-					  log10(eval(parSpace[1])),
-					  log10(eval(parSpace[2]))),
+	pars=np.concatenate((np.log10(eval(parSpace[0])),
+					  np.log10(eval(parSpace[1])),
+					  np.log10(eval(parSpace[2]))),
 					 axis=1)
 
-	pars=transpose(pars)
+	pars=np.transpose(pars)
 
 	# axis labels when plotting
-	labs=['log$_\mathrm{10}$ $F_\mathrm{tot}$',
-		  'log$_\mathrm{10}$ $F_\mathrm{max}$',
-		  'log$_\mathrm{10}$ $N_\mathrm{vox}$',
-		  'log$_\mathrm{10}$ $N_\mathrm{chan}$',
+	#labs=['log$_\mathrm{10}$ $F_\mathrm{tot}$',
+	#	  'log$_\mathrm{10}$ $F_\mathrm{max}$',
+	#	  'log$_\mathrm{10}$ $N_\mathrm{vox}$',
+	#	  'log$_\mathrm{10}$ $N_\mathrm{chan}$',
+	#	  ]
+	labs=['log Ftot',
+		  'log Fmax',
+		  'log Nvox',
+		  'log Nchan',
 		  ]
 
 	# axes limits when plotting
@@ -133,12 +139,12 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 		  ]
 
 	# calculates the number of row and columns in figure
-	nr=int(floor(sqrt(len(projections))))
+	nr=int(np.floor(np.sqrt(len(projections))))
 	nc=len(projections)/nr
 
 	# variance (sigma**2) of gaussian for smoothing along each axis
 	# covariance matrix is taken to be diagonal (i.e., all sigma_ij terms are 0)
-	kernel=array(kernel)
+	kernel=np.array(kernel)
 
 	################################
 	### EVALUATE N-d RELIABILITY ###
@@ -151,7 +157,7 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 	#Nn=stats.kde.gaussian_kde(pars[:,neg])
 
 	# Np and Nn calculated with *input* covariance
-	setcov=array(((kernel[0]**2,0,0),
+	setcov=np.array(((kernel[0]**2,0,0),
 				  (0,kernel[1]**2,0),
 				  (0,0,kernel[2]**2)))
 
@@ -181,7 +187,7 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 			print '  maximum reliability larger than 1 -- something is wrong!!!'
 			exit()
 		# take maximum(Rs,0) to include objects with Rs<0 if relThresh==0
-		pseudoreliable=maximum(Rs,0)>=relThresh
+		pseudoreliable=np.maximum(Rs,0)>=relThresh
 
 		# OLD
 		#if check_kernel:
@@ -190,7 +196,7 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 		#    # I have verified that these integrals give very similar R as that
 		#    # below; i.e., R(evaluate)=R(integrate). See Re
 		#    print '  integrating density fields within a +/-1 sigma(kernel) box (this takes time) ...'
-		#    NpI=array([Np.integrate_box(pars[:,pos][:,jj]-kernel,pars[:,pos][:,jj]+kernel)*Npos for jj in range(Npos)])
+		#    NpI=array([np.integrate_box(pars[:,pos][:,jj]-kernel,pars[:,pos][:,jj]+kernel)*Npos for jj in range(Npos)])
 		#    NnI=array([Nn.integrate_box(pars[:,pos][:,jj]-kernel,pars[:,pos][:,jj]+kernel)*Nneg for jj in range(Npos)])
 		#
 		#    print '  source density at the location of positive sources (per +/-1 sigma(kernel) volume element):'
@@ -222,22 +228,22 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 		nNps=Np(pars[:,neg])*Npos
 		nNns=Nn(pars[:,neg])*Nneg
 		nRs=(nNps-nNns)/nNps
-		dnRs=sqrt(nNps*nNns*(nNps+nNns))/nNps**2/sqrt(dV*0.85)
+		dnRs=np.sqrt(nNps*nNns*(nNps+nNns))/nNps**2/np.sqrt(dV*0.85)
 		if verb:
 			print '  median error on R at location of negative sources: %.2f'%median(dnRs)
 			print '  R<0 at the location of %3i/%3i negative sources'%((nRs<0).sum(),nRs.shape[0])
 			print '  R<0 at the location of %3i/%3i negative sources within 1-sigma error bar'%(((nRs+1*dnRs)<0).sum(),nRs.shape[0])
 
-		dRs=sqrt(Nps*Nns*(Nps+Nns))/Nps**2/sqrt(dV*0.85)
+		dRs=np.sqrt(Nps*Nns*(Nps+Nns))/Nps**2/np.sqrt(dV*0.85)
 		if verb:
 			print '  median error on R at location of positive sources: %.2f'%median(dRs)
 			print '  R<0 at the location of %3i/%3i positive sources'%((Rs<0).sum(),Rs.shape[0])
 			print '  R<0 at the location of %3i/%3i positive sources within 1-sigma error bar'%(((Rs+1*dRs)<0).sum(),Rs.shape[0])
 		# Nmin is by default zero so the line below normally selects (Rs>=relThresh)*(ftot[pos].reshape(-1,)>fMin)
 		# take maximum(Rs,0) to include objects with Rs<0 if relThresh==0
-		reliable=(maximum(Rs,0)>=relThresh)*((Nps+Nns)*0.85*dV>Nmin)*(ftot[pos].reshape(-1,)>fMin)
+		reliable=(np.maximum(Rs,0)>=relThresh)*((Nps+Nns)*0.85*dV>Nmin)*(ftot[pos].reshape(-1,)>fMin)
 		
-		delt=(nNps-nNns)/sqrt(nNps+nNns)*sqrt(0.85*dV)
+		delt=(nNps-nNns)/np.sqrt(nNps+nNns)*np.sqrt(0.85*dV)
 
 		if verb:
 			print '  negative sources found:'
@@ -251,16 +257,16 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 			print
 
 		if check_kernel:
-			plot(arange(-10,10,0.01),stats.norm().cdf(arange(-10,10,0.01)),'k-')
-			plot(arange(-10,10,0.01),stats.norm(scale=0.4).cdf(arange(-10,10,0.01)),'k:')
-			hist(delt,bins=arange(delt.min(),delt.max()+0.01,0.01),cumulative=True,histtype='step',normed=True,color='r')
+			plot(np.arange(-10,10,0.01),stats.norm().cdf(np.arange(-10,10,0.01)),'k-')
+			plot(np.arange(-10,10,0.01),stats.norm(scale=0.4).cdf(np.arange(-10,10,0.01)),'k:')
+			hist(delt,bins=np.arange(delt.min(),delt.max()+0.01,0.01),cumulative=True,histtype='step',normed=True,color='r')
 			xlim(-3,3)
 			ylim(0,1)
-			xlabel('$(P-N)/\sqrt{N+P}$')
+			xlabel('(P-N)/sqrt(N+P)')
 			ylabel('cumulative distribution')
-			legend(('Gaussian ($\sigma=1$)','Gaussian ($\sigma=0.4$)','negative sources'),loc='upper left',prop={'size':15})
+			legend(('Gaussian (sigma=1)','Gaussian (sigma=0.4)','negative sources'),loc='upper left',prop={'size':15})
 			plot([0,0],[0,1],'k--')
-			title('$\sigma$(kde) = %.3f, %.3f, %.3f'%(kernel[0],kernel[1],kernel[2]),fontsize=20)
+			title('sigma(kde) = %.3f, %.3f, %.3f'%(kernel[0],kernel[1],kernel[2]),fontsize=20)
 			show()
 			#savefig('test_scatter.pdf')
 
@@ -270,20 +276,20 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 
 	if doscatter:
 		if verb: print '  plotting sources ...'
-		fig1=figure(figsize=(18,4.5*nr))
-		subplots_adjust(left=0.06,bottom=0.15/nr,right=0.97,top=1-0.08/nr,wspace=0.35,hspace=0.25)
+		fig1=plt.figure(figsize=(18,4.5*nr))
+		plt.subplots_adjust(left=0.06,bottom=0.15/nr,right=0.97,top=1-0.08/nr,wspace=0.35,hspace=0.25)
 
-		np=0
+		n_p=0
 		for jj in projections:
 			if verb: print '    projection %i/%i'%(projections.index(jj)+1,len(projections))
-			np,p1,p2=np+1,jj[0],jj[1]
-			subplot(nr,nc,np)
-			scatter(pars[p1,pos],pars[p2,pos],marker='o',c='b',s=10,edgecolor='face',alpha=0.5)
-			scatter(pars[p1,neg],pars[p2,neg],marker='o',c='r',s=10,edgecolor='face',alpha=0.5)
-			xlim(lims[p1][0],lims[p1][1])
-			ylim(lims[p2][0],lims[p2][1])
-			xlabel(labs[p1])
-			ylabel(labs[p2])
+			n_p,p1,p2=n_p+1,jj[0],jj[1]
+			plt.subplot(nr,nc,n_p)
+			plt.scatter(pars[p1,pos],pars[p2,pos],marker='o',c='b',s=10,edgecolor='face',alpha=0.5)
+			plt.scatter(pars[p1,neg],pars[p2,neg],marker='o',c='r',s=10,edgecolor='face',alpha=0.5)
+			plt.xlim(lims[p1][0],lims[p1][1])
+			plt.ylim(lims[p2][0],lims[p2][1])
+			plt.xlabel(labs[p1])
+			plt.ylabel(labs[p2])
 		fig1.savefig('%s_scat.pdf'%pdfoutname,rasterized=True)
 
 	#####################
@@ -291,51 +297,51 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 	#####################
 
 	if docontour:
-		levs=10**arange(-1.5,2,0.5)
+		levs=10**np.arange(-1.5,2,0.5)
 
 		if verb: print '  plotting contours ...'
-		fig2=figure(figsize=(18,4.5*nr))
-		subplots_adjust(left=0.06,bottom=0.15/nr,right=0.97,top=1-0.08/nr,wspace=0.35,hspace=0.25)
-		np=0
+		fig2=plt.figure(figsize=(18,4.5*nr))
+		plt.subplots_adjust(left=0.06,bottom=0.15/nr,right=0.97,top=1-0.08/nr,wspace=0.35,hspace=0.25)
+		n_p=0
 		for jj in projections:
 			if verb: print '    projection %i/%i'%(projections.index(jj)+1,len(projections))
-			np,p1,p2=np+1,jj[0],jj[1]
+			n_p,p1,p2=n_p+1,jj[0],jj[1]
 			g1,g2=grid[p1],grid[p2]
-			x1=arange(g1[0],g1[1],g1[2])
-			x2=arange(g2[0],g2[1],g2[2])
+			x1=np.arange(g1[0],g1[1],g1[2])
+			x2=np.arange(g2[0],g2[1],g2[2])
 			pshape=(x2.shape[0],x1.shape[0])
 
 			# get array of source parameters on current projection
-			parsp=concatenate((pars[p1:p1+1],pars[p2:p2+1]),axis=0)
+			parsp=np.concatenate((pars[p1:p1+1],pars[p2:p2+1]),axis=0)
 
 			# derive Np and Nn density fields on the current projection
 			# Np and Nn calculated with *authomatic* covariance
 			#Np=stats.kde.gaussian_kde(parsp[:,pos])
 			#Nn=stats.kde.gaussian_kde(parsp[:,neg])
 			# Np and Nn calculated with *input* covariance
-			setcov=array(((kernel[p1]**2,0.0),(0.0,kernel[p2]**2)))
+			setcov=np.array(((kernel[p1]**2,0.0),(0.0,kernel[p2]**2)))
 			Np=gaussian_kde_set_covariance(parsp[:,pos],setcov)
 			Nn=gaussian_kde_set_covariance(parsp[:,neg],setcov)
 
 			# evaluate density  fields on grid on current projection
-			g=transpose(transpose(mgrid[slice(g1[0],g1[1],g1[2]),slice(g2[0],g2[1],g2[2])]).reshape(-1,2))
+			g=np.transpose(np.transpose(np.mgrid[slice(g1[0],g1[1],g1[2]),slice(g2[0],g2[1],g2[2])]).reshape(-1,2))
 			Np=Np(g)
 			Nn=Nn(g)
 			Np=Np/Np.sum()*Npos
 			Nn=Nn/Nn.sum()*Nneg
 			Np.resize(pshape)
 			Nn.resize(pshape)
-			subplot(nr,nc,np)
-			contour(x1,x2,Np,origin='lower',colors='b',levels=levs)
-			contour(x1,x2,Nn,origin='lower',colors='r',levels=levs)
+			plt.subplot(nr,nc,n_p)
+			plt.contour(x1,x2,Np,origin='lower',colors='b',levels=levs)
+			plt.contour(x1,x2,Nn,origin='lower',colors='r',levels=levs)
 
-			if reliable.sum(): scatter(pars[p1,pos][reliable],pars[p2,pos][reliable],marker='o',s=10,edgecolor='k')
-			if (pseudoreliable*(reliable==False)).sum(): scatter(pars[p1,pos][pseudoreliable*(reliable==False)],pars[p2,pos][pseudoreliable*(reliable==False)],marker='x',s=40,edgecolor='0.5')
+			if reliable.sum(): plt.scatter(pars[p1,pos][reliable],pars[p2,pos][reliable],marker='o',s=10,edgecolor='k')
+			if (pseudoreliable*(reliable==False)).sum(): plt.scatter(pars[p1,pos][pseudoreliable*(reliable==False)],pars[p2,pos][pseudoreliable*(reliable==False)],marker='x',s=40,edgecolor='0.5')
 
-			xlim(lims[p1][0],lims[p1][1])
-			ylim(lims[p2][0],lims[p2][1])
-			xlabel(labs[p1])
-			ylabel(labs[p2])
+			plt.xlim(lims[p1][0],lims[p1][1])
+			plt.ylim(lims[p2][0],lims[p2][1])
+			plt.xlabel(labs[p1])
+			plt.ylabel(labs[p2])
 		fig2.savefig('%s_cont.pdf'%pdfoutname,rasterized=True)
 
 	###############################
@@ -348,14 +354,14 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 		if not (docontour or dostats):
 			Nps=Np(pars[:,pos])*Npos
 			Nns=Nn(pars[:,pos])*Nneg
-		Np=zeros((data.shape[0],))
+		Np=np.zeros((data.shape[0],))
 		Np[pos]=Nps
-		Nn=zeros((data.shape[0],))
+		Nn=np.zeros((data.shape[0],))
 		Nn[pos]=Nns
-		R=-ones((data.shape[0],)) # R will be -1 for negative sources
+		R=-np.ones((data.shape[0],)) # R will be -1 for negative sources
 		# set R to zero for positive sources if R<0 because of Nn>Np
-		R[pos]=maximum(0,(Np[pos]-Nn[pos])/Np[pos])
-		data=concatenate((data,Np.reshape(-1,1),Nn.reshape(-1,1),R.reshape(-1,1)),axis=1)
+		R[pos]=np.maximum(0,(Np[pos]-Nn[pos])/Np[pos])
+		data=np.concatenate((data,Np.reshape(-1,1),Nn.reshape(-1,1),R.reshape(-1,1)),axis=1)
 
 	data=[list(jj) for jj in list(data)]
 	return data,ids[pos][reliable].astype(int)

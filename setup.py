@@ -79,6 +79,14 @@ wavelet_src_files = [
     ]
 wavelet_src = [wavelet_src_base + f for f in wavelet_src_files]
 
+# moment output module
+writemoment2_src_base = 'src/writemoment2/'
+writemoment2_src_files = [
+    'writemoment2.c'
+    ]
+writemoment2_src = [writemoment2_src_base + f for f in writemoment2_src_files]
+
+
 # Interface to the parametrization code
 parametrizer_src_base = 'src/parametrizer/'
 parametrizer_src_files = [
@@ -110,6 +118,11 @@ setup(
         Extension(
             'wavelet',
             wavelet_src,
+            extra_compile_args=['-O3'],
+            include_dirs=include_dirs),
+        Extension(
+            'writemoment2',
+            writemoment2_src,
             extra_compile_args=['-O3'],
             include_dirs=include_dirs),
         Extension(

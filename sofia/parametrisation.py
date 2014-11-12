@@ -4,6 +4,7 @@
 from sofia import cparametrizer as cp
 import numpy as np
 import scipy.ndimage as nd
+import sys
 
 def dilate(cube,mask,dilate_threshold=0.02,dilate_pix_max=10,dilate_chan=1):
     # stops dilating when (flux_new-flux_old)/flux_new < dilate_threshold
@@ -20,6 +21,7 @@ def dilate(cube,mask,dilate_threshold=0.02,dilate_pix_max=10,dilate_chan=1):
         # pick the best dilation kernel for current object and update mask
         dil-=1
         print 'Mask dilation of source %i by %i pix and %i chan'%(mm,dil,dilate_chan)
+        sys.stdout.flush()
         dd=dil*2+1
         dilstruct=(np.sqrt(((np.indices((dd,dd))-dil)**2).sum(axis=0))<=dil).astype(int)
         dilstruct.resize((1,dilstruct.shape[0],dilstruct.shape[1]))

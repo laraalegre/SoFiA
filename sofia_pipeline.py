@@ -18,7 +18,7 @@ from sofia import threshold_filter
 from sofia import smooth_cube
 from sofia import write_filtered_cube
 from sofia import writemask
-from sofia import writemoment
+from sofia import writemoment2
 from sofia import linker
 from sofia import store_xml
 from sofia import store_ascii
@@ -167,12 +167,6 @@ if not NRdet:
 	print 
 	sys.exit()
 
-# Reload original data cube for parameterisation if it has been changed
-if Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['import']['weightsFile']:
-	Parameters['import']['weightsFile'] = ''
-	Parameters['import']['maskFile'] = ''
-	np_Cube, dict_Header, bla, blabla = import_data.read_data(**Parameters['import'])
-
 
 
 # -----------------
@@ -290,6 +284,18 @@ if Parameters['steps']['doMerge'] and NRdet:
 
 
 
+# -------------------------------------------------------------------------------
+# ---- RELOAD ORIGINAL DATA CUBE FOR PARAMETERISATION IF IT HAS BEEN CHANGED ----
+# -------------------------------------------------------------------------------
+
+if Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['import']['weightsFile'] or Parameters['import']['weightsFunction']:
+	Parameters['import']['weightsFile'] = ''
+	Parameters['import']['maskFile'] = ''
+	Parameters['import']['weightsFunction'] = ''
+	np_Cube, dict_Header, bla, blabla = import_data.read_data(**Parameters['import'])
+
+
+
 # ----------------------------------------
 # ---- OUTPUT FOR DEBUGGING (MOMENTS) ----
 # ----------------------------------------
@@ -299,8 +305,8 @@ if Parameters['steps']['doDebug'] and NRdet:
 	sys.stdout.flush()
 	debug=1
 	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_rel.fits'%outroot)
-	mom0_Image = writemoment.writeMoment0(np_Cube, mask, outroot, debug, dict_Header)
-	writemoment.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image)
+	mom0_Image = writemoment2.writeMoment0(np_Cube, mask, outroot, debug, dict_Header)
+	writemoment2.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image)
 
 
 
@@ -369,7 +375,7 @@ if Parameters['steps']['doMom0'] or Parameters['steps']['doMom1']:
 	print "\n--- SoFiA: Writing moment-0 map ---"
 	sys.stdout.flush()
 	debug = 0
-	mom0_Image = writemoment.writeMoment0(np_Cube, mask, outroot, debug, dict_Header,Parameters['writeCat']['compress'])
+	mom0_Image = writemoment2.writeMoment0(np_Cube, mask, outroot, debug, dict_Header,Parameters['writeCat']['compress'])
 
 
 
@@ -381,7 +387,7 @@ if Parameters['steps']['doMom1'] and NRdet:
 	print "\n--- SoFiA: Writing moment-1 map ---"
 	sys.stdout.flush()
 	debug = 0
-	writemoment.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image,Parameters['writeCat']['compress'])
+	writemoment2.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image,Parameters['writeCat']['compress'])
 
 
 
