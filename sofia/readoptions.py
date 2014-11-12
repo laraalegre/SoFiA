@@ -108,6 +108,7 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "reliability.relThresh": "float", \
                  "parameters.fitBusyFunction": "bool", \
                  "parameters.optimiseMask": "bool", \
+                 "parameters.dilateMask": "bool", \
 		 "writeCat.compress":"bool", \
                  "writeCat.outputDir": "string", \
                  "writeCat.basename": "string", \
