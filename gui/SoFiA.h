@@ -123,6 +123,7 @@ private slots:
     void aboutSoFiA();
     void selectInputWeightsFile();
     void selectInputMaskFile();
+    void selectOpticalCatalogFile();
     void displayPrevTab();
     void displayNextTab();
     void updateFields();
@@ -210,6 +211,16 @@ private:
     QLineEdit    *tabInputFieldWeights;
     QPushButton  *tabInputButtonWeights;
     QLineEdit    *tabInputFieldWeightsFunction;
+    
+    QGroupBox    *tabInputGroupBox2;
+    QFormLayout  *tabInputForm2;
+    QLineEdit    *tabInputFieldCatalog;
+    QPushButton  *tabInputButtonCatalog;
+    QHBoxLayout  *tabInputLayoutCatalog;
+    QWidget      *tabInputWidgetCatalog;
+    QLineEdit    *tabInputFieldSpatialSize;
+    QLineEdit    *tabInputFieldSpectralSize;
+    QCheckBox    *tabInputFieldSingleCat;
     
     QGroupBox    *tabInputGroupBox3;
     QFormLayout  *tabInputForm3;

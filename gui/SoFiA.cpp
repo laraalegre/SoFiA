@@ -702,6 +702,12 @@ void SoFiA::updateFields()
 {
     // Activate or de-activate fields and buttons
     
+    // Check ranges in optical source finding:
+    double n = tabInputFieldSpatialSize->text().toDouble();
+    if(n < 0.0) tabInputFieldSpatialSize->setText("0.0");
+    n = tabInputFieldSpectralSize->text().toDouble();
+    if(n < 0.0) tabInputFieldSpectralSize->setText("0.0");
+    
     // Enable/disable writing of filtered cube when no filters are selected:
     tabOutputButtonFilteredCube->setEnabled(tabInFilterGroupBox1->isChecked() or tabInFilterGroupBox2->isChecked() or tabInFilterGroupBox3->isChecked());
     
@@ -716,7 +722,7 @@ void SoFiA::updateFields()
     tabOutFilterFieldFintMax->setEnabled(tabOutFilterButtonFint->isChecked());
     
     // Ensure that reliability range is within 0 and 1:
-    double n = tabParametrisationFieldRelMin->text().toDouble();
+    n = tabParametrisationFieldRelMin->text().toDouble();
     if(n < 0.0) tabParametrisationFieldRelMin->setText("0.0");
     else if(n > 1.0) tabParametrisationFieldRelMin->setText("1.0");
     
@@ -813,6 +819,19 @@ void SoFiA::selectInputDataFile()
 void SoFiA::selectInputWeightsFile()
 {
     selectFile(tabInputFieldWeights);
+    
+    return;
+}
+
+
+
+// -------------------------------------
+// Slot to select optical catalogue file
+// -------------------------------------
+
+void SoFiA::selectOpticalCatalogFile()
+{
+    selectFile(tabInputFieldCatalog);
     
     return;
 }
@@ -1312,44 +1331,41 @@ void SoFiA::createInterface()
     tabInputGroupBox1 = new QGroupBox(tr("Input data"), toolBoxIP);
     tabInputForm1 = new QFormLayout;
     
-    tabInputFieldData  = new QLineEdit(tabInputGroupBox1);
+    tabInputWidgetData = new QWidget(tabInputGroupBox1);
+    tabInputLayoutData = new QHBoxLayout;
+    tabInputFieldData  = new QLineEdit(tabInputWidgetData);
     tabInputFieldData->setObjectName("import.inFile");
     tabInputFieldData->setToolTip("Name of input data cube (required)");
     connect(tabInputFieldData, SIGNAL(editingFinished()), this, SLOT(updateFields()));
-    tabInputButtonData = new QPushButton(tr("Select..."), tabInputGroupBox1);
+    tabInputButtonData = new QPushButton(tr("Select..."), tabInputWidgetData);
     connect(tabInputButtonData, SIGNAL(clicked()), this, SLOT(selectInputDataFile()));
     tabInputButtonData->setIcon(iconDocumentOpen);
-    
-    tabInputWidgetData = new QWidget(tabInputGroupBox1);
-    tabInputLayoutData = new QHBoxLayout;
     tabInputLayoutData->addWidget(tabInputFieldData);
     tabInputLayoutData->addWidget(tabInputButtonData);
     tabInputLayoutData->setContentsMargins(0, 0, 0, 0);
     tabInputWidgetData->setLayout(tabInputLayoutData);
     
-    tabInputFieldMask  = new QLineEdit(tabInputGroupBox1);
-    tabInputFieldMask->setObjectName("import.maskFile");
-    tabInputFieldMask->setToolTip("Name of mask cube (optional)");
-    tabInputButtonMask = new QPushButton(tr("Select..."), tabInputGroupBox1);
-    connect(tabInputButtonMask, SIGNAL(clicked()), this, SLOT(selectInputMaskFile()));
-    tabInputButtonMask->setIcon(iconDocumentOpen);
-    
     tabInputWidgetMask = new QWidget(tabInputGroupBox1);
     tabInputLayoutMask = new QHBoxLayout;
+    tabInputFieldMask  = new QLineEdit(tabInputWidgetMask);
+    tabInputFieldMask->setObjectName("import.maskFile");
+    tabInputFieldMask->setToolTip("Name of mask cube (optional)");
+    tabInputButtonMask = new QPushButton(tr("Select..."), tabInputWidgetMask);
+    connect(tabInputButtonMask, SIGNAL(clicked()), this, SLOT(selectInputMaskFile()));
+    tabInputButtonMask->setIcon(iconDocumentOpen);
     tabInputLayoutMask->addWidget(tabInputFieldMask);
     tabInputLayoutMask->addWidget(tabInputButtonMask);
     tabInputLayoutMask->setContentsMargins(0, 0, 0, 0);
     tabInputWidgetMask->setLayout(tabInputLayoutMask);
     
-    tabInputFieldWeights  = new QLineEdit(tabInputGroupBox1);
-    tabInputFieldWeights->setObjectName("import.weightsFile");
-    tabInputFieldWeights->setToolTip("Name of data cube containing weights (optional)");
-    tabInputButtonWeights = new QPushButton(tr("Select..."), tabInputGroupBox1);
-    connect(tabInputButtonWeights, SIGNAL(clicked()), this, SLOT(selectInputWeightsFile()));
-    tabInputButtonWeights->setIcon(iconDocumentOpen);
-    
     tabInputWidgetWeights = new QWidget(tabInputGroupBox1);
     tabInputLayoutWeights = new QHBoxLayout;
+    tabInputFieldWeights  = new QLineEdit(tabInputWidgetWeights);
+    tabInputFieldWeights->setObjectName("import.weightsFile");
+    tabInputFieldWeights->setToolTip("Name of data cube containing weights (optional)");
+    tabInputButtonWeights = new QPushButton(tr("Select..."), tabInputWidgetWeights);
+    connect(tabInputButtonWeights, SIGNAL(clicked()), this, SLOT(selectInputWeightsFile()));
+    tabInputButtonWeights->setIcon(iconDocumentOpen);
     tabInputLayoutWeights->addWidget(tabInputFieldWeights);
     tabInputLayoutWeights->addWidget(tabInputButtonWeights);
     tabInputLayoutWeights->setContentsMargins(0, 0, 0, 0);
@@ -1399,6 +1415,47 @@ void SoFiA::createInterface()
     tabInputForm3->addRow(tr("Range:"), tabInputFieldFlags);
     tabInputGroupBox3->setLayout(tabInputForm3);
     
+    // optical source finding
+    tabInputGroupBox2 = new QGroupBox(tr("enable"), toolBoxIP);
+    tabInputGroupBox2->setObjectName("steps.doOptical");
+    tabInputGroupBox2->setCheckable(true);
+    tabInputGroupBox2->setChecked(false);
+    tabInputForm2 = new QFormLayout;
+    
+    tabInputWidgetCatalog = new QWidget(tabInputGroupBox2);
+    tabInputLayoutCatalog = new QHBoxLayout;
+    tabInputFieldCatalog = new QLineEdit(tabInputWidgetCatalog);
+    tabInputFieldCatalog->setObjectName("optical.sourceCatalogue");
+    tabInputFieldCatalog->setToolTip("Source catalogue for catalogue-based source finding");
+    tabInputButtonCatalog = new QPushButton(tr("Select..."), tabInputWidgetCatalog);
+    connect(tabInputButtonCatalog, SIGNAL(clicked()), this, SLOT(selectOpticalCatalogFile()));
+    tabInputButtonCatalog->setIcon(iconDocumentOpen);
+    tabInputLayoutCatalog->addWidget(tabInputFieldCatalog);
+    tabInputLayoutCatalog->addWidget(tabInputButtonCatalog);
+    tabInputLayoutCatalog->setContentsMargins(0, 0, 0, 0);
+    tabInputWidgetCatalog->setLayout(tabInputLayoutCatalog);
+    
+    tabInputFieldSpatialSize = new QLineEdit(tabInputGroupBox2);
+    tabInputFieldSpatialSize->setObjectName("optical.spatSize");
+    tabInputFieldSpatialSize->setToolTip("Spatial size of sub-cube to be searched");
+    connect(tabInputFieldSpatialSize, SIGNAL(editingFinished()), this, SLOT(updateFields()));
+    
+    tabInputFieldSpectralSize = new QLineEdit(tabInputGroupBox2);
+    tabInputFieldSpectralSize->setObjectName("optical.specSize");
+    tabInputFieldSpectralSize->setToolTip("Spectral size of sub-cube to be searched");
+    connect(tabInputFieldSpectralSize, SIGNAL(editingFinished()), this, SLOT(updateFields()));
+    
+    tabInputFieldSingleCat = new QCheckBox(tr("create single output catalogue "), tabInputGroupBox2);
+    tabInputFieldSingleCat->setObjectName("optical.storeSingleCat");
+    tabInputFieldSingleCat->setToolTip("Write all sources to a single output catalogue file?");
+    tabInputFieldSingleCat->setChecked(false);
+    
+    tabInputForm2->addRow(tr("Catalogue:"), tabInputWidgetCatalog);
+    tabInputForm2->addRow(tr("Spatial size:"), tabInputFieldSpatialSize);
+    tabInputForm2->addRow(tr("Spectral size:"), tabInputFieldSpectralSize);
+    tabInputForm2->addRow(tr("Output:"), tabInputFieldSingleCat);
+    tabInputGroupBox2->setLayout(tabInputForm2);
+    
     // controls
     tabInputButtonNext = new QPushButton(tr("Next"), tabInput);
     tabInputButtonNext->setIcon(iconGoNextView);
@@ -1414,6 +1471,7 @@ void SoFiA::createInterface()
     toolBoxIP->addItem(tabInputGroupBox1, "Input Data Files");
     toolBoxIP->addItem(tabInputGroupBox4, "Sub-cube");
     toolBoxIP->addItem(tabInputGroupBox3, "Data Flagging");
+    toolBoxIP->addItem(tabInputGroupBox2, "Catalogue-based Source Finding");
     
     tabInputLayout->addWidget(toolBoxIP);
     tabInputLayout->addStretch();
@@ -2048,15 +2106,14 @@ void SoFiA::createInterface()
     tabOutputFieldBaseName->setToolTip("Base name to be used for all output files (optional). Defaults to input file name.");
     tabOutputFieldBaseName->setEnabled(true);
     
-    tabOutputFieldDirectory  = new QLineEdit(tabOutputGroupBox1);
-    tabOutputFieldDirectory->setObjectName("writeCat.outputDir");
-    tabOutputFieldDirectory->setToolTip("Path to output directory (optional). Defaults to input cube directory.");
-    tabOutputButtonDirectory = new QPushButton(tr("Select..."), tabOutputGroupBox1);
-    connect(tabOutputButtonDirectory, SIGNAL(clicked()), this, SLOT(selectOutputDirectory()));
-    tabOutputButtonDirectory->setIcon(iconDocumentOpen);
-    
     tabOutputWidgetDirectory = new QWidget(tabOutputGroupBox1);
     tabOutputLayoutDirectory = new QHBoxLayout;
+    tabOutputFieldDirectory  = new QLineEdit(tabOutputWidgetDirectory);
+    tabOutputFieldDirectory->setObjectName("writeCat.outputDir");
+    tabOutputFieldDirectory->setToolTip("Path to output directory (optional). Defaults to input cube directory.");
+    tabOutputButtonDirectory = new QPushButton(tr("Select..."), tabOutputWidgetDirectory);
+    connect(tabOutputButtonDirectory, SIGNAL(clicked()), this, SLOT(selectOutputDirectory()));
+    tabOutputButtonDirectory->setIcon(iconDocumentOpen);
     tabOutputLayoutDirectory->addWidget(tabOutputFieldDirectory);
     tabOutputLayoutDirectory->addWidget(tabOutputButtonDirectory);
     tabOutputLayoutDirectory->setContentsMargins(0, 0, 0, 0);
