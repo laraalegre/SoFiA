@@ -151,7 +151,7 @@ sys.stdout.flush()
 # --- PYFIND ---
 if Parameters['steps']['doSCfind']:
 	print 'Running S+C filter'
-	pyfind_mask = pyfind.SCfinder(np_Cube, dict_Header, t0, **Parameters['SCfind'])
+	pyfind_mask = pyfind.SCfinder_mem(np_Cube, dict_Header, t0, **Parameters['SCfind'])
 	mask = mask + pyfind_mask
 
 # --- CNHI ---	
