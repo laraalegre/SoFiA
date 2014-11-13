@@ -43,7 +43,7 @@ def readPipelineOptions(filename = "pipeline.options"):
     # convert the input values into the correct data type.
     # Ensure that all new parameters get added to this list!
     datatypes = {"steps.doSubCube": "bool", \
-                 "steps.doSmooth": "bool", \
+                 "steps.doFlag": "bool", \
                  "steps.doSmooth": "bool", \
                  "steps.doScaleNoise": "bool", \
                  "steps.doSCfind": "bool", \
