@@ -71,7 +71,7 @@ def SortKernels(kernels):
 				velfshape[-1].append(ii[3])
 	return uniquesky,velsmooth,velfshape
 
-def SCfinder(cube,header,kernels=[[0,0,0,'b'],],threshold=3.5,sizeFilter=0,maskScaleXY=2.,maskScaleZ=2.,kernelUnit='pixel',edgeMode='constant',rmsMode='negative',verbose=0):
+def SCfinder(cube,header,t0,kernels=[[0,0,0,'b'],],threshold=3.5,sizeFilter=0,maskScaleXY=2.,maskScaleZ=2.,kernelUnit='pixel',edgeMode='constant',rmsMode='negative',verbose=0):
 	# Create binary mask array
 	msk=np.zeros(cube.shape,'bool')
 	found_nan=np.isnan(cube).sum()
@@ -88,7 +88,9 @@ def SCfinder(cube,header,kernels=[[0,0,0,'b'],],threshold=3.5,sizeFilter=0,maskS
 		if kernelUnit=='world' or kernelUnit=='w':
 			kx=abs(float(kx)/header['cdelt1']/3600)
 			ky=abs(float(ky)/header['cdelt2']/3600)
-		if verbose:  print '    Filter %2.0f %2.0f %2.0f %s ...'%(kx,ky,0,'-')
+		if verbose: 
+			print "\n--- %.3f seconds since start"%(time()-t0)
+			print '    Filter %2.0f %2.0f %2.0f %s ...'%(kx,ky,0,'-')
 		sys.stdout.flush()
 
 		mskxy=np.zeros(cube.shape,'bool')
@@ -115,7 +117,9 @@ def SCfinder(cube,header,kernels=[[0,0,0,'b'],],threshold=3.5,sizeFilter=0,maskS
 
 			# Velocity smoothing of *clipped* cube if needed
 			if kz:
-				if verbose:  print '    Filter %2.0f %2.0f %2.0f %s ...'%(kx,ky,kz,kt)
+				if verbose: 
+					print "\n--- %.3f seconds since start"%(time()-t0)
+					print '    Filter %2.0f %2.0f %2.0f %s ...'%(kx,ky,kz,kt)
 				sys.stdout.flush()
 				if not ii:
 					rmsxyz=rmsxy/mt.sqrt(kz)
@@ -162,4 +166,4 @@ import string
 from os import path
 import sys
 from functions import *
-
+from time import time
