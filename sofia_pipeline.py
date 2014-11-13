@@ -4,6 +4,7 @@
 import numpy as np
 import sys, os
 import string
+from time import time
 
 # import source finding modules
 sys.path.insert(0, os.environ['SOFIA_MODULE_PATH'])
@@ -27,12 +28,13 @@ from sofia import parametrisation
 from sofia import wcs_coordinates
 from sofia import flag_cube
 
-
+t0=time()
 
 # ---------------------------------
 # ---- READ DEFAULT PARAMETERS ----
 # ---------------------------------
 
+print "\n--- %.3f seconds since start"%(time()-t0)
 print "\n--- SoFiA: Reading default parameters ---"
 sys.stdout.flush()
 
@@ -47,6 +49,7 @@ Parameters = readoptions.readPipelineOptions(default_file)
 # ---- READ USER PARAMETERS ----
 # ------------------------------
 
+print "\n--- %.3f seconds since start"%(time()-t0)
 print "\n--- SoFiA: Reading user parameters ---"
 sys.stdout.flush()
 
@@ -86,6 +89,7 @@ else:
 # ---- IMPORT DATA ----
 # ---------------------
 
+print "\n--- %.3f seconds since start"%(time()-t0)
 print "\n--- SoFiA: Reading data cube(s) ---"
 sys.stdout.flush()
 
@@ -96,6 +100,7 @@ np_Cube, dict_Header, mask, subcube = import_data.read_data(**Parameters['import
 # ---- PRECONDITIONING ----
 # -------------------------
 
+print "\n--- %.3f seconds since start"%(time()-t0)
 print "\n--- SoFiA: Running input filters ---"
 sys.stdout.flush()
 
@@ -128,11 +133,14 @@ if Parameters['steps']['doWriteFilteredCube'] and (Parameters['steps']['doSmooth
         print "SoFiA: Writing filtered cube"
         write_filtered_cube.writeFilteredCube(np_Cube, dict_Header, Parameters, '%s_filtered.fits' % outroot, Parameters['writeCat']['compress'])
 
+print "Filtering complete"
+print 
 
 # -----------------
 # ---- FILTERS ----
 # -----------------
 
+print "\n--- %.3f seconds since start"%(time()-t0)
 print "\n--- SoFiA: Running source finder ---"
 sys.stdout.flush()
 
@@ -143,7 +151,7 @@ sys.stdout.flush()
 # --- PYFIND ---
 if Parameters['steps']['doSCfind']:
 	print 'Running S+C filter'
-	pyfind_mask = pyfind.SCfinder(np_Cube, dict_Header, **Parameters['SCfind'])
+	pyfind_mask = pyfind.SCfinder(np_Cube, dict_Header, t0, **Parameters['SCfind'])
 	mask = mask + pyfind_mask
 
 # --- CNHI ---	
@@ -157,7 +165,7 @@ if Parameters['steps']['doThreshold']:
 	#mask+=threshold_filter.filter(np_Cube, dict_Header, **Parameters['threshold'])
 	threshold_filter.filter(mask,np_Cube, dict_Header, **Parameters['threshold'])
 
-print 'Filtering complete.'
+print 'Source finding complete.'
 print
 
 # Check whether any voxel is detected
@@ -174,6 +182,7 @@ if not NRdet:
 # -----------------
 
 if Parameters['steps']['doMerge'] and NRdet:
+	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Merging detections ---"
 	sys.stdout.flush()
 	
@@ -195,6 +204,7 @@ if Parameters['steps']['doMerge'] and NRdet:
 # -------------------------------------
 
 if Parameters['steps']['doDebug'] and NRdet:
+	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Writing all-source mask cube for debugging ---"
 	sys.stdout.flush()
 	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_all.fits'%outroot)
@@ -206,6 +216,7 @@ if Parameters['steps']['doDebug'] and NRdet:
 # ----------------------------------------------------
 
 if Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and NRdet:
+	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Determining reliability ---"
 	sys.stdout.flush()
 	objects,reliable = addrel.EstimateRel(np.array(objects), outroot, **Parameters['reliability'])
@@ -233,6 +244,7 @@ if Parameters['steps']['doMerge'] and NRdet:
 		catParUnits = tuple(list(catParUnits) + ['-','-','-'])
 		catParFormt = tuple(list(catParFormt) + ['%12.3e', '%12.3e', '%12.6f'])
 	if Parameters['steps']['doDebug']:
+		print "\n--- %.3f seconds since start"%(time()-t0)
 		print "\n--- SoFiA: Writing all-source catalogue for debugging ---"
 		#sys.stdout.flush()
 		store_ascii.make_ascii_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outroot+'_cat.debug.ascii')
@@ -244,6 +256,7 @@ if Parameters['steps']['doMerge'] and NRdet:
 # --------------------------------------------------
 
 if Parameters['steps']['doMerge'] and NRdet:
+	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Removing all sources that are not reliable ---"
 
 	# make sure that reliable is sorted
@@ -301,6 +314,7 @@ if Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Par
 # ----------------------------------------
 
 if Parameters['steps']['doDebug'] and NRdet:
+	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Writing pre-optimisation mask and moment maps for debugging ---"
 	sys.stdout.flush()
 	debug=1
@@ -318,6 +332,7 @@ if Parameters['steps']['doDebug'] and NRdet:
 #results.readDuchampFile("duchamp-results.txt")
 
 if Parameters['steps']['doParameterise'] and Parameters['steps']['doMerge'] and NRdet:
+	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Parametrising sources ---"
 	sys.stdout.flush()
 #	np_Cube, dict_Header, mask, objects, catParNames, catParFormt = parametrisation.parametrise(np_Cube, dict_Header, mask, objects, catParNames, catParFormt, Parameters)
@@ -338,6 +353,7 @@ if Parameters['steps']['doParameterise'] and Parameters['steps']['doMerge'] and 
 # ----------------------------------------------------
 
 if len(subcube) and Parameters['steps']['doMerge'] and NRdet:
+	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Correcting positional parameter values for subcube ---"
 	sys.stdout.flush()
 	# list of parameters to correct for X, Y and Z offset
@@ -362,7 +378,8 @@ if len(subcube) and Parameters['steps']['doMerge'] and NRdet:
 # --------------------
 
 if Parameters['steps']['doWriteMask'] and NRdet:
-        print "\n--- SoFiA: Writing mask ---"
+	print "\n--- %.3f seconds since start"%(time()-t0)
+	print "\n--- SoFiA: Writing mask ---"
 	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.fits'%outroot,Parameters['writeCat']['compress'])
 
 
@@ -372,6 +389,7 @@ if Parameters['steps']['doWriteMask'] and NRdet:
 # -------------------
 
 if Parameters['steps']['doMom0'] or Parameters['steps']['doMom1']:
+	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Writing moment-0 map ---"
 	sys.stdout.flush()
 	debug = 0
@@ -384,6 +402,7 @@ if Parameters['steps']['doMom0'] or Parameters['steps']['doMom1']:
 # --------------------
 
 if Parameters['steps']['doMom1'] and NRdet:
+	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Writing moment-1 map ---"
 	sys.stdout.flush()
 	debug = 0
@@ -396,6 +415,7 @@ if Parameters['steps']['doMom1'] and NRdet:
 # ------------------------
 
 if Parameters['steps']['doCubelets'] and Parameters['steps']['doMerge'] and NRdet:
+	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Writing cubelets ---"
 	sys.stdout.flush()
 	objects = np.array(objects)
@@ -409,6 +429,7 @@ if Parameters['steps']['doCubelets'] and Parameters['steps']['doMerge'] and NRde
 # ---------------------------------------------------
 
 if Parameters['steps']['doMerge'] and NRdet:
+	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Adding WCS position to catalog ---"
 	sys.stdout.flush()
 	objects, catParNames, catParFormt, catParUnits = wcs_coordinates.add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters)
@@ -420,6 +441,7 @@ if Parameters['steps']['doMerge'] and NRdet:
 # --------------------
 
 if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge'] and NRdet:
+	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Writing output catalogue ---"
 	sys.stdout.flush()
 	if Parameters['writeCat']['writeXML'] and Parameters['steps']['doMerge'] and NRdet:
@@ -431,5 +453,6 @@ if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge'] and NRde
 
 
 
+print "\n--- %.3f seconds since start"%(time()-t0)
 print "\n--- SoFiA: Pipeline finished ---"
 sys.stdout.flush()
