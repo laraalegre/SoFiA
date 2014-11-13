@@ -164,6 +164,20 @@ storeSingleCat = Parameters['optical']['storeSingleCat']
 print 'working on cube: ', cube
 print 'working on catalogue: ', catalogue
 
+# check whether the catalogue exists, and otherwise exit.
+if os.path.isfile(catalogue) == False:
+    sys.stderr.write("ERROR: The specified source catalogue does not exist.\n")
+    sys.stderr.write("       Cannot find: " + catalogue + "\n")
+    raise SystemExit(1)
+
+# check whether the catalogue is a csv file, and otherwise exit
+# not the most elegant "if" but somehow it doesn't work at once
+if catalogue[-4:-1] != '.cs' and catalogue[-1] != 'v':
+    sys.stderr.write("ERROR: The specified source catalogue is not a .csv file.\n")
+    sys.stderr.write("       Cannot work on: " + catalogue + "\n")
+    raise SystemExit(1)
+
+
 
 # read the optical catalogue
 # For the moment I require a .csv file, with the following order:
@@ -174,6 +188,12 @@ reader = csv.DictReader(f)
 cat = list(reader)
 f.close()
 
+# check whether the file has the right columns (id, ra, dec, z)
+if cat[0]['id'] == False or cat[0]['ra'] == False or cat[0]['dec'] == False or cat[0]['z'] == False: 
+    sys.stderr.write("ERROR: The specified source catalogue does not have the right input\n")
+    sys.stderr.write("       it should contain at least for columns with values id, ra, dec and z \n")
+    sys.stderr.write("       Cannot work on: " + catalogue + "\n")
+    raise SystemExit(1)
 
 for i in range(len(cat)):
     # define the subregion:
