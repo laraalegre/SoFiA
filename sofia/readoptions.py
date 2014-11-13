@@ -42,7 +42,8 @@ def readPipelineOptions(filename = "pipeline.options"):
     # Define data types of individual parameters. This is used to 
     # convert the input values into the correct data type.
     # Ensure that all new parameters get added to this list!
-    datatypes = {"steps.doFlag": "bool", \
+    datatypes = {"steps.doSubCube": "bool", \
+                 "steps.doSmooth": "bool", \
                  "steps.doSmooth": "bool", \
                  "steps.doScaleNoise": "bool", \
                  "steps.doSCfind": "bool", \

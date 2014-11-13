@@ -1304,10 +1304,12 @@ void SoFiA::createInterface()
     // Set up input tab
     // ----------------
     
+    toolBoxIP = new QToolBox(tabInput);
+    
     tabInputLayout = new QVBoxLayout;
     
     // input files
-    tabInputGroupBox1 = new QGroupBox(tr("Input data"), tabInput);
+    tabInputGroupBox1 = new QGroupBox(tr("Input data"), toolBoxIP);
     tabInputForm1 = new QFormLayout;
     
     tabInputFieldData  = new QLineEdit(tabInputGroupBox1);
@@ -1364,7 +1366,10 @@ void SoFiA::createInterface()
     tabInputGroupBox1->setLayout(tabInputForm1);
     
     // sub-cube
-    tabInputGroupBox4 = new QGroupBox(tr("Sub-cube"), tabInput);
+    tabInputGroupBox4 = new QGroupBox(tr("enable"), toolBoxIP);
+    tabInputGroupBox4->setObjectName("steps.doSubCube");
+    tabInputGroupBox4->setCheckable(true);
+    tabInputGroupBox4->setChecked(false);
     tabInputForm4 = new QFormLayout;
     
     tabInputFieldSubcube = new QLineEdit(tabInputGroupBox4);
@@ -1381,7 +1386,7 @@ void SoFiA::createInterface()
     tabInputGroupBox4->setLayout(tabInputForm4);
     
     // flagging
-    tabInputGroupBox3 = new QGroupBox(tr("Data flagging"), tabInput);
+    tabInputGroupBox3 = new QGroupBox(tr("enable"), toolBoxIP);
     tabInputGroupBox3->setObjectName("steps.doFlag");
     tabInputGroupBox3->setCheckable(true);
     tabInputGroupBox3->setChecked(false);
@@ -1406,9 +1411,11 @@ void SoFiA::createInterface()
     tabInputWidgetControls = new QWidget(tabInput);
     tabInputWidgetControls->setLayout(tabInputLayoutControls);
     
-    tabInputLayout->addWidget(tabInputGroupBox1);
-    tabInputLayout->addWidget(tabInputGroupBox4);
-    tabInputLayout->addWidget(tabInputGroupBox3);
+    toolBoxIP->addItem(tabInputGroupBox1, "Input Data Files");
+    toolBoxIP->addItem(tabInputGroupBox4, "Sub-cube");
+    toolBoxIP->addItem(tabInputGroupBox3, "Data Flagging");
+    
+    tabInputLayout->addWidget(toolBoxIP);
     tabInputLayout->addStretch();
     tabInputLayout->addWidget(tabInputWidgetControls);
     tabInput->setLayout(tabInputLayout);

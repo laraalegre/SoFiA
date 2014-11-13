@@ -3,6 +3,7 @@
 
 # Pipeline modules
 
+steps.doSubCube                 =       false
 steps.doFlag                    =       false
 steps.doSmooth                  =       false
 steps.doScaleNoise              =       false

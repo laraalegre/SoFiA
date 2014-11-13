@@ -191,6 +191,8 @@ private:
     
     // Input tab
     
+    QToolBox     *toolBoxIP;
+    
     QVBoxLayout  *tabInputLayout;
     QHBoxLayout  *tabInputLayoutData;
     QWidget      *tabInputWidgetData;
