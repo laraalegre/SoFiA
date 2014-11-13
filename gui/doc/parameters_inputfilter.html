@@ -87,28 +87,96 @@
         <td>Normalise noise levels prior to source finding?</td>
       </tr>
       <tr>
+        <td>scaleNoise.scaleX</td>
+        <td>bool</td>
+        <td>true, <b>false</b></td>
+        <td>Noise normalisation in first (spatial) dimension.</td>
+      </tr>
+      <tr style="background-color:#F0F8FF;">
+        <td>scaleNoise.scaleY</td>
+        <td>bool</td>
+        <td>true, <b>false</b></td>
+        <td>Noise normalisation in second (spatial) dimension.</td>
+      </tr>
+      <tr>
+        <td>scaleNoise.scaleZ</td>
+        <td>bool</td>
+        <td><b>true</b>, false</td>
+        <td>Noise normalisation in third (spectral) dimension.</td>
+      </tr>
+      <tr style="background-color:#F0F8FF;">
         <td>scaleNoise.statistic</td>
         <td>string</td>
         <td><b>mad</b>, std, negative</td>
         <td>Statistic used to measure the noise (median absolute deviation or standard deviation).</td>
       </tr>
-      <tr style="background-color:#F0F8FF;">
+      <tr>
         <td>scaleNoise.edgeX</td>
         <td>int</td>
         <td>&ge; <b>0</b></td>
         <td>Size of edge (in pixels) to be excluded in first coordinate.</td>
       </tr>
-      <tr>
+      <tr style="background-color:#F0F8FF;">
         <td>scaleNoise.edgeY</td>
         <td>int</td>
         <td>&ge; <b>0</b></td>
         <td>Size of edge (in pixels) to be excluded in second coordinate.</td>
       </tr>
-      <tr style="background-color:#F0F8FF;">
+      <tr>
         <td>scaleNoise.edgeZ</td>
         <td>int</td>
         <td>&ge; <b>0</b></td>
         <td>Size of edge (in pixels) to be excluded in third coordinate.</td>
+      </tr>
+      <tr>
+        <td colspan="4" style="background-color:#FFFFFF;">Default values are set in <b>bold-face</b> font.</td>
+      </tr>
+    </table>
+    
+    <h3 style="color:#4060A0;">2D&ndash;1D wavelet filter</h3>
+    
+    <table style="margin:10px; background-color:#E0F0FF;" cellspacing="0" cellpadding="3" border="1">
+      <tr>
+        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Module / Parameter</th>
+        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Type</th>
+        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Value</th>
+        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Description</th>
+      </tr>
+      <tr style="background-color:#F0F8FF;">
+        <td>steps.doWavelet</td>
+        <td>bool</td>
+        <td>true, <b>false</b></td>
+        <td>Decompose the data cube into wavelet components using the 2D&ndash;1D wavelet decomposition algorithm of <a href="http://adsabs.harvard.edu/abs/2012PASA...29..244F">Fl&ouml;er et al. (2012)</a>.</td>
+      </tr>
+      <tr>
+        <td>wavelet.threshold</td>
+        <td>float</td>
+        <td>&ge; 0.0; default: <b>5.0</b></td>
+        <td>Flux threshold used in the wavelet reconstruction in multiples of the rms noise. Note that this threshold only determines which wavelet components are added to the decomposed cube; any source finding will be done separately, using a different flux threshold.</td>
+      </tr>
+      <tr style="background-color:#F0F8FF;">
+        <td>wavelet.iterations</td>
+        <td>int</td>
+        <td>&ge; <b>1</b></td>
+        <td>Number of iterations in the reconstruction process.</td>
+      </tr>
+      <tr>
+        <td>wavelet.scaleXY</td>
+        <td>int</td>
+        <td>&ge; <b>-1</b></td>
+        <td>Number of <b>spatial</b> scales used in the decomposition. The default value of <b>-1</b> will automatically determine the appropriate number of scales based on the data cube.</td>
+      </tr>
+      <tr style="background-color:#F0F8FF;">
+        <td>wavelet.scaleZ</td>
+        <td>int</td>
+        <td>&ge; <b>-1</b></td>
+        <td>Number of <b>spectral</b> scales used in the decomposition. The default value of <b>-1</b> will automatically determine the appropriate number of scales based on the data cube.</td>
+      </tr>
+      <tr>
+        <td>wavelet.positivity</td>
+        <td>bool</td>
+        <td>true, <b>false</b></td>
+        <td>Include only positive wavelet components in the decomposition?</td>
       </tr>
       <tr>
         <td colspan="4" style="background-color:#FFFFFF;">Default values are set in <b>bold-face</b> font.</td>

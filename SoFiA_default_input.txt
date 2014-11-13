@@ -20,7 +20,7 @@ steps.doMom0                    =       false
 steps.doMom1                    =       false
 steps.doCubelets                =       false
 steps.doDebug                   =       false
-steps.doOptical                  =       false
+steps.doOptical                 =       false
 
 # Import module
 
@@ -59,10 +59,10 @@ scaleNoise.edgeZ                =       0
 
 # Optical finder module
 
-optical.sourceCatalogue            =
-optical.spatSize               =  0.01
-optical.specSize              =  1e5
-optical.storeSingleCat     = false
+optical.sourceCatalogue         =       
+optical.spatSize                =       0.01
+optical.specSize                =       1e+5
+optical.storeSingleCat          =       false
 
 
 

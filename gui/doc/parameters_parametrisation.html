@@ -29,15 +29,21 @@
         <td>steps.doParameterise</td>
         <td>bool</td>
         <td><b>true</b>, false</td>
-        <td>Run the mask optimisation and parametrisation module?</td>
+        <td>Run the mask optimisation and source parametrisation module?</td>
       </tr>
       <tr>
         <td>parameters.optimiseMask</td>
         <td>bool</td>
         <td>true, <b>false</b></td>
-        <td>Run the mask optimisation algorithm to achieve more accurate flux measurements.</td>
+        <td>Run the mask optimisation algorithm based on fitting and growing ellipses to achieve more accurate flux measurements.</td>
       </tr>
       <tr style="background-color:#F0F8FF;">
+        <td>parameters.dilateMask</td>
+        <td>bool</td>
+        <td>true, <b>false</b></td>
+        <td>Run the mask optimisation algorithm based on spatially dilating the initial mask to achieve more accurate flux measurements.</td>
+      </tr>
+      <tr>
         <td>parameters.fitBusyFunction</td>
         <td>bool</td>
         <td>true, <b>false</b></td>
