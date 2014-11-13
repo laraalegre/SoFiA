@@ -6,18 +6,26 @@ import numpy as np
 import scipy.ndimage as nd
 import sys
 
-def dilate(cube,mask,dilate_threshold=0.02,dilate_pix_max=10,dilate_chan=1):
+def dilate(cube,mask,objects,cathead,dilate_threshold=0.02,dilate_pix_max=10,dilate_chan=1):
     # stops dilating when (flux_new-flux_old)/flux_new < dilate_threshold
-    fluxes=[]
     for mm in range(1,mask.max()+1):
-        fluxes.append([])
+    	obj=objects[mm-1]
+    	xmin=obj[list(cathead).index('Xmin')]-dilate_pix_max
+    	xmax=obj[list(cathead).index('Xmax')]+dilate_pix_max
+    	ymin=obj[list(cathead).index('Ymin')]-dilate_pix_max
+    	ymax=obj[list(cathead).index('Ymax')]+dilate_pix_max
+    	zmin=obj[list(cathead).index('Zmin')]-dilate_chan
+    	zmax=obj[list(cathead).index('Zmax')]+dilate_chan
+    	objcube=cube[zmin:zmax+1,ymin:ymax+1,xmin:xmax+1]
+    	objmask=mask[zmin:zmax+1,ymin:ymax+1,xmin:xmax+1]
+        fluxes=[]
         for dil in range(dilate_pix_max+1):
             dd=dil*2+1
             dilstruct=(np.sqrt(((np.indices((dd,dd))-dil)**2).sum(axis=0))<=dil).astype(int)
             dilstruct.resize((1,dilstruct.shape[0],dilstruct.shape[1]))
             dilstruct=dilstruct.repeat(dilate_chan*2+1,axis=0)
-            fluxes[-1].append(cube[nd.morphology.binary_dilation(mask==mm,structure=dilstruct)].sum())
-            if dil>0 and (fluxes[-1][-1]-fluxes[-1][-2])/fluxes[-1][-1]<dilate_threshold: break
+            fluxes.append(objcube[nd.morphology.binary_dilation(objmask==mm,structure=dilstruct)].sum())
+            if dil>0 and (fluxes[-1]-fluxes[-2])/fluxes[-1]<dilate_threshold: break
         # pick the best dilation kernel for current object and update mask
         dil-=1
         print 'Mask dilation of source %i by %i pix and %i chan'%(mm,dil,dilate_chan)
@@ -26,7 +34,8 @@ def dilate(cube,mask,dilate_threshold=0.02,dilate_pix_max=10,dilate_chan=1):
         dilstruct=(np.sqrt(((np.indices((dd,dd))-dil)**2).sum(axis=0))<=dil).astype(int)
         dilstruct.resize((1,dilstruct.shape[0],dilstruct.shape[1]))
         dilstruct=dilstruct.repeat(dilate_chan*2+1,axis=0)
-        mask[nd.morphology.binary_dilation(mask==mm,structure=dilstruct).astype(int)*mm==mm]=mm
+        objmask[nd.morphology.binary_dilation(objmask==mm,structure=dilstruct).astype(int)*mm==mm]=mm
+        mask[zmin:zmax+1,ymin:ymax+1,xmin:xmax+1]=objmask
     return mask
 
 def parametrise(
