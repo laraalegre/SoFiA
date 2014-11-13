@@ -163,11 +163,11 @@ def SCfinder_mem(cube,header,t0,kernels=[[0,0,0,'b'],],threshold=3.5,sizeFilter=
     rms=GetRMS(cube,rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=10,verbose=verbose)
     # Loop over all kernels
     for jj in kernels:
+    	[kx,ky,kz,kt]=jj
         if verbose: 
 	    print "\n--- %.3f seconds since start"%(time()-t0)
 	    print '    Filter %2.0f %2.0f %2.0f %s ...'%(kx,ky,kz,kt)
         sys.stdout.flush()
-        [kx,ky,kz,kt]=jj
         smoothedcube=cube*1.
         if found_nan: smoothedcube=np.nan_to_num(smoothedcube)
         smoothedcube[(smoothedcube>0)*msk]=+maskScaleXY*rms
