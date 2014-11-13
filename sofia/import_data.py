@@ -9,62 +9,64 @@ import re
 import imp
 
 
-def read_data(inFile, weightsFile, maskFile, weightsFunction = None, subcube=[], subcubeMode='pix'):
+def read_data(doSubCube, inFile, weightsFile, maskFile, weightsFunction = None, subcube=[], subcubeMode='pix'):
 	# import the fits file into an numpy array for the cube and a dictionary for the header:
 	# the data cube is converted into a 3D array
-
-	if os.path.isfile(inFile) == False:
-		sys.stderr.write("ERROR: The specified data cube does not exist.\n")
-		sys.stderr.write("       Cannot find: " + inFile + "\n")
-		raise SystemExit(1)
-
-	if len(subcube):
-		try:
-		    imp.find_module('astropy')
-		    found = True
-		except ImportError: found = False
-		if found:
-			from astropy import wcs
-			from astropy.io import fits
-			hdulist = fits.open(inFile)
-			header = hdulist[0].header
-			hdulist.close()
-
-	if (len(subcube)==6 or len(subcube)==4) and subcubeMode=='wcs':
-		print 'Calculating subcube boundaries from input WCS centre and radius'
-		wcsin = wcs.WCS(header)
-		# calculate cos(Dec) correction for RA range
-		if wcsin.wcs.cunit[0]=='deg' and wcsin.wcs.cunit[1]=='deg': corrfact=cos(subcube[1]/180*pi)
-		if header['naxis']==4: subcube=wcsin.wcs_world2pix(array([[subcube[0]-subcube[3]/corrfact,subcube[1]-subcube[4],subcube[2]-subcube[5],0],[subcube[0]+subcube[3]/corrfact,subcube[1]+subcube[4],subcube[2]+subcube[5],0]]),0)[:,:3]
-		elif header['naxis']==3: subcube=wcsin.wcs_world2pix(array([[subcube[0]-subcube[3]/corrfact,subcube[1]-subcube[4],subcube[2]-subcube[5]],[subcube[0]+subcube[3]/corrfact,subcube[1]+subcube[4],subcube[2]+subcube[5]]]),0)
-		elif header['naxis']==2: subcube=wcsin.wcs_world2pix(array([[subcube[0]-subcube[2]/corrfact,subcube[1]-subcube[3]],[subcube[0]+subcube[2]/corrfact,subcube[1]+subcube[3]]]),0)
-		subcube=ravel(subcube,order='F')
-		# make sure min pix coord is < max pix coord for all axes
-		if subcube[0]>subcube[1]: subcube[0],subcube[1]=subcube[1],subcube[0]
-		if subcube[2]>subcube[3]: subcube[2],subcube[3]=subcube[3],subcube[2]
-		if len(subcube)==6:
-			if subcube[4]>subcube[5]: subcube[4],subcube[5]=subcube[5],subcube[4]
-		# make sure to be within the cube boundaries
-		for ss in range(min(3,header['naxis'])): subcube[2*ss]=max(0,floor(subcube[2*ss]))
-		for ss in range(min(3,header['naxis'])): subcube[1+2*ss]=min(header['naxis%i'%(ss+1)],ceil(subcube[1+2*ss]))
-		subcube=list(subcube.astype(int))
-	elif (len(subcube)==6 or len(subcube)==4) and subcubeMode=='pix':
-		# make sure pixel coordinates are integers
-		for ss in subcube:
-			if type(ss)!=int:
-				sys.stderr.write("ERROR: When subcubeMode = pix the subcube must be defined by a set of integer pixel coordinates.\n")
-				sys.stderr.write("       The %i-th coordinate has the wrong type.\n" % subcube.index(ss))
-				raise SystemExit(1)
-		# make sure to be within the cube boundaries
-		for ss in range(min(3,header['naxis'])): subcube[2*ss]=max(0,subcube[2*ss])
-		for ss in range(min(3,header['naxis'])): subcube[1+2*ss]=min(header['naxis%i'%(ss+1)],subcube[1+2*ss])
-	elif len(subcube):
-		sys.stderr.write("ERROR: import.subcubeMode can only be \'pix\' or \'wcs\', and import.subcube must have 4 or 6 entries.\n")
-		raise SystemExit(1)
-
-	if len(subcube)==4: print 'Loading subcube of %s defined by [x1 x2 y1 y2] ='%inFile,subcube
-	elif len(subcube)==6: print 'Loading subcube of %s defined by [x1 x2 y1 y2 z1 z2] ='%inFile,subcube
-	else: print 'Loading cube: ' , inFile
+	if doSubCube:
+		if os.path.isfile(inFile) == False:
+			sys.stderr.write("ERROR: The specified data cube does not exist.\n")
+			sys.stderr.write("       Cannot find: " + inFile + "\n")
+			raise SystemExit(1)
+	
+		if len(subcube):
+			try:
+			    imp.find_module('astropy')
+			    found = True
+			except ImportError: found = False
+			if found:
+				from astropy import wcs
+				from astropy.io import fits
+				hdulist = fits.open(inFile)
+				header = hdulist[0].header
+				hdulist.close()
+	
+		if (len(subcube)==6 or len(subcube)==4) and subcubeMode=='wcs':
+			print 'Calculating subcube boundaries from input WCS centre and radius'
+			wcsin = wcs.WCS(header)
+			# calculate cos(Dec) correction for RA range
+			if wcsin.wcs.cunit[0]=='deg' and wcsin.wcs.cunit[1]=='deg': corrfact=cos(subcube[1]/180*pi)
+			if header['naxis']==4: subcube=wcsin.wcs_world2pix(array([[subcube[0]-subcube[3]/corrfact,subcube[1]-subcube[4],subcube[2]-subcube[5],0],[subcube[0]+subcube[3]/corrfact,subcube[1]+subcube[4],subcube[2]+subcube[5],0]]),0)[:,:3]
+			elif header['naxis']==3: subcube=wcsin.wcs_world2pix(array([[subcube[0]-subcube[3]/corrfact,subcube[1]-subcube[4],subcube[2]-subcube[5]],[subcube[0]+subcube[3]/corrfact,subcube[1]+subcube[4],subcube[2]+subcube[5]]]),0)
+			elif header['naxis']==2: subcube=wcsin.wcs_world2pix(array([[subcube[0]-subcube[2]/corrfact,subcube[1]-subcube[3]],[subcube[0]+subcube[2]/corrfact,subcube[1]+subcube[3]]]),0)
+			subcube=ravel(subcube,order='F')
+			# make sure min pix coord is < max pix coord for all axes
+			if subcube[0]>subcube[1]: subcube[0],subcube[1]=subcube[1],subcube[0]
+			if subcube[2]>subcube[3]: subcube[2],subcube[3]=subcube[3],subcube[2]
+			if len(subcube)==6:
+				if subcube[4]>subcube[5]: subcube[4],subcube[5]=subcube[5],subcube[4]
+			# make sure to be within the cube boundaries
+			for ss in range(min(3,header['naxis'])): subcube[2*ss]=max(0,floor(subcube[2*ss]))
+			for ss in range(min(3,header['naxis'])): subcube[1+2*ss]=min(header['naxis%i'%(ss+1)],ceil(subcube[1+2*ss]))
+			subcube=list(subcube.astype(int))
+		elif (len(subcube)==6 or len(subcube)==4) and subcubeMode=='pix':
+			# make sure pixel coordinates are integers
+			for ss in subcube:
+				if type(ss)!=int:
+					sys.stderr.write("ERROR: When subcubeMode = pix the subcube must be defined by a set of integer pixel coordinates.\n")
+					sys.stderr.write("       The %i-th coordinate has the wrong type.\n" % subcube.index(ss))
+					raise SystemExit(1)
+			# make sure to be within the cube boundaries
+			for ss in range(min(3,header['naxis'])): subcube[2*ss]=max(0,subcube[2*ss])
+			for ss in range(min(3,header['naxis'])): subcube[1+2*ss]=min(header['naxis%i'%(ss+1)],subcube[1+2*ss])
+		elif len(subcube):
+			sys.stderr.write("ERROR: import.subcubeMode can only be \'pix\' or \'wcs\', and import.subcube must have 4 or 6 entries.\n")
+			raise SystemExit(1)
+	
+		if len(subcube)==4: print 'Loading subcube of %s defined by [x1 x2 y1 y2] ='%inFile,subcube
+		elif len(subcube)==6: print 'Loading subcube of %s defined by [x1 x2 y1 y2 z1 z2] ='%inFile,subcube
+	else: 
+		print 'Loading cube: ' , inFile
+		subcube = []
 	f = pyfits.open(inFile,memmap=True)
 	dict_Header = f[0].header
 
