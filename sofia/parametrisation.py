@@ -16,6 +16,12 @@ def dilate(cube,mask,objects,cathead,dilate_threshold=0.02,dilate_pix_max=10,dil
     	ymax=obj[list(cathead).index('Ymax')]+dilate_pix_max
     	zmin=obj[list(cathead).index('Zmin')]-dilate_chan
     	zmax=obj[list(cathead).index('Zmax')]+dilate_chan
+    	xmin=max(0,xmin)
+    	xmax=min(xmax,cube.shape[2]-1)
+    	ymin=max(0,ymin)
+    	ymax=min(ymax,cube.shape[1]-1)
+    	zmin=max(0,zmin)
+    	zmax=min(zmax,cube.shape[0]-1)
     	objcube=cube[zmin:zmax+1,ymin:ymax+1,xmin:xmax+1]
     	objmask=mask[zmin:zmax+1,ymin:ymax+1,xmin:xmax+1]
         fluxes=[]
