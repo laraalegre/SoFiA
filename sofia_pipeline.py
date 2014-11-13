@@ -34,7 +34,6 @@ t0=time()
 # ---- READ DEFAULT PARAMETERS ----
 # ---------------------------------
 
-print "\n--- %.3f seconds since start"%(time()-t0)
 print "\n--- SoFiA: Reading default parameters ---"
 sys.stdout.flush()
 
