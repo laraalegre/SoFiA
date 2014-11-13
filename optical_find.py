@@ -171,8 +171,7 @@ if os.path.isfile(catalogue) == False:
     raise SystemExit(1)
 
 # check whether the catalogue is a csv file, and otherwise exit
-# not the most elegant "if" but somehow it doesn't work at once
-if catalogue[-4:-1] != '.cs' and catalogue[-1] != 'v':
+if catalogue[-4:] != '.csv':
     sys.stderr.write("ERROR: The specified source catalogue is not a .csv file.\n")
     sys.stderr.write("       Cannot work on: " + catalogue + "\n")
     raise SystemExit(1)

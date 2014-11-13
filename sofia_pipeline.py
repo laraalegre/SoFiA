@@ -151,7 +151,7 @@ sys.stdout.flush()
 # --- PYFIND ---
 if Parameters['steps']['doSCfind']:
 	print 'Running S+C filter'
-	pyfind_mask = pyfind.SCfinder(np_Cube, dict_Header, t0, **Parameters['SCfind'])
+	pyfind_mask = pyfind.SCfinder_mem(np_Cube, dict_Header, t0, **Parameters['SCfind'])
 	mask = mask + pyfind_mask
 
 # --- CNHI ---	
@@ -336,7 +336,7 @@ if Parameters['steps']['doParameterise'] and Parameters['steps']['doMerge'] and 
 	print "\n--- SoFiA: Parametrising sources ---"
 	sys.stdout.flush()
 #	np_Cube, dict_Header, mask, objects, catParNames, catParFormt = parametrisation.parametrise(np_Cube, dict_Header, mask, objects, catParNames, catParFormt, Parameters)
-	if Parameters['parameters']['dilateMask']: mask = parametrisation.dilate(np_Cube,mask)
+	if Parameters['parameters']['dilateMask']: mask = parametrisation.dilate(np_Cube,mask,objects,catParNames)
 	np_Cube, mask, objects, catParNames, catParFormt, catParUnits = parametrisation.parametrise(np_Cube, mask, objects, catParNames, catParFormt, catParUnits, Parameters, dunits)
 	catParNames=tuple(catParNames)
 	catParUnits=tuple(catParUnits)
