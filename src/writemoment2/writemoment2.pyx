@@ -95,8 +95,8 @@ def mom0(cube1, cube2):
     for k in range(cube.shape[2]):
       sum = 0
       for i in range(cube.shape[0]):
-        if not isnan(cube[i,j,k]):
-          sum += cube[i,j,k]*mask[i,j,k]
+        if not isnan(cube[i,j,k]) and mask[i,j,k]!=0:
+          sum += cube[i,j,k]
       mom0[j,k] = sum
 
   return np.array(mom0)
@@ -115,8 +115,8 @@ def mom1(cube1, cube2, cube3, int cpx, float cval, float cdelt):
     for k in range(cube.shape[2]):
       sum = 0
       for i in range(cube.shape[0]):
-        if not isnan(cube[i,j,k]):
-          sum += ((i+1-cpx)*cdelt+cval)*cube[i,j,k]*mask[i,j,k]
+        if not isnan(cube[i,j,k]) and mask[i,j,k]!=0:
+          sum += ((i+1-cpx)*cdelt+cval)*cube[i,j,k]
       if mom0[j,k] != 0 and not isnan(mom0[j,k]):
         mom1[j,k] = sum/mom0[j,k]
       else:
