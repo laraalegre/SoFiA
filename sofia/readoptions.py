@@ -45,7 +45,6 @@ def readPipelineOptions(filename = "pipeline.options"):
     datatypes = {"steps.doFlag": "bool", \
                  "steps.doSmooth": "bool", \
                  "steps.doScaleNoise": "bool", \
-                 "steps.doOptical": "bool", \
                  "steps.doSCfind": "bool", \
                  "steps.doThreshold": "bool", \
                  "steps.doWavelet": "bool", \
@@ -68,10 +67,9 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "import.subcubeMode": "string", \
                  "import.subcube": "array", \
                  "flag.regions": "array", \
-                 "optical.catalogue": "string", \
+                 "optical.sourceCatalogue": "string", \
                  "optical.spatSize": "float", \
                  "optical.specSize": "float", \
-                 "optical.outputCat": "string", \
                  "optical.storeSingleCat": "bool", \
                  "smooth.kernel": "string", \
                  "smooth.edgeMode": "string", \
@@ -116,7 +114,7 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "parameters.fitBusyFunction": "bool", \
                  "parameters.optimiseMask": "bool", \
                  "parameters.dilateMask": "bool", \
-		 "writeCat.compress":"bool", \
+                 "writeCat.compress":"bool", \
                  "writeCat.outputDir": "string", \
                  "writeCat.basename": "string", \
                  "writeCat.writeASCII": "bool", \
