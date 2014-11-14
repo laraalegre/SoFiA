@@ -19,6 +19,8 @@
         <file>icons/22/edit-clear-list.png</file>
         <file>icons/22/help-contents.png</file>
         <file>icons/22/view-refresh.png</file>
+        <file>icons/16/task-complete.png</file>
+        <file>icons/16/task-reject.png</file>
         <file>icons/32/SoFiA.png</file>
         <file>../SoFiA_default_input.txt</file>
     </qresource>

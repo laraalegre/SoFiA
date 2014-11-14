@@ -769,6 +769,39 @@ void SoFiA::updateFields()
     tabOutputButtonParameterBFPhys->setEnabled(!tabOutputButtonParameterAll->isChecked());
     tabOutputButtonParameterBFInfo->setEnabled(!tabOutputButtonParameterAll->isChecked());
     
+    // Set icons on vertical tabs:
+    if((tabInputFieldData->text()).isEmpty())    toolBoxIP->setItemIcon(0, iconTaskReject);
+    else                                         toolBoxIP->setItemIcon(0, iconTaskComplete);
+    if(tabInputGroupBox4->isChecked())           toolBoxIP->setItemIcon(1, iconTaskComplete);
+    else                                         toolBoxIP->setItemIcon(1, iconTaskReject);
+    if(tabInputGroupBox3->isChecked())           toolBoxIP->setItemIcon(2, iconTaskComplete);
+    else                                         toolBoxIP->setItemIcon(2, iconTaskReject);
+    if(tabInputGroupBox2->isChecked())           toolBoxIP->setItemIcon(3, iconTaskComplete);
+    else                                         toolBoxIP->setItemIcon(3, iconTaskReject);
+    
+    if(tabInFilterGroupBox1->isChecked())        toolBoxIF->setItemIcon(0, iconTaskComplete);
+    else                                         toolBoxIF->setItemIcon(0, iconTaskReject);
+    if(tabInFilterGroupBox2->isChecked())        toolBoxIF->setItemIcon(1, iconTaskComplete);
+    else                                         toolBoxIF->setItemIcon(1, iconTaskReject);
+    if(tabInFilterGroupBox3->isChecked())        toolBoxIF->setItemIcon(2, iconTaskComplete);
+    else                                         toolBoxIF->setItemIcon(2, iconTaskReject);
+    
+    if(tabSourceFindingGroupBox1->isChecked())   toolBoxSF->setItemIcon(0, iconTaskComplete);
+    else                                         toolBoxSF->setItemIcon(0, iconTaskReject);
+    if(tabSourceFindingGroupBox2->isChecked())   toolBoxSF->setItemIcon(1, iconTaskComplete);
+    else                                         toolBoxSF->setItemIcon(1, iconTaskReject);
+    
+    if(tabMergingGroupBox1->isChecked())         toolBoxME->setItemIcon(0, iconTaskComplete);
+    else                                         toolBoxME->setItemIcon(0, iconTaskReject);
+    
+    if(tabParametrisationGroupBox1->isChecked()) toolBoxPA->setItemIcon(0, iconTaskComplete);
+    else                                         toolBoxPA->setItemIcon(0, iconTaskReject);
+    if(tabParametrisationGroupBox2->isChecked()) toolBoxPA->setItemIcon(1, iconTaskComplete);
+    else                                         toolBoxPA->setItemIcon(1, iconTaskReject);
+    
+    if(tabOutputButtonASCII->isChecked() or tabOutputButtonXML->isChecked() or tabOutputButtonSQL->isChecked() or (tabOutputButtonFilteredCube->isEnabled() and tabOutputButtonFilteredCube->isChecked()) or tabOutputButtonMask->isChecked() or tabOutputButtonMom0->isChecked() or tabOutputButtonMom1->isChecked() or tabOutputButtonCubelets->isChecked()) toolBoxOP->setItemIcon(0, iconTaskComplete);
+    else toolBoxOP->setItemIcon(0, iconTaskReject);
+    
     updateActions();
     
     return;
@@ -1269,23 +1302,24 @@ void SoFiA::createInterface()
     // Load icons
     // ----------
     
-    QIcon iconSoFiA;
     iconSoFiA.addFile(QString(":/icons/32/SoFiA.png"), QSize(32, 32));
     
-    QIcon iconDocumentNew     = QIcon::fromTheme("document-new", QIcon(":/icons/22/document-new.png"));
-    QIcon iconDocumentOpen    = QIcon::fromTheme("document-open", QIcon(":/icons/22/document-open.png"));
-    QIcon iconDocumentPreview = QIcon::fromTheme("document-preview", QIcon(":/icons/22/document-preview.png"));
-    QIcon iconDocumentSave    = QIcon::fromTheme("document-save", QIcon(":/icons/22/document-save.png"));
-    QIcon iconDocumentSaveAs  = QIcon::fromTheme("document-save-as", QIcon(":/icons/22/document-save-as.png"));
-    QIcon iconApplicationExit = QIcon::fromTheme("application-exit", QIcon(":/icons/22/application-exit.png"));
-    QIcon iconDialogOkApply   = QIcon::fromTheme("dialog-ok-apply", QIcon(":/icons/22/dialog-ok-apply.png"));
-    QIcon iconDialogCancel    = QIcon::fromTheme("dialog-cancel", QIcon(":/icons/22/dialog-cancel.png"));
-    QIcon iconDialogClose     = QIcon::fromTheme("dialog-close", QIcon(":/icons/22/dialog-close.png"));
-    QIcon iconGoPreviousView  = QIcon::fromTheme("go-previous-view", QIcon(":/icons/22/go-previous-view.png"));
-    QIcon iconGoNextView      = QIcon::fromTheme("go-next-view", QIcon(":/icons/22/go-next-view.png"));
-    QIcon iconEditClearList   = QIcon::fromTheme("edit-clear-list", QIcon(":/icons/22/edit-clear-list.png"));
-    QIcon iconHelpContents    = QIcon::fromTheme("help-contents", QIcon(":/icons/22/help-contents.png"));
-    QIcon iconHelpAbout       = QIcon::fromTheme("help-about", QIcon(":/icons/22/help-about.png"));
+    iconDocumentNew     = QIcon::fromTheme("document-new", QIcon(":/icons/22/document-new.png"));
+    iconDocumentOpen    = QIcon::fromTheme("document-open", QIcon(":/icons/22/document-open.png"));
+    iconDocumentPreview = QIcon::fromTheme("document-preview", QIcon(":/icons/22/document-preview.png"));
+    iconDocumentSave    = QIcon::fromTheme("document-save", QIcon(":/icons/22/document-save.png"));
+    iconDocumentSaveAs  = QIcon::fromTheme("document-save-as", QIcon(":/icons/22/document-save-as.png"));
+    iconApplicationExit = QIcon::fromTheme("application-exit", QIcon(":/icons/22/application-exit.png"));
+    iconDialogOkApply   = QIcon::fromTheme("dialog-ok-apply", QIcon(":/icons/22/dialog-ok-apply.png"));
+    iconDialogCancel    = QIcon::fromTheme("dialog-cancel", QIcon(":/icons/22/dialog-cancel.png"));
+    iconDialogClose     = QIcon::fromTheme("dialog-close", QIcon(":/icons/22/dialog-close.png"));
+    iconGoPreviousView  = QIcon::fromTheme("go-previous-view", QIcon(":/icons/22/go-previous-view.png"));
+    iconGoNextView      = QIcon::fromTheme("go-next-view", QIcon(":/icons/22/go-next-view.png"));
+    iconEditClearList   = QIcon::fromTheme("edit-clear-list", QIcon(":/icons/22/edit-clear-list.png"));
+    iconHelpContents    = QIcon::fromTheme("help-contents", QIcon(":/icons/22/help-contents.png"));
+    iconHelpAbout       = QIcon::fromTheme("help-about", QIcon(":/icons/22/help-about.png"));
+    iconTaskComplete    = QIcon::fromTheme("task-complete", QIcon(":/icons/16/task-complete.png"));
+    iconTaskReject      = QIcon::fromTheme("task-reject", QIcon(":/icons/16/task-reject.png"));
     
     // Create main widget that contains everything else
     // ------------------------------------------------
@@ -1328,7 +1362,7 @@ void SoFiA::createInterface()
     tabInputLayout = new QVBoxLayout;
     
     // input files
-    tabInputGroupBox1 = new QGroupBox(tr("Input data"), toolBoxIP);
+    tabInputGroupBox1 = new QGroupBox(tr("Files and settings"), toolBoxIP);
     tabInputForm1 = new QFormLayout;
     
     tabInputWidgetData = new QWidget(tabInputGroupBox1);
@@ -1382,10 +1416,11 @@ void SoFiA::createInterface()
     tabInputGroupBox1->setLayout(tabInputForm1);
     
     // sub-cube
-    tabInputGroupBox4 = new QGroupBox(tr("enable"), toolBoxIP);
+    tabInputGroupBox4 = new QGroupBox(tr("Enable"), toolBoxIP);
     tabInputGroupBox4->setObjectName("steps.doSubCube");
     tabInputGroupBox4->setCheckable(true);
     tabInputGroupBox4->setChecked(false);
+    connect(tabInputGroupBox4, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     tabInputForm4 = new QFormLayout;
     
     tabInputFieldSubcube = new QLineEdit(tabInputGroupBox4);
@@ -1402,10 +1437,11 @@ void SoFiA::createInterface()
     tabInputGroupBox4->setLayout(tabInputForm4);
     
     // flagging
-    tabInputGroupBox3 = new QGroupBox(tr("enable"), toolBoxIP);
+    tabInputGroupBox3 = new QGroupBox(tr("Enable"), toolBoxIP);
     tabInputGroupBox3->setObjectName("steps.doFlag");
     tabInputGroupBox3->setCheckable(true);
     tabInputGroupBox3->setChecked(false);
+    connect(tabInputGroupBox3, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     tabInputForm3 = new QFormLayout;
     
     tabInputFieldFlags = new QLineEdit(tabInputGroupBox3);
@@ -1416,10 +1452,11 @@ void SoFiA::createInterface()
     tabInputGroupBox3->setLayout(tabInputForm3);
     
     // optical source finding
-    tabInputGroupBox2 = new QGroupBox(tr("enable"), toolBoxIP);
+    tabInputGroupBox2 = new QGroupBox(tr("Enable"), toolBoxIP);
     tabInputGroupBox2->setObjectName("steps.doOptical");
     tabInputGroupBox2->setCheckable(true);
     tabInputGroupBox2->setChecked(false);
+    connect(tabInputGroupBox2, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     tabInputForm2 = new QFormLayout;
     
     tabInputWidgetCatalog = new QWidget(tabInputGroupBox2);
@@ -1445,7 +1482,7 @@ void SoFiA::createInterface()
     tabInputFieldSpectralSize->setToolTip("Spectral size of sub-cube to be searched");
     connect(tabInputFieldSpectralSize, SIGNAL(editingFinished()), this, SLOT(updateFields()));
     
-    tabInputFieldSingleCat = new QCheckBox(tr("create single output catalogue "), tabInputGroupBox2);
+    tabInputFieldSingleCat = new QCheckBox(tr("Create single output catalogue "), tabInputGroupBox2);
     tabInputFieldSingleCat->setObjectName("optical.storeSingleCat");
     tabInputFieldSingleCat->setToolTip("Write all sources to a single output catalogue file?");
     tabInputFieldSingleCat->setChecked(false);
@@ -1468,10 +1505,10 @@ void SoFiA::createInterface()
     tabInputWidgetControls = new QWidget(tabInput);
     tabInputWidgetControls->setLayout(tabInputLayoutControls);
     
-    toolBoxIP->addItem(tabInputGroupBox1, "Input Data Files");
-    toolBoxIP->addItem(tabInputGroupBox4, "Sub-cube");
-    toolBoxIP->addItem(tabInputGroupBox3, "Data Flagging");
-    toolBoxIP->addItem(tabInputGroupBox2, "Catalogue-based Source Finding");
+    toolBoxIP->addItem(tabInputGroupBox1, iconTaskReject, tr("Input Data Products"));
+    toolBoxIP->addItem(tabInputGroupBox4, iconTaskReject, tr("Sub-cube"));
+    toolBoxIP->addItem(tabInputGroupBox3, iconTaskReject, tr("Flagging"));
+    toolBoxIP->addItem(tabInputGroupBox2, iconTaskReject, tr("Catalogue-based Source Finding"));
     
     tabInputLayout->addWidget(toolBoxIP);
     tabInputLayout->addStretch();
@@ -1487,7 +1524,7 @@ void SoFiA::createInterface()
     
     tabInFilterLayout = new QVBoxLayout;
     
-    tabInFilterGroupBox1 = new QGroupBox(tr("enable"), toolBoxIF);
+    tabInFilterGroupBox1 = new QGroupBox(tr("Enable"), toolBoxIF);
     tabInFilterGroupBox1->setObjectName("steps.doSmooth");
     tabInFilterGroupBox1->setCheckable(true);
     tabInFilterGroupBox1->setChecked(false);
@@ -1536,7 +1573,7 @@ void SoFiA::createInterface()
     
     
     
-    tabInFilterGroupBox2 = new QGroupBox(tr("enable"), toolBoxIF);
+    tabInFilterGroupBox2 = new QGroupBox(tr("Enable"), toolBoxIF);
     tabInFilterGroupBox2->setObjectName("steps.doScaleNoise");
     tabInFilterGroupBox2->setCheckable(true);
     tabInFilterGroupBox2->setChecked(false);
@@ -1556,7 +1593,7 @@ void SoFiA::createInterface()
     tabInFilterFieldScaleZ->setObjectName("scaleNoise.scaleZ");
     tabInFilterFieldScaleZ->setChecked(true);
     tabInFilterLayoutScaleXYZ->setContentsMargins(0, 0, 0, 0);
-    tabInFilterLayoutScaleXYZ->setSpacing(0);
+    //tabInFilterLayoutScaleXYZ->setSpacing(0);
     tabInFilterLayoutScaleXYZ->addWidget(tabInFilterFieldScaleX);
     tabInFilterLayoutScaleXYZ->addWidget(tabInFilterFieldScaleY);
     tabInFilterLayoutScaleXYZ->addWidget(tabInFilterFieldScaleZ);
@@ -1592,7 +1629,7 @@ void SoFiA::createInterface()
     
     
     
-    tabInFilterGroupBox3 = new QGroupBox(tr("enable"), toolBoxIF);
+    tabInFilterGroupBox3 = new QGroupBox(tr("Enable"), toolBoxIF);
     tabInFilterGroupBox3->setObjectName("steps.doWavelet");
     tabInFilterGroupBox3->setCheckable(true);
     tabInFilterGroupBox3->setChecked(false);
@@ -1628,7 +1665,7 @@ void SoFiA::createInterface()
     tabInFilterField2d1dScaleZ->setMinimum(-1);
     tabInFilterField2d1dScaleZ->setMaximum(50);
     
-    tabInFilterField2d1dPositivity = new QCheckBox(tr("enable "), tabInFilterGroupBox3);
+    tabInFilterField2d1dPositivity = new QCheckBox(tr("Enable "), tabInFilterGroupBox3);
     tabInFilterField2d1dPositivity->setObjectName("wavelet.positivity");
     tabInFilterField2d1dPositivity->setToolTip("Only include positive wavelet components");
     tabInFilterField2d1dPositivity->setChecked(false);
@@ -1656,9 +1693,9 @@ void SoFiA::createInterface()
     tabInFilterWidgetControls = new QWidget(tabInFilter);
     tabInFilterWidgetControls->setLayout(tabInFilterLayoutControls);
     
-    toolBoxIF->addItem(tabInFilterGroupBox1, "Smoothing");
-    toolBoxIF->addItem(tabInFilterGroupBox2, "Noise Scaling");
-    toolBoxIF->addItem(tabInFilterGroupBox3, "2D-1D Wavelet Filter");
+    toolBoxIF->addItem(tabInFilterGroupBox1, iconTaskReject, tr("Smoothing"));
+    toolBoxIF->addItem(tabInFilterGroupBox2, iconTaskReject, tr("Noise Scaling"));
+    toolBoxIF->addItem(tabInFilterGroupBox3, iconTaskReject, tr("2D-1D Wavelet Filter"));
     
     tabInFilterGroupBox1->setLayout(tabInFilterForm1);
     tabInFilterGroupBox2->setLayout(tabInFilterForm2);
@@ -1679,10 +1716,11 @@ void SoFiA::createInterface()
     
     tabSourceFindingLayout = new QVBoxLayout;
     
-    tabSourceFindingGroupBox1 = new QGroupBox(tr("enable"), toolBoxSF);
+    tabSourceFindingGroupBox1 = new QGroupBox(tr("Enable"), toolBoxSF);
     tabSourceFindingGroupBox1->setObjectName("steps.doSCfind");
     tabSourceFindingGroupBox1->setCheckable(true);
     tabSourceFindingGroupBox1->setChecked(true);
+    connect(tabSourceFindingGroupBox1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     
     tabSourceFindingWidget1Left = new QWidget(tabSourceFindingGroupBox1);
     tabSourceFindingWidget1Right = new QWidget(tabSourceFindingGroupBox1);
@@ -1737,10 +1775,11 @@ void SoFiA::createInterface()
     
     
     
-    tabSourceFindingGroupBox2 = new QGroupBox(tr("enable"), toolBoxSF);
+    tabSourceFindingGroupBox2 = new QGroupBox(tr("Enable"), toolBoxSF);
     tabSourceFindingGroupBox2->setObjectName("steps.doThreshold");
     tabSourceFindingGroupBox2->setCheckable(true);
     tabSourceFindingGroupBox2->setChecked(false);
+    connect(tabSourceFindingGroupBox2, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     
     tabSourceFindingForm2 = new QFormLayout;
     
@@ -1783,11 +1822,9 @@ void SoFiA::createInterface()
     tabSourceFindingWidgetControls = new QWidget(tabSourceFinding);
     tabSourceFindingWidgetControls->setLayout(tabSourceFindingLayoutControls);
     
-    toolBoxSF->addItem(tabSourceFindingGroupBox1, "Smooth + Clip Finder");
-    toolBoxSF->addItem(tabSourceFindingGroupBox2, "Threshold Finder");
+    toolBoxSF->addItem(tabSourceFindingGroupBox1, iconTaskReject, tr("Smooth + Clip Finder"));
+    toolBoxSF->addItem(tabSourceFindingGroupBox2, iconTaskReject, tr("Threshold Finder"));
     
-    //tabSourceFindingLayout->addWidget(tabSourceFindingGroupBox1);
-    //tabSourceFindingLayout->addWidget(tabSourceFindingGroupBox2);
     tabSourceFindingLayout->addWidget(toolBoxSF);
     tabSourceFindingLayout->addStretch();
     tabSourceFindingLayout->addWidget(tabSourceFindingWidgetControls);
@@ -1798,12 +1835,15 @@ void SoFiA::createInterface()
     // Set up merging tab
     // ------------------
     
+    toolBoxME = new QToolBox(tabMerging);
+    
     tabMergingLayout = new QVBoxLayout;
     
-    tabMergingGroupBox1 = new QGroupBox(tr("Merge detections"), tabMerging);
+    tabMergingGroupBox1 = new QGroupBox(tr("Enable"), toolBoxME);
     tabMergingGroupBox1->setObjectName("steps.doMerge");
     tabMergingGroupBox1->setCheckable(true);
     tabMergingGroupBox1->setChecked(true);
+    connect(tabMergingGroupBox1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     tabMergingForm1 = new QFormLayout;
     
     tabMergingFieldMergeX = new QSpinBox(tabMergingGroupBox1);
@@ -1860,7 +1900,9 @@ void SoFiA::createInterface()
     tabMergingWidgetControls = new QWidget(tabMerging);
     tabMergingWidgetControls->setLayout(tabMergingLayoutControls);
     
-    tabMergingLayout->addWidget(tabMergingGroupBox1);
+    toolBoxME->addItem(tabMergingGroupBox1, iconTaskReject, tr("Merging of Detections"));
+    
+    tabMergingLayout->addWidget(toolBoxME);
     tabMergingLayout->addStretch();
     tabMergingLayout->addWidget(tabMergingWidgetControls);
     tabMerging->setLayout(tabMergingLayout);
@@ -1871,12 +1913,15 @@ void SoFiA::createInterface()
     // Set up parametrisation tab
     // --------------------------
     
+    toolBoxPA = new QToolBox(tabParametrisation);
+    
     tabParametrisationLayout = new QVBoxLayout;
     
-    tabParametrisationGroupBox1 = new QGroupBox(tr("Parametrise sources"), tabParametrisation);
+    tabParametrisationGroupBox1 = new QGroupBox(tr("Enable"), toolBoxPA);
     tabParametrisationGroupBox1->setObjectName("steps.doParameterise");
     tabParametrisationGroupBox1->setCheckable(true);
     tabParametrisationGroupBox1->setChecked(true);
+    connect(tabParametrisationGroupBox1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     tabParametrisationForm1 = new QFormLayout;
     
     tabParametrisationButtonMaskOpt = new QCheckBox(tr("Optimise mask (ellipse) "), tabParametrisationGroupBox1);
@@ -1900,10 +1945,11 @@ void SoFiA::createInterface()
     tabParametrisationForm1->addRow(tr(""), tabParametrisationButtonBusyFunction);
     tabParametrisationGroupBox1->setLayout(tabParametrisationForm1);
     
-    tabParametrisationGroupBox2 = new QGroupBox(tr("Calculate reliability"), tabParametrisation);
+    tabParametrisationGroupBox2 = new QGroupBox(tr("Enable"), toolBoxPA);
     tabParametrisationGroupBox2->setObjectName("steps.doReliability");
     tabParametrisationGroupBox2->setCheckable(true);
     tabParametrisationGroupBox2->setChecked(true);
+    connect(tabParametrisationGroupBox2, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     tabParametrisationForm2 = new QFormLayout;
     
     tabParametrisationFieldRelMin = new QLineEdit(tabParametrisationGroupBox2);
@@ -1951,8 +1997,10 @@ void SoFiA::createInterface()
     tabParametrisationWidgetControls = new QWidget(tabParametrisation);
     tabParametrisationWidgetControls->setLayout(tabParametrisationLayoutControls);
     
-    tabParametrisationLayout->addWidget(tabParametrisationGroupBox1);
-    tabParametrisationLayout->addWidget(tabParametrisationGroupBox2);
+    toolBoxPA->addItem(tabParametrisationGroupBox1, iconTaskReject, tr("Source Parametrisation"));
+    toolBoxPA->addItem(tabParametrisationGroupBox2, iconTaskReject, tr("Reliability Calculation"));
+    
+    tabParametrisationLayout->addWidget(toolBoxPA);
     tabParametrisationLayout->addStretch();
     tabParametrisationLayout->addWidget(tabParametrisationWidgetControls);
     tabParametrisation->setLayout(tabParametrisationLayout);
@@ -1962,9 +2010,11 @@ void SoFiA::createInterface()
     // Set up output filter tab
     // ------------------------
     
+    toolBoxOF = new QToolBox(tabOutFilter);
+    
     tabOutFilterLayout = new QVBoxLayout;
     
-    tabOutFilterGroupBox1 = new QGroupBox(tr("Parameter range"), tabOutFilter);
+    tabOutFilterGroupBox1 = new QGroupBox(tr("Parameter range"), toolBoxOF);
     tabOutFilterGroupBox1->setEnabled(false);
     
     tabOutFilterForm1 = new QFormLayout;
@@ -2070,6 +2120,7 @@ void SoFiA::createInterface()
     tabOutFilterForm1->addRow(tr("Line width (w20):"), tabOutFilterWidgetW20);
     tabOutFilterForm1->addRow(tr("Peak flux:"), tabOutFilterWidgetFpeak);
     tabOutFilterForm1->addRow(tr("Integrated flux:"), tabOutFilterWidgetFint);
+    tabOutFilterGroupBox1->setLayout(tabOutFilterForm1);
     
     tabOutFilterButtonPrev = new QPushButton(tr("Previous"), tabOutFilter);
     tabOutFilterButtonPrev->setIcon(iconGoPreviousView);
@@ -2086,8 +2137,9 @@ void SoFiA::createInterface()
     tabOutFilterWidgetControls = new QWidget(tabOutFilter);
     tabOutFilterWidgetControls->setLayout(tabOutFilterLayoutControls);
     
-    tabOutFilterGroupBox1->setLayout(tabOutFilterForm1);
-    tabOutFilterLayout->addWidget(tabOutFilterGroupBox1);
+    toolBoxOF->addItem(tabOutFilterGroupBox1, iconTaskReject,   tr("Output Parameter Filtering (not yet available)"));
+    
+    tabOutFilterLayout->addWidget(toolBoxOF);
     tabOutFilterLayout->addStretch();
     tabOutFilterLayout->addWidget(tabOutFilterWidgetControls);
     tabOutFilter->setLayout(tabOutFilterLayout);
@@ -2095,9 +2147,11 @@ void SoFiA::createInterface()
     // Set up output tab
     // -----------------
     
+    toolBoxOP = new QToolBox(tabOutput);
+    
     tabOutputLayout = new QVBoxLayout;
     
-    tabOutputGroupBox1 = new QGroupBox(tr("Output files"), tabOutput);
+    tabOutputGroupBox1 = new QGroupBox(tr("Files and settings"), toolBoxOP);
     
     tabOutputForm1 = new QFormLayout;
     
@@ -2124,19 +2178,19 @@ void SoFiA::createInterface()
     tabOutputButtonASCII->setToolTip(tr("Human-readable ASCII file"));
     tabOutputButtonASCII->setChecked(true);
     tabOutputButtonASCII->setEnabled(true);
-    //connect(tabOutputButtonASCII, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
+    connect(tabOutputButtonASCII, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     tabOutputButtonXML = new QCheckBox(tr("VO table "), tabOutputGroupBox1);
     tabOutputButtonXML->setObjectName("writeCat.writeXML");
     tabOutputButtonXML->setChecked(false);
     tabOutputButtonXML->setEnabled(true);
     tabOutputButtonXML->setToolTip(tr("Virtual Observatory XML table"));
-    //connect(tabOutputButtonXML, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
+    connect(tabOutputButtonXML, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     tabOutputButtonSQL = new QCheckBox(tr("SQL "), tabOutputGroupBox1);
     tabOutputButtonSQL->setObjectName("writeCat.writeSQL");
     tabOutputButtonSQL->setChecked(false);
     tabOutputButtonSQL->setEnabled(false);
     tabOutputButtonSQL->setToolTip(tr("Structured Query Language"));
-    //connect(tabOutputButtonSQL, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
+    connect(tabOutputButtonSQL, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     
     tabOutputWidgetFormat = new QWidget(tabOutputGroupBox1);
     tabOutputLayoutFormat = new QHBoxLayout();
@@ -2150,26 +2204,31 @@ void SoFiA::createInterface()
     
     tabOutputButtonFilteredCube = new QCheckBox(tr("Filtered cube "), tabOutputGroupBox1);
     tabOutputButtonFilteredCube->setObjectName("steps.doWriteFilteredCube");
-    tabOutputButtonFilteredCube->setToolTip(tr("Data cube after applying input filters"));
+    tabOutputButtonFilteredCube->setToolTip(tr("Data cube with input filters applied"));
     tabOutputButtonFilteredCube->setChecked(false);
+    connect(tabOutputButtonFilteredCube, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     tabOutputButtonMask = new QCheckBox(tr("Mask "), tabOutputGroupBox1);
     tabOutputButtonMask->setObjectName("steps.doWriteMask");
     tabOutputButtonMask->setToolTip(tr("Source mask cube"));
     tabOutputButtonMask->setChecked(false);
+    connect(tabOutputButtonMask, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     tabOutputButtonMom0 = new QCheckBox(tr("Mom. 0 "), tabOutputGroupBox1);
     tabOutputButtonMom0->setObjectName("steps.doMom0");
     tabOutputButtonMom0->setChecked(false);
-    tabOutputButtonMom0->setToolTip(tr("Integrated flux map"));
+    tabOutputButtonMom0->setToolTip(tr("Integrated flux map (moment 0)"));
+    connect(tabOutputButtonMom0, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     tabOutputButtonMom1 = new QCheckBox(tr("Mom. 1 "), tabOutputGroupBox1);
     tabOutputButtonMom1->setObjectName("steps.doMom1");
     tabOutputButtonMom1->setChecked(false);
-    tabOutputButtonMom1->setToolTip(tr("Velocity field map"));
+    tabOutputButtonMom1->setToolTip(tr("Velocity field map (moment 1)"));
+    connect(tabOutputButtonMom1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     tabOutputButtonCubelets = new QCheckBox(tr("Cubelets "), tabOutputGroupBox1);
     tabOutputButtonCubelets->setObjectName("steps.doCubelets");
     tabOutputButtonCubelets->setChecked(false);
-    tabOutputButtonCubelets->setToolTip(tr("Create cubelet for each source"));
+    tabOutputButtonCubelets->setToolTip(tr("Individual cubelets, moment maps and spectra for each source"));
+    connect(tabOutputButtonCubelets, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     
-    tabOutputButtonCompress = new QCheckBox(tr("gzip "), tabOutputGroupBox1);
+    tabOutputButtonCompress = new QCheckBox(tr("Gzip "), tabOutputGroupBox1);
     tabOutputButtonCompress->setObjectName("writeCat.compress");
     tabOutputButtonCompress->setChecked(false);
     tabOutputButtonCompress->setToolTip(tr("Use gzip to compress all output files"));
@@ -2188,11 +2247,12 @@ void SoFiA::createInterface()
     
     tabOutputForm1->addRow(tr("Base name:"), tabOutputFieldBaseName);
     tabOutputForm1->addRow(tr("Output directory:"), tabOutputWidgetDirectory);
-    tabOutputForm1->addRow(tr("Catalogue:"), tabOutputWidgetFormat);
+    tabOutputForm1->addRow(tr("Source catalogue:"), tabOutputWidgetFormat);
     tabOutputForm1->addRow(tr("Data products:"), tabOutputWidgetProducts);
     tabOutputForm1->addRow(tr("Compression:"), tabOutputButtonCompress);
+    tabOutputGroupBox1->setLayout(tabOutputForm1);
     
-    tabOutputGroupBox2 = new QGroupBox(tr("Output parameters"), tabOutput);
+    tabOutputGroupBox2 = new QGroupBox(tr("Parameter list"), toolBoxOP);
     tabOutputGroupBox2->setEnabled(true);
     
     tabOutputForm2 = new QFormLayout;
@@ -2310,6 +2370,7 @@ void SoFiA::createInterface()
     tabOutputWidgetParameters->setLayout(tabOutputLayoutParameters);
     
     tabOutputForm2->addRow(tr(""), tabOutputWidgetParameters);
+    tabOutputGroupBox2->setLayout(tabOutputForm2);
     
     tabOutputButtonPrev = new QPushButton(tr("Previous"), tabOutput);
     tabOutputButtonPrev->setIcon(iconGoPreviousView);
@@ -2326,10 +2387,10 @@ void SoFiA::createInterface()
     tabOutputWidgetControls = new QWidget(tabOutput);
     tabOutputWidgetControls->setLayout(tabOutputLayoutControls);
     
-    tabOutputGroupBox1->setLayout(tabOutputForm1);
-    tabOutputGroupBox2->setLayout(tabOutputForm2);
-    tabOutputLayout->addWidget(tabOutputGroupBox2);
-    tabOutputLayout->addWidget(tabOutputGroupBox1);
+    toolBoxOP->addItem(tabOutputGroupBox1, iconTaskReject, tr("Output Data Products"));
+    toolBoxOP->addItem(tabOutputGroupBox2, iconTaskReject, tr("Output Parameters (not yet available)"));
+    
+    tabOutputLayout->addWidget(toolBoxOP);
     tabOutputLayout->addStretch();
     tabOutputLayout->addWidget(tabOutputWidgetControls);
     tabOutput->setLayout(tabOutputLayout);

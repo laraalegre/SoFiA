@@ -155,6 +155,24 @@ private:
     void createInterface();
     void updateActions();
     
+    QIcon iconSoFiA;
+    QIcon iconDocumentNew;
+    QIcon iconDocumentOpen;
+    QIcon iconDocumentPreview;
+    QIcon iconDocumentSave;
+    QIcon iconDocumentSaveAs;
+    QIcon iconApplicationExit;
+    QIcon iconDialogOkApply;
+    QIcon iconDialogCancel;
+    QIcon iconDialogClose;
+    QIcon iconGoPreviousView;
+    QIcon iconGoNextView;
+    QIcon iconEditClearList;
+    QIcon iconHelpContents;
+    QIcon iconHelpAbout;
+    QIcon iconTaskComplete;
+    QIcon iconTaskReject;
+    
     QMenu      *menuFile;
     QMenu      *menuPipeline;
     QMenu      *menuView;
@@ -311,6 +329,8 @@ private:
     
     // Merging tab
     
+    QToolBox     *toolBoxME;
+    
     QVBoxLayout  *tabMergingLayout;
     
     QGroupBox    *tabMergingGroupBox1;
@@ -331,6 +351,8 @@ private:
     
     
     // Parametrisation tab
+    
+    QToolBox     *toolBoxPA;
     
     QVBoxLayout  *tabParametrisationLayout;
     
@@ -356,6 +378,8 @@ private:
     
     
     // Output filter tab
+    
+    QToolBox     *toolBoxOF;
     
     QVBoxLayout  *tabOutFilterLayout;
     
@@ -390,6 +414,8 @@ private:
     
     
     // Output tab
+    
+    QToolBox     *toolBoxOP;
     
     QVBoxLayout  *tabOutputLayout;
     
