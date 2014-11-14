@@ -1018,9 +1018,12 @@ void SoFiA::runPipeline()
             flagTmpFile = true;
         }
         
-        char *SOFIA_FULL_PATH = getenv("SOFIA_PIPELINE_PATH");
+        QString SOFIA_FULL_PATH = getenv("SOFIA_PIPELINE_PATH");
         
-        arguments << SOFIA_FULL_PATH << currentFileName;
+        // Replace name of pipeline if optically motivated source finding is requested:
+        if(tabInputGroupBox2->isChecked()) SOFIA_FULL_PATH.replace("sofia_pipeline.py", "optical_find.py");
+        
+        arguments << SOFIA_FULL_PATH.toUtf8().data() << currentFileName;
         saveSettings();
         
         if(flagTmpFile == true)
