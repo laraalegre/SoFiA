@@ -92,7 +92,7 @@ print "\n--- %.3f seconds since start"%(time()-t0)
 print "\n--- SoFiA: Reading data cube(s) ---"
 sys.stdout.flush()
 
-np_Cube, dict_Header, mask, subcube = import_data.read_data(**Parameters['import'])
+np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters['steps']['doSubCube'],**Parameters['import'])
 
 
 # -------------------------
