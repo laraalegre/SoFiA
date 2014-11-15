@@ -51,7 +51,6 @@
 from sys import exit,argv
 import string
 import scipy.stats as stats
-import pyfits
 from os import path
 import numpy as np
 
