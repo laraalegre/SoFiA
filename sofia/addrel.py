@@ -3,7 +3,7 @@
 ##################################################################################
 #
 # addrel
-# last modified: 2013-05-15
+# last modified: 2014-11-16
 #
 #  run as: addrel <table1>.txt ... <tableN>.txt
 # creates: <table1>_rel.txt ... <tableN>_rel.txt [Ndrel_scatter.pdf]
@@ -51,15 +51,8 @@
 import sys
 import string
 import scipy.stats as stats
-import pyfits
 from os import path
 import numpy as np
-
-#from matplotlib import rc
-#rc('text', usetex=True)
-#rc('font', family='serif')
-#rc('font', serif='Times Roman')
-#rc('font', size=18)
 
 # START INPUT
 
