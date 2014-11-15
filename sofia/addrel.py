@@ -3,7 +3,7 @@
 ##################################################################################
 #
 # addrel
-# last modified: 2013-05-15
+# last modified: 2014-11-16
 #
 #  run as: addrel <table1>.txt ... <tableN>.txt
 # creates: <table1>_rel.txt ... <tableN>_rel.txt [Ndrel_scatter.pdf]
@@ -50,17 +50,10 @@
 # IMPORT PYTHON MODULES
 from sys import exit,argv
 import string
-import matplotlib.pyplot as plt
 import scipy.stats as stats
 import pyfits
 from os import path
 import numpy as np
-
-#from matplotlib import rc
-#rc('text', usetex=True)
-#rc('font', family='serif')
-#rc('font', serif='Times Roman')
-#rc('font', size=18)
 
 # START INPUT
 
@@ -76,7 +69,9 @@ class gaussian_kde_set_covariance(stats.gaussian_kde):
 		self.inv_cov = np.linalg.inv(self.covariance)
 		self._norm_factor = np.sqrt(np.linalg.det(2*np.pi*self.covariance)) * self.n
 
-def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCOL=16,parSpace=['ftot','fmax','nrvox'],projections=[[2,0],[2,1],[0,1]],kernel=[0.15,0.05,0.1],doscatter=1,docontour=1,check_kernel=0,dostats=0,saverel=1,relThresh=0.99,Nmin=0,dV=0.2,fMin=0,verb=0):
+def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCOL=16,parSpace=['ftot','fmax','nrvox'],projections=[[2,0],[2,1],[0,1]],kernel=[0.15,0.05,0.1],doscatter=1,docontour=1,check_kernel=0,dostats=0,saverel=1,relThresh=0.99,Nmin=0,dV=0.2,fMin=0,verb=0,makePlot=False):
+	if makePlot: import matplotlib.pyplot as plt
+
 	########################################
 	### BUILD ARRAY OF SOURCE PARAMETERS ###
 	########################################
@@ -274,7 +269,7 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 	### SCATTER PLOT SOURCES ###
 	############################
 
-	if doscatter:
+	if doscatter and makePlot:
 		if verb: print '  plotting sources ...'
 		fig1=plt.figure(figsize=(18,4.5*nr))
 		plt.subplots_adjust(left=0.06,bottom=0.15/nr,right=0.97,top=1-0.08/nr,wspace=0.35,hspace=0.25)
@@ -296,7 +291,7 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 	### PLOT CONTOURS ###
 	#####################
 
-	if docontour:
+	if docontour and makePlot:
 		levs=10**np.arange(-1.5,2,0.5)
 
 		if verb: print '  plotting contours ...'
