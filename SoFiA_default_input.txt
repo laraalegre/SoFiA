@@ -109,7 +109,7 @@ merge.minSizeZ                  =       2
 
 # Reliability module
 
-reliability.parSpace            =       ['ftot','fmax','nrvox']
+reliability.parSpace            =       ['SNRsum','SNRmax','NRvox']
 reliability.kernel              =       [0.15,0.05,0.1]
 reliability.fMin                =       0.0
 reliability.relThresh           =       0.9
