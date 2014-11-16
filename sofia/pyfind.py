@@ -164,9 +164,15 @@ def SCfinder_mem(cube,header,t0,kernels=[[0,0,0,'b'],],threshold=3.5,sizeFilter=
     # Loop over all kernels
     for jj in kernels:
     	[kx,ky,kz,kt]=jj
-        if verbose: 
-	    print "\n--- %.3f seconds since start"%(time()-t0)
-	    print '    Filter %2.0f %2.0f %2.0f %s ...'%(kx,ky,kz,kt)
+        if verbose:
+        	print "\n--- %.3f seconds since start"%(time()-t0)
+	    	print '    Filter %s %s %s %s ...'%(kx,ky,kz,kt)
+        if kernelUnit=='world' or kernelUnit=='w':
+        	if verbose: print '    Converting filter size to pixels ...'
+        	kx=abs(float(kx)/header['cdelt1'])
+        	ky=abs(float(ky)/header['cdelt2'])
+        	kz=abs(float(kz)/header['cdelt3'])
+        if kt=='b': kz=int(mt.ceil(kz))
         sys.stdout.flush()
         smoothedcube=cube*1.
         if found_nan: smoothedcube=np.nan_to_num(smoothedcube)
