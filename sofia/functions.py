@@ -27,6 +27,7 @@ def GetRMS(cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=10000,nrbins=10000,verb
 	if verbose: print '    ... Subcube shape is',cube[z0:z1,y0:y1,x0:x1].shape,'...'
 
 	if rmsMode=='negative':
+		nrbins=max(100,int(mt.ceil(float(np.array(cube.shape).prod())/1e+5))) # overwrites nrbins value!!!
 		cubemin=np.nanmin(cube)
 		bins=np.arange(cubemin,abs(cubemin)/nrbins-1e-12,abs(cubemin)/nrbins)
 		fluxval=(bins[:-1]+bins[1:])/2
@@ -37,7 +38,7 @@ def GetRMS(cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=10000,nrbins=10000,verb
 			nrsummedbins+=1
 		if nrsummedbins:
 			if verbose: print '    ... adjusting bin size to get a fraction of voxels in central bin >=',min_hist_peak
-			nrbins/=nrsummedbins
+			nrbins/=(nrsummedbins+1)
 			bins=np.arange(cubemin,abs(cubemin)/nrbins-1e-12,abs(cubemin)/nrbins)
 			fluxval=(bins[:-1]+bins[1:])/2
 			rmshisto=np.histogram(cube[z0:z1,y0:y1,x0:x1],bins=bins)[0]
