@@ -338,7 +338,7 @@ if Parameters['steps']['doParameterise'] and Parameters['steps']['doMerge'] and 
 	print "\n--- SoFiA: Parametrising sources ---"
 	sys.stdout.flush()
 #	np_Cube, dict_Header, mask, objects, catParNames, catParFormt = parametrisation.parametrise(np_Cube, dict_Header, mask, objects, catParNames, catParFormt, Parameters)
-	if Parameters['parameters']['dilateMask']: mask = parametrisation.dilate(np_Cube,mask,objects,catParNames)
+	if Parameters['parameters']['dilateMask']: mask = parametrisation.dilate(np_Cube,mask,objects,catParNames,Parameters)
 	np_Cube, mask, objects, catParNames, catParFormt, catParUnits = parametrisation.parametrise(np_Cube, mask, objects, catParNames, catParFormt, catParUnits, Parameters, dunits)
 	catParNames=tuple(catParNames)
 	catParUnits=tuple(catParUnits)
