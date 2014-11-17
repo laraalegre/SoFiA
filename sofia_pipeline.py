@@ -184,18 +184,27 @@ if Parameters['steps']['doMerge'] and NRdet:
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Merging detections ---"
 	sys.stdout.flush()
-	
 	objects, mask = linker.link_objects(np_Cube, mask, **Parameters['merge'])
-	
 	if not objects:
 		sys.stderr.write("WARNING: No objects remain after merging. Exiting pipeline.\n")
 		sys.exit()
-	
 	print 'Merging complete'
 	print
-	
 	NRdet = len(objects)
-
+	# set catalog header	
+	if 'bunit' in dict_Header: dunits=dict_Header['bunit']
+	else: dunits='-'
+	catParNames = ('ID','Xg','Yg','Zg','Xm','Ym','Zm','Xmin','Xmax','Ymin','Ymax','Zmin','Zmax','NRvox','SNRmin','SNRmax','SNRsum')
+	catParUnits = ('-','pix','pix','chan','pix','pix','chan','pix','pix','pix','pix','chan','chan','-','-','-','-')
+	catParFormt = ('%10i', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%7i', '%7i', '%7i', '%7i', '%7i', '%7i', '%8i', '%12.3e', '%12.3e', '%12.3e')
+	# normalise flux parameters to global rms (this is done also if weights were applied, in case they are prop. to 1/sigma but not exactly = 1/sigma)
+	print 'Dividing flux parameters by global cube rms'
+	globalrms=functions.GetRMS(np_Cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=1,verbose=True)
+	objects=np.array(objects)
+	objects[:,catParNames.index('SNRmin')]/=globalrms
+	objects[:,catParNames.index('SNRmax')]/=globalrms
+	objects[:,catParNames.index('SNRsum')]/=globalrms
+	objects=[list(jj) for jj in list(objects)]
 
 
 # -------------------------------------
@@ -218,9 +227,12 @@ if Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and N
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Determining reliability ---"
 	sys.stdout.flush()
-	objects,reliable = addrel.EstimateRel(np.array(objects), outroot, **Parameters['reliability'])
+	objects,reliable = addrel.EstimateRel(np.array(objects), outroot, catParNames, **Parameters['reliability'])
 	print 'The following sources have been detected:', reliable
 	print
+	catParNames = tuple(list(catParNames) + ['NRpos',  'NRneg',  'Rel'])
+	catParUnits = tuple(list(catParUnits) + ['-','-','-'])
+	catParFormt = tuple(list(catParFormt) + ['%12.3e', '%12.3e', '%12.6f'])
 elif Parameters['steps']['doMerge'] and NRdet:
 	reliable = list(np.array(objects)[np.array(objects)[:,16] > 0,0].astype(int)) # select all positive sources
 	print 'The following sources have been detected:', reliable
@@ -232,21 +244,11 @@ else: reliable=[1,] # if not merging, all detected voxels have ID = 1 and here t
 # ---- OUTPUT FOR DEBUGGING (CATALOGUE) ----
 # ------------------------------------------
 
-if Parameters['steps']['doMerge'] and NRdet:
-	if 'bunit' in dict_Header: dunits=dict_Header['bunit']
-	else: dunits='-'
-	catParNames = ('ID','Xg','Yg','Zg','Xm','Ym','Zm','Xmin','Xmax','Ymin','Ymax','Zmin','Zmax','NRvox','Fmin','Fmax','Ftot')
-	catParUnits = ('-','pix','pix','chan','pix','pix','chan','pix','pix','pix','pix','chan','chan','-',dunits,dunits,dunits)
-	catParFormt = ('%10i', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%7i', '%7i', '%7i', '%7i', '%7i', '%7i', '%8i', '%12.3e', '%12.3e', '%12.3e')
-	if Parameters['steps']['doReliability']:
-		catParNames = tuple(list(catParNames) + ['NRpos',  'NRneg',  'Rel'])
-		catParUnits = tuple(list(catParUnits) + ['-','-','-'])
-		catParFormt = tuple(list(catParFormt) + ['%12.3e', '%12.3e', '%12.6f'])
-	if Parameters['steps']['doDebug']:
-		print "\n--- %.3f seconds since start"%(time()-t0)
-		print "\n--- SoFiA: Writing all-source catalogue for debugging ---"
-		#sys.stdout.flush()
-		store_ascii.make_ascii_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outroot+'_cat.debug.ascii')
+if Parameters['steps']['doDebug']:
+	print "\n--- %.3f seconds since start"%(time()-t0)
+	print "\n--- SoFiA: Writing all-source catalogue for debugging ---"
+	#sys.stdout.flush()
+	store_ascii.make_ascii_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outroot+'_cat.debug.ascii')
 
 
 

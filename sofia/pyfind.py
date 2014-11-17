@@ -160,13 +160,19 @@ def SCfinder_mem(cube,header,t0,kernels=[[0,0,0,'b'],],threshold=3.5,sizeFilter=
     msk=np.zeros(cube.shape,'bool')
     found_nan=np.isnan(cube).sum()
     # Measure noise in original cube
-    rms=GetRMS(cube,rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=10,verbose=verbose)
+    rms=GetRMS(cube,rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
     # Loop over all kernels
     for jj in kernels:
     	[kx,ky,kz,kt]=jj
-        if verbose: 
-	    print "\n--- %.3f seconds since start"%(time()-t0)
-	    print '    Filter %2.0f %2.0f %2.0f %s ...'%(kx,ky,kz,kt)
+        if verbose:
+        	print "\n--- %.3f seconds since start"%(time()-t0)
+	    	print '    Filter %s %s %s %s ...'%(kx,ky,kz,kt)
+        if kernelUnit=='world' or kernelUnit=='w':
+        	if verbose: print '    Converting filter size to pixels ...'
+        	kx=abs(float(kx)/header['cdelt1'])
+        	ky=abs(float(ky)/header['cdelt2'])
+        	kz=abs(float(kz)/header['cdelt3'])
+        if kt=='b': kz=int(mt.ceil(kz))
         sys.stdout.flush()
         smoothedcube=cube*1.
         if found_nan: smoothedcube=np.nan_to_num(smoothedcube)
@@ -177,7 +183,7 @@ def SCfinder_mem(cube,header,t0,kernels=[[0,0,0,'b'],],threshold=3.5,sizeFilter=
             if kt=='b': smoothedcube=nd.filters.uniform_filter1d(smoothedcube,kz,axis=0,mode=edgeMode)
             elif kt=='g': smoothedcube=nd.filters.gaussian_filter1d(smoothedcube,kz/2.355,axis=0,mode=edgeMode)
         if found_nan: smoothedcube[np.isnan(cube)]=np.nan
-        smoothedrms=GetRMS(smoothedcube,rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=10,verbose=verbose)
+        smoothedrms=GetRMS(smoothedcube,rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
         if found_nan: smoothedcube=np.nan_to_num(smoothedcube)
         msk=msk+(smoothedcube>=threshold*smoothedrms)+(smoothedcube<=-threshold*smoothedrms)
         del(smoothedcube)

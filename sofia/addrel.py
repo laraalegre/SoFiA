@@ -3,7 +3,7 @@
 ##################################################################################
 #
 # addrel
-# last modified: 2013-05-15
+# last modified: 2014-11-16
 #
 #  run as: addrel <table1>.txt ... <tableN>.txt
 # creates: <table1>_rel.txt ... <tableN>_rel.txt [Ndrel_scatter.pdf]
@@ -48,19 +48,11 @@
 
 
 # IMPORT PYTHON MODULES
-from sys import exit,argv
+import sys
 import string
-import matplotlib.pyplot as plt
 import scipy.stats as stats
-import pyfits
 from os import path
 import numpy as np
-
-#from matplotlib import rc
-#rc('text', usetex=True)
-#rc('font', family='serif')
-#rc('font', serif='Times Roman')
-#rc('font', size=18)
 
 # START INPUT
 
@@ -76,12 +68,19 @@ class gaussian_kde_set_covariance(stats.gaussian_kde):
 		self.inv_cov = np.linalg.inv(self.covariance)
 		self._norm_factor = np.sqrt(np.linalg.det(2*np.pi*self.covariance)) * self.n
 
-def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCOL=16,parSpace=['ftot','fmax','nrvox'],projections=[[2,0],[2,1],[0,1]],kernel=[0.15,0.05,0.1],doscatter=1,docontour=1,check_kernel=0,dostats=0,saverel=1,relThresh=0.99,Nmin=0,dV=0.2,fMin=0,verb=0):
+def EstimateRel(data,pdfoutname,parNames,parSpace=['SNRsum','SNRmax','NRvox'],projections=[[2,0],[2,1],[0,1]],kernel=[0.15,0.05,0.1],doscatter=1,docontour=1,check_kernel=0,dostats=0,saverel=1,relThresh=0.99,Nmin=0,dV=0.2,fMin=0,verb=0,makePlot=False):
+	if makePlot: import matplotlib.pyplot as plt
+
 	########################################
 	### BUILD ARRAY OF SOURCE PARAMETERS ###
 	########################################
 
 	# get position of positive and negative sources
+	idCOL=parNames.index('ID')
+	ftotCOL=parNames.index('SNRsum')
+	nrvoxCOL=parNames.index('NRvox')
+	fmaxCOL=parNames.index('SNRmax')
+	fminCOL=parNames.index('SNRmin')
 	pos=data[:,ftotCOL]>0
 	neg=data[:,ftotCOL]<=0
 	Npos=pos.sum()
@@ -89,10 +88,10 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 
 	if not Npos:
 		sys.stderr.write("ERROR: no positive sources found; cannot proceed.\n")
-		exit()
+		sys.exit(1)
 	elif not Nneg:
 		sys.stderr.write("ERROR: no negative sources found; cannot proceed.\n")
-		exit()
+		sys.exit(1)
 
 	# get array of relevant source parameters and set what to plot
 	ids=data[:,idCOL]
@@ -105,9 +104,9 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 	### SET PARAMETERS TO WORK WITH AND GRIDDING/PLOTTNG FOR EACH ###
 	#################################################################
 
-	pars=np.concatenate((np.log10(eval(parSpace[0])),
-					  np.log10(eval(parSpace[1])),
-					  np.log10(eval(parSpace[2]))),
+	pars=np.concatenate((np.log10(ftot),
+					  np.log10(fmax),
+					  np.log10(nrvox)),
 					 axis=1)
 
 	pars=np.transpose(pars)
@@ -118,10 +117,10 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 	#	  'log$_\mathrm{10}$ $N_\mathrm{vox}$',
 	#	  'log$_\mathrm{10}$ $N_\mathrm{chan}$',
 	#	  ]
-	labs=['log Ftot',
-		  'log Fmax',
-		  'log Nvox',
-		  'log Nchan',
+	labs=['log SNRsum',
+		  'log SNRmax',
+		  'log NRvox',
+		  'log NRchan',
 		  ]
 
 	# axes limits when plotting
@@ -184,8 +183,8 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 		Rs=(Nps-Nns)/Nps
 
 		if Rs.max()>1:
-			print '  maximum reliability larger than 1 -- something is wrong!!!'
-			exit()
+			sys.stderr.write("ERROR: maximum reliability larger than 1 -- something is wrong.\n")
+			sys.exit(1)
 		# take maximum(Rs,0) to include objects with Rs<0 if relThresh==0
 		pseudoreliable=np.maximum(Rs,0)>=relThresh
 
@@ -274,7 +273,7 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 	### SCATTER PLOT SOURCES ###
 	############################
 
-	if doscatter:
+	if doscatter and makePlot:
 		if verb: print '  plotting sources ...'
 		fig1=plt.figure(figsize=(18,4.5*nr))
 		plt.subplots_adjust(left=0.06,bottom=0.15/nr,right=0.97,top=1-0.08/nr,wspace=0.35,hspace=0.25)
@@ -296,7 +295,7 @@ def EstimateRel(data,pdfoutname,idCOL=0,nrvoxCOL=13,fminCOL=14,fmaxCOL=15,ftotCO
 	### PLOT CONTOURS ###
 	#####################
 
-	if docontour:
+	if docontour and makePlot:
 		levs=10**np.arange(-1.5,2,0.5)
 
 		if verb: print '  plotting contours ...'
