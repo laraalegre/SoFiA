@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import pyfits
+import astropy.io.fits as pyfits
 import os
 import numpy as np
 cimport numpy as np
