@@ -708,6 +708,9 @@ void SoFiA::updateFields()
     n = tabInputFieldSpectralSize->text().toDouble();
     if(n < 0.0) tabInputFieldSpectralSize->setText("0.0");
     
+    // Disable RMS mode field in threshold finder if clip mode is 'absolute':
+    tabSourceFindingFieldRmsMode2->setEnabled(tabSourceFindingFieldClipMethod->currentIndex() == 0 and tabSourceFindingGroupBox2->isChecked());
+    
     // Enable/disable writing of filtered cube when no filters are selected:
     tabOutputButtonFilteredCube->setEnabled(tabInFilterGroupBox1->isChecked() or tabInFilterGroupBox2->isChecked() or tabInFilterGroupBox3->isChecked());
     
@@ -1796,6 +1799,7 @@ void SoFiA::createInterface()
     tabSourceFindingFieldClipMethod->setObjectName("threshold.clipMethod");
     tabSourceFindingFieldClipMethod->addItem(tr("Relative"), QVariant(QString("relative")));
     tabSourceFindingFieldClipMethod->addItem(tr("Absolute"), QVariant(QString("absolute")));
+    connect(tabSourceFindingFieldClipMethod, SIGNAL(currentIndexChanged(int)), this, SLOT(updateFields()));
     
     tabSourceFindingFieldRmsMode2 = new QComboBox(tabSourceFindingGroupBox2);
     tabSourceFindingFieldRmsMode2->setObjectName("threshold.rmsMode");
