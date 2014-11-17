@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 import numpy as np
-import pyfits
+import astropy.io.fits as pyfits
 import os
 from sofia import writemoment
 import math
