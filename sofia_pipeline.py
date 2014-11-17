@@ -307,7 +307,7 @@ if Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Par
 	Parameters['import']['weightsFile'] = ''
 	Parameters['import']['maskFile'] = ''
 	Parameters['import']['weightsFunction'] = ''
-	np_Cube, dict_Header, bla, blabla = import_data.read_data(**Parameters['import'])
+	np_Cube, dict_Header, bla, blabla = import_data.read_data(Parameters['steps']['doSubCube'],**Parameters['import'])
 
 
 
