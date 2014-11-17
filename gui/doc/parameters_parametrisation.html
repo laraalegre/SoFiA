@@ -81,13 +81,19 @@
         <td>list of kernel sizes; default: <b>[0.15, 0.05, 0.1]</b></td>
         <td>Size of 3D smoothing kernel in log(parameter) space (see reliability.parSpace).</td>
       </tr>
-      <tr style="background-color:#F0E0E0;">
+      <tr>
+        <td>reliability.makePlot</td>
+        <td>bool</td>
+        <td>true, <b>false</b></td>
+        <td>If set to true, a PDF file showing the distribution of positive and negative detections in parameters space will be created for diagnostic purposes.</td>
+      </tr>
+      <tr style="background-color:#FFF8F0;">
         <td>reliability.parSpace</td>
         <td>string</td>
         <td>list of parameters; default: <b>['ftot', 'fmax', 'nrvox']</b></td>
         <td>Defines 3D parameter space in which to calculate reliability.</td>
       </tr>
-      <tr style="background-color:#FFF8F0;">
+      <tr style="background-color:#F0E0E0;">
         <td>reliability.fMin</td>
         <td>float</td>
         <td>&ge; <b>0.0</b></td>

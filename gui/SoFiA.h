@@ -367,6 +367,7 @@ private:
     QLineEdit    *tabParametrisationFieldRelMin;
     QLineEdit    *tabParametrisationFieldRelMax;
     QLineEdit    *tabParametrisationFieldRelKernel;
+    QCheckBox    *tabParametrisationFieldRelPlot;
     QHBoxLayout  *tabParametrisationLayoutRel;
     QWidget      *tabParametrisationWidgetRel;
     

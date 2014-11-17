@@ -1985,8 +1985,15 @@ void SoFiA::createInterface()
     tabParametrisationFieldRelKernel = new QLineEdit(tabParametrisationGroupBox2);
     tabParametrisationFieldRelKernel->setObjectName("reliability.kernel");
     
+    tabParametrisationFieldRelPlot = new QCheckBox(tr("Enable "), tabParametrisationGroupBox1);
+    tabParametrisationFieldRelPlot->setObjectName("reliability.makePlot");
+    tabParametrisationFieldRelPlot->setToolTip("PDF file showing distribution of positive/negative sources in parameter space");
+    tabParametrisationFieldRelPlot->setEnabled(true);
+    tabParametrisationFieldRelPlot->setChecked(false);
+    
     tabParametrisationForm2->addRow(tr("Accepted range:"), tabParametrisationWidgetRel);
     tabParametrisationForm2->addRow(tr("Kernel:"), tabParametrisationFieldRelKernel);
+    tabParametrisationForm2->addRow(tr("Diagnostic plot:"), tabParametrisationFieldRelPlot);
     tabParametrisationGroupBox2->setLayout(tabParametrisationForm2);
     
     tabParametrisationButtonPrev = new QPushButton(tr("Previous"), tabParametrisation);
