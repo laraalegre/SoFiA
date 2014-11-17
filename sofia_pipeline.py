@@ -118,6 +118,8 @@ if Parameters['steps']['doSmooth']:
 if Parameters['steps']['doScaleNoise']:
 	np_Cube = sigma_cube.sigma_scale(np_Cube, **Parameters['scaleNoise'])
 
+globalrms=functions.GetRMS(np_Cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=1,verbose=True)
+
 # --- WAVELET ---
 if Parameters['steps']['doWavelet']:
         print 'Running wavelet filter'
@@ -199,7 +201,6 @@ if Parameters['steps']['doMerge'] and NRdet:
 	catParFormt = ('%10i', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%7i', '%7i', '%7i', '%7i', '%7i', '%7i', '%8i', '%12.3e', '%12.3e', '%12.3e')
 	# normalise flux parameters to global rms (this is done also if weights were applied, in case they are prop. to 1/sigma but not exactly = 1/sigma)
 	print 'Dividing flux parameters by global cube rms'
-	globalrms=functions.GetRMS(np_Cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=1,verbose=True)
 	objects=np.array(objects)
 	objects[:,catParNames.index('SNRmin')]/=globalrms
 	objects[:,catParNames.index('SNRmax')]/=globalrms
