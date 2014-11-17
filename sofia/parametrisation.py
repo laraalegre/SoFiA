@@ -45,6 +45,8 @@ def dilate(cube,mask,objects,cathead,Parameters):
         dilstruct=dilstruct.repeat(dilate_chan*2+1,axis=0)
         objmask[nd.morphology.binary_dilation(objmask==mm,structure=dilstruct).astype(int)*mm==mm]=mm
         mask[zmin:zmax+1,ymin:ymax+1,xmin:xmax+1]=objmask
+        del(objcube)
+        del(objmask)
     return mask
 
 def parametrise(
