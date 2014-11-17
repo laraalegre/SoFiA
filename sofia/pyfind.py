@@ -172,7 +172,9 @@ def SCfinder_mem(cube,header,t0,kernels=[[0,0,0,'b'],],threshold=3.5,sizeFilter=
         	kx=abs(float(kx)/header['cdelt1'])
         	ky=abs(float(ky)/header['cdelt2'])
         	kz=abs(float(kz)/header['cdelt3'])
-        if kt=='b': kz=int(mt.ceil(kz))
+        if kt=='b':
+        	if verbose: print '    WARNING: Rounding width of boxcar z kernel to next integer'
+        	kz=int(mt.ceil(kz))
         sys.stdout.flush()
         smoothedcube=cube*1.
         if found_nan: smoothedcube=np.nan_to_num(smoothedcube)
