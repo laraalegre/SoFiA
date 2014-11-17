@@ -6,7 +6,10 @@ import numpy as np
 import scipy.ndimage as nd
 import sys
 
-def dilate(cube,mask,objects,cathead,dilate_threshold=0.02,dilate_pix_max=10,dilate_chan=1):
+def dilate(cube,mask,objects,cathead,Parameters):
+    dilate_threshold=Parameters['parameters']['dilate_threshold']
+    dilate_pix_max=Parameters['parameters']['dilate_pix_max']
+    dilate_chan=Parameters['parameters']['dilate_chan']
     # stops dilating when (flux_new-flux_old)/flux_new < dilate_threshold
     for mm in range(1,mask.max()+1):
     	obj=objects[mm-1]
