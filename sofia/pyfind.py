@@ -189,7 +189,7 @@ def SCfinder_mem(cube,header,t0,kernels=[[0,0,0,'b'],],threshold=3.5,sizeFilter=
         del(smoothedcube)
     return msk
 
-import pyfits as pf
+import astropy.io.fits as pf
 import numpy as np
 import math as mt
 import scipy
