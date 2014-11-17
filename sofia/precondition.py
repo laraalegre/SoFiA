@@ -12,7 +12,7 @@ import math                      # for maths commands (fabs)
 import sys                       # system (sys.exit)
 import re                        # for regular expressions
 import random                    # for random numbers
-import pyfits
+import astropy.io.fits as pyfits
 import scipy
 import numpy
 import ast
