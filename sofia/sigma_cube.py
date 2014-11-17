@@ -39,16 +39,16 @@ def sigma_scale(cube,scaleX=False,scaleY=False,scaleZ=True,edgeX=0,edgeY=0,edgeZ
         edge_z1 = edgeZ
         edge_z2 = edgeZ
         
-        # define the range over which stats are calculated
-        z1 = edge_z1
-        z2 = len(z_rms) - edge_z2
-        y1 = edge_y1
-        y2 = len(y_rms) - edge_y2
-        x1 = edge_x1
-        x2 = len(x_rms) - edge_x2
-        
         # check the dimensions of the cube (could be obtained from header information)
         dimensions = np.shape(cube)
+
+        # define the range over which stats are calculated
+        z1 = edge_z1
+        z2 = dimensions[0] - edge_z2
+        y1 = edge_y1
+        y2 = dimensions[1] - edge_y2
+        x1 = edge_x1
+        x2 = dimensions[2] - edge_x2
         
         if scaleZ == True:
             z_rms = np.zeros(dimensions[0])
