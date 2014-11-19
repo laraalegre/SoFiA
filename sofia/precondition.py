@@ -1,7 +1,7 @@
 # precondition.py
 #
 # known bugs:
-# - masking and boxcar at the some time results in blank cube, as boxcar smoothing routine doesn't handle NaNs
+# - masking and boxcar at the same time results in blank cube, as boxcar smoothing routine doesn't handle NaNs
 
 # import required modules
 
@@ -43,7 +43,7 @@ def writefits(fnameout, data, header):
     
     fitsobj = pyfits.HDUList()
     fitsobj.append(hdu)
-    fitsobj.writeto(fnameout)
+    fitsobj.writeto(fnameout,output_verify='warn')
 
 def smooth(indata, type, kern_px, kern_py, kern_pz):
     """
