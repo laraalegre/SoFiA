@@ -44,12 +44,12 @@ def writeMoment0(datacube,maskcube,filename,debug,header,compress):
   del(hdu.header['crval3'])
   del(hdu.header['cdelt3'])
   del(hdu.header['ctype3'])
-  if debug: hdu.writeto('%s_mom0.debug.fits'%filename,clobber=True)
+  if debug: hdu.writeto('%s_mom0.debug.fits'%filename,output_verify='warn',clobber=True)
   else: 
     name = '%s_mom0.fits'%filename
     if compress:
       name += '.gz'
-    hdu.writeto(name,clobber=True)
+    hdu.writeto(name,output_verify='warn',clobber=True)
   return m0
 
 
@@ -74,12 +74,12 @@ def writeMoment1(datacube,maskcube,filename,debug,header,m0,compress):
   del(hdu.header['crval3'])
   del(hdu.header['cdelt3'])
   del(hdu.header['ctype3'])
-  if debug: hdu.writeto('%s_mom1.debug.fits'%filename,clobber=True)
+  if debug: hdu.writeto('%s_mom1.debug.fits'%filename,output_verify='warn',clobber=True)
   else: 
     name = '%s_mom1.fits'%filename
     if compress:
       name += '.gz'
-    hdu.writeto(name,clobber=True)
+    hdu.writeto(name,output_verify='warn',clobber=True)
 
 
 def mom0(cube1, cube2):
