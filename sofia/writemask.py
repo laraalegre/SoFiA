@@ -51,4 +51,4 @@ def writeMask(cube,header,dictionary,filename,compress):
   name = filename
   if compress:
 	  name += '.gz'
-  hdu.writeto(name,clobber=True)
+  hdu.writeto(name,output_verify='warn',clobber=True)
