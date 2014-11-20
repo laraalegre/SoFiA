@@ -216,7 +216,7 @@ if Parameters['steps']['doDebug'] and NRdet:
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Writing all-source mask cube for debugging ---"
 	sys.stdout.flush()
-	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_all.fits'%outroot)
+	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_all.fits'%outroot,Parameters['writeCat']['compress'])
 
 
 
@@ -249,7 +249,7 @@ if Parameters['steps']['doDebug']:
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Writing all-source catalogue for debugging ---"
 	#sys.stdout.flush()
-	store_ascii.make_ascii_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outroot+'_cat.debug.ascii')
+	store_ascii.make_ascii_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outroot+'_cat.debug.ascii',Parameters['writeCat']['compress'])
 
 
 
@@ -320,9 +320,9 @@ if Parameters['steps']['doDebug'] and NRdet:
 	print "\n--- SoFiA: Writing pre-optimisation mask and moment maps for debugging ---"
 	sys.stdout.flush()
 	debug=1
-	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_rel.fits'%outroot)
-	mom0_Image = writemoment2.writeMoment0(np_Cube, mask, outroot, debug, dict_Header)
-	writemoment2.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image)
+	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_rel.fits'%outroot,Parameters['writeCat']['compress'])
+	mom0_Image = writemoment2.writeMoment0(np_Cube, mask, outroot, debug, dict_Header,Parameters['writeCat']['compress'])
+	writemoment2.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image,Parameters['writeCat']['compress'])
 
 
 
