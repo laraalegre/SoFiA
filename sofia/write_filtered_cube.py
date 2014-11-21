@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import pyfits
+import astropy.io.fits as pyfits
 import os
 
 def removeOptions(dictionary):
@@ -62,4 +62,4 @@ def writeFilteredCube(cube, header, dictionary, filename, compress):
     #{
         filename += '.gz'
     #}
-    hdu.writeto(filename, clobber=True)
+    hdu.writeto(filename,output_verify='warn', clobber=True)

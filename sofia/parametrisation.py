@@ -6,7 +6,10 @@ import numpy as np
 import scipy.ndimage as nd
 import sys
 
-def dilate(cube,mask,objects,cathead,dilate_threshold=0.02,dilate_pix_max=10,dilate_chan=1):
+def dilate(cube,mask,objects,cathead,Parameters):
+    dilate_threshold=Parameters['parameters']['dilate_threshold']
+    dilate_pix_max=Parameters['parameters']['dilate_pix_max']
+    dilate_chan=Parameters['parameters']['dilate_chan']
     # stops dilating when (flux_new-flux_old)/flux_new < dilate_threshold
     for mm in range(1,mask.max()+1):
     	obj=objects[mm-1]
@@ -22,8 +25,14 @@ def dilate(cube,mask,objects,cathead,dilate_threshold=0.02,dilate_pix_max=10,dil
     	ymax=min(ymax,cube.shape[1]-1)
     	zmin=max(0,zmin)
     	zmax=min(zmax,cube.shape[0]-1)
-    	objcube=cube[zmin:zmax+1,ymin:ymax+1,xmin:xmax+1]
-    	objmask=mask[zmin:zmax+1,ymin:ymax+1,xmin:xmax+1]
+    	objcube=cube[zmin:zmax+1,ymin:ymax+1,xmin:xmax+1].copy()
+    	objmask=mask[zmin:zmax+1,ymin:ymax+1,xmin:xmax+1].copy()
+    	allmask=mask[zmin:zmax+1,ymin:ymax+1,xmin:xmax+1].copy()
+    	otherobjs=(allmask>0)*(allmask!=mm)
+    	if (otherobjs).sum():
+    		# Ensure that objects!=mm within dilate_pix_max, dilate_chan are not included in the flux growth calculation
+    		print 'WARNING: object %i has possible overlapping objects within %i pix, %i chan'%(mm,dilate_pix_max,dilate_chan)
+    		objcube[(allmask>0)*(allmask!=mm)]=0
         fluxes=[]
         for dil in range(dilate_pix_max+1):
             dd=dil*2+1
@@ -40,8 +49,15 @@ def dilate(cube,mask,objects,cathead,dilate_threshold=0.02,dilate_pix_max=10,dil
         dilstruct=(np.sqrt(((np.indices((dd,dd))-dil)**2).sum(axis=0))<=dil).astype(int)
         dilstruct.resize((1,dilstruct.shape[0],dilstruct.shape[1]))
         dilstruct=dilstruct.repeat(dilate_chan*2+1,axis=0)
-        objmask[nd.morphology.binary_dilation(objmask==mm,structure=dilstruct).astype(int)*mm==mm]=mm
+        # Only grow the mask of object mm even when other objects are present in objmask
+        objmask[nd.morphology.binary_dilation(objmask==mm,structure=dilstruct).astype(int)==1]=mm
+        # Put back in objmask objects!=mm that may have been inside objmask before dilation or may have been temporarily replaced by the dilated object mm
+        if (otherobjs).sum(): objmask[otherobjs]=allmask[otherobjs]
         mask[zmin:zmax+1,ymin:ymax+1,xmin:xmax+1]=objmask
+        del(objcube)
+        del(objmask)
+        del(allmask)
+        del(otherobjs)
     return mask
 
 def parametrise(

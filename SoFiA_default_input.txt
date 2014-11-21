@@ -75,7 +75,7 @@ SCfind.maskScaleXY              =       2.0
 SCfind.maskScaleZ               =       2.0
 SCfind.edgeMode                 =       constant
 SCfind.rmsMode                  =       negative
-SCfind.kernels                  =       [[ 0, 0, 0,'b'],[ 0, 0, 2,'b'],[ 0, 0, 4,'b'],[ 0, 0, 8,'b'],[ 3, 3, 0,'b'],[ 3, 3, 2,'b'],[ 3, 3, 4,'b'],[ 3, 3, 8,'b'],[ 6, 6, 0,'b'],[ 6, 6, 2,'b'],[ 6, 6, 4,'b'],[ 6, 6, 8,'b']]
+SCfind.kernels                  =       [[ 0, 0, 0,'b'],[ 0, 0, 3,'b'],[ 0, 0, 7,'b'],[ 0, 0, 15,'b'],[ 3, 3, 0,'b'],[ 3, 3, 3,'b'],[ 3, 3, 7,'b'],[ 3, 3, 15,'b'],[ 6, 6, 0,'b'],[ 6, 6, 3,'b'],[ 6, 6, 7,'b'],[ 6, 6, 15,'b']]
 SCfind.kernelUnit               =       pixel
 SCfind.verbose                  =       true
 
@@ -121,7 +121,9 @@ reliability.makePlot            =       false
 parameters.fitBusyFunction      =       false
 parameters.optimiseMask         =       false
 parameters.dilateMask           =       false
-
+parameters.dilate_threshold     =       0.02
+parameters.dilate_pix_max       =       10
+parameters.dilate_chan          =       1
 
 # Output module
 

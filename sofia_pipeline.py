@@ -118,6 +118,8 @@ if Parameters['steps']['doSmooth']:
 if Parameters['steps']['doScaleNoise']:
 	np_Cube = sigma_cube.sigma_scale(np_Cube, **Parameters['scaleNoise'])
 
+globalrms=functions.GetRMS(np_Cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=1,verbose=True)
+
 # --- WAVELET ---
 if Parameters['steps']['doWavelet']:
         print 'Running wavelet filter'
@@ -199,7 +201,6 @@ if Parameters['steps']['doMerge'] and NRdet:
 	catParFormt = ('%10i', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%7i', '%7i', '%7i', '%7i', '%7i', '%7i', '%8i', '%12.3e', '%12.3e', '%12.3e')
 	# normalise flux parameters to global rms (this is done also if weights were applied, in case they are prop. to 1/sigma but not exactly = 1/sigma)
 	print 'Dividing flux parameters by global cube rms'
-	globalrms=functions.GetRMS(np_Cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=1,verbose=True)
 	objects=np.array(objects)
 	objects[:,catParNames.index('SNRmin')]/=globalrms
 	objects[:,catParNames.index('SNRmax')]/=globalrms
@@ -215,7 +216,7 @@ if Parameters['steps']['doDebug'] and NRdet:
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Writing all-source mask cube for debugging ---"
 	sys.stdout.flush()
-	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_all.fits'%outroot)
+	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_all.fits'%outroot,Parameters['writeCat']['compress'])
 
 
 
@@ -248,7 +249,7 @@ if Parameters['steps']['doDebug']:
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Writing all-source catalogue for debugging ---"
 	#sys.stdout.flush()
-	store_ascii.make_ascii_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outroot+'_cat.debug.ascii')
+	store_ascii.make_ascii_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outroot+'_cat.debug.ascii',Parameters['writeCat']['compress'])
 
 
 
@@ -306,7 +307,7 @@ if Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Par
 	Parameters['import']['weightsFile'] = ''
 	Parameters['import']['maskFile'] = ''
 	Parameters['import']['weightsFunction'] = ''
-	np_Cube, dict_Header, bla, blabla = import_data.read_data(**Parameters['import'])
+	np_Cube, dict_Header, bla, blabla = import_data.read_data(Parameters['steps']['doSubCube'],**Parameters['import'])
 
 
 
@@ -319,9 +320,9 @@ if Parameters['steps']['doDebug'] and NRdet:
 	print "\n--- SoFiA: Writing pre-optimisation mask and moment maps for debugging ---"
 	sys.stdout.flush()
 	debug=1
-	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_rel.fits'%outroot)
-	mom0_Image = writemoment2.writeMoment0(np_Cube, mask, outroot, debug, dict_Header)
-	writemoment2.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image)
+	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_rel.fits'%outroot,Parameters['writeCat']['compress'])
+	mom0_Image = writemoment2.writeMoment0(np_Cube, mask, outroot, debug, dict_Header,Parameters['writeCat']['compress'])
+	writemoment2.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image,Parameters['writeCat']['compress'])
 
 
 
@@ -337,7 +338,7 @@ if Parameters['steps']['doParameterise'] and Parameters['steps']['doMerge'] and 
 	print "\n--- SoFiA: Parametrising sources ---"
 	sys.stdout.flush()
 #	np_Cube, dict_Header, mask, objects, catParNames, catParFormt = parametrisation.parametrise(np_Cube, dict_Header, mask, objects, catParNames, catParFormt, Parameters)
-	if Parameters['parameters']['dilateMask']: mask = parametrisation.dilate(np_Cube,mask,objects,catParNames)
+	if Parameters['parameters']['dilateMask']: mask = parametrisation.dilate(np_Cube,mask,objects,catParNames,Parameters)
 	np_Cube, mask, objects, catParNames, catParFormt, catParUnits = parametrisation.parametrise(np_Cube, mask, objects, catParNames, catParFormt, catParUnits, Parameters, dunits)
 	catParNames=tuple(catParNames)
 	catParUnits=tuple(catParUnits)

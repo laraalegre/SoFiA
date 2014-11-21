@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 # import default python libraries
-import pyfits
+import astropy.io.fits as pyfits
 import os
 import sys
 from numpy import *

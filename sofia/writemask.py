@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import pyfits
+import astropy.io.fits as pyfits
 import os
 
 def removeOptions(dictionary):
@@ -51,4 +51,4 @@ def writeMask(cube,header,dictionary,filename,compress):
   name = filename
   if compress:
 	  name += '.gz'
-  hdu.writeto(name,clobber=True)
+  hdu.writeto(name,output_verify='warn',clobber=True)

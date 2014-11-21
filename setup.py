@@ -11,7 +11,7 @@ import warnings
 from sofia import __version__ as version
 
 # Dependency checking
-dependencies = [['numpy', '1.7'], ['scipy', None], ['pyfits', None]]
+dependencies = [['numpy', '1.7'], ['scipy', None]]
 
 for (pkg, minversion) in dependencies:
     try:

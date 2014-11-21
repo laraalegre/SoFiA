@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 import numpy as np
-import pyfits
+import astropy.io.fits as pyfits
 import os
 from sofia import writemoment
 import math
@@ -97,7 +97,7 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot,compress):
 	name = outputDir+cubename+'_'+str(int(obj[0]))+'.fits'
 	if compress:
 	  name += '.gz'
-	hdulist.writeto(name,clobber=True)
+	hdulist.writeto(name,output_verify='warn',clobber=True)
 	hdulist.close()
 	
 	# make PV diagram
@@ -133,7 +133,7 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot,compress):
 		del hdulist[0].header['CRVAL3']
 		del hdulist[0].header['CRPIX3']
 		name = outputDir+cubename+'_'+str(int(obj[0]))+'_pv.fits'
-		hdulist.writeto(name,clobber=True)
+		hdulist.writeto(name,output_verify='warn',clobber=True)
 		hdulist.close()
 
 	# remove all other sources from the mask
@@ -147,7 +147,7 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot,compress):
 	name = outputDir+cubename+'_'+str(int(obj[0]))+'_mask.fits'
 	if compress:
 	  name += '.gz'
-	hdulist.writeto(name,clobber=True)
+	hdulist.writeto(name,output_verify='warn',clobber=True)
 	hdulist.close()
 	
 
@@ -175,7 +175,7 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot,compress):
 	name = outputDir+cubename+'_'+str(int(obj[0]))+'_mom0.fits'
 	if compress:
 	  name += '.gz'
-	hdu.writeto(name,clobber=True)
+	hdu.writeto(name,output_verify='warn',clobber=True)
 	
 	
 	# moment 1
@@ -200,7 +200,7 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot,compress):
 	name = outputDir+cubename+'_'+str(int(obj[0]))+'_mom1.fits'
 	if compress:
 	  name += '.gz'
-	hdu.writeto(name,clobber=True)
+	hdu.writeto(name,output_verify='warn',clobber=True)
 	
 	
 	# moment 2
@@ -226,7 +226,7 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot,compress):
         name = outputDir+cubename+'_'+str(int(obj[0]))+'_mom2.fits'
         if compress:
 	  name += '.gz'
-        hdu.writeto(name,clobber=True)
+        hdu.writeto(name,output_verify='warn',clobber=True)
 	
 	# spectra
 	spec = np.nansum(subcube*submask,axis=(1,2))
