@@ -75,6 +75,7 @@
     #include <QtGui/QComboBox>
     #include <QtGui/QFileDialog>
     #include <QtGui/QMessageBox>
+    #include <QtGui/QWhatsThis>
 #else
     #include <QtWidgets/QMainWindow>
     #include <QtWidgets/QWidget>
@@ -98,6 +99,7 @@
     #include <QtWidgets/QComboBox>
     #include <QtWidgets/QFileDialog>
     #include <QtWidgets/QMessageBox>
+    #include <QtWidgets/QWhatsThis>
 #endif
 
 #include "WidgetSpreadsheet.h"
@@ -153,6 +155,7 @@ private:
     int  setDefaults();
     int  showMessage(int severity, QString &messageText, QString &statusText);
     void createInterface();
+    void createWhatsThis();
     void updateActions();
     
     QIcon iconSoFiA;
@@ -172,6 +175,7 @@ private:
     QIcon iconHelpAbout;
     QIcon iconTaskComplete;
     QIcon iconTaskReject;
+    QIcon iconWhatsThis;
     
     QMenu      *menuFile;
     QMenu      *menuPipeline;
@@ -192,6 +196,7 @@ private:
     QAction    *actionClearLog;
     QAction    *actionShowCatalogue;
     QAction    *actionHelp;
+    QAction    *actionWhatsThis;
     QAction    *actionAbout;
     
     QWidget     *widgetMain;

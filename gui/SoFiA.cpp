@@ -1310,6 +1310,9 @@ void SoFiA::createInterface()
     
     iconSoFiA.addFile(QString(":/icons/32/SoFiA.png"), QSize(32, 32));
     
+    iconWhatsThis.addFile(QString(":/icons/22/whats-this.png"), QSize(22, 22));
+    iconWhatsThis.addFile(QString(":/icons/16/whats-this.png"), QSize(16, 16));
+    
     iconDocumentNew     = QIcon::fromTheme("document-new", QIcon(":/icons/22/document-new.png"));
     iconDocumentOpen    = QIcon::fromTheme("document-open", QIcon(":/icons/22/document-open.png"));
     iconDocumentPreview = QIcon::fromTheme("document-preview", QIcon(":/icons/22/document-preview.png"));
@@ -1375,7 +1378,7 @@ void SoFiA::createInterface()
     tabInputLayoutData = new QHBoxLayout;
     tabInputFieldData  = new QLineEdit(tabInputWidgetData);
     tabInputFieldData->setObjectName("import.inFile");
-    tabInputFieldData->setToolTip("Name of input data cube (required)");
+    //tabInputFieldData->setToolTip("Name of input data cube (required)");
     connect(tabInputFieldData, SIGNAL(editingFinished()), this, SLOT(updateFields()));
     tabInputButtonData = new QPushButton(tr("Select..."), tabInputWidgetData);
     connect(tabInputButtonData, SIGNAL(clicked()), this, SLOT(selectInputDataFile()));
@@ -1389,7 +1392,7 @@ void SoFiA::createInterface()
     tabInputLayoutMask = new QHBoxLayout;
     tabInputFieldMask  = new QLineEdit(tabInputWidgetMask);
     tabInputFieldMask->setObjectName("import.maskFile");
-    tabInputFieldMask->setToolTip("Name of mask cube (optional)");
+    //tabInputFieldMask->setToolTip("Name of mask cube (optional)");
     tabInputButtonMask = new QPushButton(tr("Select..."), tabInputWidgetMask);
     connect(tabInputButtonMask, SIGNAL(clicked()), this, SLOT(selectInputMaskFile()));
     tabInputButtonMask->setIcon(iconDocumentOpen);
@@ -1402,7 +1405,7 @@ void SoFiA::createInterface()
     tabInputLayoutWeights = new QHBoxLayout;
     tabInputFieldWeights  = new QLineEdit(tabInputWidgetWeights);
     tabInputFieldWeights->setObjectName("import.weightsFile");
-    tabInputFieldWeights->setToolTip("Name of data cube containing weights (optional)");
+    //tabInputFieldWeights->setToolTip("Name of data cube containing weights (optional)");
     tabInputButtonWeights = new QPushButton(tr("Select..."), tabInputWidgetWeights);
     connect(tabInputButtonWeights, SIGNAL(clicked()), this, SLOT(selectInputWeightsFile()));
     tabInputButtonWeights->setIcon(iconDocumentOpen);
@@ -1413,7 +1416,7 @@ void SoFiA::createInterface()
     
     tabInputFieldWeightsFunction = new QLineEdit(tabInputGroupBox1);
     tabInputFieldWeightsFunction->setObjectName("import.weightsFunction");
-    tabInputFieldWeightsFunction->setToolTip("Analytic function describing data weights (optional)");
+    //tabInputFieldWeightsFunction->setToolTip("Analytic function describing data weights (optional)");
     
     tabInputForm1->addRow(tr("Data cube:"), tabInputWidgetData);
     tabInputForm1->addRow(tr("Mask cube:"), tabInputWidgetMask);
@@ -1431,10 +1434,10 @@ void SoFiA::createInterface()
     
     tabInputFieldSubcube = new QLineEdit(tabInputGroupBox4);
     tabInputFieldSubcube->setObjectName("import.subcube");
-    tabInputFieldSubcube->setToolTip(tr("Define sub-cube range to be used (optional)"));
+    //tabInputFieldSubcube->setToolTip(tr("Define sub-cube range to be used (optional)"));
     tabInputFieldSubcubeMode = new QComboBox(tabInputGroupBox4);
     tabInputFieldSubcubeMode->setObjectName("import.subcubeMode");
-    tabInputFieldSubcubeMode->setToolTip(tr("Range given in pixels or world coordinates"));
+    //tabInputFieldSubcubeMode->setToolTip(tr("Range given in pixels or world coordinates"));
     tabInputFieldSubcubeMode->addItem(tr("Pixels"), QVariant(QString("pix")));
     tabInputFieldSubcubeMode->addItem(tr("World coordinates"), QVariant(QString("wcs")));
     
@@ -1452,7 +1455,7 @@ void SoFiA::createInterface()
     
     tabInputFieldFlags = new QLineEdit(tabInputGroupBox3);
     tabInputFieldFlags->setObjectName("flag.regions");
-    tabInputFieldFlags->setToolTip("Pixel/channel ranges to be flagged (optional)");
+    //tabInputFieldFlags->setToolTip("Pixel/channel ranges to be flagged (optional)");
     
     tabInputForm3->addRow(tr("Range:"), tabInputFieldFlags);
     tabInputGroupBox3->setLayout(tabInputForm3);
@@ -1469,7 +1472,7 @@ void SoFiA::createInterface()
     tabInputLayoutCatalog = new QHBoxLayout;
     tabInputFieldCatalog = new QLineEdit(tabInputWidgetCatalog);
     tabInputFieldCatalog->setObjectName("optical.sourceCatalogue");
-    tabInputFieldCatalog->setToolTip("Source catalogue for catalogue-based source finding");
+    //tabInputFieldCatalog->setToolTip("Source catalogue for catalogue-based source finding");
     tabInputButtonCatalog = new QPushButton(tr("Select..."), tabInputWidgetCatalog);
     connect(tabInputButtonCatalog, SIGNAL(clicked()), this, SLOT(selectOpticalCatalogFile()));
     tabInputButtonCatalog->setIcon(iconDocumentOpen);
@@ -1480,17 +1483,17 @@ void SoFiA::createInterface()
     
     tabInputFieldSpatialSize = new QLineEdit(tabInputGroupBox2);
     tabInputFieldSpatialSize->setObjectName("optical.spatSize");
-    tabInputFieldSpatialSize->setToolTip("Spatial size of sub-cube to be searched");
+    //tabInputFieldSpatialSize->setToolTip("Spatial size of sub-cube to be searched");
     connect(tabInputFieldSpatialSize, SIGNAL(editingFinished()), this, SLOT(updateFields()));
     
     tabInputFieldSpectralSize = new QLineEdit(tabInputGroupBox2);
     tabInputFieldSpectralSize->setObjectName("optical.specSize");
-    tabInputFieldSpectralSize->setToolTip("Spectral size of sub-cube to be searched");
+    //tabInputFieldSpectralSize->setToolTip("Spectral size of sub-cube to be searched");
     connect(tabInputFieldSpectralSize, SIGNAL(editingFinished()), this, SLOT(updateFields()));
     
     tabInputFieldSingleCat = new QCheckBox(tr("Create single output catalogue "), tabInputGroupBox2);
     tabInputFieldSingleCat->setObjectName("optical.storeSingleCat");
-    tabInputFieldSingleCat->setToolTip("Write all sources to a single output catalogue file?");
+    //tabInputFieldSingleCat->setToolTip("Write all sources to a single output catalogue file?");
     tabInputFieldSingleCat->setChecked(false);
     
     tabInputForm2->addRow(tr("Catalogue:"), tabInputWidgetCatalog);
@@ -1554,19 +1557,19 @@ void SoFiA::createInterface()
     
     tabInFilterFieldSmoothingSpatialLon  = new QLineEdit(tabInFilterGroupBox1);
     tabInFilterFieldSmoothingSpatialLon->setObjectName("smooth.kernelX");
-    tabInFilterFieldSmoothingSpatialLon->setToolTip(tr("Longitude smoothing scale in pixels"));
+    //tabInFilterFieldSmoothingSpatialLon->setToolTip(tr("Longitude smoothing scale in pixels"));
     tabInFilterFieldSmoothingSpatialLon->setMaxLength(10);
     tabInFilterFieldSmoothingSpatialLon->setMaximumWidth(100);
     connect(tabInFilterFieldSmoothingSpatialLon, SIGNAL(editingFinished()), this, SLOT(updateFields()));
     tabInFilterFieldSmoothingSpatialLat  = new QLineEdit(tabInFilterGroupBox1);
     tabInFilterFieldSmoothingSpatialLat->setObjectName("smooth.kernelY");
-    tabInFilterFieldSmoothingSpatialLat->setToolTip(tr("Latitude smoothing scale in pixels"));
+    //tabInFilterFieldSmoothingSpatialLat->setToolTip(tr("Latitude smoothing scale in pixels"));
     tabInFilterFieldSmoothingSpatialLat->setMaxLength(10);
     tabInFilterFieldSmoothingSpatialLat->setMaximumWidth(100);
     connect(tabInFilterFieldSmoothingSpatialLat, SIGNAL(editingFinished()), this, SLOT(updateFields()));
     tabInFilterFieldSmoothingSpectral = new QLineEdit(tabInFilterGroupBox1);
     tabInFilterFieldSmoothingSpectral->setObjectName("smooth.kernelZ");
-    tabInFilterFieldSmoothingSpectral->setToolTip(tr("Spectral smoothing scale in channels"));
+    //tabInFilterFieldSmoothingSpectral->setToolTip(tr("Spectral smoothing scale in channels"));
     tabInFilterFieldSmoothingSpectral->setMaxLength(10);
     tabInFilterFieldSmoothingSpectral->setMaximumWidth(100);
     connect(tabInFilterFieldSmoothingSpectral, SIGNAL(editingFinished()), this, SLOT(updateFields()));
@@ -1645,35 +1648,35 @@ void SoFiA::createInterface()
     
     tabInFilterField2d1dThreshold = new QLineEdit(tabInFilterGroupBox3);
     tabInFilterField2d1dThreshold->setObjectName("wavelet.threshold");
-    tabInFilterField2d1dThreshold->setToolTip(tr("Wavelet reconstruction threshold in multiples of the rms noise"));
+    //tabInFilterField2d1dThreshold->setToolTip(tr("Wavelet reconstruction threshold in multiples of the rms noise"));
     tabInFilterField2d1dThreshold->setMaximumWidth(100);
     tabInFilterField2d1dThreshold->setMaxLength(10);
     connect(tabInFilterField2d1dThreshold, SIGNAL(editingFinished()), this, SLOT(updateFields()));
     
     tabInFilterField2d1dIterations = new QSpinBox(tabInFilterGroupBox3);
     tabInFilterField2d1dIterations->setObjectName("wavelet.iterations");
-    tabInFilterField2d1dIterations->setToolTip(tr("Number of iterations in the reconstruction process"));
+    //tabInFilterField2d1dIterations->setToolTip(tr("Number of iterations in the reconstruction process"));
     tabInFilterField2d1dIterations->setMaximumWidth(100);
     tabInFilterField2d1dIterations->setMinimum(1);
     tabInFilterField2d1dIterations->setMaximum(50);
     
     tabInFilterField2d1dScaleXY = new QSpinBox(tabInFilterGroupBox3);
     tabInFilterField2d1dScaleXY->setObjectName("wavelet.scaleXY");
-    tabInFilterField2d1dScaleXY->setToolTip(tr("Number of spatial scales used in decomposition"));
+    //tabInFilterField2d1dScaleXY->setToolTip(tr("Number of spatial scales used in decomposition"));
     tabInFilterField2d1dScaleXY->setMaximumWidth(100);
     tabInFilterField2d1dScaleXY->setMinimum(-1);
     tabInFilterField2d1dScaleXY->setMaximum(50);
     
     tabInFilterField2d1dScaleZ = new QSpinBox(tabInFilterGroupBox3);
     tabInFilterField2d1dScaleZ->setObjectName("wavelet.scaleZ");
-    tabInFilterField2d1dScaleZ->setToolTip(tr("Number of spectral scales used in decomposition"));
+    //tabInFilterField2d1dScaleZ->setToolTip(tr("Number of spectral scales used in decomposition"));
     tabInFilterField2d1dScaleZ->setMaximumWidth(100);
     tabInFilterField2d1dScaleZ->setMinimum(-1);
     tabInFilterField2d1dScaleZ->setMaximum(50);
     
     tabInFilterField2d1dPositivity = new QCheckBox(tr("Enable "), tabInFilterGroupBox3);
     tabInFilterField2d1dPositivity->setObjectName("wavelet.positivity");
-    tabInFilterField2d1dPositivity->setToolTip("Only include positive wavelet components");
+    //tabInFilterField2d1dPositivity->setToolTip("Only include positive wavelet components");
     tabInFilterField2d1dPositivity->setChecked(false);
     
     tabInFilterForm3->addRow(tr("Threshold:"), tabInFilterField2d1dThreshold);
@@ -1933,17 +1936,17 @@ void SoFiA::createInterface()
     
     tabParametrisationButtonMaskOpt = new QCheckBox(tr("Optimise mask (ellipse) "), tabParametrisationGroupBox1);
     tabParametrisationButtonMaskOpt->setObjectName("parameters.optimiseMask");
-    tabParametrisationButtonMaskOpt->setToolTip("Run mask optimisation algorithm to improve flux measurement");
+    //tabParametrisationButtonMaskOpt->setToolTip("Run mask optimisation algorithm to improve flux measurement");
     tabParametrisationButtonMaskOpt->setEnabled(true);
     tabParametrisationButtonMaskOpt->setChecked(false);
     tabParametrisationButtonDilateMask = new QCheckBox(tr("Optimise mask (dilation) "), tabParametrisationGroupBox1);
     tabParametrisationButtonDilateMask->setObjectName("parameters.dilateMask");
-    tabParametrisationButtonDilateMask->setToolTip("Dilate source mask to improve flux measurement");
+    //tabParametrisationButtonDilateMask->setToolTip("Dilate source mask to improve flux measurement");
     tabParametrisationButtonDilateMask->setEnabled(true);
     tabParametrisationButtonDilateMask->setChecked(false);
     tabParametrisationButtonBusyFunction = new QCheckBox(tr("Fit Busy Function "), tabParametrisationGroupBox1);
     tabParametrisationButtonBusyFunction->setObjectName("parameters.fitBusyFunction");
-    tabParametrisationButtonBusyFunction->setToolTip("Parametrise integrated spectrum by fitting Busy Function");
+    //tabParametrisationButtonBusyFunction->setToolTip("Parametrise integrated spectrum by fitting Busy Function");
     tabParametrisationButtonBusyFunction->setEnabled(true);
     tabParametrisationButtonBusyFunction->setChecked(false);
     
@@ -1973,7 +1976,7 @@ void SoFiA::createInterface()
     QLabel *labelRel   = new QLabel(QString::fromUtf8("–"), tabParametrisationGroupBox2);
     
     tabParametrisationWidgetRel = new QWidget(tabParametrisationGroupBox2);
-    tabParametrisationWidgetRel->setToolTip("Reliability cutoff for output catalogue");
+    //tabParametrisationWidgetRel->setToolTip("Reliability cutoff for output catalogue");
     tabParametrisationLayoutRel = new QHBoxLayout;
     tabParametrisationLayoutRel->addWidget(tabParametrisationFieldRelMin);
     tabParametrisationLayoutRel->addWidget(labelRel);
@@ -1987,7 +1990,7 @@ void SoFiA::createInterface()
     
     tabParametrisationFieldRelPlot = new QCheckBox(tr("Enable "), tabParametrisationGroupBox1);
     tabParametrisationFieldRelPlot->setObjectName("reliability.makePlot");
-    tabParametrisationFieldRelPlot->setToolTip("PDF file showing distribution of positive/negative sources in parameter space");
+    //tabParametrisationFieldRelPlot->setToolTip("PDF file showing distribution of positive/negative sources in parameter space");
     tabParametrisationFieldRelPlot->setEnabled(true);
     tabParametrisationFieldRelPlot->setChecked(false);
     
@@ -2171,14 +2174,14 @@ void SoFiA::createInterface()
     
     tabOutputFieldBaseName = new QLineEdit(tabOutputGroupBox1);
     tabOutputFieldBaseName->setObjectName("writeCat.basename");
-    tabOutputFieldBaseName->setToolTip("Base name to be used for all output files (optional). Defaults to input file name.");
+    //tabOutputFieldBaseName->setToolTip("Base name to be used for all output files (optional). Defaults to input file name.");
     tabOutputFieldBaseName->setEnabled(true);
     
     tabOutputWidgetDirectory = new QWidget(tabOutputGroupBox1);
     tabOutputLayoutDirectory = new QHBoxLayout;
     tabOutputFieldDirectory  = new QLineEdit(tabOutputWidgetDirectory);
     tabOutputFieldDirectory->setObjectName("writeCat.outputDir");
-    tabOutputFieldDirectory->setToolTip("Path to output directory (optional). Defaults to input cube directory.");
+    //tabOutputFieldDirectory->setToolTip("Path to output directory (optional). Defaults to input cube directory.");
     tabOutputButtonDirectory = new QPushButton(tr("Select..."), tabOutputWidgetDirectory);
     connect(tabOutputButtonDirectory, SIGNAL(clicked()), this, SLOT(selectOutputDirectory()));
     tabOutputButtonDirectory->setIcon(iconDocumentOpen);
@@ -2189,7 +2192,7 @@ void SoFiA::createInterface()
     
     tabOutputButtonASCII = new QCheckBox(tr("ASCII "), tabOutputGroupBox1);
     tabOutputButtonASCII->setObjectName("writeCat.writeASCII");
-    tabOutputButtonASCII->setToolTip(tr("Human-readable ASCII file"));
+    //tabOutputButtonASCII->setToolTip(tr("Human-readable ASCII file"));
     tabOutputButtonASCII->setChecked(true);
     tabOutputButtonASCII->setEnabled(true);
     connect(tabOutputButtonASCII, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
@@ -2197,13 +2200,13 @@ void SoFiA::createInterface()
     tabOutputButtonXML->setObjectName("writeCat.writeXML");
     tabOutputButtonXML->setChecked(false);
     tabOutputButtonXML->setEnabled(true);
-    tabOutputButtonXML->setToolTip(tr("Virtual Observatory XML table"));
+    //tabOutputButtonXML->setToolTip(tr("Virtual Observatory XML table"));
     connect(tabOutputButtonXML, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     tabOutputButtonSQL = new QCheckBox(tr("SQL "), tabOutputGroupBox1);
     tabOutputButtonSQL->setObjectName("writeCat.writeSQL");
     tabOutputButtonSQL->setChecked(false);
     tabOutputButtonSQL->setEnabled(false);
-    tabOutputButtonSQL->setToolTip(tr("Structured Query Language"));
+    //tabOutputButtonSQL->setToolTip(tr("Structured Query Language"));
     connect(tabOutputButtonSQL, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     
     tabOutputWidgetFormat = new QWidget(tabOutputGroupBox1);
@@ -2218,34 +2221,34 @@ void SoFiA::createInterface()
     
     tabOutputButtonFilteredCube = new QCheckBox(tr("Filtered cube "), tabOutputGroupBox1);
     tabOutputButtonFilteredCube->setObjectName("steps.doWriteFilteredCube");
-    tabOutputButtonFilteredCube->setToolTip(tr("Data cube with input filters applied"));
+    //tabOutputButtonFilteredCube->setToolTip(tr("Data cube with input filters applied"));
     tabOutputButtonFilteredCube->setChecked(false);
     connect(tabOutputButtonFilteredCube, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     tabOutputButtonMask = new QCheckBox(tr("Mask "), tabOutputGroupBox1);
     tabOutputButtonMask->setObjectName("steps.doWriteMask");
-    tabOutputButtonMask->setToolTip(tr("Source mask cube"));
+    //tabOutputButtonMask->setToolTip(tr("Source mask cube"));
     tabOutputButtonMask->setChecked(false);
     connect(tabOutputButtonMask, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     tabOutputButtonMom0 = new QCheckBox(tr("Mom. 0 "), tabOutputGroupBox1);
     tabOutputButtonMom0->setObjectName("steps.doMom0");
     tabOutputButtonMom0->setChecked(false);
-    tabOutputButtonMom0->setToolTip(tr("Integrated flux map (moment 0)"));
+    //tabOutputButtonMom0->setToolTip(tr("Integrated flux map (moment 0)"));
     connect(tabOutputButtonMom0, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     tabOutputButtonMom1 = new QCheckBox(tr("Mom. 1 "), tabOutputGroupBox1);
     tabOutputButtonMom1->setObjectName("steps.doMom1");
     tabOutputButtonMom1->setChecked(false);
-    tabOutputButtonMom1->setToolTip(tr("Velocity field map (moment 1)"));
+    //tabOutputButtonMom1->setToolTip(tr("Velocity field map (moment 1)"));
     connect(tabOutputButtonMom1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     tabOutputButtonCubelets = new QCheckBox(tr("Cubelets "), tabOutputGroupBox1);
     tabOutputButtonCubelets->setObjectName("steps.doCubelets");
     tabOutputButtonCubelets->setChecked(false);
-    tabOutputButtonCubelets->setToolTip(tr("Individual cubelets, moment maps and spectra for each source"));
+    //tabOutputButtonCubelets->setToolTip(tr("Individual cubelets, moment maps and spectra for each source"));
     connect(tabOutputButtonCubelets, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     
     tabOutputButtonCompress = new QCheckBox(tr("Gzip "), tabOutputGroupBox1);
     tabOutputButtonCompress->setObjectName("writeCat.compress");
     tabOutputButtonCompress->setChecked(false);
-    tabOutputButtonCompress->setToolTip(tr("Use gzip to compress all output files"));
+    //tabOutputButtonCompress->setToolTip(tr("Use gzip to compress all output files"));
     
     tabOutputWidgetProducts = new QWidget(tabOutputGroupBox1);
     tabOutputLayoutProducts = new QHBoxLayout();
@@ -2277,30 +2280,30 @@ void SoFiA::createInterface()
     tabOutputButtonParameterX     = new QCheckBox(tr("Position X "), tabOutputGroupBox2);
     tabOutputButtonParameterX->setObjectName("parameterX");
     tabOutputButtonParameterX->setChecked(false);
-    tabOutputButtonParameterX->setToolTip(tr("Source position in pixels"));
+    //tabOutputButtonParameterX->setToolTip(tr("Source position in pixels"));
     tabOutputButtonParameterY     = new QCheckBox(tr("Position Y "), tabOutputGroupBox2);
     tabOutputButtonParameterY->setObjectName("parameterY");
     tabOutputButtonParameterY->setChecked(false);
-    tabOutputButtonParameterY->setToolTip(tr("Source position in pixels"));
+    //tabOutputButtonParameterY->setToolTip(tr("Source position in pixels"));
     tabOutputButtonParameterZ     = new QCheckBox(tr("Position Z "), tabOutputGroupBox2);
     tabOutputButtonParameterZ->setObjectName("parameterZ");
     tabOutputButtonParameterZ->setChecked(false);
-    tabOutputButtonParameterZ->setToolTip(tr("Source position in pixels"));
+    //tabOutputButtonParameterZ->setToolTip(tr("Source position in pixels"));
     tabOutputButtonParameterLon   = new QCheckBox(tr("Longitude "), tabOutputGroupBox2);
     tabOutputButtonParameterLon->setObjectName("parameterLon");
     tabOutputButtonParameterLon->setChecked(false);
-    tabOutputButtonParameterLon->setToolTip(tr("Longitude in world coordinates (e.g. right ascension, Galactic longitude, etc.)"));
+    //tabOutputButtonParameterLon->setToolTip(tr("Longitude in world coordinates (e.g. right ascension, Galactic longitude, etc.)"));
     tabOutputButtonParameterLat   = new QCheckBox(tr("Latitude "), tabOutputGroupBox2);
     tabOutputButtonParameterLat->setObjectName("parameterLat");
     tabOutputButtonParameterLat->setChecked(false);
-    tabOutputButtonParameterLat->setToolTip(tr("Latitude in world coordinates (e.g. declination, Galactic latitude, etc.)"));
+    //tabOutputButtonParameterLat->setToolTip(tr("Latitude in world coordinates (e.g. declination, Galactic latitude, etc.)"));
     tabOutputButtonParameterFreq  = new QCheckBox(tr("Frequency "), tabOutputGroupBox2);
     tabOutputButtonParameterFreq->setObjectName("parameterFreq");
     tabOutputButtonParameterFreq->setChecked(false);
     tabOutputButtonParameterVrad  = new QCheckBox(tr("Velocity "), tabOutputGroupBox2);
     tabOutputButtonParameterVrad->setObjectName("parameterVelo");
     tabOutputButtonParameterVrad->setChecked(false);
-    tabOutputButtonParameterVrad->setToolTip(tr("Radial velocity"));
+    //tabOutputButtonParameterVrad->setToolTip(tr("Radial velocity"));
     tabOutputButtonParameterW50   = new QCheckBox(tr("Line width (w50) "), tabOutputGroupBox2);
     tabOutputButtonParameterW50->setObjectName("parameterW50");
     tabOutputButtonParameterW50->setChecked(false);
@@ -2316,43 +2319,43 @@ void SoFiA::createInterface()
     tabOutputButtonParameterRel   = new QCheckBox(tr("Reliability "), tabOutputGroupBox2);
     tabOutputButtonParameterRel->setObjectName("parameterRel");
     tabOutputButtonParameterRel->setChecked(false);
-    tabOutputButtonParameterRel->setToolTip(tr("Reliability from negative detections (if enabled)"));
+    //tabOutputButtonParameterRel->setToolTip(tr("Reliability from negative detections (if enabled)"));
     tabOutputButtonParameterFlags = new QCheckBox(tr("Quality flags "), tabOutputGroupBox2);
     tabOutputButtonParameterFlags->setObjectName("parameterFlags");
     tabOutputButtonParameterFlags->setChecked(false);
     tabOutputButtonParameterEllMaj = new QCheckBox(tr("Major axis "), tabOutputGroupBox2);
     tabOutputButtonParameterEllMaj->setObjectName("parameterEllMaj");
     tabOutputButtonParameterEllMaj->setChecked(false);
-    tabOutputButtonParameterEllMaj->setToolTip(tr("Major axis of ellipse fitted to source"));
+    //tabOutputButtonParameterEllMaj->setToolTip(tr("Major axis of ellipse fitted to source"));
     tabOutputButtonParameterEllMin = new QCheckBox(tr("Minor axis "), tabOutputGroupBox2);
     tabOutputButtonParameterEllMin->setObjectName("parameterEllMin");
     tabOutputButtonParameterEllMin->setChecked(false);
-    tabOutputButtonParameterEllMin->setToolTip(tr("Minor axis of ellipse fitted to source"));
+    //tabOutputButtonParameterEllMin->setToolTip(tr("Minor axis of ellipse fitted to source"));
     tabOutputButtonParameterEllPA = new QCheckBox(tr("Position angle "), tabOutputGroupBox2);
     tabOutputButtonParameterEllPA->setObjectName("parameterEllPA");
     tabOutputButtonParameterEllPA->setChecked(false);
-    tabOutputButtonParameterEllPA->setToolTip(tr("Position angle of ellipse fitted to source"));
+    //tabOutputButtonParameterEllPA->setToolTip(tr("Position angle of ellipse fitted to source"));
     tabOutputButtonParameterRms = new QCheckBox(tr("RMS noise "), tabOutputGroupBox2);
     tabOutputButtonParameterRms->setObjectName("parameterRms");
     tabOutputButtonParameterRms->setChecked(false);
-    tabOutputButtonParameterRms->setToolTip(tr("Measured RMS noise of the data"));
+    //tabOutputButtonParameterRms->setToolTip(tr("Measured RMS noise of the data"));
     tabOutputButtonParameterBFPar = new QCheckBox(tr("BF fit solution "), tabOutputGroupBox2);
     tabOutputButtonParameterBFPar->setObjectName("parameterBFPar");
     tabOutputButtonParameterBFPar->setChecked(false);
-    tabOutputButtonParameterBFPar->setToolTip(tr("Best-fit Busy Function parameters (if enabled)"));
+    //tabOutputButtonParameterBFPar->setToolTip(tr("Best-fit Busy Function parameters (if enabled)"));
     tabOutputButtonParameterBFPhys = new QCheckBox(tr("BF parametrisation "), tabOutputGroupBox2);
     tabOutputButtonParameterBFPhys->setObjectName("parameterBFPhys");
     tabOutputButtonParameterBFPhys->setChecked(false);
-    tabOutputButtonParameterBFPhys->setToolTip(tr("Physical parameters derived from Busy Function fit (if enabled)"));
+    //tabOutputButtonParameterBFPhys->setToolTip(tr("Physical parameters derived from Busy Function fit (if enabled)"));
     tabOutputButtonParameterBFInfo = new QCheckBox(tr("BF information "), tabOutputGroupBox2);
     tabOutputButtonParameterBFInfo->setObjectName("parameterBFInfo");
     tabOutputButtonParameterBFInfo->setChecked(false);
-    tabOutputButtonParameterBFInfo->setToolTip(tr("Additional information (chi-squared, flags, etc.) about Busy Function fit (if enabled)"));
+    //tabOutputButtonParameterBFInfo->setToolTip(tr("Additional information (chi-squared, flags, etc.) about Busy Function fit (if enabled)"));
     tabOutputButtonParameterAll = new QCheckBox(tr("All "), tabOutputGroupBox2);
     tabOutputButtonParameterAll->setObjectName("parameterAll");
     tabOutputButtonParameterAll->setChecked(true);
     tabOutputButtonParameterAll->setEnabled(false);
-    tabOutputButtonParameterAll->setToolTip(tr("Select all available parameters"));
+    //tabOutputButtonParameterAll->setToolTip(tr("Select all available parameters"));
     connect(tabOutputButtonParameterAll, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     
     tabOutputWidgetParameters = new QWidget(tabOutputGroupBox2);
@@ -2408,6 +2411,11 @@ void SoFiA::createInterface()
     tabOutputLayout->addStretch();
     tabOutputLayout->addWidget(tabOutputWidgetControls);
     tabOutput->setLayout(tabOutputLayout);
+    
+    // Generate What's This? entries for all widgets
+    // ---------------------------------------------
+    
+    createWhatsThis();
     
     // Set up output widget
     // --------------------
@@ -2523,6 +2531,9 @@ void SoFiA::createInterface()
     actionHelp->setIcon(iconHelpContents);
     connect(actionHelp, SIGNAL(triggered()), this, SLOT(showHandbook()));
     
+    actionWhatsThis = QWhatsThis::createAction(this);
+    actionWhatsThis->setIcon(iconWhatsThis);
+    
     actionAbout = new QAction(tr("About SoFiA"), this);
     actionAbout->setIcon(iconHelpAbout);
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(aboutSoFiA()));
@@ -2538,6 +2549,8 @@ void SoFiA::createInterface()
     toolBar->addAction(actionRun);
     toolBar->addAction(actionAbort);
     toolBar->addAction(actionClearLog);
+    toolBar->addSeparator();
+    toolBar->addAction(actionWhatsThis);
     
     toolBar->setIconSize(QSize(22, 22));
     toolBar->setMovable(false);
@@ -2573,6 +2586,7 @@ void SoFiA::createInterface()
     
     menuHelp = new QMenu(tr("&Help"), this);
     menuHelp->addAction(actionHelp);
+    menuHelp->addAction(actionWhatsThis);
     menuHelp->addAction(actionAbout);
     
     this->menuBar()->addMenu(menuFile);
@@ -2595,6 +2609,159 @@ void SoFiA::createInterface()
     this->setCentralWidget(widgetMain);
     this->resize(600, 300);
     this->setWindowIcon(iconSoFiA);
+    
+    return;
+}
+
+
+
+// ----------------------------------------
+// Function to create What's This? entries:
+// ----------------------------------------
+
+void SoFiA::createWhatsThis()
+{
+    tabInputFieldData->setWhatsThis(tr("<h3>import.inFile</h3><p>Full path and file name of the input data cube. This option is mandatory, and there is no default. Note that only <b>FITS</b> files are currently supported by SoFiA.</p>"));
+    
+    tabInputFieldMask->setWhatsThis(tr("<h3>import.maskFile</h3><p>Full path and file name of an optional file containing a mask of pixels identified as part of a source, e.g. from a previous run of SoFiA. This can be used to re-parametrise sources without repeating the source finding step or to add more sources from a second source finding run. The default is to not read a mask cube.</p>"));
+    
+    tabInputFieldWeights->setWhatsThis(tr("<h3>import.weightsFile</h3><p>Full path and file name of an optional file containing the weights of pixels in the input cube. The weights will be applied before running the source finder. The default is to not apply weights.</p>"));
+    
+    tabInputFieldWeightsFunction->setWhatsThis(tr("<h3>import.weightsFunction</h3><p>Analytic function used to describe the data weights as a function of the three cube dimensions, <b>x</b>, <b>y</b>, and <b>z</b>. The default is to not apply weights. The following mathematical functions from Numpy are supported:<p><p style=\"font-family:monospace;\">sin(), cos(), tan(), arcsin(), arccos(), arctan(), arctan2(), sinh(), cosh(), tanh(), arcsinh(), arccosh(), arctanh(), exp(), log(), log10(), log2(), sqrt(), square(), power(), absolute(), fabs(), sign()</p><p>Note that the weights function is not applied whenever a weights cube is specified (see <b>import.weightsFile</b>).</p>"));
+    
+    tabInputFieldSubcube->setWhatsThis(tr("<h3>import.subcube</h3><p>This parameter defines a sub-cube to be read in and processed by SoFiA. Depending on the value of import.subcubeMode, the range is either specified in pixels as</p><p style=\"font-family:monospace;\">[x1, x2, y1, y2, z1, z2]</p><p>or in world coordinates as</p><p style=\"font-family:monospace;\">[x, y, z, rx, ry, rz]</p><p>In the latter case, <b>x</b>, <b>y</b> and <b>z</b> define the centre of the subcube, and <b>rx</b>, <b>ry</b> and <b>rz</b> specify the half-widths in the three dimensions. If world coordinates are used, all parameters must be in the native format as defined in the header of the data cube; e.g. if <span style=\"font-family:monospace;\">CUNIT3</span> is <span style=\"font-family:monospace;\">'Hz'</span> then both z and rz must be given in hertz. The default is an empty list, <span style=\"font-family:monospace;\">[]</span>, which means to read the entire cube.</p>"));
+    
+    tabInputGroupBox4->setWhatsThis(tr("<h3>steps.doSubCube</h3><p>If set to true, source finding will be carried out on a sub-cube to be defined by the <b>import.subcube</b> and <b>import.subcubeMode</b> options.</p>"));
+    
+    tabInputFieldSubcubeMode->setWhatsThis(tr("<h3>import.subcubeMode</h3><p>This parameter defines whether import.subcube is specified in pixels (<b>pix</b>) or in world coordinates (<b>wcs</b>).</p>"));
+    
+    tabInputGroupBox3->setWhatsThis(tr("<h3>steps.doFlag</h3><p>Flag pixel and channel ranges before proceeding. Details are specified with the <b>flag.regions</b> option.</p>"));
+    
+    tabInputFieldFlags->setWhatsThis(tr("<h3>flag.regions</h3><p>Pixel/channel range(s) to be flagged prior to source finding. Format:</p><p style=\"font-family:monospace;\">[[x1, x2, y1, y2, z1, z2], ...]</p><p>A place holder, <span style=\"font-family:monospace;\">''</span> (two single quotes), can be used for the upper range limit (x2, y2, and z2) to flag all the way to the end, e.g.</p><p style=\"font-family:monospace;\">[[0, '', 0, '', 0, 19]]</p><p>will flag the first 20 channels of the entire cube. The default is an empty list, <span style=\"font-family:monospace;\">[]</span>, which means to not flag anything.</p>"));
+    
+    tabInputGroupBox2->setWhatsThis(tr("<h3>steps.doOptical</h3><p>Run SoFiA on multiple, smaller sub-cubes centred on positions defined in an input source catalogue. A catalogue file will need to be specified (see parameter <b>optical.sourceCatalogue</b>). This could, e.g., be an optical galaxy catalogue with the aim to search for HI detections at the positions of all galaxies.</p>"));
+    
+    tabInputFieldCatalog->setWhatsThis(tr("<h3>optical.sourceCatalogue</h3><p>This defines the full path and file name of the input catalogue required for catalogue-based source finding (see parameter <b>steps.doOptical</b>). There is no default.</p>"));
+    
+    tabInputFieldSpatialSize->setWhatsThis(tr("<h3>optical.spatSize</h3><p>This defines the <b>spatial</b> size of the sub-cube to be searched around each catalogue position. The size must be specified in the <b>native units</b> of the data cube, e.g. in degrees.</p>"));
+    
+    tabInputFieldSpectralSize->setWhatsThis(tr("<h3>optical.specSize</h3><p>This defines the <b>spectral</b> size of the sub-cube to be searched around each catalogue position. The size must be specified in the <b>native units</b> of the data cube, e.g. in km/s or Hz.</p>"));
+    
+    tabInputFieldSingleCat->setWhatsThis(tr("<h3>optical.storeSingleCat</h3><p>If set to <b>true</b>, the sources found around all input positions will be combined to create a single output catalogue. By default this parameter is set to <b>false</b>, in which case a separate output catalogue file is generated for each input position.</p>"));
+    
+    tabInFilterGroupBox1->setWhatsThis(tr("<h3>steps.doSmooth</h3><p>Spatially and spectrally smooth cube prior to source finding?</p>"));
+    
+    tabInFilterFieldKernel->setWhatsThis(tr("<h3>smooth.kernel</h3><p>Type of smoothing kernel used in both spatial and spectral smoothing. Can be gaussian, boxcar or median.</p>"));
+    
+    tabInFilterFieldBorder->setWhatsThis(tr("<h3>smooth.edgeMode</h3><p>Behaviour near the edge of the cube. The following options are supported:</p><ul><li>constant: assume constant value of 0</li><li>nearest: assume constant value equal to edge pixel</li><li>reflect: mirror values at edge, thereby including the edge pixel itself</li><li>mirror: mirror values at position of outermost pixel, thereby excluding the edge pixel itself</li><li>wrap: copy values from opposite edge of the array</li></ul>"));
+    
+    tabInFilterFieldSmoothingSpatialLon->setWhatsThis(tr("<h3>smooth.kernelX</h3><p>Kernel size in pixels for first coordinate. For Gaussian kernels the value refers to the FWHM.</p>"));
+    
+    tabInFilterFieldSmoothingSpatialLat->setWhatsThis(tr("<h3>smooth.kernelY</h3><p>Kernel size in pixels for second coordinate. For Gaussian kernels the value refers to the FWHM.</p>"));
+    
+    tabInFilterFieldSmoothingSpectral->setWhatsThis(tr("<h3>smooth.kernelZ</h3><p>Kernel size in pixels for third coordinate. For Gaussian kernels the value refers to the FWHM.</p>"));
+    
+    tabInFilterGroupBox2->setWhatsThis(tr("<h3>steps.doScaleNoise</h3><p>Normalise noise levels prior to source finding?</p>"));
+    
+    tabInFilterFieldScaleX->setWhatsThis(tr("<h3>scaleNoise.scaleX</h3><p>Noise normalisation in first (spatial) dimension.</p>"));
+    
+    tabInFilterFieldScaleY->setWhatsThis(tr("<h3>scaleNoise.scaleY</h3><p>Noise normalisation in second (spatial) dimension.</p>"));
+    
+    tabInFilterFieldScaleZ->setWhatsThis(tr("<h3>scaleNoise.scaleZ</h3><p>Noise normalisation in third (spectral) dimension.</p>"));
+    
+    tabInFilterFieldStatistic->setWhatsThis(tr("<h3>scaleNoise.statistic</h3><p>Statistic used to measure the noise (median absolute deviation, standard deviation or Gaussian fit to negative fluxes).</p>"));
+    
+    tabInFilterFieldEdgeX->setWhatsThis(tr("<h3>scaleNoise.edgeX</h3><p>Size of edge (in pixels) to be excluded in first coordinate.</p>"));
+    
+    tabInFilterFieldEdgeY->setWhatsThis(tr("<h3>scaleNoise.edgeY</h3><p>Size of edge (in pixels) to be excluded in second coordinate.</p>"));
+    
+    tabInFilterFieldEdgeZ->setWhatsThis(tr("<h3>scaleNoise.edgeZ</h3><p>Size of edge (in pixels) to be excluded in third coordinate.</p>"));
+    
+    tabInFilterGroupBox3->setWhatsThis(tr("<h3>steps.doWavelet</h3>"));
+    
+    tabInFilterField2d1dThreshold->setWhatsThis(tr("<h3>wavelet.threshold</h3><p>Flux threshold used in the wavelet reconstruction in multiples of the rms noise. Note that this threshold only determines which wavelet components are added to the decomposed cube; any source finding will be done separately, using a different flux threshold.</p>"));
+    
+    tabInFilterField2d1dIterations->setWhatsThis(tr("<h3>wavelet.iterations</h3><p>Number of iterations in the reconstruction process.</p>"));
+    
+    tabInFilterField2d1dScaleXY->setWhatsThis(tr("<h3>wavelet.scaleXY</h3><p>Number of spatial scales used in the decomposition. The default value of -1 will automatically determine the appropriate number of scales based on the data cube.</p>"));
+    
+    tabInFilterField2d1dScaleZ->setWhatsThis(tr("<h3>wavelet.scaleZ</h3><p>Number of spectral scales used in the decomposition. The default value of -1 will automatically determine the appropriate number of scales based on the data cube.</p>"));
+    
+    tabInFilterField2d1dPositivity->setWhatsThis(tr("<h3>wavelet.positivity</h3><p>Include only positive wavelet components in the decomposition?</p>"));
+    
+    tabSourceFindingGroupBox1->setWhatsThis(tr("<h3>steps.doSCfind</h3><p>Run the smooth + clip finder?</p>"));
+    
+    tabSourceFindingFieldThreshold->setWhatsThis(tr("<h3>SCfind.threshold</h3><p>Flux threshold relative to the noise level.</p>"));
+    
+    tabSourceFindingFieldEdgeMode->setWhatsThis(tr("<h3>SCfind.edgeMode</h3><p>Behaviour near the edge of the cube. The following values are possible:<p><ul><li>constant: assume constant value of 0</li><li>nearest: assume constant value equal to edge pixel</li><li>reflect: mirror values at edge, thereby including the edge pixel itself</li><li>mirror: mirror values at position of outermost pixel, thereby excluding the edge pixel itself</li><li>wrap: copy values from opposite edge of the array</li></ul>"));
+    
+    tabSourceFindingFieldRmsMode->setWhatsThis(tr("<h3>SCfind.rmsMode</h3><p>Noise determination method: Gaussian fit to negative flux histogram (negative), median absolute deviation (mad), or standard deviation (std).</p>"));
+    
+    tabSourceFindingFieldKunit->setWhatsThis(tr("<h3>SCfind.kernelUnit</h3><p>Are kernel parameters specified in pixel or world coordinates?</p>"));
+    
+    tabSourceFindingFieldKernels->setWhatsThis(tr("<h3>SCfind.kernels</h3><p>List of kernels to be used for smoothing. Format is [[dx, dy, dz, 'type'], ...] where dx, dy, and dz are the spatial and spectral kernel sizes (FWHM), and 'type' can be boxcar ('b') or Gaussian ('g'). Note that 'type' only applies to the spectral axis, and the spatial kernel is always Gaussian.</p>"));
+    
+    tabSourceFindingGroupBox2->setWhatsThis(tr("<h3>steps.doThreshold</h3><p>Run the threshold finder?</p>"));
+    
+    tabSourceFindingFieldThreshold2->setWhatsThis(tr("<h3>threshold.threshold</h3><p>Absolute or relative flux threshold (see threshold.clipMethod).</p>"));
+    
+    tabSourceFindingFieldClipMethod->setWhatsThis(tr("<h3>threshold.clipMethod</h3><p>Should threshold be relative to the noise level or in absolute flux units?</p>"));
+    
+    tabSourceFindingFieldRmsMode2->setWhatsThis(tr("<h3>threshold.rmsMode</h3><p>Noise determination method: Gaussian fit to negative flux histogram (negative), median absolute deviation (mad), or standard deviation (std).</p>"));
+    
+    tabMergingGroupBox1->setWhatsThis(tr("<h3>steps.doMerge</h3><p>Merge detected sources?</p>"));
+    
+    tabMergingFieldMergeX->setWhatsThis(tr("<h3>merge.mergeX</h3><p>Merging radius in first dimension in pixels.</p>"));
+    
+    tabMergingFieldMergeY->setWhatsThis(tr("<h3>merge.mergeY</h3><p>Merging radius in second dimension in pixels.</p>"));
+    
+    tabMergingFieldMergeZ->setWhatsThis(tr("<h3>merge.mergeZ</h3><p>Merging radius in third dimension in pixels.</p>"));
+    
+    tabMergingFieldMinSizeX->setWhatsThis(tr("<h3>merge.minSizeX</h3><p>Minimum extent of genuine sources in first dimension.</p>"));
+    
+    tabMergingFieldMinSizeY->setWhatsThis(tr("<h3>merge.minSizeY</h3><p>Minimum extent of genuine sources in second dimension.</p>"));
+    
+    tabMergingFieldMinSizeZ->setWhatsThis(tr("<h3>merge.minSizeZ</h3><p>Minimum extent of genuine sources in third dimension.</p>"));
+    
+    tabParametrisationGroupBox1->setWhatsThis(tr("<h3>steps.doParameterise</h3><p>Run the mask optimisation and source parametrisation module?</p>"));
+    
+    tabParametrisationButtonMaskOpt->setWhatsThis(tr("<h3>parameters.optimiseMask</h3><p>Run the mask optimisation algorithm based on fitting and growing ellipses to achieve more accurate flux measurements.</p>"));
+    
+    tabParametrisationButtonDilateMask->setWhatsThis(tr("<h3>parameters.dilateMask</h3><p>Run the mask optimisation algorithm based on spatially dilating the initial mask to achieve more accurate flux measurements.</p>"));
+    
+    tabParametrisationButtonBusyFunction->setWhatsThis(tr("<h3>parameters.fitBusyFunction</h3><p>Fit the Busy Function (<a href=\"http://arxiv.org/abs/1311.5308\">Westmeier et al. 2013</a>) to the integrated spectrum for more accurate parametrisation.</p>"));
+    
+    tabParametrisationGroupBox2->setWhatsThis(tr("<h3>steps.doReliability</h3><p>Use negative detections to calculate reliability?</p>"));
+    
+    tabParametrisationFieldRelMin->setWhatsThis(tr("<h3>reliability.relThresh</h3><p>Discard sources whose reliability is below this value.</p>"));
+    
+    tabParametrisationFieldRelKernel->setWhatsThis(tr("<h3>reliability.kernel</h3><p>Size of 3D smoothing kernel in log(parameter) space (see reliability.parSpace).</p>"));
+    
+    tabParametrisationFieldRelPlot->setWhatsThis(tr("<h3>reliability.makePlot</h3><p>If set to true, a PDF file showing the distribution of positive and negative detections in parameter space will be created for diagnostic purposes.</p>"));
+    
+    tabOutputGroupBox2->setWhatsThis(tr("<h3>writeCat.parameters</h3><p>List of parameters to appear in source catalogue. Format: ['par1', 'par2', ...]. An asterisk ['*'] means all parameters.</p>"));
+    
+    tabOutputFieldBaseName->setWhatsThis(tr("<h3>writeCat.baseName</h3><p>By default, SoFiA will use the file name of the input data cube as the template for all output data files, usually extended by a specific postfix based on the specific output data product. By setting the <b>writeCat.basename</b> parameter, a different template for all output file names can be specified.</p>"));
+    
+    tabOutputFieldDirectory->setWhatsThis(tr("<h3>writeCat.outputDir</h3><p>Optional directory path to which all output files are written. If not specified, the directory of the input cube will be used by default.</p>"));
+    
+    tabOutputButtonASCII->setWhatsThis(tr("<h3>writeCat.writeASCII</h3><p>Write catalogue in ASCII format.</p>"));
+    
+    tabOutputButtonXML->setWhatsThis(tr("<h3>writeCat.writeXML</h3><p>Write catalogue in VO table (XML) format.</p>"));
+    
+    tabOutputButtonSQL->setWhatsThis(tr("<h3>writeCat.writeSQL</h3><p>Write catalogue in SQL format (not yet implemented).</p>"));
+    
+    tabOutputButtonCompress->setWhatsThis(tr("<h3>writeCat.compress</h3><p>If set to true, use <a href=\"http://www.gzip.org/\">gzip</a> to compress all output files.</p>"));
+    
+    tabOutputButtonFilteredCube->setWhatsThis(tr("<h3>steps.doWriteFilteredCube</h3><p>Save a copy of the filtered data cube? Note that this will only work if at least one of the input filters was applied.</p>"));
+    
+    tabOutputButtonMask->setWhatsThis(tr("<h3>steps.doWriteMask</h3><p>Save mask cube?</p>"));
+    
+    tabOutputButtonMom0->setWhatsThis(tr("<h3>steps.doMom0</h3><p>Create and save moment-0 map?</p>"));
+    
+    tabOutputButtonMom1->setWhatsThis(tr("<h3>steps.doMom1</h3><p>Create and save moment-1 map?</p>"));
+    
+    tabOutputButtonCubelets->setWhatsThis(tr("<h3>steps.doCubelets</h3><p>Create and save sub-cube of each source?</p>"));
     
     return;
 }
