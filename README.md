@@ -26,7 +26,6 @@ SoFiA:
         Python (≥ 2.4)
         numpy (≥ 1.7)
         scipy (≥ 0.7)
-        pyfits (≥ 3.0)
         astropy (≥ 0.2.5)
         matplotlib (≥ 1.1; optional, only needed for reliability plot)
     Packages (C++):
