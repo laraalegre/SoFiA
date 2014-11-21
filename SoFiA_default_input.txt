@@ -121,9 +121,9 @@ reliability.makePlot            =       false
 parameters.fitBusyFunction      =       false
 parameters.optimiseMask         =       false
 parameters.dilateMask           =       false
-parameters.dilateThreshold     =       0.02
-parameters.dilatePixMax       =       10
-parameters.dilateChan          =       1
+parameters.dilateThreshold      =       0.02
+parameters.dilatePixMax         =       10
+parameters.dilateChan           =       1
 
 # Output module
 
