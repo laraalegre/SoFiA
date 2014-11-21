@@ -116,9 +116,9 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "parameters.fitBusyFunction": "bool", \
                  "parameters.optimiseMask": "bool", \
                  "parameters.dilateMask": "bool", \
-                 "parameters.dilate_threshold":"float",\
-                 "parameters.dilate_pix_max":"int",\
-                 "parameters.dilate_chan":"int",\
+                 "parameters.dilateThreshold":"float",\
+                 "parameters.dilatePixMax":"int",\
+                 "parameters.dilateChan":"int",\
                  "writeCat.compress":"bool", \
                  "writeCat.outputDir": "string", \
                  "writeCat.basename": "string", \

@@ -7,18 +7,18 @@ import scipy.ndimage as nd
 import sys
 
 def dilate(cube,mask,objects,cathead,Parameters):
-    dilate_threshold=Parameters['parameters']['dilate_threshold']
-    dilate_pix_max=Parameters['parameters']['dilate_pix_max']
-    dilate_chan=Parameters['parameters']['dilate_chan']
-    # stops dilating when (flux_new-flux_old)/flux_new < dilate_threshold
+    dilateThreshold=Parameters['parameters']['dilateThreshold']
+    dilatePixMax=Parameters['parameters']['dilatePixMax']
+    dilateChan=Parameters['parameters']['dilateChan']
+    # stops dilating when (flux_new-flux_old)/flux_new < dilateThreshold
     for mm in range(1,mask.max()+1):
     	obj=objects[mm-1]
-    	xmin=obj[list(cathead).index('Xmin')]-dilate_pix_max
-    	xmax=obj[list(cathead).index('Xmax')]+dilate_pix_max
-    	ymin=obj[list(cathead).index('Ymin')]-dilate_pix_max
-    	ymax=obj[list(cathead).index('Ymax')]+dilate_pix_max
-    	zmin=obj[list(cathead).index('Zmin')]-dilate_chan
-    	zmax=obj[list(cathead).index('Zmax')]+dilate_chan
+    	xmin=obj[list(cathead).index('Xmin')]-dilatePixMax
+    	xmax=obj[list(cathead).index('Xmax')]+dilatePixMax
+    	ymin=obj[list(cathead).index('Ymin')]-dilatePixMax
+    	ymax=obj[list(cathead).index('Ymax')]+dilatePixMax
+    	zmin=obj[list(cathead).index('Zmin')]-dilateChan
+    	zmax=obj[list(cathead).index('Zmax')]+dilateChan
     	xmin=max(0,xmin)
     	xmax=min(xmax,cube.shape[2]-1)
     	ymin=max(0,ymin)
@@ -30,25 +30,25 @@ def dilate(cube,mask,objects,cathead,Parameters):
     	allmask=mask[zmin:zmax+1,ymin:ymax+1,xmin:xmax+1].copy()
     	otherobjs=(allmask>0)*(allmask!=mm)
     	if (otherobjs).sum():
-    		# Ensure that objects!=mm within dilate_pix_max, dilate_chan are not included in the flux growth calculation
-    		print 'WARNING: object %i has possible overlapping objects within %i pix, %i chan'%(mm,dilate_pix_max,dilate_chan)
+    		# Ensure that objects!=mm within dilatePixMax, dilateChan are not included in the flux growth calculation
+    		print 'WARNING: object %i has possible overlapping objects within %i pix, %i chan'%(mm,dilatePixMax,dilateChan)
     		objcube[(allmask>0)*(allmask!=mm)]=0
         fluxes=[]
-        for dil in range(dilate_pix_max+1):
+        for dil in range(dilatePixMax+1):
             dd=dil*2+1
             dilstruct=(np.sqrt(((np.indices((dd,dd))-dil)**2).sum(axis=0))<=dil).astype(int)
             dilstruct.resize((1,dilstruct.shape[0],dilstruct.shape[1]))
-            dilstruct=dilstruct.repeat(dilate_chan*2+1,axis=0)
+            dilstruct=dilstruct.repeat(dilateChan*2+1,axis=0)
             fluxes.append(objcube[nd.morphology.binary_dilation(objmask==mm,structure=dilstruct)].sum())
-            if dil>0 and (fluxes[-1]-fluxes[-2])/fluxes[-1]<dilate_threshold: break
+            if dil>0 and (fluxes[-1]-fluxes[-2])/fluxes[-1]<dilateThreshold: break
         # pick the best dilation kernel for current object and update mask
         dil-=1
-        print 'Mask dilation of source %i by %i pix and %i chan'%(mm,dil,dilate_chan)
+        print 'Mask dilation of source %i by %i pix and %i chan'%(mm,dil,dilateChan)
         sys.stdout.flush()
         dd=dil*2+1
         dilstruct=(np.sqrt(((np.indices((dd,dd))-dil)**2).sum(axis=0))<=dil).astype(int)
         dilstruct.resize((1,dilstruct.shape[0],dilstruct.shape[1]))
-        dilstruct=dilstruct.repeat(dilate_chan*2+1,axis=0)
+        dilstruct=dilstruct.repeat(dilateChan*2+1,axis=0)
         # Only grow the mask of object mm even when other objects are present in objmask
         objmask[nd.morphology.binary_dilation(objmask==mm,structure=dilstruct).astype(int)==1]=mm
         # Put back in objmask objects!=mm that may have been inside objmask before dilation or may have been temporarily replaced by the dilated object mm

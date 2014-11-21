@@ -25,6 +25,9 @@ def recursion(dictionary,optionsList,optionsDepth,counter=0):
 
 def writeMoment0(datacube,maskcube,filename,debug,header,compress):
   print 'Writing moment-0' # in units of header['bunit']*km/s
+  if 'CELLSCAL' in header:
+    if header['CELLSCAL'] == '1/F':
+      print 'WARNING: CELLSCAL keyword with value 1/F found'
   datacube = np.array(datacube, dtype=np.single)
   maskcube = np.array(maskcube, dtype=np.single)
   m0 = mom0(datacube,maskcube)  
