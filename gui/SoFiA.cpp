@@ -1422,6 +1422,7 @@ void SoFiA::createInterface()
     tabInputForm1->addRow(tr("Mask cube:"), tabInputWidgetMask);
     tabInputForm1->addRow(tr("Weights cube:"), tabInputWidgetWeights);
     tabInputForm1->addRow(tr("Weights function:"), tabInputFieldWeightsFunction);
+    tabInputForm1->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
     tabInputGroupBox1->setLayout(tabInputForm1);
     
     // sub-cube
@@ -1443,6 +1444,7 @@ void SoFiA::createInterface()
     
     tabInputForm4->addRow(tr("Range:"), tabInputFieldSubcube);
     tabInputForm4->addRow(tr("Mode:"), tabInputFieldSubcubeMode);
+    tabInputForm4->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
     tabInputGroupBox4->setLayout(tabInputForm4);
     
     // flagging
@@ -1458,6 +1460,7 @@ void SoFiA::createInterface()
     //tabInputFieldFlags->setToolTip("Pixel/channel ranges to be flagged (optional)");
     
     tabInputForm3->addRow(tr("Range:"), tabInputFieldFlags);
+    tabInputForm3->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
     tabInputGroupBox3->setLayout(tabInputForm3);
     
     // optical source finding
@@ -1500,6 +1503,7 @@ void SoFiA::createInterface()
     tabInputForm2->addRow(tr("Spatial size:"), tabInputFieldSpatialSize);
     tabInputForm2->addRow(tr("Spectral size:"), tabInputFieldSpectralSize);
     tabInputForm2->addRow(tr("Output:"), tabInputFieldSingleCat);
+    tabInputForm2->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
     tabInputGroupBox2->setLayout(tabInputForm2);
     
     // controls
@@ -1773,6 +1777,7 @@ void SoFiA::createInterface()
     tabSourceFindingForm1Left->addRow(tr("Kernel units:"), tabSourceFindingFieldKunit);
     
     tabSourceFindingForm1Right->addRow(tr("Kernels:"), tabSourceFindingFieldKernels);
+    tabSourceFindingForm1Right->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
     
     tabSourceFindingWidget1Left->setLayout(tabSourceFindingForm1Left);
     tabSourceFindingWidget1Right->setLayout(tabSourceFindingForm1Right);
@@ -1997,6 +2002,7 @@ void SoFiA::createInterface()
     tabParametrisationForm2->addRow(tr("Accepted range:"), tabParametrisationWidgetRel);
     tabParametrisationForm2->addRow(tr("Kernel:"), tabParametrisationFieldRelKernel);
     tabParametrisationForm2->addRow(tr("Diagnostic plot:"), tabParametrisationFieldRelPlot);
+    tabParametrisationForm2->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
     tabParametrisationGroupBox2->setLayout(tabParametrisationForm2);
     
     tabParametrisationButtonPrev = new QPushButton(tr("Previous"), tabParametrisation);
@@ -2267,6 +2273,7 @@ void SoFiA::createInterface()
     tabOutputForm1->addRow(tr("Source catalogue:"), tabOutputWidgetFormat);
     tabOutputForm1->addRow(tr("Data products:"), tabOutputWidgetProducts);
     tabOutputForm1->addRow(tr("Compression:"), tabOutputButtonCompress);
+    tabOutputForm1->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
     tabOutputGroupBox1->setLayout(tabOutputForm1);
     
     tabOutputGroupBox2 = new QGroupBox(tr("Parameter list"), toolBoxOP);
