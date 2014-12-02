@@ -36,12 +36,14 @@ def writeMoment0(datacube,maskcube,filename,debug,header,compress):
     if not 'cunit3' in header: dkms=abs(header['cdelt3'])/1e+3 # assuming m/s
     elif header['cunit3'].lower()=='km/s': dkms=abs(header['cdelt3'])
     bunitExt = '.km/s'
-  #elif 'freq' in header['ctype3'].lower():
+  elif 'freq' in header['ctype3'].lower():
     #if not 'cunit3' in header or header['cunit3'].lower()=='hz': dkms=abs(header['cdelt3'])/1.42040575177e+9*2.99792458e+5 # assuming Hz
     #elif header['cunit3'].lower()=='khz': dkms=abs(header['cdelt3'])/1.42040575177e+6*2.99792458e+5
-  else: 
+    if not 'cunit3' in header or ('cunit3' in header and header['cunit3'].lower()=='hz'):
+      bunitExt = '.hz'
+    else: 
+      bunitExt = '.'+header['cunit3']
     dkms=1. # no scaling, avoids crashing
-    bunitExt = '.'+header['cunit3']
   hdu = pyfits.PrimaryHDU(data=m0*dkms,header=header)
   hdu.header['bunit']+=bunitExt
   hdu.header['datamin']=(m0*dkms).min()
@@ -68,16 +70,18 @@ def writeMoment1(datacube,maskcube,filename,debug,header,m0,compress):
   if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
     if not 'cunit3' in header: m1/=1e+3 # assuming m/s
     elif header['cunit3'].lower()=='km/s': 
-      bunit = 'km/s'
-      pass
-  #elif 'freq' in header['ctype3'].lower():
+      bunitExt = 'km/s'
+  elif 'freq' in header['ctype3'].lower():
     #if not 'cunit3' in header or header['cunit3'].lower()=='hz': m1*=2.99792458e+5/1.42040575177e+9 # assuming Hz
     #elif header['cunit3'].lower()=='khz': m1*=2.99792458e+5/1.42040575177e+6
-  else:
-    bunit = header['cunit3']
+    if not 'cunit3' in header or ('cunit3' in header and header['cunit3'].lower()=='hz'):
+      bunitExt = 'hz'
+    else: 
+      bunitExt = header['cunit3']
+    dkms=1. # no scaling, avoids crashing
   # calculate moment 1
   hdu = pyfits.PrimaryHDU(data=m1,header=header)
-  hdu.header['bunit']=bunit
+  hdu.header['bunit']=bunitExt
   hdu.header['datamin']=np.nanmin(m1)
   hdu.header['datamax']=np.nanmax(m1)
   del(hdu.header['crpix3'])
