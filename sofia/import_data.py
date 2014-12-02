@@ -9,10 +9,10 @@ import re
 import imp
 
 
-def read_data(doSubCube, inFile, weightsFile, maskFile, weightsFunction = None, subcube=[], subcubeMode='pixel'):
+def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, subcube=[], subcubeMode='pixel'):
 	# import the fits file into an numpy array for the cube and a dictionary for the header:
 	# the data cube is converted into a 3D array
-	if doSubCube:
+	if doSubcube:
 		if os.path.isfile(inFile) == False:
 			sys.stderr.write("ERROR: The specified data cube does not exist.\n")
 			sys.stderr.write("       Cannot find: " + inFile + "\n")

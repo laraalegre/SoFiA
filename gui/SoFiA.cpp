@@ -1427,7 +1427,7 @@ void SoFiA::createInterface()
     
     // sub-cube
     tabInputGroupBox4 = new QGroupBox(tr("Enable"), toolBoxIP);
-    tabInputGroupBox4->setObjectName("steps.doSubCube");
+    tabInputGroupBox4->setObjectName("steps.doSubcube");
     tabInputGroupBox4->setCheckable(true);
     tabInputGroupBox4->setChecked(false);
     connect(tabInputGroupBox4, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
@@ -2638,7 +2638,7 @@ void SoFiA::createWhatsThis()
     
     tabInputFieldSubcube->setWhatsThis(tr("<h3>import.subcube</h3><p>This parameter defines a sub-cube to be read in and processed by SoFiA. Depending on the value of import.subcubeMode, the range is either specified in pixels as</p><p style=\"font-family:monospace;\">[x1, x2, y1, y2, z1, z2]</p><p>or in world coordinates as</p><p style=\"font-family:monospace;\">[x, y, z, rx, ry, rz]</p><p>In the latter case, <b>x</b>, <b>y</b> and <b>z</b> define the centre of the subcube, and <b>rx</b>, <b>ry</b> and <b>rz</b> specify the half-widths in the three dimensions. If world coordinates are used, all parameters must be in the native format as defined in the header of the data cube; e.g. if <span style=\"font-family:monospace;\">CUNIT3</span> is <span style=\"font-family:monospace;\">'Hz'</span> then both z and rz must be given in hertz. The default is an empty list, <span style=\"font-family:monospace;\">[]</span>, which means to read the entire cube.</p>"));
     
-    tabInputGroupBox4->setWhatsThis(tr("<h3>steps.doSubCube</h3><p>If set to true, source finding will be carried out on a sub-cube to be defined by the <b>import.subcube</b> and <b>import.subcubeMode</b> options.</p>"));
+    tabInputGroupBox4->setWhatsThis(tr("<h3>steps.doSubcube</h3><p>If set to true, source finding will be carried out on a sub-cube to be defined by the <b>import.subcube</b> and <b>import.subcubeMode</b> options.</p>"));
     
     tabInputFieldSubcubeMode->setWhatsThis(tr("<h3>import.subcubeMode</h3><p>This parameter defines whether import.subcube is specified in pixels (<b>pixel</b>) or in world coordinates (<b>world</b>).</p>"));
     
