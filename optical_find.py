@@ -188,13 +188,13 @@ reader = csv.DictReader(f)
 cat = list(reader)
 f.close()
 
+
 # check whether the file has the right columns (id, ra, dec, z)
-if cat[0]['id'] == False or cat[0]['ra'] == False or cat[0]['dec'] == False or cat[0]['z'] == False: 
+if 'id' not in cat[0] or 'ra' not in cat[0] or 'dec' not in cat[0] or 'z' not in cat[0]: 
     sys.stderr.write("ERROR: The specified source catalogue does not have the right input\n")
     sys.stderr.write("       it should contain at least for columns with values id, ra, dec and z \n")
     sys.stderr.write("       Cannot work on: " + catalogue + "\n")
     raise SystemExit(1)
-
 
 
 # open a file for the output catalogue
@@ -213,13 +213,17 @@ for i in range(len(cat)):
     f2 = open(new_file,'wt')
 
     for line in f1:
+        pattern0 = 'steps.doSubcube'
+        subst0 = 'steps.doSubcube =  true \n'
         pattern1 = 'import.subcube'
         subst1 = 'import.subcube = ' + str(subcube) + '\n'          
         pattern2 = 'import.subcubeMode'
         subst2 = 'import.subcubeMode =  ' + 'world' + '\n'           
         pattern3 = 'writeCat.basename'
         subst3 = 'writeCat.basename = ' + Parameters['writeCat']['basename'] + '_' + cat[i]['id'] + '\n'
-        if pattern1 in line and pattern2 not in line:
+        if pattern0 in line:
+            f2.write(subst0)
+        elif pattern1 in line and pattern2 not in line:
             f2.write(subst1)
         elif pattern2 in line:
             f2.write(subst2)
@@ -231,8 +235,9 @@ for i in range(len(cat)):
     f1.close()    
     f2.close()
 
-    #os.system('python sofia_pipeline.py temp_optical.txt')
+
     os.system('python $SOFIA_PIPELINE_PATH temp_optical.txt')
+    #os.system('cp temp_optical.txt temp_'+ cat[i]['id'] + '.txt' )
     os.system('rm -rf temp_optical.txt')
 
     # write the number of detections into the match_catalogue
