@@ -1972,23 +1972,23 @@ void SoFiA::createInterface()
     tabParametrisationFieldRelMin->setMaximumWidth(100);
     tabParametrisationFieldRelMin->setMaxLength(10);
     connect(tabParametrisationFieldRelMin, SIGNAL(editingFinished()), this, SLOT(updateFields()));
-    tabParametrisationFieldRelMax = new QLineEdit(tabParametrisationGroupBox2);
+    //tabParametrisationFieldRelMax = new QLineEdit(tabParametrisationGroupBox2);
     //tabParametrisationFieldRelMax->setObjectName("reliability.thresholdMax");
-    tabParametrisationFieldRelMax->setMaximumWidth(100);
-    tabParametrisationFieldRelMax->setMaxLength(10);
-    tabParametrisationFieldRelMax->setEnabled(false);
-    tabParametrisationFieldRelMax->setText("1.0");
-    QLabel *labelRel   = new QLabel(QString::fromUtf8("–"), tabParametrisationGroupBox2);
+    //tabParametrisationFieldRelMax->setMaximumWidth(100);
+    //tabParametrisationFieldRelMax->setMaxLength(10);
+    //tabParametrisationFieldRelMax->setEnabled(false);
+    //tabParametrisationFieldRelMax->setText("1.0");
+    //QLabel *labelRel   = new QLabel(QString::fromUtf8("–"), tabParametrisationGroupBox2);
     
-    tabParametrisationWidgetRel = new QWidget(tabParametrisationGroupBox2);
+    //tabParametrisationWidgetRel = new QWidget(tabParametrisationGroupBox2);
     //tabParametrisationWidgetRel->setToolTip("Reliability cutoff for output catalogue");
-    tabParametrisationLayoutRel = new QHBoxLayout;
-    tabParametrisationLayoutRel->addWidget(tabParametrisationFieldRelMin);
-    tabParametrisationLayoutRel->addWidget(labelRel);
-    tabParametrisationLayoutRel->addWidget(tabParametrisationFieldRelMax);
-    tabParametrisationLayoutRel->addStretch();
-    tabParametrisationLayoutRel->setContentsMargins(0, 0, 0, 0);
-    tabParametrisationWidgetRel->setLayout(tabParametrisationLayoutRel);
+    //tabParametrisationLayoutRel = new QHBoxLayout;
+    //tabParametrisationLayoutRel->addWidget(tabParametrisationFieldRelMin);
+    //tabParametrisationLayoutRel->addWidget(labelRel);
+    //tabParametrisationLayoutRel->addWidget(tabParametrisationFieldRelMax);
+    //tabParametrisationLayoutRel->addStretch();
+    //tabParametrisationLayoutRel->setContentsMargins(0, 0, 0, 0);
+    //tabParametrisationWidgetRel->setLayout(tabParametrisationLayoutRel);
     
     tabParametrisationFieldRelKernel = new QLineEdit(tabParametrisationGroupBox2);
     tabParametrisationFieldRelKernel->setObjectName("reliability.kernel");
@@ -1999,7 +1999,7 @@ void SoFiA::createInterface()
     tabParametrisationFieldRelPlot->setEnabled(true);
     tabParametrisationFieldRelPlot->setChecked(false);
     
-    tabParametrisationForm2->addRow(tr("Accepted range:"), tabParametrisationWidgetRel);
+    tabParametrisationForm2->addRow(tr("Threshold:"), tabParametrisationFieldRelMin);
     tabParametrisationForm2->addRow(tr("Kernel:"), tabParametrisationFieldRelKernel);
     tabParametrisationForm2->addRow(tr("Diagnostic plot:"), tabParametrisationFieldRelPlot);
     tabParametrisationForm2->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);

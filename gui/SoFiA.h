@@ -370,11 +370,11 @@ private:
     QGroupBox    *tabParametrisationGroupBox2;
     QFormLayout  *tabParametrisationForm2;
     QLineEdit    *tabParametrisationFieldRelMin;
-    QLineEdit    *tabParametrisationFieldRelMax;
+    //QLineEdit    *tabParametrisationFieldRelMax;
     QLineEdit    *tabParametrisationFieldRelKernel;
     QCheckBox    *tabParametrisationFieldRelPlot;
-    QHBoxLayout  *tabParametrisationLayoutRel;
-    QWidget      *tabParametrisationWidgetRel;
+    //QHBoxLayout  *tabParametrisationLayoutRel;
+    //QWidget      *tabParametrisationWidgetRel;
     
     QHBoxLayout  *tabParametrisationLayoutControls;
     QWidget      *tabParametrisationWidgetControls;
