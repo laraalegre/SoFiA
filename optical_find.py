@@ -216,7 +216,7 @@ for i in range(len(cat)):
         pattern1 = 'import.subcube'
         subst1 = 'import.subcube = ' + str(subcube) + '\n'          
         pattern2 = 'import.subcubeMode'
-        subst2 = 'import.subcubeMode =  ' + 'wcs' + '\n'           
+        subst2 = 'import.subcubeMode =  ' + 'world' + '\n'           
         pattern3 = 'writeCat.basename'
         subst3 = 'writeCat.basename = ' + Parameters['writeCat']['basename'] + '_' + cat[i]['id'] + '\n'
         if pattern1 in line and pattern2 not in line:
