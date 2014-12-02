@@ -35,12 +35,15 @@ def writeMoment0(datacube,maskcube,filename,debug,header,compress):
   if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
     if not 'cunit3' in header: dkms=abs(header['cdelt3'])/1e+3 # assuming m/s
     elif header['cunit3'].lower()=='km/s': dkms=abs(header['cdelt3'])
-  elif 'freq' in header['ctype3'].lower():
-    if not 'cunit3' in header or header['cunit3'].lower()=='hz': dkms=abs(header['cdelt3'])/1.42040575177e+9*2.99792458e+5 # assuming Hz
-    elif header['cunit3'].lower()=='khz': dkms=abs(header['cdelt3'])/1.42040575177e+6*2.99792458e+5
-  else: dkms=1. # no scaling, avoids crashing
+    bunitExt = '.km/s'
+  #elif 'freq' in header['ctype3'].lower():
+    #if not 'cunit3' in header or header['cunit3'].lower()=='hz': dkms=abs(header['cdelt3'])/1.42040575177e+9*2.99792458e+5 # assuming Hz
+    #elif header['cunit3'].lower()=='khz': dkms=abs(header['cdelt3'])/1.42040575177e+6*2.99792458e+5
+  else: 
+    dkms=1. # no scaling, avoids crashing
+    bunitExt = '.'+header['cunit3']
   hdu = pyfits.PrimaryHDU(data=m0*dkms,header=header)
-  hdu.header['bunit']+='.km/s'
+  hdu.header['bunit']+=bunitExt
   hdu.header['datamin']=(m0*dkms).min()
   hdu.header['datamax']=(m0*dkms).max()
   del(hdu.header['crpix3'])
@@ -64,13 +67,17 @@ def writeMoment1(datacube,maskcube,filename,debug,header,m0,compress):
   # convert it to km/s (using radio velocity definition to go from Hz to km/s)
   if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
     if not 'cunit3' in header: m1/=1e+3 # assuming m/s
-    elif header['cunit3'].lower()=='km/s': pass
-  elif 'freq' in header['ctype3'].lower():
-    if not 'cunit3' in header or header['cunit3'].lower()=='hz': m1*=2.99792458e+5/1.42040575177e+9 # assuming Hz
-    elif header['cunit3'].lower()=='khz': m1*=2.99792458e+5/1.42040575177e+6
+    elif header['cunit3'].lower()=='km/s': 
+      bunit = 'km/s'
+      pass
+  #elif 'freq' in header['ctype3'].lower():
+    #if not 'cunit3' in header or header['cunit3'].lower()=='hz': m1*=2.99792458e+5/1.42040575177e+9 # assuming Hz
+    #elif header['cunit3'].lower()=='khz': m1*=2.99792458e+5/1.42040575177e+6
+  else:
+    bunit = header['cunit3']
   # calculate moment 1
   hdu = pyfits.PrimaryHDU(data=m1,header=header)
-  hdu.header['bunit']='km/s'
+  hdu.header['bunit']=bunit
   hdu.header['datamin']=np.nanmin(m1)
   hdu.header['datamax']=np.nanmax(m1)
   del(hdu.header['crpix3'])
