@@ -49,7 +49,7 @@ def GetRMS(cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=10000,nrbins=10000,verb
 
             
 	elif rmsMode=='std':
-                rms=sp.stats.nanstd(cube[z0:z1,y0:y1,x0:x1],axis=None)
+                rms=sp.stats.nanstd(cube[z0:z1,y0:y1,x0:x1],axis=None,dtype=np.float64)
 	if verbose: print '    ... %s rms = %.2e (data units)'%(rmsMode,rms)
 
 
