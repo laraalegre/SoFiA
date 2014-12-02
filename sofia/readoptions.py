@@ -111,7 +111,7 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "reliability.parSpace": "array", \
                  "reliability.kernel": "array", \
                  "reliability.fMin": "float", \
-                 "reliability.relThresh": "float", \
+                 "reliability.threshold": "float", \
                  "reliability.makePlot": "bool", \
                  "parameters.fitBusyFunction": "bool", \
                  "parameters.optimiseMask": "bool", \

@@ -112,7 +112,7 @@ merge.minSizeZ                  =       2
 reliability.parSpace            =       ['SNRsum','SNRmax','NRvox']
 reliability.kernel              =       [0.15,0.05,0.1]
 reliability.fMin                =       0.0
-reliability.relThresh           =       0.9
+reliability.threshold           =       0.9
 reliability.makePlot            =       false
 
 

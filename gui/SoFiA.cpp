@@ -1968,12 +1968,12 @@ void SoFiA::createInterface()
     tabParametrisationForm2 = new QFormLayout;
     
     tabParametrisationFieldRelMin = new QLineEdit(tabParametrisationGroupBox2);
-    tabParametrisationFieldRelMin->setObjectName("reliability.relThresh");
+    tabParametrisationFieldRelMin->setObjectName("reliability.threshold");
     tabParametrisationFieldRelMin->setMaximumWidth(100);
     tabParametrisationFieldRelMin->setMaxLength(10);
     connect(tabParametrisationFieldRelMin, SIGNAL(editingFinished()), this, SLOT(updateFields()));
     tabParametrisationFieldRelMax = new QLineEdit(tabParametrisationGroupBox2);
-    tabParametrisationFieldRelMax->setObjectName("reliability.relThreshMax");
+    //tabParametrisationFieldRelMax->setObjectName("reliability.thresholdMax");
     tabParametrisationFieldRelMax->setMaximumWidth(100);
     tabParametrisationFieldRelMax->setMaxLength(10);
     tabParametrisationFieldRelMax->setEnabled(false);
@@ -2740,7 +2740,7 @@ void SoFiA::createWhatsThis()
     
     tabParametrisationGroupBox2->setWhatsThis(tr("<h3>steps.doReliability</h3><p>Use negative detections to calculate the reliability of each source by comparing the distribution of positive and negative detections in parameter space (<a href=\"http://adsabs.harvard.edu/abs/2012PASA...29..296S\">Serra et al. 2012</a>). Note that this requires a flux threshold low enough to ensure that a substantial number of positive and negative noise peaks are detected.</p>"));
     
-    tabParametrisationFieldRelMin->setWhatsThis(tr("<h3>reliability.relThresh</h3><p>Discard sources whose reliability is below this threshold.</p>"));
+    tabParametrisationFieldRelMin->setWhatsThis(tr("<h3>reliability.threshold</h3><p>Discard sources whose reliability is below this threshold.</p>"));
     
     tabParametrisationFieldRelKernel->setWhatsThis(tr("<h3>reliability.kernel</h3><p>Size of 3D smoothing kernel in log(parameter) space (see <b>reliability.parSpace</b>).</p>"));
     

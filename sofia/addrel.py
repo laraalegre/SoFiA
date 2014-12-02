@@ -68,7 +68,7 @@ class gaussian_kde_set_covariance(stats.gaussian_kde):
 		self.inv_cov = np.linalg.inv(self.covariance)
 		self._norm_factor = np.sqrt(np.linalg.det(2*np.pi*self.covariance)) * self.n
 
-def EstimateRel(data,pdfoutname,parNames,parSpace=['SNRsum','SNRmax','NRvox'],projections=[[2,0],[2,1],[0,1]],kernel=[0.15,0.05,0.1],doscatter=1,docontour=1,check_kernel=0,dostats=0,saverel=1,relThresh=0.99,Nmin=0,dV=0.2,fMin=0,verb=0,makePlot=False):
+def EstimateRel(data,pdfoutname,parNames,parSpace=['SNRsum','SNRmax','NRvox'],projections=[[2,0],[2,1],[0,1]],kernel=[0.15,0.05,0.1],doscatter=1,docontour=1,check_kernel=0,dostats=0,saverel=1,threshold=0.99,Nmin=0,dV=0.2,fMin=0,verb=0,makePlot=False):
 	if makePlot: import matplotlib.pyplot as plt
 
 	########################################
@@ -185,8 +185,8 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['SNRsum','SNRmax','NRvox'],pr
 		if Rs.max()>1:
 			sys.stderr.write("ERROR: maximum reliability larger than 1 -- something is wrong.\n")
 			sys.exit(1)
-		# take maximum(Rs,0) to include objects with Rs<0 if relThresh==0
-		pseudoreliable=np.maximum(Rs,0)>=relThresh
+		# take maximum(Rs,0) to include objects with Rs<0 if threshold==0
+		pseudoreliable=np.maximum(Rs,0)>=threshold
 
 		# OLD
 		#if check_kernel:
@@ -206,7 +206,7 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['SNRsum','SNRmax','NRvox'],pr
 		#    print '  median error on R is %.2f'%median(dRs)
 		#    print '  %i/%i positive sources have R<0 within 1-sigma error bar'%(((Rs+1*dRs)<0).sum(),Rs.shape[0])
 		#
-		#    reliable=(Rs>relThresh)*((NpI+NnI)>Nmin)
+		#    reliable=(Rs>threshold)*((NpI+NnI)>Nmin)
 		#    
 		#    #plot(Nps*dV,NpI,'bo')
 		#    #plot(Nns*dV,NnI,'ro')
@@ -238,9 +238,9 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['SNRsum','SNRmax','NRvox'],pr
 			print '  median error on R at location of positive sources: %.2f'%median(dRs)
 			print '  R<0 at the location of %3i/%3i positive sources'%((Rs<0).sum(),Rs.shape[0])
 			print '  R<0 at the location of %3i/%3i positive sources within 1-sigma error bar'%(((Rs+1*dRs)<0).sum(),Rs.shape[0])
-		# Nmin is by default zero so the line below normally selects (Rs>=relThresh)*(ftot[pos].reshape(-1,)>fMin)
-		# take maximum(Rs,0) to include objects with Rs<0 if relThresh==0
-		reliable=(np.maximum(Rs,0)>=relThresh)*((Nps+Nns)*0.85*dV>Nmin)*(ftot[pos].reshape(-1,)>fMin)
+		# Nmin is by default zero so the line below normally selects (Rs>=threshold)*(ftot[pos].reshape(-1,)>fMin)
+		# take maximum(Rs,0) to include objects with Rs<0 if threshold==0
+		reliable=(np.maximum(Rs,0)>=threshold)*((Nps+Nns)*0.85*dV>Nmin)*(ftot[pos].reshape(-1,)>fMin)
 		
 		delt=(nNps-nNns)/np.sqrt(nNps+nNns)*np.sqrt(0.85*dV)
 
@@ -250,9 +250,9 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['SNRsum','SNRmax','NRvox'],pr
 			print '  positive sources found:'
 			print '    %20s: %4i'%('total',Npos),
 			print
-			print '                  R>%.2f: %4i'%(relThresh,pseudoreliable.sum()),
+			print '                  R>%.2f: %4i'%(threshold,pseudoreliable.sum()),
 			print
-			print '     R>%.2f, N(3sig)>%3i: %4i'%(relThresh,Nmin,reliable.sum()),
+			print '     R>%.2f, N(3sig)>%3i: %4i'%(threshold,Nmin,reliable.sum()),
 			print
 
 		if check_kernel:
