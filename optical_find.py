@@ -153,7 +153,8 @@ else:
     outroot = outputDir + outroot
 
 
-
+match_catalogue = outroot + '_match.csv'
+    
 cube = Parameters['import']['inFile']
 specSize = Parameters['optical']['specSize']
 spatSize = Parameters['optical']['spatSize']
@@ -194,6 +195,13 @@ if cat[0]['id'] == False or cat[0]['ra'] == False or cat[0]['dec'] == False or c
     sys.stderr.write("       Cannot work on: " + catalogue + "\n")
     raise SystemExit(1)
 
+
+
+# open a file for the output catalogue
+f_out = open(match_catalogue,'w')
+f_out.write('# id, ra, dec, z, match \n')
+
+
 for i in range(len(cat)):
     # define the subregion:
     subcube  = [float(cat[i]['ra']),float(cat[i]['dec']),float(cat[i]['z']),spatSize,spatSize,specSize]
@@ -205,13 +213,13 @@ for i in range(len(cat)):
     f2 = open(new_file,'wt')
 
     for line in f1:
-        pattern1 = 'import.subcube '
+        pattern1 = 'import.subcube'
         subst1 = 'import.subcube = ' + str(subcube) + '\n'          
         pattern2 = 'import.subcubeMode'
         subst2 = 'import.subcubeMode =  ' + 'wcs' + '\n'           
         pattern3 = 'writeCat.basename'
         subst3 = 'writeCat.basename = ' + Parameters['writeCat']['basename'] + '_' + cat[i]['id'] + '\n'
-        if pattern1 in line:
+        if pattern1 in line and pattern2 not in line:
             f2.write(subst1)
         elif pattern2 in line:
             f2.write(subst2)
@@ -223,10 +231,28 @@ for i in range(len(cat)):
     f1.close()    
     f2.close()
 
-    os.system('python SoFiA-master/sofia_pipeline.py temp_optical.txt')
+    #os.system('python sofia_pipeline.py temp_optical.txt')
+    os.system('python $SOFIA_PIPELINE_PATH temp_optical.txt')
     os.system('rm -rf temp_optical.txt')
 
+    # write the number of detections into the match_catalogue
+    temp_ascii = outroot + '_' + cat[i]['id'] + '_cat.ascii'
 
+    # check whether the file exists:
+    n = 0
+    nr_sources = 0
+    if os.path.exists(temp_ascii) == True:
+        f1=open(temp_ascii,'r')
+        for line in f1:
+            n += 1
+            if  n > 4:
+                nr_sources += 1
+        
+    f_out.write(cat[i]['id'] + ',' + cat[i]['ra'] + ',' + cat[i]['dec'] + ',' + cat[i]['z'] + ',' +str(int( nr_sources)) + '\n')
+    f1.close
+    
+    
+f_out.close()
 
 
 
@@ -237,6 +263,7 @@ for i in range(len(cat)):
     
 # --------------------
 # ---- STORE DATA ----
+
 # --------------------
 
 if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge']:

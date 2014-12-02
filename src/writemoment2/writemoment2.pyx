@@ -96,7 +96,7 @@ def mom0(cube1, cube2):
   
   cdef:
     int i, j, k
-    float sum
+    double sum
     double [:,:] mom0 = np.zeros((cube1.shape[1],cube1.shape[2]))
     float[:,:,:] cube = cube1
     float[:,:,:] mask = cube2
@@ -115,7 +115,7 @@ def mom1(cube1, cube2, cube3, int cpx, float cval, float cdelt):
 
   cdef:
     int i, j, k
-    float sum
+    double sum
     double [:,:] mom1 = np.zeros((cube1.shape[1],cube1.shape[2]))
     float[:,:,:] cube = cube1
     float[:,:,:] mask = cube2

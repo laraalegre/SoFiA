@@ -24,7 +24,7 @@ SoFiA:
         Terminal with bash or tcsh (other shells should work as well)
     Packages (Python):
         Python (≥ 2.4)
-        numpy (≥ 1.7)
+        numpy (≥ 1.8)
         scipy (≥ 0.7)
         astropy (≥ 0.2.5)
         matplotlib (≥ 1.1; optional, only needed for reliability plot)
