@@ -9,7 +9,7 @@ import re
 import imp
 
 
-def read_data(doSubCube, inFile, weightsFile, maskFile, weightsFunction = None, subcube=[], subcubeMode='pix'):
+def read_data(doSubCube, inFile, weightsFile, maskFile, weightsFunction = None, subcube=[], subcubeMode='pixel'):
 	# import the fits file into an numpy array for the cube and a dictionary for the header:
 	# the data cube is converted into a 3D array
 	if doSubCube:
@@ -30,7 +30,7 @@ def read_data(doSubCube, inFile, weightsFile, maskFile, weightsFunction = None, 
 				header = hdulist[0].header
 				hdulist.close()
 	
-		if (len(subcube)==6 or len(subcube)==4) and subcubeMode=='wcs':
+		if (len(subcube)==6 or len(subcube)==4) and subcubeMode=='world':
 			print 'Calculating subcube boundaries from input WCS centre and radius'
 			wcsin = wcs.WCS(header)
 			# calculate cos(Dec) correction for RA range
@@ -48,18 +48,18 @@ def read_data(doSubCube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			for ss in range(min(3,header['naxis'])): subcube[2*ss]=max(0,floor(subcube[2*ss]))
 			for ss in range(min(3,header['naxis'])): subcube[1+2*ss]=min(header['naxis%i'%(ss+1)],ceil(subcube[1+2*ss]))
 			subcube=list(subcube.astype(int))
-		elif (len(subcube)==6 or len(subcube)==4) and subcubeMode=='pix':
+		elif (len(subcube)==6 or len(subcube)==4) and subcubeMode=='pixel':
 			# make sure pixel coordinates are integers
 			for ss in subcube:
 				if type(ss)!=int:
-					sys.stderr.write("ERROR: When subcubeMode = pix the subcube must be defined by a set of integer pixel coordinates.\n")
+					sys.stderr.write("ERROR: When subcubeMode = pixel the subcube must be defined by a set of integer pixel coordinates.\n")
 					sys.stderr.write("       The %i-th coordinate has the wrong type.\n" % subcube.index(ss))
 					raise SystemExit(1)
 			# make sure to be within the cube boundaries
 			for ss in range(min(3,header['naxis'])): subcube[2*ss]=max(0,subcube[2*ss])
 			for ss in range(min(3,header['naxis'])): subcube[1+2*ss]=min(header['naxis%i'%(ss+1)],subcube[1+2*ss])
 		elif len(subcube):
-			sys.stderr.write("ERROR: import.subcubeMode can only be \'pix\' or \'wcs\', and import.subcube must have 4 or 6 entries.\n")
+			sys.stderr.write("ERROR: import.subcubeMode can only be \'pixel\' or \'world\', and import.subcube must have 4 or 6 entries.\n")
 			raise SystemExit(1)
 	
 		if len(subcube)==4: print 'Loading subcube of %s defined by [x1 x2 y1 y2] ='%inFile,subcube

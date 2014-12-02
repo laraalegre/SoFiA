@@ -1439,8 +1439,8 @@ void SoFiA::createInterface()
     tabInputFieldSubcubeMode = new QComboBox(tabInputGroupBox4);
     tabInputFieldSubcubeMode->setObjectName("import.subcubeMode");
     //tabInputFieldSubcubeMode->setToolTip(tr("Range given in pixels or world coordinates"));
-    tabInputFieldSubcubeMode->addItem(tr("Pixels"), QVariant(QString("pix")));
-    tabInputFieldSubcubeMode->addItem(tr("World coordinates"), QVariant(QString("wcs")));
+    tabInputFieldSubcubeMode->addItem(tr("Pixels"), QVariant(QString("pixel")));
+    tabInputFieldSubcubeMode->addItem(tr("World coordinates"), QVariant(QString("world")));
     
     tabInputForm4->addRow(tr("Range:"), tabInputFieldSubcube);
     tabInputForm4->addRow(tr("Mode:"), tabInputFieldSubcubeMode);
@@ -2640,7 +2640,7 @@ void SoFiA::createWhatsThis()
     
     tabInputGroupBox4->setWhatsThis(tr("<h3>steps.doSubCube</h3><p>If set to true, source finding will be carried out on a sub-cube to be defined by the <b>import.subcube</b> and <b>import.subcubeMode</b> options.</p>"));
     
-    tabInputFieldSubcubeMode->setWhatsThis(tr("<h3>import.subcubeMode</h3><p>This parameter defines whether import.subcube is specified in pixels (<b>pix</b>) or in world coordinates (<b>wcs</b>).</p>"));
+    tabInputFieldSubcubeMode->setWhatsThis(tr("<h3>import.subcubeMode</h3><p>This parameter defines whether import.subcube is specified in pixels (<b>pixel</b>) or in world coordinates (<b>world</b>).</p>"));
     
     tabInputGroupBox3->setWhatsThis(tr("<h3>steps.doFlag</h3><p>Flag pixel and channel ranges before proceeding. Details are specified with the <b>flag.regions</b> option.</p>"));
     

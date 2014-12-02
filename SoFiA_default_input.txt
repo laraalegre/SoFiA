@@ -30,7 +30,7 @@ import.weightsFile              =
 import.maskFile                 =       
 import.weightsFunction          =       
 import.subcube                  =       []
-import.subcubeMode              =       pix
+import.subcubeMode              =       pixel
 
 
 # Flagging module
