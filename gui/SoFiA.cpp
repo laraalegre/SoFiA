@@ -1425,7 +1425,7 @@ void SoFiA::createInterface()
     tabInputForm1->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
     tabInputGroupBox1->setLayout(tabInputForm1);
     
-    // sub-cube
+    // subcube
     tabInputGroupBox4 = new QGroupBox(tr("Enable"), toolBoxIP);
     tabInputGroupBox4->setObjectName("steps.doSubcube");
     tabInputGroupBox4->setCheckable(true);
@@ -1435,7 +1435,7 @@ void SoFiA::createInterface()
     
     tabInputFieldSubcube = new QLineEdit(tabInputGroupBox4);
     tabInputFieldSubcube->setObjectName("import.subcube");
-    //tabInputFieldSubcube->setToolTip(tr("Define sub-cube range to be used (optional)"));
+    //tabInputFieldSubcube->setToolTip(tr("Define subcube range to be used (optional)"));
     tabInputFieldSubcubeMode = new QComboBox(tabInputGroupBox4);
     tabInputFieldSubcubeMode->setObjectName("import.subcubeMode");
     //tabInputFieldSubcubeMode->setToolTip(tr("Range given in pixels or world coordinates"));
@@ -1486,12 +1486,12 @@ void SoFiA::createInterface()
     
     tabInputFieldSpatialSize = new QLineEdit(tabInputGroupBox2);
     tabInputFieldSpatialSize->setObjectName("optical.spatSize");
-    //tabInputFieldSpatialSize->setToolTip("Spatial size of sub-cube to be searched");
+    //tabInputFieldSpatialSize->setToolTip("Spatial size of subcube to be searched");
     connect(tabInputFieldSpatialSize, SIGNAL(editingFinished()), this, SLOT(updateFields()));
     
     tabInputFieldSpectralSize = new QLineEdit(tabInputGroupBox2);
     tabInputFieldSpectralSize->setObjectName("optical.specSize");
-    //tabInputFieldSpectralSize->setToolTip("Spectral size of sub-cube to be searched");
+    //tabInputFieldSpectralSize->setToolTip("Spectral size of subcube to be searched");
     connect(tabInputFieldSpectralSize, SIGNAL(editingFinished()), this, SLOT(updateFields()));
     
     tabInputFieldSingleCat = new QCheckBox(tr("Create single output catalogue "), tabInputGroupBox2);
@@ -1519,7 +1519,7 @@ void SoFiA::createInterface()
     tabInputWidgetControls->setLayout(tabInputLayoutControls);
     
     toolBoxIP->addItem(tabInputGroupBox1, iconTaskReject, tr("Input Data Products"));
-    toolBoxIP->addItem(tabInputGroupBox4, iconTaskReject, tr("Sub-cube"));
+    toolBoxIP->addItem(tabInputGroupBox4, iconTaskReject, tr("Subcube"));
     toolBoxIP->addItem(tabInputGroupBox3, iconTaskReject, tr("Flagging"));
     toolBoxIP->addItem(tabInputGroupBox2, iconTaskReject, tr("Catalogue-based Source Finding"));
     
@@ -2636,9 +2636,9 @@ void SoFiA::createWhatsThis()
     
     tabInputFieldWeightsFunction->setWhatsThis(tr("<h3>import.weightsFunction</h3><p>Analytic function used to describe the data weights as a function of the three cube dimensions, <b>x</b>, <b>y</b>, and <b>z</b>. The default is to not apply weights. The following mathematical functions from Numpy are supported:<p><p style=\"font-family:monospace;\">sin(), cos(), tan(), arcsin(), arccos(), arctan(), arctan2(), sinh(), cosh(), tanh(), arcsinh(), arccosh(), arctanh(), exp(), log(), log10(), log2(), sqrt(), square(), power(), absolute(), fabs(), sign()</p><p>Note that the weights function is not applied whenever a weights cube is specified (see <b>import.weightsFile</b>).</p>"));
     
-    tabInputFieldSubcube->setWhatsThis(tr("<h3>import.subcube</h3><p>This parameter defines a sub-cube to be read in and processed by SoFiA. Depending on the value of import.subcubeMode, the range is either specified in pixels as</p><p style=\"font-family:monospace;\">[x1, x2, y1, y2, z1, z2]</p><p>or in world coordinates as</p><p style=\"font-family:monospace;\">[x, y, z, rx, ry, rz]</p><p>In the latter case, <b>x</b>, <b>y</b> and <b>z</b> define the centre of the subcube, and <b>rx</b>, <b>ry</b> and <b>rz</b> specify the half-widths in the three dimensions. If world coordinates are used, all parameters must be in the native format as defined in the header of the data cube; e.g. if <span style=\"font-family:monospace;\">CUNIT3</span> is <span style=\"font-family:monospace;\">'Hz'</span> then both z and rz must be given in hertz. The default is an empty list, <span style=\"font-family:monospace;\">[]</span>, which means to read the entire cube.</p>"));
+    tabInputFieldSubcube->setWhatsThis(tr("<h3>import.subcube</h3><p>This parameter defines a subcube to be read in and processed by SoFiA. Depending on the value of import.subcubeMode, the range is either specified in pixels as</p><p style=\"font-family:monospace;\">[x1, x2, y1, y2, z1, z2]</p><p>or in world coordinates as</p><p style=\"font-family:monospace;\">[x, y, z, rx, ry, rz]</p><p>In the latter case, <b>x</b>, <b>y</b> and <b>z</b> define the centre of the subcube, and <b>rx</b>, <b>ry</b> and <b>rz</b> specify the half-widths in the three dimensions. If world coordinates are used, all parameters must be in the native format as defined in the header of the data cube; e.g. if <span style=\"font-family:monospace;\">CUNIT3</span> is <span style=\"font-family:monospace;\">'Hz'</span> then both z and rz must be given in hertz. The default is an empty list, <span style=\"font-family:monospace;\">[]</span>, which means to read the entire cube.</p>"));
     
-    tabInputGroupBox4->setWhatsThis(tr("<h3>steps.doSubcube</h3><p>If set to true, source finding will be carried out on a sub-cube to be defined by the <b>import.subcube</b> and <b>import.subcubeMode</b> options.</p>"));
+    tabInputGroupBox4->setWhatsThis(tr("<h3>steps.doSubcube</h3><p>If set to true, source finding will be carried out on a subcube to be defined by the <b>import.subcube</b> and <b>import.subcubeMode</b> options.</p>"));
     
     tabInputFieldSubcubeMode->setWhatsThis(tr("<h3>import.subcubeMode</h3><p>This parameter defines whether import.subcube is specified in pixels (<b>pixel</b>) or in world coordinates (<b>world</b>).</p>"));
     
@@ -2646,13 +2646,13 @@ void SoFiA::createWhatsThis()
     
     tabInputFieldFlags->setWhatsThis(tr("<h3>flag.regions</h3><p>Pixel/channel range(s) to be flagged prior to source finding. Format:</p><p style=\"font-family:monospace;\">[[x1, x2, y1, y2, z1, z2], ...]</p><p>A place holder, <span style=\"font-family:monospace;\">''</span> (two single quotes), can be used for the upper range limit (x2, y2, and z2) to flag all the way to the end, e.g.</p><p style=\"font-family:monospace;\">[[0, '', 0, '', 0, 19]]</p><p>will flag the first 20 channels of the entire cube. The default is an empty list, <span style=\"font-family:monospace;\">[]</span>, which means to not flag anything.</p>"));
     
-    tabInputGroupBox2->setWhatsThis(tr("<h3>steps.doOptical</h3><p>Run SoFiA on multiple, smaller sub-cubes centred on positions defined in an input source catalogue. A catalogue file will need to be specified (see parameter <b>optical.sourceCatalogue</b>). This could, e.g., be an optical galaxy catalogue with the aim to search for HI detections at the positions of all galaxies.</p>"));
+    tabInputGroupBox2->setWhatsThis(tr("<h3>steps.doOptical</h3><p>Run SoFiA on multiple, smaller subcubes centred on positions defined in an input source catalogue. A catalogue file will need to be specified (see parameter <b>optical.sourceCatalogue</b>). This could, e.g., be an optical galaxy catalogue with the aim to search for HI detections at the positions of all galaxies.</p>"));
     
     tabInputFieldCatalog->setWhatsThis(tr("<h3>optical.sourceCatalogue</h3><p>This defines the full path and file name of the input catalogue required for catalogue-based source finding (see parameter <b>steps.doOptical</b>). There is no default.</p>"));
     
-    tabInputFieldSpatialSize->setWhatsThis(tr("<h3>optical.spatSize</h3><p>This defines the <b>spatial</b> size of the sub-cube to be searched around each catalogue position. The size must be specified in the <b>native units</b> of the data cube, e.g. in degrees.</p>"));
+    tabInputFieldSpatialSize->setWhatsThis(tr("<h3>optical.spatSize</h3><p>This defines the <b>spatial</b> size of the subcube to be searched around each catalogue position. The size must be specified in the <b>native units</b> of the data cube, e.g. in degrees.</p>"));
     
-    tabInputFieldSpectralSize->setWhatsThis(tr("<h3>optical.specSize</h3><p>This defines the <b>spectral</b> size of the sub-cube to be searched around each catalogue position. The size must be specified in the <b>native units</b> of the data cube, e.g. in km/s or Hz.</p>"));
+    tabInputFieldSpectralSize->setWhatsThis(tr("<h3>optical.specSize</h3><p>This defines the <b>spectral</b> size of the subcube to be searched around each catalogue position. The size must be specified in the <b>native units</b> of the data cube, e.g. in km/s or Hz.</p>"));
     
     tabInputFieldSingleCat->setWhatsThis(tr("<h3>optical.storeSingleCat</h3><p>If set to <b>true</b>, the sources found around all input positions will be combined to create a single output catalogue. By default this parameter is set to <b>false</b>, in which case a separate output catalogue file is generated for each input position.</p>"));
     
@@ -2768,7 +2768,7 @@ void SoFiA::createWhatsThis()
     
     tabOutputButtonMom1->setWhatsThis(tr("<h3>steps.doMom1</h3><p>Create and save moment-1 map of all detections.</p>"));
     
-    tabOutputButtonCubelets->setWhatsThis(tr("<h3>steps.doCubelets</h3><p>Create and save data products for each individual source, including sub-cubes, moment 0, 1 and 2 maps, integrated spectra and position&ndash;velocity diagrams.</p>"));
+    tabOutputButtonCubelets->setWhatsThis(tr("<h3>steps.doCubelets</h3><p>Create and save data products for each individual source, including subcubes, moment 0, 1 and 2 maps, integrated spectra and position&ndash;velocity diagrams.</p>"));
     
     return;
 }
