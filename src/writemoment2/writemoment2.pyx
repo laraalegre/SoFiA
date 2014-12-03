@@ -68,9 +68,13 @@ def writeMoment1(datacube,maskcube,filename,debug,header,m0,compress):
   m1 = mom1(datacube,maskcube,m0,header['crpix3'],header['crval3'],header['cdelt3'])
   # convert it to km/s (using radio velocity definition to go from Hz to km/s)
   if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
-    if not 'cunit3' in header: m1/=1e+3 # assuming m/s
+    if not 'cunit3' in header:
+      m1/=1e+3 # assuming m/s
+      bunitExt = 'km/s'
     elif header['cunit3'].lower()=='km/s': 
       bunitExt = 'km/s'
+    else:
+      bunitExt = header['cunit3']
   elif 'freq' in header['ctype3'].lower():
     #if not 'cunit3' in header or header['cunit3'].lower()=='hz': m1*=2.99792458e+5/1.42040575177e+9 # assuming Hz
     #elif header['cunit3'].lower()=='khz': m1*=2.99792458e+5/1.42040575177e+6
