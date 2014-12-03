@@ -2654,7 +2654,7 @@ void SoFiA::createWhatsThis()
     
     tabInputFieldSpectralSize->setWhatsThis(tr("<h3>optical.specSize</h3><p>This defines the <b>spectral</b> size of the subcube to be searched around each catalogue position. The size must be specified in the <b>native units</b> of the data cube, e.g. in km/s or Hz.</p>"));
     
-    tabInputFieldMultiCat->setWhatsThis(tr("<h3>optical.storeSingleCat</h3><p>If set to <b>true</b>, the sources found around all input positions will be combined to create a single output catalogue. By default this parameter is set to <b>false</b>, in which case a separate output catalogue file is generated for each input position.</p>"));
+    tabInputFieldMultiCat->setWhatsThis(tr("<h3>optical.storeSingleCat</h3><p>If set to <b>true</b>, a separate output catalogue will be created for each input position, containing only the sources found in that subcube. In addition, a single, merged catalogue will also be created. By default this parameter is set to <b>false</b>, in which case only a single output catalogue file is generated.</p>"));
     
     tabInFilterGroupBox1->setWhatsThis(tr("<h3>steps.doSmooth</h3><p>Spatially and spectrally smooth cube prior to source finding.</p>"));
     
