@@ -55,8 +55,13 @@ def merge_ascii(outroot,cat,storeMultiCat):
             # throw away the intermediate catalogues if not needed
             if storeMultiCat == False:
             # security check whether this is a legitimate file (and not a link) before deleting anything
-                if os.system.isfile(temp_ascii) == True and os.system.islink(temp_ascii) == False:
-                    os.system('rm -f ' + temp_xml)           
+                if os.path.isfile(temp_ascii) == True and os.path.islink(temp_ascii) == False:
+                    os.system('rm -f ' + temp_ascii)
+                else:
+                    sys.stderr.write("ERROR: The specified file does not seem to be valid \n")
+                    sys.stderr.write("       Cannot identify: " + temp_ascii + " as a normal file\n")
+                    raise SystemExit(1)
+
             
     f.close    
     return
@@ -89,8 +94,14 @@ def merge_xml(outroot,cat,storeMultiCat):
             # throw away the intermediate catalogues if not needed
             if storeMultiCat == False:
                 # security check whether this is a legitimate file (and not a link) before deleting anything
-                if os.system.isfile(temp_xml) == True and os.system.islink(temp_xml) == False:
-                    os.system('rm -f ' + temp_xml)           
+                if os.path.isfile(temp_xml) == True and os.path.islink(temp_xml) == False:
+                    os.system('rm -f ' + temp_xml)
+                else:
+                    sys.stderr.write("ERROR: The specified file does not seem to be valid \n")
+                    sys.stderr.write("       Cannot identify: " + temp_xml + " as a normal file\n")
+                    raise SystemExit(1)
+
+                              
             
     f.write('</TABLEDATA>\n')
     f.write('</DATA>\n')
@@ -225,7 +236,13 @@ for i in range(len(cat)):
         pattern2 = 'import.subcubeMode'
         subst2 = 'import.subcubeMode =  ' + 'world' + '\n'           
         pattern3 = 'writeCat.basename'
-        subst3 = 'writeCat.basename = ' + outroot + '_' + cat[i]['id'] + '\n'
+        if (Parameters['writeCat']['basename']): 
+            subst3 = 'writeCat.basename = ' + Parameters['writeCat']['basename'] + '_' + cat[i]['id'] + '\n'
+        else:
+            temp_base = Parameters['import']['inFile'].split('/')[-1]
+            if((temp_base.lower()).endswith(".fits") and len(temp_base) > 5):
+                temp_base = temp_base[0:-5]
+            subst3 = 'writeCat.basename = ' + temp_base + '_' + cat[i]['id'] + '\n'
         if pattern0 in line:
             f2.write(subst0)
         elif pattern1 in line and pattern2 not in line:
@@ -243,7 +260,7 @@ for i in range(len(cat)):
 
     os.system('python $SOFIA_PIPELINE_PATH temp_optical.txt')
     #os.system('cp temp_optical.txt temp_'+ cat[i]['id'] + '.txt' )
-    os.system('rm -rf temp_optical.txt')
+    os.system('rm -f temp_optical.txt')
 
     # write the number of detections into the match_catalogue
     temp_ascii = outroot + '_' + cat[i]['id'] + '_cat.ascii'
