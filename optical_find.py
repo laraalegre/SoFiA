@@ -32,7 +32,7 @@ from sofia import readoptions
 # ---- Functions to merger tables ----
 # ------------------------------------
 
-def merge_ascii(outroot,cat,storeSingleCat):
+def merge_ascii(outroot,cat,storeMultiCat):
     # merge the ascii tables:
     outfile = outroot + '_cat.ascii'
     f=open(outfile,'w')
@@ -41,7 +41,7 @@ def merge_ascii(outroot,cat,storeSingleCat):
         temp_ascii = outroot + '_' + cat[i]['id'] + '_cat.ascii'
         # check whether the file exists:
         n = 0
-        if os.path.exists(temp_ascii) == True:
+        if os.path.isfile(temp_ascii) == True:
             f1=open(temp_ascii,'r')
             for line in f1:
                 h += 1
@@ -53,14 +53,17 @@ def merge_ascii(outroot,cat,storeSingleCat):
                     f.write(line)
             f1.close
             # throw away the intermediate catalogues if not needed
-            if storeSingleCat == False:
-                os.system('rm -rf ' + temp_ascii)           
+            if storeMultiCat == False:
+            # security check whether this is a legitimate file (and not a link) before deleting anything
+                if os.system.isfile(temp_ascii) == True and os.system.islink(temp_ascii) == False:
+                    os.system('rm -f ' + temp_xml)           
+            
     f.close    
     return
 
 
 
-def merge_xml(outroot,cat,storeSingleCat):
+def merge_xml(outroot,cat,storeMultiCat):
     # merge the xml tables:
     outfile = outroot + '_cat.xml'
     f=open(outfile,'w')
@@ -69,7 +72,7 @@ def merge_xml(outroot,cat,storeSingleCat):
         temp_xml = outroot + '_' + cat[i]['id'] + '_cat.xml'
         # check whether the file exists:
         n = 0
-        if os.path.exists(temp_xml) == True:
+        if os.path.isfile(temp_xml) == True:
             f1=open(temp_xml,'r')
             for line in f1:
                 h += 1
@@ -84,8 +87,10 @@ def merge_xml(outroot,cat,storeSingleCat):
             f.write('</TR>\n')            
             f1.close
             # throw away the intermediate catalogues if not needed
-            if storeSingleCat == False:
-                os.system('rm -rf ' + temp_xml)           
+            if storeMultiCat == False:
+                # security check whether this is a legitimate file (and not a link) before deleting anything
+                if os.system.isfile(temp_xml) == True and os.system.islink(temp_xml) == False:
+                    os.system('rm -f ' + temp_xml)           
             
     f.write('</TABLEDATA>\n')
     f.write('</DATA>\n')
@@ -159,7 +164,7 @@ cube = Parameters['import']['inFile']
 specSize = Parameters['optical']['specSize']
 spatSize = Parameters['optical']['spatSize']
 catalogue = Parameters['optical']['sourceCatalogue']
-storeSingleCat = Parameters['optical']['storeSingleCat']
+storeMultiCat = Parameters['optical']['storeMultiCat']
 
 
 print 'working on cube: ', cube
@@ -220,7 +225,7 @@ for i in range(len(cat)):
         pattern2 = 'import.subcubeMode'
         subst2 = 'import.subcubeMode =  ' + 'world' + '\n'           
         pattern3 = 'writeCat.basename'
-        subst3 = 'writeCat.basename = ' + Parameters['writeCat']['basename'] + '_' + cat[i]['id'] + '\n'
+        subst3 = 'writeCat.basename = ' + outroot + '_' + cat[i]['id'] + '\n'
         if pattern0 in line:
             f2.write(subst0)
         elif pattern1 in line and pattern2 not in line:
@@ -276,11 +281,11 @@ if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge']:
     sys.stdout.flush()
     if Parameters['writeCat']['writeXML'] and Parameters['steps']['doMerge']:
         print 'Merge the xml file'
-        merge_xml(outroot,cat,storeSingleCat)
+        merge_xml(outroot,cat,storeMultiCat)
 				
     if Parameters['writeCat']['writeASCII'] and Parameters['steps']['doMerge']:
         print 'Merge the ascii file'
-        merge_ascii(outroot,cat,storeSingleCat)
+        merge_ascii(outroot,cat,storeMultiCat)
 				
 
 
