@@ -1494,15 +1494,15 @@ void SoFiA::createInterface()
     //tabInputFieldSpectralSize->setToolTip("Spectral size of subcube to be searched");
     connect(tabInputFieldSpectralSize, SIGNAL(editingFinished()), this, SLOT(updateFields()));
     
-    tabInputFieldSingleCat = new QCheckBox(tr("Create single output catalogue "), tabInputGroupBox2);
-    tabInputFieldSingleCat->setObjectName("optical.storeSingleCat");
-    //tabInputFieldSingleCat->setToolTip("Write all sources to a single output catalogue file?");
-    tabInputFieldSingleCat->setChecked(false);
+    tabInputFieldMultiCat = new QCheckBox(tr("Create separate output catalogues "), tabInputGroupBox2);
+    tabInputFieldMultiCat->setObjectName("optical.storeMultiCat");
+    //tabInputFieldMultiCat->setToolTip("Create separate output catalogue file for each field?");
+    tabInputFieldMultiCat->setChecked(false);
     
     tabInputForm2->addRow(tr("Catalogue:"), tabInputWidgetCatalog);
     tabInputForm2->addRow(tr("Spatial size:"), tabInputFieldSpatialSize);
     tabInputForm2->addRow(tr("Spectral size:"), tabInputFieldSpectralSize);
-    tabInputForm2->addRow(tr("Output:"), tabInputFieldSingleCat);
+    tabInputForm2->addRow(tr("Output:"), tabInputFieldMultiCat);
     tabInputForm2->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
     tabInputGroupBox2->setLayout(tabInputForm2);
     
@@ -2654,7 +2654,7 @@ void SoFiA::createWhatsThis()
     
     tabInputFieldSpectralSize->setWhatsThis(tr("<h3>optical.specSize</h3><p>This defines the <b>spectral</b> size of the subcube to be searched around each catalogue position. The size must be specified in the <b>native units</b> of the data cube, e.g. in km/s or Hz.</p>"));
     
-    tabInputFieldSingleCat->setWhatsThis(tr("<h3>optical.storeSingleCat</h3><p>If set to <b>true</b>, the sources found around all input positions will be combined to create a single output catalogue. By default this parameter is set to <b>false</b>, in which case a separate output catalogue file is generated for each input position.</p>"));
+    tabInputFieldMultiCat->setWhatsThis(tr("<h3>optical.storeSingleCat</h3><p>If set to <b>true</b>, the sources found around all input positions will be combined to create a single output catalogue. By default this parameter is set to <b>false</b>, in which case a separate output catalogue file is generated for each input position.</p>"));
     
     tabInFilterGroupBox1->setWhatsThis(tr("<h3>steps.doSmooth</h3><p>Spatially and spectrally smooth cube prior to source finding.</p>"));
     

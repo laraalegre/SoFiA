@@ -243,7 +243,7 @@ private:
     QWidget      *tabInputWidgetCatalog;
     QLineEdit    *tabInputFieldSpatialSize;
     QLineEdit    *tabInputFieldSpectralSize;
-    QCheckBox    *tabInputFieldSingleCat;
+    QCheckBox    *tabInputFieldMultiCat;
     
     QGroupBox    *tabInputGroupBox3;
     QFormLayout  *tabInputForm3;

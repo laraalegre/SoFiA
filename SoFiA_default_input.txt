@@ -63,7 +63,7 @@ scaleNoise.edgeZ                =       0
 optical.sourceCatalogue         =       
 optical.spatSize                =       0.01
 optical.specSize                =       1e+5
-optical.storeSingleCat          =       false
+optical.storeMultiCat           =       false
 
 
 
