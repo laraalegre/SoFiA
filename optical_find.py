@@ -70,6 +70,7 @@ def merge_ascii(outroot,cat,storeMultiCat):
 
 def merge_xml(outroot,cat,storeMultiCat):
     # merge the xml tables:
+    # this is a temporary (working) solution, should be replaced by proper xml functions in python
     outfile = outroot + '_cat.xml'
     f=open(outfile,'w')
     h = 0    
@@ -80,16 +81,16 @@ def merge_xml(outroot,cat,storeMultiCat):
         if os.path.isfile(temp_xml) == True:
             f1=open(temp_xml,'r')
             for line in f1:
+                line_string = line
                 h += 1
-                if h < 39:
-                    f.write(line)  
+                if h < 41:
+                    f.write(line_string)  
 
                 n += 1
-                if  n > 38:
-                    if line[0:2] != '</':
-                    
-                        f.write(line)
-            f.write('</TR>\n')            
+                if  n > 40:
+                    if line_string[0:2] != '</' or line_string[0:5] == '</TR>':
+                        f.write(line_string)                        
+            #f.write('</TR>\n')            
             f1.close
             # throw away the intermediate catalogues if not needed
             if storeMultiCat == False:
