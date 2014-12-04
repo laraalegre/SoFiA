@@ -1,28 +1,43 @@
 <html>
   <head>
-    <title>SoFiA Handbook - Running the Pipeline</title>
+      <title>SoFiA Handbook - Running the Pipeline</title>
+      
+      <style>
+          body      {margin:5px;}
+          table     {margin:10px 0px; border:2px solid #FFFFFF; border-collapse:collapse; empty-cells:show;}
+          td        {margin:0px; padding:2px 5px; vertical-align:top; border:2px solid #FFFFFF;}
+          td.head   {background-color:#406080; color:#D0E0F0; font-weight:bold;}
+          td.head2  {background-color:#806040; color:#F0E0D0; font-weight:bold;}
+          td.body   {background-color:#F0F0F0; color:#000000;}
+          td.body2  {background-color:#F0F0F0; color:#406080; font-weight:bold;}
+          td.body3  {background-color:#F0F0F0; color:#806040; font-weight:bold;}
+          code      {color:#800000;}
+          h1        {color:#406080;}
+          h2        {color:#406080;}
+          h3        {color:#406080;}
+      </style>
   </head>
   
-  <body style="margin:5px;">
-    <h1 style="color:#4060A0;">Running the Pipeline</h1>
+  <body>
+    <h1>Running the Pipeline</h1>
     
-    <h2 style="color:#4060A0;">From the User Interface</h2>
+    <h2>From the User Interface</h2>
     
     <p>
-      Once an input data cube has been selected and the desired parameter settings have been set, the pipeline can be launched from within the user interface, either by selecting <span style="background-color:#E0E0E0;">&nbsp;Pipeline &rarr; Run Pipeline&nbsp;</span> or by clicking on the corresponding tool bar button. The pipeline run can be aborted at any time by selecting <span style="background-color:#E0E0E0;">&nbsp;Pipeline &rarr; Abort Pipeline&nbsp;</span> or by clicking on the respective tool bar button.
+        Once an input data cube has been selected and the desired parameter settings have been set, the pipeline can be launched from within the user interface, either by selecting <strong>Pipeline &rarr; Run Pipeline</strong> or by clicking on the corresponding tool bar button. The pipeline run can be aborted at any time by selecting <strong>Pipeline &rarr; Abort Pipeline</strong> or by clicking on the respective tool bar button.
     </p>
     
     <p>
       SoFiA will automatically save the current parameter settings to the current parameter file before starting the pipeline. If no file is specified, SoFiA will create a temporary file (named &lsquo;SoFiA_parameters.tmp&rsquo;) instead. Note that this temorary file will automatically get deleted again when exiting from SoFiA, and it is advisable to explicitly save the current settings to prevent the loss of information.
     </p>
     
-    <h2 style="color:#4060A0;">From the Terminal</h2>
+    <h2>From the Terminal</h2>
     
     <p>
       Alternatively, the pipeline can be launched from the terminal after the parameter settings have been saved to an output file. To achieve this, open a terminal window and navigate to the directory where the output parameter file was saved. Then run the pipeline by typing
     </p>
     
-    <pre style="background-color:#E0F0FF; margin:10px;"> sofia_pipeline.py &lt;parameter_file&gt;</pre>
+    <p><code>sofia_pipeline.py &lt;parameter_file&gt;</code></p>
     
     where &lt;parameter_file&gt; is the name of the SoFiA parameter file. There is no difference between running the pipeline from the user interface or from the terminal, but the latter is more useful in situations where the pipeline needs to be launched by another application or shell script, e.g. to automatically process a larger number of data cubes.
     

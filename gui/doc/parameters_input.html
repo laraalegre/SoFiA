@@ -1,141 +1,286 @@
 <html>
   <head>
     <title>SoFiA Handbook - Parameters: Input</title>
+    
+    <style>
+        body      {margin:5px;}
+        table     {margin:10px 0px; border:2px solid #FFFFFF; border-collapse:collapse; empty-cells:show;}
+        td        {margin:0px; padding:2px 5px; vertical-align:top; border:2px solid #FFFFFF;}
+        td.head   {background-color:#406080; color:#D0E0F0; font-weight:bold;}
+        td.head2  {background-color:#806040; color:#F0E0D0; font-weight:bold;}
+        td.body   {background-color:#F0F0F0; color:#000000;}
+        td.body2  {background-color:#F0F0F0; color:#406080; font-weight:bold;}
+        td.body3  {background-color:#F0F0F0; color:#806040; font-weight:bold;}
+        code      {color:#800000;}
+        h1        {color:#406080;}
+        h2        {color:#406080;}
+        h3        {color:#406080;}
+    </style>
   </head>
   
-  <body style="margin:5px;">
-    <h1 style="color:#4060A0;">Parameters</h1>
+  <body>
+    <h1>Parameters</h1>
     
-    <h2 style="color:#4060A0;">Input</h2>
+    <h2>Input</h2>
     
-    <p align="center">
-      <img src="images/interface_input.png" width="480" heigh="239" alt="SoFiA User Interface: Input Parameters" />
-    </p>
+    <h3>Input Files</h3>
     
-    <p>
-      Here, the input data files and settings can be specified.
-    </p>
-    
-    <h3 style="color:#4060A0;">Input Data</h3>
-    
-    <table style="margin:10px; background-color:#E0F0FF;" cellspacing="0" cellpadding="3" border="1">
-      <tr>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Module / Parameter</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Type</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Values</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Description</th>
-      </tr>
-      <tr>
-        <td>import.inFile</td>
-        <td>string</td>
-        <td>file name</td>
-        <td>Name of input data file. This option is mandatory, and there is no default. Note that only FITS files are currently supported.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>import.maskFile</td>
-        <td>string</td>
-        <td>file name</td>
-        <td>Name of optional file containing a mask of pixels identified as part of a source, e.g. from a previous run of SoFiA. This can be used to re-parametrise sources without repeating the source finding step. The default is to not read a mask cube.</td>
-      </tr>
-      <tr>
-        <td>import.weightsFile</td>
-        <td>string</td>
-        <td>file name</td>
-        <td>Name of optional file containing weights of pixels in the input cube. The weights will be applied before running the source finder. The default is to not apply weights.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>import.weightsFunction</td>
-        <td>string</td>
-        <td>analytic function</td>
-        <td>Analytic function used to describe the data weights as a function of x, y, and z. The default is to not apply weights. The following mathematical functions from <a href="http://docs.scipy.org/doc/numpy/reference/routines.math.html">Numpy</a> are supported: sin(), cos(), tan(), arcsin(), arccos(), arctan(), arctan2(), sinh(), cosh(), tanh(), arcsinh(), arccosh(), arctanh(), exp(), log(), log10(), log2(), sqrt(), square(), power(), absolute(), fabs(), and sign(). Note that the weights function is not applied whenever a weights cube is specified (see import.weightsFile).</td>
-      </tr>
+    <table id="import.inFile">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">import.inFile</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>string</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code></code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Full path and name of input data cube. This option is mandatory, and there is no default. Note that only FITS files are currently supported by SoFiA.</td>
+        </tr>
     </table>
     
-    <h3 style="color:#4060A0;">Subcube</h3>
-    
-    <table style="margin:10px; background-color:#E0F0FF;" cellspacing="0" cellpadding="3" border="1">
-      <tr>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Module / Parameter</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Type</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Values</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Description</th>
-      </tr>
-      <tr>
-        <td>import.subcube</td>
-        <td>list</td>
-        <td>subcube range; default: <b>[]</b></td>
-        <td>This parameter defines a subcube to be read in and processed by SoFiA. Depending on the value of import.subcubeMode, the range is either specified in pixels as [x1, x2, y1, y2, z1, z2] or in world coordinates as [x, y, z, rx, ry, rz]. In the latter case, x, y and z define the centre of the subcube, and rx, ry and rz specify the half-widths in the three dimensions. If world coordinates are used, all parameters must be in the native format as defined in the header of the data cube; e.g. if CUNIT3 is 'Hz' then both z and rz must be given in hertz. The default is an empty list, [], which means to read the entire cube.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>import.subcubeMode</td>
-        <td>string</td>
-        <td><b>pixel</b>, world</td>
-        <td>This parameter defines whether import.subcube is specified in pixels (pixel) or in world coordinates (world).</td>
-      </tr>
+    <table id="import.maskFile">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">import.maskFile</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>string</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code></code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Name of an optional file containing a mask of pixels identified as part of a source, e.g. from a previous run of SoFiA. This can be used to re-parametrise sources without repeating the source finding step. The default is to not read a mask cube.</td>
+        </tr>
     </table>
     
-    <h3 style="color:#4060A0;">Flagging</h3>
-    
-    <table style="margin:10px; background-color:#E0F0FF;" cellspacing="0" cellpadding="3" border="1">
-      <tr>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Module / Parameter</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Type</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Values</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Description</th>
-      </tr>
-      <tr>
-        <td>steps.doFlag</td>
-        <td>bool</td>
-        <td>true, <b>false</b></td>
-        <td>Flag certain pixel and channel ranges before proceeding.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>flag.regions</td>
-        <td>list</td>
-        <td>range(s) to be flagged; default: <b>[]</b></td>
-        <td>Pixel/channel range(s) to be flagged prior to source finding. Format: [[x1, x2, y1, y2, z1, z2], ...]. A place holder, '' (two single quotes), can be used for the upper range limit (x2, y2, and z2) to flag all the way to the end, e.g. [[0, '', 0, '', 0, 19]] will flag the first 20&nbsp;channels of the entire cube. The default is an empty list, [], which means to not flag anything.</td>
-      </tr>
+    <table id="import.weightsFile">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">import.weightsFile</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>string</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code></code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Name of an optional file containing weights of pixels in the input cube. The weights will be applied before running the source finder. The default is to not apply weights.</td>
+        </tr>
     </table>
     
-    <h3 style="color:#4060A0;">Catalogue-based Source Finding</h3>
+    <table id="import.weightsFunction">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">import.weightsFunction</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>string</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code></code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Analytic function used to describe the data weights as a function of x, y, and z. The default is to not apply weights. The following mathematical functions from Numpy are supported: <code>sin()</code>, <code>cos()</code>, <code>tan()</code>, <code>arcsin()</code>, <code>arccos()</code>, <code>arctan()</code>, <code>arctan2()</code>, <code>sinh()</code>, <code>cosh()</code>, <code>tanh()</code>, <code>arcsinh()</code>, <code>arccosh()</code>, <code>arctanh()</code>, <code>exp()</code>, <code>log()</code>, <code>log10()</code>, <code>log2()</code>, <code>sqrt()</code>, <code>square()</code>, <code>power()</code>, <code>absolute()</code>, <code>fabs()</code>, and <code>sign()</code>. Note that the weights function is not applied whenever a weights cube is specified (see <a href="#import.weightsFile">import.weightsFile</a>).</td>
+        </tr>
+    </table>
     
-    <table style="margin:10px; background-color:#E0F0FF;" cellspacing="0" cellpadding="3" border="1">
-      <tr>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Module / Parameter</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Type</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Values</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Description</th>
-      </tr>
-      <tr>
-        <td>steps.doOptical</td>
-        <td>bool</td>
-        <td>true, <b>false</b></td>
-        <td>Run SoFiA on multiple, smaller subcubes centred on positions defined in an input source catalogue. A catalogue file will need to be specified (see parameter optical.sourceCatalogue). This could, e.g., be an optical galaxy catalogue with the aim to search for HI detections at the positions of all galaxies.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>optical.sourceCatalogue</td>
-        <td>string</td>
-        <td>file name</td>
-        <td>This defines the full path to the input catalogue required for catalogue-based source finding (see parameter steps.doOptical). There is no default.</td>
-      </tr>
-      <tr>
-        <td>optical.spatSize</td>
-        <td>float</td>
-        <td>&ge; 0; default: <b>0.01</b></td>
-        <td>This defines the spatial size of the subcube to be searched around each catalogue position. The size must be specified in the native units of the data cube, e.g. in degrees.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>optical.specSize</td>
-        <td>float</td>
-        <td>&ge; 0; default: <b>1e+5</b></td>
-        <td>This defines the spectral size of the subcube to be searched around each catalogue position. The size must be specified in the native units of the data cube, e.g. in km/s or Hz.</td>
-      </tr>
-      <tr>
-        <td>optical.storeSingleCat</td>
-        <td>bool</td>
-        <td>true, <b>false</b></td>
-        <td>If set to true, a single output catalogue will be generated that contains the detections around all positions specified in the input catalogue. By default this parameter is set to false, in which case a separate output catalogue file is generated for each input position.</td>
-      </tr>
+    <h3>Subcube</h3>
+    
+    <table id="steps.doSubcube">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">steps.doSubcube</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, source finding can be carried out on a subcube to be defined by the <a href="#import.subcube">import.subcube</a> and <a href="#import.subcubeMode">import.subcubeMode</a> options.</td>
+        </tr>
+    </table>
+    
+    <table id="import.subcube">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">import.subcube</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>list</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>[]</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">This parameter defines a subcube to be read in and processed by SoFiA. Depending on the value of import.subcubeMode, the range is either specified in pixels as <code>[x1, x2, y1, y2, z1, z2]</code> or in world coordinates as <code>[x, y, z, rx, ry, rz]</code> depending on the value of <a href="#import.subcubeMode">import.subcubeMode</a>. In the latter case, <code>x</code>, <code>y</code> and <code>z</code> define the centre of the subcube, and <code>rx</code>, <code>ry</code> and <code>rz</code> specify the half-widths in the three dimensions. If world coordinates are used, all parameters must be in the native format as defined in the header of the data cube; e.g. if <code>CUNIT3</code> is <code>'Hz'</code> then both <code>z</code> and <code>rz</code> must be given in hertz. The default is an empty list, <code>[]</code>, which means to read the entire cube.</td>
+        </tr>
+    </table>
+    
+    <table id="import.subcubeMode">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">import.subcubeMode</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>string</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>pixel</code>, <code>world</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>pixel</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">This parameter defines whether import.subcube is specified in pixels (<code>pixel</code>) or in world coordinates (<code>world</code>).</td>
+        </tr>
+    </table>
+    
+    <h3>Flagging</h3>
+    
+    <table id="steps.doFlag">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">steps.doFlag</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Flag pixel and channel ranges before proceeding. Details are specified with the <a href="#flag.regions">flag.regions</a> option.</td>
+        </tr>
+    </table>
+    
+    <table id="flag.regions">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">flag.regions</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>list</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>[]</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Pixel/channel range(s) to be flagged prior to source finding. Format: <code>[[x1, x2, y1, y2, z1, z2], ...]</code>. A place holder, <code>''</code> (two single quotes), can be used for the upper range limit (<code>x2</code>, <code>y2</code>, and <code>z2</code>) to flag all the way to the end, e.g. <code>[[0, '', 0, '', 0, 19]]</code> will flag the first 20 channels of the entire cube. The default is an empty list, <code>[]</code>, which means to not flag anything.</td>
+        </tr>
+    </table>
+    
+    <h3>Optical Catalogue</h3>
+    
+    <table id="steps.doOptical">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">steps.doOptical</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, run SoFiA on multiple, smaller sub-cubes centred on positions defined in an input source catalogue. A catalogue file will need to be specified (see parameter <a href="#optical.sourceCatalogue">optical.sourceCatalogue</a>). This could, e.g., be an optical galaxy catalogue with the aim to search for HI detections at the positions of all galaxies.</td>
+        </tr>
+    </table>
+    
+    <table id="optical.sourceCatalogue">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">optical.sourceCatalogue</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>string</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code></code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">This parameter defines the full path to the input catalogue required for catalogue-based source finding (see parameter <a href="#steps.doOptical">steps.doOptical</a>). There is no default.</td>
+        </tr>
+    </table>
+    
+    <table id="optical.spatSize">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">optical.spatSize</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>0.0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>0.01</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">This parameter defines the spatial size of the sub-cube to be searched around each catalogue position. The size must be specified in the native units of the data cube, e.g. in degrees.</td>
+        </tr>
+    </table>
+    
+    <table id="optical.specSize">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">optical.specSize</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>0.0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>1e+5</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">This parameter defines the spectral size of the sub-cube to be searched around each catalogue position. The size must be specified in the native units of the data cube, e.g. in km/s or Hz.</td>
+        </tr>
+    </table>
+    
+    <table id="optical.storeMultiCat">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">optical.storeMultiCat</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, a separate output catalogue will be created for each input position, containing only the sources found in that subcube. In addition, a single, merged catalogue will also be created. By default this parameter is set to <code>false</code>, in which case only a single output catalogue file is generated.</td>
+        </tr>
     </table>
     
     <p align="center">

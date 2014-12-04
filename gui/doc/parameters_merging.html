@@ -1,73 +1,158 @@
 <html>
   <head>
-    <title>SoFiA Handbook - Parameters: Merging</title>
+      <title>SoFiA Handbook - Parameters: Merging</title>
+      
+      <style>
+          body      {margin:5px;}
+          table     {margin:10px 0px; border:2px solid #FFFFFF; border-collapse:collapse; empty-cells:show;}
+          td        {margin:0px; padding:2px 5px; vertical-align:top; border:2px solid #FFFFFF;}
+          td.head   {background-color:#406080; color:#D0E0F0; font-weight:bold;}
+          td.head2  {background-color:#806040; color:#F0E0D0; font-weight:bold;}
+          td.body   {background-color:#F0F0F0; color:#000000;}
+          td.body2  {background-color:#F0F0F0; color:#406080; font-weight:bold;}
+          td.body3  {background-color:#F0F0F0; color:#806040; font-weight:bold;}
+          code      {color:#800000;}
+          h1        {color:#406080;}
+          h2        {color:#406080;}
+          h3        {color:#406080;}
+      </style>
   </head>
   
-  <body style="margin:5px;">
-    <h1 style="color:#4060A0;">Parameters</h1>
+  <body>
+    <h1>Parameters</h1>
     
-    <h2 style="color:#4060A0;">Merging</h2>
-    
-    <p align="center">
-      <img src="images/interface_merging.png" width="480" heigh="154" alt="SoFiA User Interface: Merging Parameters" />
-    </p>
+    <h2>Merging</h2>
     
     <p>
       The settings below control how detections get merged into sources.
     </p>
     
-    <table style="margin:10px; background-color:#E0F0FF;" cellspacing="0" cellpadding="3" border="1">
-      <tr>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Module / Parameter</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Type</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Values</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Description</th>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>steps.doMerge</td>
-        <td>bool</td>
-        <td><b>true</b>, false</td>
-        <td>Merge detected sources?</td>
-      </tr>
-      <tr>
-        <td>merge.mergeX</td>
-        <td>int</td>
-        <td>&ge; 0; default: <b>3</b></td>
-        <td>Merging radius in first dimension in pixels.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>merge.mergeY</td>
-        <td>int</td>
-        <td>&ge; 0; default: <b>3</b></td>
-        <td>Merging radius in second dimension in pixels.</td>
-      </tr>
-      <tr>
-        <td>merge.mergeZ</td>
-        <td>int</td>
-        <td>&ge; 0; default: <b>3</b></td>
-        <td>Merging radius in third dimension in pixels.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>merge.minSizeX</td>
-        <td>int</td>
-        <td>&ge; 1; default: <b>3</b></td>
-        <td>Minimum extent of genuine sources in first dimension.</td>
-      </tr>
-      <tr>
-        <td>merge.minSizeY</td>
-        <td>int</td>
-        <td>&ge; 1; default: <b>3</b></td>
-        <td>Minimum extent of genuine sources in second dimension.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>merge.minSizeZ</td>
-        <td>int</td>
-        <td>&ge; 1; default: <b>2</b></td>
-        <td>Minimum extent of genuine sources in third dimension.</td>
-      </tr>
-      <tr>
-        <td colspan="4" style="background-color:#FFFFFF;">Default values are set in <b>bold-face</b> font.</td>
-      </tr>
+    <h3>Merging</h3>
+    
+    <table id="steps.doMerge">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">steps.doMerge</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>true</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, pixels detected by the source finder will be merged into final sources based on user-defined separation and size criteria.</td>
+        </tr>
+    </table>
+    
+    <table id="merge.mergeX">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">merge.mergeX</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>3</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Merging radius in first dimension in pixels. Note that a value of <code>0</code> means that no merging takes place and each detected pixel is retained as a separate source.</td>
+        </tr>
+    </table>
+    
+    <table id="merge.mergeY">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">merge.mergeY</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>3</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Merging radius in second dimension in pixels. Note that a value of <code>0</code> means that no merging takes place and each detected pixel is retained as a separate source.</td>
+        </tr>
+    </table>
+    
+    <table id="merge.mergeZ">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">merge.mergeZ</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>3</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Merging radius in third dimension in pixels. Note that a value of <code>0</code> means that no merging takes place and each detected pixel is retained as a separate source.</td>
+        </tr>
+    </table>
+    
+    <table id="merge.minSizeX">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">merge.minSizeX</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>3</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Minimum required extent in first dimension of genuine sources after merging. Sources below this size will be discarded.</td>
+        </tr>
+    </table>
+    
+    <table id="merge.minSizeY">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">merge.minSizeY</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>3</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Minimum required extent in second dimension of genuine sources after merging. Sources below this size will be discarded.</td>
+        </tr>
+    </table>
+    
+    <table id="merge.minSizeZ">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">merge.minSizeZ</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>2</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Minimum required extent in third dimension of genuine sources after merging. Sources below this size will be discarded.</td>
+        </tr>
     </table>
     
     <p align="center">

@@ -1,125 +1,268 @@
 <html>
   <head>
-    <title>SoFiA Handbook - Parameters: Output</title>
+      <title>SoFiA Handbook - Parameters: Output</title>
+      
+      <style>
+          body      {margin:5px;}
+          table     {margin:10px 0px; border:2px solid #FFFFFF; border-collapse:collapse; empty-cells:show;}
+          td        {margin:0px; padding:2px 5px; vertical-align:top; border:2px solid #FFFFFF;}
+          td.head   {background-color:#406080; color:#D0E0F0; font-weight:bold;}
+          td.head2  {background-color:#806040; color:#F0E0D0; font-weight:bold;}
+          td.body   {background-color:#F0F0F0; color:#000000;}
+          td.body2  {background-color:#F0F0F0; color:#406080; font-weight:bold;}
+          td.body3  {background-color:#F0F0F0; color:#806040; font-weight:bold;}
+          code      {color:#800000;}
+          h1        {color:#406080;}
+          h2        {color:#406080;}
+          h3        {color:#406080;}
+      </style>
   </head>
   
-  <body style="margin:5px;">
-    <h1 style="color:#4060A0;">Parameters</h1>
+  <body>
+    <h1>Parameters</h1>
     
-    <h2 style="color:#4060A0;">Output</h2>
-    
-    <p align="center">
-      <img src="images/interface_output.png" width="480" heigh="268" alt="SoFiA User Interface: Output Parameters" />
-    </p>
+    <h2>Output</h2>
     
     <p>
       The parameters below control the storage of source catalogues and other data products.
     </p>
     
-    <h3 style="color:#4060A0;">Source catalogue</h3>
+    <h3>Output Files</h3>
     
-    <table style="margin:10px; background-color:#E0F0FF;" cellspacing="0" cellpadding="3" border="1">
-      <tr>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Module / Parameter</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Type</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Values</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Description</th>
-      </tr>
-      <tr style="background-color:#F0E0E0;">
-        <td>steps.doWriteCat</td>
-        <td>bool</td>
-        <td><b>true</b>, false</td>
-        <td>Write source catalogue(s) to disk?</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>writeCat.parameters</td>
-        <td>string</td>
-        <td>list of parameters; default: <b>['*']</b></td>
-        <td>List of parameters to appear in source catalogue. Format: ['par1', 'par2', ...]. An asterisk ['*'] means all parameters.</td>
-      </tr>
-      <tr>
-        <td>writeCat.baseName</td>
-        <td>string</td>
-        <td>file name</td>
-        <td>Optional base name of all output files. If not specified, the input file name will be used by default.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>writeCat.outputDir</td>
-        <td>string</td>
-        <td>directory path</td>
-        <td>Optional directory path to which all output files are written. If not specified, the directory of the input cube will be used by default.</td>
-      </tr>
-      <tr>
-        <td>writeCat.writeASCII</td>
-        <td>bool</td>
-        <td><b>true</b>, false</td>
-        <td>Write catalogue in ASCII format.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>writeCat.writeXML</td>
-        <td>bool</td>
-        <td>true, <b>false</b></td>
-        <td>Write catalogue in VO table (XML) format.</td>
-      </tr>
-      <tr>
-        <td>writeCat.writeSQL</td>
-        <td>bool</td>
-        <td>true, <b>false</b></td>
-        <td>Write catalogue in SQL format (not yet implemented).</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>writeCat.compress</td>
-        <td>bool</td>
-        <td>true, <b>false</b></td>
-        <td>If set to true, use <a href="http://www.gzip.org/">gzip</a> to compress all output files.</td>
-      </tr>
-      <tr>
-        <td colspan="4" style="background-color:#FFFFFF;">Default values are set in <b>bold-face</b> font. Parameters on a red background are not accessible through the user interface.</td>
-      </tr>
+    <table id="steps.doWriteCat">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">steps.doWriteCat</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>true</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">If set to <code>true</code>, write output catalogue(s) to disk. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+        </tr>
     </table>
     
-    <h3 style="color:#4060A0;">Additional data products</h3>
+    <table id="writeCat.baseName">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">writeCat.baseName</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>string</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code></code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Optional base name of all output files. If not specified, the input file name will be used by default.</td>
+        </tr>
+    </table>
     
-    <table style="margin:10px; background-color:#E0F0FF;" cellspacing="0" cellpadding="3" border="1">
-      <tr>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Module / Parameter</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Type</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Values</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Description</th>
-      </tr>
-      <tr>
-        <td>steps.doWriteFilteredCube</td>
-        <td>bool</td>
-        <td><b>false</b>, true</td>
-        <td>Save a copy of the filtered data cube? Note that this will only work if at least one of the input filters was applied.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>steps.doWriteMask</td>
-        <td>bool</td>
-        <td><b>false</b>, true</td>
-        <td>Save mask cube?</td>
-      </tr>
-      <tr>
-        <td>steps.doMom0</td>
-        <td>bool</td>
-        <td><b>false</b>, true</td>
-        <td>Create and save moment-0 map?</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>steps.doMom1</td>
-        <td>bool</td>
-        <td><b>false</b>, true</td>
-        <td>Create and save moment-1 map?</td>
-      </tr>
-      <tr>
-        <td>steps.doCubelets</td>
-        <td>bool</td>
-        <td><b>false</b>, true</td>
-        <td>Create and save sub-cube of each source?</td>
-      </tr>
-      <tr>
-        <td colspan="4" style="background-color:#FFFFFF;">Default values are set in <b>bold-face</b> font.</td>
-      </tr>
+    <table id="writeCat.outputDir">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">writeCat.outputDir</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>string</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code></code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Optional directory path to which all output files are written. If not specified, the directory of the input data cube will be used by default.</td>
+        </tr>
+    </table>
+    
+    <table id="writeCat.writeASCII">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">writeCat.writeASCII</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>true</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, write catalogue in human-readable ASCII format.</td>
+        </tr>
+    </table>
+    
+    <table id="writeCat.writeXML">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">writeCat.writeXML</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, write catalogue in VO table format (XML).</td>
+        </tr>
+    </table>
+    
+    <table id="writeCat.writeSQL">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">writeCat.writeSQL</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, write catalogue in SQL format for insertion into an SQL database (not yet implemented).</td>
+        </tr>
+    </table>
+    
+    <table id="steps.doWriteFilteredCube">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">steps.doWriteFilteredCube</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, save a copy of the filtered data cube. Note that this will only work if at least one of the input filters was applied.</td>
+        </tr>
+    </table>
+    
+    <table id="steps.doWriteMask">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">steps.doWriteMask</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, save the mask cube.</td>
+        </tr>
+    </table>
+    
+    <table id="steps.doMom0">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">steps.doMom0</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, a moment-0 map of all detected sources will be created and saved to disk.</td>
+        </tr>
+    </table>
+    
+    <table id="steps.doMom1">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">steps.doMom1</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, a moment-1 map of all detected sources will be created and saved to disk.</td>
+        </tr>
+    </table>
+    
+    <table id="steps.doCubelets">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">steps.doCubelets</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, a range of data products for each individual source will be created and written to disk, including a small <em>sub-cube</em>, <em>moment-0</em>, <em>1</em> and <em>2</em> maps, a <em>position&ndash;velocity diagram</em> along the morphological major axis (as derived from an ellipse fit to the moment-0 image) and an <em>integrated spectrum</em> of the source.</td>
+        </tr>
+    </table>
+    
+    <table id="writeCat.compress">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">writeCat.compress</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, use <a href="http://www.gzip.org/">gzip</a> to compress all output files.</td>
+        </tr>
+    </table>
+    
+    <h3>Output Parameters</h3>
+    
+    <table id="writeCat.parameters">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">writeCat.parameters</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>list</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>['*']</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">List of parameters to appear in source catalogue. Format: <code>['par1', 'par2', ...]</code>. An asterisk, <code>['*']</code>, means that all parameters are written to the output catalogue.</td>
+        </tr>
     </table>
     
     <p align="center">

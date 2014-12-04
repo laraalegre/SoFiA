@@ -1,186 +1,397 @@
 <html>
   <head>
-    <title>SoFiA Handbook - Parameters: Input Filter</title>
+      <title>SoFiA Handbook - Parameters: Input Filter</title>
+      
+      <style>
+          body      {margin:5px;}
+          table     {margin:10px 0px; border:2px solid #FFFFFF; border-collapse:collapse; empty-cells:show;}
+          td        {margin:0px; padding:2px 5px; vertical-align:top; border:2px solid #FFFFFF;}
+          td.head   {background-color:#406080; color:#D0E0F0; font-weight:bold;}
+          td.head2  {background-color:#806040; color:#F0E0D0; font-weight:bold;}
+          td.body   {background-color:#F0F0F0; color:#000000;}
+          td.body2  {background-color:#F0F0F0; color:#406080; font-weight:bold;}
+          td.body3  {background-color:#F0F0F0; color:#806040; font-weight:bold;}
+          code      {color:#800000;}
+          h1        {color:#406080;}
+          h2        {color:#406080;}
+          h3        {color:#406080;}
+      </style>
   </head>
   
-  <body style="margin:5px;">
-    <h1 style="color:#4060A0;">Parameters</h1>
+  <body>
+    <h1>Parameters</h1>
     
-    <h2 style="color:#4060A0;">Input Filter</h2>
+    <h2>Input Filter</h2>
     
-    <p align="center">
-      <img src="images/interface_inputfilter.png" width="480" heigh="134" alt="SoFiA User Interface: Input Filter Parameters" />
-    </p>
+    <h3>Smoothing</h3>
     
-    <h3 style="color:#4060A0;">Spatial and spectral smoothing</h3>
-    
-    <table style="margin:10px; background-color:#E0F0FF;" cellspacing="0" cellpadding="3" border="1">
-      <tr>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Module / Parameter</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Type</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Values</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Description</th>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>steps.doSmooth</td>
-        <td>bool</td>
-        <td>true, <b>false</b></td>
-        <td>Spatially and spectrally smooth cube prior to source finding?</td>
-      </tr>
-      <tr>
-        <td>smooth.kernel</td>
-        <td>string</td>
-        <td><b>gaussian</b>, boxcar, median</td>
-        <td>Type of smoothing kernel used in both spatial and spectral smoothing.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>smooth.edgeMode</td>
-        <td>string</td>
-        <td><b>constant</b>, reflect, mirror, nearest, wrap</td>
-        <td>
-          Behaviour near the edge of the cube:
-          <ul>
-            <li><i>constant</i>: assume constant value of 0</li>
-            <li><i>nearest</i>: assume constant value equal to edge pixel</li>
-            <li><i>reflect</i>: mirror values at edge, thereby including the edge pixel itself</li>
-            <li><i>mirror</i>: mirror values at position of outermost pixel, thereby excluding the edge pixel itself</li>
-            <li><i>wrap</i>: copy values from opposite edge of the array</li>
-          </ul>
-        </td>
-      </tr>
-      <tr>
-        <td>smooth.kernelX</td>
-        <td>float</td>
-        <td>&ge; 0.0; default: <b>3.0</b></td>
-        <td>Kernel size in pixels for first coordinate. For Gaussian kernels the value refers to the FWHM.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>smooth.kernelY</td>
-        <td>float</td>
-        <td>&ge; 0.0; default: <b>3.0</b></td>
-        <td>Kernel size in pixels for second coordinate. For Gaussian kernels the value refers to the FWHM.</td>
-      </tr>
-      <tr>
-        <td>smooth.kernelZ</td>
-        <td>float</td>
-        <td>&ge; 0.0; default: <b>3.0</b></td>
-        <td>Kernel size in pixels for third coordinate. For Gaussian kernels the value refers to the FWHM.</td>
-      </tr>
-      <tr>
-        <td colspan="4" style="background-color:#FFFFFF;">Default values are set in <b>bold-face</b> font.</td>
-      </tr>
+    <table id="steps.doSmooth">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">steps.doSmooth</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, spatially and spectrally smooth the data cube prior to source finding.</td>
+        </tr>
     </table>
     
-    <h3 style="color:#4060A0;">Noise scaling</h3>
-    
-    <table style="margin:10px; background-color:#E0F0FF;" cellspacing="0" cellpadding="3" border="1">
-      <tr>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Module / Parameter</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Type</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Value</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Description</th>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>steps.doScaleNoise</td>
-        <td>bool</td>
-        <td>true, <b>false</b></td>
-        <td>Normalise noise levels prior to source finding?</td>
-      </tr>
-      <tr>
-        <td>scaleNoise.scaleX</td>
-        <td>bool</td>
-        <td>true, <b>false</b></td>
-        <td>Noise normalisation in first (spatial) dimension.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>scaleNoise.scaleY</td>
-        <td>bool</td>
-        <td>true, <b>false</b></td>
-        <td>Noise normalisation in second (spatial) dimension.</td>
-      </tr>
-      <tr>
-        <td>scaleNoise.scaleZ</td>
-        <td>bool</td>
-        <td><b>true</b>, false</td>
-        <td>Noise normalisation in third (spectral) dimension.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>scaleNoise.statistic</td>
-        <td>string</td>
-        <td><b>mad</b>, std, negative</td>
-        <td>Statistic used to measure the noise (median absolute deviation or standard deviation).</td>
-      </tr>
-      <tr>
-        <td>scaleNoise.edgeX</td>
-        <td>int</td>
-        <td>&ge; <b>0</b></td>
-        <td>Size of edge (in pixels) to be excluded in first coordinate.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>scaleNoise.edgeY</td>
-        <td>int</td>
-        <td>&ge; <b>0</b></td>
-        <td>Size of edge (in pixels) to be excluded in second coordinate.</td>
-      </tr>
-      <tr>
-        <td>scaleNoise.edgeZ</td>
-        <td>int</td>
-        <td>&ge; <b>0</b></td>
-        <td>Size of edge (in pixels) to be excluded in third coordinate.</td>
-      </tr>
-      <tr>
-        <td colspan="4" style="background-color:#FFFFFF;">Default values are set in <b>bold-face</b> font.</td>
-      </tr>
+    <table id="smooth.kernel">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">smooth.kernel</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>string</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>gaussian</code>, <code>boxcar</code>, <code>median</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>gaussian</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Type of smoothing kernel used in both spatial and spectral smoothing. The possible options are <code>gaussian</code>, <code>boxcar</code> or <code>median</code>.</td>
+        </tr>
     </table>
     
-    <h3 style="color:#4060A0;">2D&ndash;1D wavelet filter</h3>
+    <table id="smooth.edgeMode">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">smooth.edgeMode</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>string</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>constant</code>, <code>nearest</code>, <code>reflect</code>, <code>mirror</code>, <code>wrap</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>constant</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Pixel values assumed by the smoothing algorithm outside the boundaries of the cube. The following options are available:<br />
+                <code>constant</code>: assume a constant value of 0.<br />
+                <code>nearest</code>: assume a constant value equal to that of the nearest edge pixel.<br />
+                <code>reflect</code>: mirror values at the edge, thereby duplicating the edge pixel itself.<br />
+                <code>mirror</code>: mirror values at the centre of the outermost pixel, thereby avoiding duplication of the edge pixel itself.<br />
+                <code>wrap</code>: copy values from the opposite edge of the cube.</td>
+        </tr>
+    </table>
     
-    <table style="margin:10px; background-color:#E0F0FF;" cellspacing="0" cellpadding="3" border="1">
-      <tr>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Module / Parameter</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Type</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Value</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Description</th>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>steps.doWavelet</td>
-        <td>bool</td>
-        <td>true, <b>false</b></td>
-        <td>Decompose the data cube into wavelet components using the 2D&ndash;1D wavelet decomposition algorithm of <a href="http://adsabs.harvard.edu/abs/2012PASA...29..244F">Fl&ouml;er et al. (2012)</a>.</td>
-      </tr>
-      <tr>
-        <td>wavelet.threshold</td>
-        <td>float</td>
-        <td>&ge; 0.0; default: <b>5.0</b></td>
-        <td>Flux threshold used in the wavelet reconstruction in multiples of the rms noise. Note that this threshold only determines which wavelet components are added to the decomposed cube; any source finding will be done separately, using a different flux threshold.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>wavelet.iterations</td>
-        <td>int</td>
-        <td>&ge; <b>1</b></td>
-        <td>Number of iterations in the reconstruction process.</td>
-      </tr>
-      <tr>
-        <td>wavelet.scaleXY</td>
-        <td>int</td>
-        <td>&ge; <b>-1</b></td>
-        <td>Number of <b>spatial</b> scales used in the decomposition. The default value of <b>-1</b> will automatically determine the appropriate number of scales based on the data cube.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>wavelet.scaleZ</td>
-        <td>int</td>
-        <td>&ge; <b>-1</b></td>
-        <td>Number of <b>spectral</b> scales used in the decomposition. The default value of <b>-1</b> will automatically determine the appropriate number of scales based on the data cube.</td>
-      </tr>
-      <tr>
-        <td>wavelet.positivity</td>
-        <td>bool</td>
-        <td>true, <b>false</b></td>
-        <td>Include only positive wavelet components in the decomposition?</td>
-      </tr>
-      <tr>
-        <td colspan="4" style="background-color:#FFFFFF;">Default values are set in <b>bold-face</b> font.</td>
-      </tr>
+    <table id="smooth.kernelX">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">smooth.kernelX</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>0.0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>3.0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Kernel size in pixels for the first (spatial) coordinate. For Gaussian kernels the value refers to the FWHM.</td>
+        </tr>
+    </table>
+    
+    <table id="smooth.kernelY">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">smooth.kernelY</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>0.0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>3.0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Kernel size in pixels for the second (spatial) coordinate. For Gaussian kernels the value refers to the FWHM.</td>
+        </tr>
+    </table>
+    
+    <table id="smooth.kernelZ">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">smooth.kernelZ</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>0.0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>3.0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Kernel size in pixels for the third (spectral) coordinate. For Gaussian kernels the value refers to the FWHM.</td>
+        </tr>
+    </table>
+    
+    <h3>Noise Scaling</h3>
+    
+    <table id="steps.doScaleNoise">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">steps.doScaleNoise</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, normalise noise levels across the data cube prior to source finding.</td>
+        </tr>
+    </table>
+    
+    <table id="scaleNoise.scaleX">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">scaleNoise.scaleX</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, apply noise normalisation in first (spatial) dimension.</td>
+        </tr>
+    </table>
+    
+    <table id="scaleNoise.scaleY">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">scaleNoise.scaleY</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, apply noise normalisation in second (spatial) dimension.</td>
+        </tr>
+    </table>
+    
+    <table id="scaleNoise.scaleZ">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">scaleNoise.scaleZ</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>true</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, apply noise normalisation in third (spectral) dimension.</td>
+        </tr>
+    </table>
+    
+    <table id="scaleNoise.statistic">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">scaleNoise.statistic</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>string</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>std</code>, <code>mad</code>, <code>negative</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>mad</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Statistic used to determine the noise in the data cube. The following options are available: standard deviation (<code>std</code>), median absolute deviation (<code>mad</code>) or fitting of a Gaussian function to the negative part of the flux histogram (<code>negative</code>).</td>
+        </tr>
+    </table>
+    
+    <table id="scaleNoise.edgeX">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">scaleNoise.edgeX</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Size of the edge (in pixels) to be excluded in first (spatial) dimension.</td>
+        </tr>
+    </table>
+    
+    <table id="scaleNoise.edgeY">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">scaleNoise.edgeY</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Size of the edge (in pixels) to be excluded in second (spatial) dimension.</td>
+        </tr>
+    </table>
+    
+    <table id="scaleNoise.edgeZ">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">scaleNoise.edgeZ</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Size of the edge (in pixels) to be excluded in third (spectral) dimension.</td>
+        </tr>
+    </table>
+    
+    <h3>Wavelet Filter</h3>
+    
+    <table id="steps.doWavelet">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">steps.doWavelet</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, decompose the data cube into wavelet components using the 2D&ndash;1D wavelet decomposition algorithm of <a href="http://adsabs.harvard.edu/abs/2012PASA...29..244F">Flöer &amp; Winkel (2012)</a>.</td>
+        </tr>
+    </table>
+    
+    <table id="wavelet.threshold">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">wavelet.threshold</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>0.0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>5.0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Flux threshold used in the wavelet reconstruction processs in multiples of the rms noise. Note that this threshold only determines which wavelet components are added to the decomposed cube. Any source finder run after the reconstruction will use its own flux threshold.</td>
+        </tr>
+    </table>
+    
+    <table id="wavelet.iterations">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">wavelet.iterations</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>3</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Number of iterations to be used in the wavelet reconstruction process.</td>
+        </tr>
+    </table>
+    
+    <table id="wavelet.scaleXY">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">wavelet.scaleXY</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>-1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>-1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Number of <em>spatial</em> scales used in the decomposition. The default value of <code>-1</code> will automatically determine the appropriate number of scales depending on the actual data cube.</td>
+        </tr>
+    </table>
+    
+    <table id="wavelet.scaleZ">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">wavelet.scaleZ</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>-1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>-1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Number of <em>spectral</em> scales used in the decomposition. The default value of <code>-1</code> will automatically determine the appropriate number of scales depending on the actual data cube.</td>
+        </tr>
+    </table>
+    
+    <table id="wavelet.positivity">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">wavelet.positivity</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, include only positive wavelet components in the decomposition. Otherwise, negative components will be included as well.</td>
+        </tr>
     </table>
     
     <p align="center">

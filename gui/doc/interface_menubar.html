@@ -1,12 +1,27 @@
 <html>
   <head>
-    <title>SoFiA Handbook - User Interface: Menu Bar</title>
+      <title>SoFiA Handbook - User Interface: Menu Bar</title>
+      
+      <style>
+          body      {margin:5px;}
+          table     {margin:10px 0px; border:2px solid #FFFFFF; border-collapse:collapse; empty-cells:show;}
+          td        {margin:0px; padding:2px 5px; vertical-align:top; border:2px solid #FFFFFF;}
+          td.head   {background-color:#406080; color:#D0E0F0; font-weight:bold;}
+          td.head2  {background-color:#806040; color:#F0E0D0; font-weight:bold;}
+          td.body   {background-color:#F0F0F0; color:#000000;}
+          td.body2  {background-color:#F0F0F0; color:#406080; font-weight:bold;}
+          td.body3  {background-color:#F0F0F0; color:#806040; font-weight:bold;}
+          code      {color:#800000;}
+          h1        {color:#406080;}
+          h2        {color:#406080;}
+          h3        {color:#406080;}
+      </style>
   </head>
   
-  <body style="margin:5px;">
-    <h1 style="color:#4060A0;">User Interface</h1>
+  <body>
+    <h1>User Interface</h1>
     
-    <h2 style="color:#4060A0;">Menu Bar</h2>
+    <h2>Menu Bar</h2>
     
     <p>
       The following tasks and options are available from the menu bar:
@@ -14,42 +29,43 @@
     
     <ul>
       <li>
-        <b>File</b>
+        <strong>File</strong>
         <ul>
-          <li><b>New</b> &ndash; Close current file and reset all parameter settings to their default values.</li>
-          <li><b>Open</b> &ndash; Open a file and read parameter settings.</li>
-          <li><b>Save</b> &ndash; Save parameter settings to currently opened file.</li>
-          <li><b>Save As</b> &ndash; Save parameter settings to new file.</li>
-          <li><b>Quit</b> &ndash; Exit from SoFiA. Any unsaved parameter settings will be lost. It will not be possible to exit from SoFiA while the pipeline is running.</li>
+          <li><strong>New</strong> &ndash; Close current file and reset all parameter settings to their default values.</li>
+          <li><strong>Open</strong> &ndash; Open a file and read parameter settings.</li>
+          <li><strong>Save</strong> &ndash; Save parameter settings to currently opened file.</li>
+          <li><strong>Save As</strong> &ndash; Save parameter settings to new file.</li>
+          <li><strong>Quit</strong> &ndash; Exit from SoFiA. Any unsaved parameter settings will be lost. It will not be possible to exit from SoFiA while the pipeline is running.</li>
         </ul>
       </li>
       <li>
-        <b>Pipeline</b>
+        <strong>Pipeline</strong>
         <ul>
-          <li><b>Run Pipeline</b> &ndash; Start the pipeline using the current parameter settings. SoFiA will save the current parameter settings to the currently opened file before invoking the pipeline. If no file is currently open, SoFiA will use a temporary file instead.</li>
-          <li><b>Abort Pipeline</b> &ndash; Abort the current pipeline run. All pipeline processes will be terminated immediately without waiting for them to finish. Hence, the pipeline will not produce any useful results in this case and will have to be restarted.</li>
-          <li><b>Save Messages As</b> &ndash; Save all pipeline messages to file.</li>
-          <li><b>Clear Messages</b> &ndash; Clear the pipeline message interface. This will discard all previous pipeline output messages. If you wish to keep a copy of the pipeline messages, please save them before clearing the message interface.</li>
+          <li><strong>Run Pipeline</strong> &ndash; Start the pipeline using the current parameter settings. SoFiA will save the current parameter settings to the currently opened file before invoking the pipeline. If no file is currently open, SoFiA will use a temporary file instead.</li>
+          <li><strong>Abort Pipeline</strong> &ndash; Abort the current pipeline run. All pipeline processes will be terminated immediately without waiting for them to finish. Hence, the pipeline will not produce any useful results in this case and will have to be restarted.</li>
+          <li><strong>Save Messages As</strong> &ndash; Save all pipeline messages to file.</li>
+          <li><strong>Clear Messages</strong> &ndash; Clear the pipeline message interface. This will discard all previous pipeline output messages. If you wish to keep a copy of the pipeline messages, please save them before clearing the message interface.</li>
         </ul>
       </li>
       <li>
-        <b>Analysis</b>
+        <strong>Analysis</strong>
         <ul>
-          <li><b>View Catalogue</b> &ndash; Display source catalogue after successfully running the pipeline. It is necessary to write the catalogue in VO table format for this to work.</li>
+          <li><strong>View Catalogue</strong> &ndash; Display source catalogue after successfully running the pipeline. It is necessary to write the catalogue in VO table format for this to work.</li>
         </ul>
       </li>
       <li>
-        <b>Settings</b>
+        <strong>Settings</strong>
         <ul>
-          <li><b>Show Toolbar</b> &ndash; Show/hide SoFiA&rsquo;s tool bar.</li>
-          <li><b>Pipeline Messages</b> &ndash; Show/hide pipeline message window and progress bar.</li>
+          <li><strong>Show Toolbar</strong> &ndash; Show/hide SoFiA&rsquo;s tool bar.</li>
+          <li><strong>Pipeline Messages</strong> &ndash; Show/hide pipeline message window and progress bar.</li>
         </ul>
       </li>
       <li>
-        <b>Help</b>
+        <strong>Help</strong>
         <ul>
-          <li><b>SoFiA Handbook</b> &ndash; Open this handbook.</li>
-          <li><b>About SoFiA</b> &ndash; Display basic information about SoFiA.</li>
+          <li><strong>SoFiA Handbook</strong> &ndash; Open this handbook.</li>
+          <li><strong>What&rsquo;s This?</strong> &ndash; Select this option and then click into any of the input fields and buttons to display a comprehensive help message.</li>
+          <li><strong>About SoFiA</strong> &ndash; Display basic information about SoFiA.</li>
         </ul>
       </li>
     </ul>

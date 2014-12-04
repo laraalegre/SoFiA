@@ -1,107 +1,268 @@
 <html>
   <head>
-    <title>SoFiA Handbook - Parameters: Parametrisation</title>
+      <title>SoFiA Handbook - Parameters: Parameterisation</title>
+      
+      <style>
+          body      {margin:5px;}
+          table     {margin:10px 0px; border:2px solid #FFFFFF; border-collapse:collapse; empty-cells:show;}
+          td        {margin:0px; padding:2px 5px; vertical-align:top; border:2px solid #FFFFFF;}
+          td.head   {background-color:#406080; color:#D0E0F0; font-weight:bold;}
+          td.head2  {background-color:#806040; color:#F0E0D0; font-weight:bold;}
+          td.body   {background-color:#F0F0F0; color:#000000;}
+          td.body2  {background-color:#F0F0F0; color:#406080; font-weight:bold;}
+          td.body3  {background-color:#F0F0F0; color:#806040; font-weight:bold;}
+          code      {color:#800000;}
+          h1        {color:#406080;}
+          h2        {color:#406080;}
+          h3        {color:#406080;}
+      </style>
   </head>
   
-  <body style="margin:5px;">
-    <h1 style="color:#4060A0;">Parameters</h1>
+  <body>
+    <h1>Parameters</h1>
     
-    <h2 style="color:#4060A0;">Parametrisation</h2>
-    
-    <p align="center">
-      <img src="images/interface_parametrisation.png" width="480" heigh="138" alt="SoFiA User Interface: Parametrisation Parameters" />
-    </p>
+    <h2>Parameterisation</h2>
     
     <p>
-      The settings below control the parametrisation and reliability calculation steps.
+      The settings below control the parameterisation and reliability calculation steps.
     </p>
     
-    <h3 style="color:#4060A0;">Mask optimisation and parametrisation</h3>
+    <h3>Parameterisation</h3>
     
-    <table style="margin:10px; background-color:#E0F0FF;" cellspacing="0" cellpadding="3" border="1">
-      <tr>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Module / Parameter</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Type</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Values</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Description</th>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>steps.doParameterise</td>
-        <td>bool</td>
-        <td><b>true</b>, false</td>
-        <td>Run the mask optimisation and source parametrisation module?</td>
-      </tr>
-      <tr>
-        <td>parameters.optimiseMask</td>
-        <td>bool</td>
-        <td>true, <b>false</b></td>
-        <td>Run the mask optimisation algorithm based on fitting and growing ellipses to achieve more accurate flux measurements.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>parameters.dilateMask</td>
-        <td>bool</td>
-        <td>true, <b>false</b></td>
-        <td>Run the mask optimisation algorithm based on spatially dilating the initial mask to achieve more accurate flux measurements.</td>
-      </tr>
-      <tr>
-        <td>parameters.fitBusyFunction</td>
-        <td>bool</td>
-        <td>true, <b>false</b></td>
-        <td>Fit the Busy Function (<a href="http://arxiv.org/abs/1311.5308">Westmeier et al. 2013</a>) to the integrated spectrum for more accurate parametrisation.</td>
-      </tr>
-      <tr>
-        <td colspan="4" style="background-color:#FFFFFF;">Default values are set in <b>bold-face</b> font.</td>
-      </tr>
+    <table id="steps.doParameterise">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">steps.doParameterise</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>true</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, run the mask optimisation and source parametrisation module.</td>
+        </tr>
     </table>
     
-    <h3 style="color:#4060A0;">Reliability calculation</h3>
+    <table id="parameters.optimiseMask">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">parameters.optimiseMask</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Run the mask optimisation algorithm based on fitting and growing ellipses to achieve more accurate flux measurements. Note that the improved integrated fluxes obtained by this algorithm will come at the cost of increased statistical uncertainties in most source parameters (also see <a href="#parameters.dilateMask">parameters.dilateMask</a>).</td>
+        </tr>
+    </table>
     
-    <table style="margin:10px; background-color:#E0F0FF;" cellspacing="0" cellpadding="3" border="1">
-      <tr>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Module / Parameter</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Type</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Values</th>
-        <th align="left" style="background-color:#4060A0; color:#FFFFFF;">Description</th>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>steps.doReliability</td>
-        <td>bool</td>
-        <td>true, <b>false</b></td>
-        <td>Use negative detections to calculate reliability?</td>
-      </tr>
-      <tr>
-        <td>reliability.threshold</td>
-        <td>float</td>
-        <td>0.0 &ndash; 1.0; default: <b>0.9</b></td>
-        <td>Discard sources whose reliability is below this value.</td>
-      </tr>
-      <tr style="background-color:#F0F8FF;">
-        <td>reliability.kernel</td>
-        <td>list</td>
-        <td>list of kernel sizes; default: <b>[0.15, 0.05, 0.1]</b></td>
-        <td>Size of 3D smoothing kernel in log(parameter) space (see reliability.parSpace).</td>
-      </tr>
-      <tr>
-        <td>reliability.makePlot</td>
-        <td>bool</td>
-        <td>true, <b>false</b></td>
-        <td>If set to true, a PDF file showing the distribution of positive and negative detections in parameter space will be created for diagnostic purposes.</td>
-      </tr>
-      <tr style="background-color:#FFF8F0;">
-        <td>reliability.parSpace</td>
-        <td>string</td>
-        <td>list of parameters; default: <b>['ftot', 'fmax', 'nrvox']</b></td>
-        <td>Defines 3D parameter space in which to calculate reliability.</td>
-      </tr>
-      <tr style="background-color:#F0E0E0;">
-        <td>reliability.fMin</td>
-        <td>float</td>
-        <td>&ge; <b>0.0</b></td>
-        <td>Minimum total flux for a source to be reliable.</td>
-      </tr>
-      <tr>
-        <td colspan="4" style="background-color:#FFFFFF;">Default values are set in <b>bold-face</b> font. Parameters on a red background are not accessible through the user interface.</td>
-      </tr>
+    <table id="parameters.dilateMask">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">parameters.dilateMask</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Run the mask optimisation algorithm based on spatially dilating the initial mask to achieve more accurate flux measurements. The advantage of this algorithm is that it preserves the source shape (also see <a href="#parameters.optimiseMask">parameters.optimiseMask</a>).</td>
+        </tr>
+    </table>
+    
+    <table id="parameters.dilateThreshold">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">parameters.dilateThreshold</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>0.02</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">No idea what this parameter does... Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+        </tr>
+    </table>
+    
+    <table id="parameters.dilatePixMax">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">parameters.dilatePixMax</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>10</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">No idea what this parameter does... Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+        </tr>
+    </table>
+    
+    <table id="parameters.dilateChan">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">parameters.dilateChan</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>1</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">No idea what this parameter does... Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+        </tr>
+    </table>
+    
+    <table id="parameters.fitBusyFunction">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">parameters.fitBusyFunction</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Fit the Busy Function (<a href="http://adsabs.harvard.edu/abs/2014MNRAS.438.1176W">Westmeier et al. 2013</a>) to the integrated spectrum of each source for more accurate parametrisation.</td>
+        </tr>
+    </table>
+    
+    <h3>Reliability</h3>
+    
+    <table id="steps.doReliability">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">steps.doReliability</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, use negative detections to determine the reliability of each source based on the algorithm of <a href="http://adsabs.harvard.edu/abs/2012PASA...29..296S">Serra, Jurek &amp; Fl&ouml;er (2012)</a>.</td>
+        </tr>
+    </table>
+    
+    <table id="reliability.threshold">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">reliability.threshold</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>0.0</code>&thinsp;&ndash;&thinsp;<code>1.0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>0.9</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Discard all sources whose reliability is below this threshold.</td>
+        </tr>
+    </table>
+    
+    <table id="reliability.kernel">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">reliability.kernel</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>list</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>[0.15, 0.05, 0.1]</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Size of the 3D smoothing kernel in log(parameter) space (see <a href="#reliability.parSpace">reliability.parSpace</a>).</td>
+        </tr>
+    </table>
+    
+    <table id="reliability.makePlot">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">reliability.makePlot</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, a PDF file showing the distribution of positive and negative detections in parameter space will be created for diagnostic purposes.</td>
+        </tr>
+    </table>
+    
+    <table id="reliability.parSpace">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">reliability.parSpace</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>list</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>['ftot', 'fmax', 'nrvox']</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">Defines the 3D parameter space in which to determine reliability. It is strongly recommended to use the pre-defined default settings. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+        </tr>
+    </table>
+    
+    <table id="reliability.fMin">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">reliability.fMin</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body">&ge; <code>0.0</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>0.0</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">Minimum total flux for a source to be considered reliable. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+        </tr>
     </table>
     
     <p align="center">
