@@ -38,6 +38,14 @@ import.subcubeMode              =       pixel
 flag.regions                    =       []
 
 
+# Optical finder module
+
+optical.sourceCatalogue         =       
+optical.spatSize                =       0.01
+optical.specSize                =       1e+5
+optical.storeMultiCat           =       false
+
+
 # Smoothing module
 
 smooth.kernel                   =       gaussian
@@ -58,13 +66,13 @@ scaleNoise.edgeY                =       0
 scaleNoise.edgeZ                =       0
 
 
-# Optical finder module
+# 2D-1D wavelet finder module
 
-optical.sourceCatalogue         =       
-optical.spatSize                =       0.01
-optical.specSize                =       1e+5
-optical.storeMultiCat           =       false
-
+wavelet.threshold               =       5.0
+wavelet.scaleXY                 =       -1
+wavelet.scaleZ                  =       -1
+wavelet.positivity              =       false
+wavelet.iterations              =       3
 
 
 # S+C finder module
@@ -78,15 +86,6 @@ SCfind.rmsMode                  =       negative
 SCfind.kernels                  =       [[ 0, 0, 0,'b'],[ 0, 0, 3,'b'],[ 0, 0, 7,'b'],[ 0, 0, 15,'b'],[ 3, 3, 0,'b'],[ 3, 3, 3,'b'],[ 3, 3, 7,'b'],[ 3, 3, 15,'b'],[ 6, 6, 0,'b'],[ 6, 6, 3,'b'],[ 6, 6, 7,'b'],[ 6, 6, 15,'b']]
 SCfind.kernelUnit               =       pixel
 SCfind.verbose                  =       true
-
-
-# 2D-1D wavelet finder module
-
-wavelet.threshold               =       5.0
-wavelet.scaleXY                 =       -1
-wavelet.scaleZ                  =       -1
-wavelet.positivity              =       false
-wavelet.iterations              =       3
 
 
 # Threshold finder module
@@ -107,15 +106,6 @@ merge.minSizeY                  =       3
 merge.minSizeZ                  =       2
 
 
-# Reliability module
-
-reliability.parSpace            =       ['SNRsum','SNRmax','NRvox']
-reliability.kernel              =       [0.15,0.05,0.1]
-reliability.fMin                =       0.0
-reliability.threshold           =       0.9
-reliability.makePlot            =       false
-
-
 # Parametrisation module
 
 parameters.fitBusyFunction      =       false
@@ -124,6 +114,16 @@ parameters.dilateMask           =       false
 parameters.dilateThreshold      =       0.02
 parameters.dilatePixMax         =       10
 parameters.dilateChan           =       1
+
+
+# Reliability module
+
+reliability.parSpace            =       ['SNRsum','SNRmax','NRvox']
+reliability.kernel              =       [0.15,0.05,0.1]
+reliability.fMin                =       0.0
+reliability.threshold           =       0.9
+reliability.makePlot            =       false
+
 
 # Output module
 
