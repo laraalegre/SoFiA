@@ -102,9 +102,9 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "threshold.clipMethod": "string", \
                  "threshold.rmsMode": "string", \
                  "threshold.verbose": "bool", \
-                 "merge.mergeX": "int", \
-                 "merge.mergeY": "int", \
-                 "merge.mergeZ": "int", \
+                 "merge.radiusX": "int", \
+                 "merge.radiusY": "int", \
+                 "merge.radiusZ": "int", \
                  "merge.minSizeX": "int", \
                  "merge.minSizeY": "int", \
                  "merge.minSizeZ": "int", \

@@ -34,7 +34,7 @@
     </p>
     
     <p>
-      Merging of pixels into sources is controlled by two sets of parameters. The first set defines the maximum separation that two detected pixels are allowed to have in order to be considered as part of the same source. This maximum separation is controlled independently for each dimension, using the <code>merge.mergeX</code>, <code>merge.mergeY</code> and <code>merge.mergeZ</code> parameters. Once all pixels have been merged into sources, the size of each source is checked (again independently in each dimension), and sources falling below the size thresholds (specified with <code>merge.minSizeX</code>, <code>merge.minSizeX</code> and <code>merge.minSizeX</code>) are discarded. This allows many spurious detections, such as bright noise peaks, to be eliminated based on their small size.
+      Merging of pixels into sources is controlled by two sets of parameters. The first set defines the maximum separation that two detected pixels are allowed to have in order to be considered as part of the same source. This maximum separation is controlled independently for each dimension, using the <code>merge.radiusX</code>, <code>merge.radiusY</code> and <code>merge.radiusZ</code> parameters. Once all pixels have been merged into sources, the size of each source is checked (again independently in each dimension), and sources falling below the size thresholds (specified with <code>merge.minSizeX</code>, <code>merge.minSizeX</code> and <code>merge.minSizeX</code>) are discarded. This allows many spurious detections, such as bright noise peaks, to be eliminated based on their small size.
     </p>
     
     <table id="steps.doMerge">
@@ -55,9 +55,9 @@
         </tr>
     </table>
     
-    <table id="merge.mergeX">
+    <table id="merge.radiusX">
         <tr>
-            <td class="head">Parameter:</td><td class="body2">merge.mergeX</td>
+            <td class="head">Parameter:</td><td class="body2">merge.radiusX</td>
         </tr>
         <tr>
             <td class="head">Type:</td><td class="body"><code>int</code></td>
@@ -73,9 +73,9 @@
         </tr>
     </table>
     
-    <table id="merge.mergeY">
+    <table id="merge.radiusY">
         <tr>
-            <td class="head">Parameter:</td><td class="body2">merge.mergeY</td>
+            <td class="head">Parameter:</td><td class="body2">merge.radiusY</td>
         </tr>
         <tr>
             <td class="head">Type:</td><td class="body"><code>int</code></td>
@@ -91,9 +91,9 @@
         </tr>
     </table>
     
-    <table id="merge.mergeZ">
+    <table id="merge.radiusZ">
         <tr>
-            <td class="head">Parameter:</td><td class="body2">merge.mergeZ</td>
+            <td class="head">Parameter:</td><td class="body2">merge.radiusZ</td>
         </tr>
         <tr>
             <td class="head">Type:</td><td class="body"><code>int</code></td>

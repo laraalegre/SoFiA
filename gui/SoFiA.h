@@ -341,9 +341,9 @@ private:
     QGroupBox    *tabMergingGroupBox1;
     QFormLayout  *tabMergingForm1;
     
-    QSpinBox     *tabMergingFieldMergeX;
-    QSpinBox     *tabMergingFieldMergeY;
-    QSpinBox     *tabMergingFieldMergeZ;
+    QSpinBox     *tabMergingFieldRadiusX;
+    QSpinBox     *tabMergingFieldRadiusY;
+    QSpinBox     *tabMergingFieldRadiusZ;
     QSpinBox     *tabMergingFieldMinSizeX;
     QSpinBox     *tabMergingFieldMinSizeY;
     QSpinBox     *tabMergingFieldMinSizeZ;

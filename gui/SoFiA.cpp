@@ -1861,21 +1861,21 @@ void SoFiA::createInterface()
     connect(tabMergingGroupBox1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     tabMergingForm1 = new QFormLayout;
     
-    tabMergingFieldMergeX = new QSpinBox(tabMergingGroupBox1);
-    tabMergingFieldMergeX->setObjectName("merge.mergeX");
-    tabMergingFieldMergeX->setMaximumWidth(100);
-    tabMergingFieldMergeX->setMinimum(0);
-    tabMergingFieldMergeX->setMaximum(50);
-    tabMergingFieldMergeY = new QSpinBox(tabMergingGroupBox1);
-    tabMergingFieldMergeY->setObjectName("merge.mergeY");
-    tabMergingFieldMergeY->setMaximumWidth(100);
-    tabMergingFieldMergeY->setMinimum(0);
-    tabMergingFieldMergeY->setMaximum(50);
-    tabMergingFieldMergeZ = new QSpinBox(tabMergingGroupBox1);
-    tabMergingFieldMergeZ->setObjectName("merge.mergeZ");
-    tabMergingFieldMergeZ->setMaximumWidth(100);
-    tabMergingFieldMergeZ->setMinimum(0);
-    tabMergingFieldMergeZ->setMaximum(50);
+    tabMergingFieldRadiusX = new QSpinBox(tabMergingGroupBox1);
+    tabMergingFieldRadiusX->setObjectName("merge.radiusX");
+    tabMergingFieldRadiusX->setMaximumWidth(100);
+    tabMergingFieldRadiusX->setMinimum(0);
+    tabMergingFieldRadiusX->setMaximum(50);
+    tabMergingFieldRadiusY = new QSpinBox(tabMergingGroupBox1);
+    tabMergingFieldRadiusY->setObjectName("merge.radiusY");
+    tabMergingFieldRadiusY->setMaximumWidth(100);
+    tabMergingFieldRadiusY->setMinimum(0);
+    tabMergingFieldRadiusY->setMaximum(50);
+    tabMergingFieldRadiusZ = new QSpinBox(tabMergingGroupBox1);
+    tabMergingFieldRadiusZ->setObjectName("merge.radiusZ");
+    tabMergingFieldRadiusZ->setMaximumWidth(100);
+    tabMergingFieldRadiusZ->setMinimum(0);
+    tabMergingFieldRadiusZ->setMaximum(50);
     tabMergingFieldMinSizeX = new QSpinBox(tabMergingGroupBox1);
     tabMergingFieldMinSizeX->setObjectName("merge.minSizeX");
     tabMergingFieldMinSizeX->setMaximumWidth(100);
@@ -1892,9 +1892,9 @@ void SoFiA::createInterface()
     tabMergingFieldMinSizeZ->setMinimum(1);
     tabMergingFieldMinSizeZ->setMaximum(50);
     
-    tabMergingForm1->addRow(tr("Radius X:"), tabMergingFieldMergeX);
-    tabMergingForm1->addRow(tr("Radius Y:"), tabMergingFieldMergeY);
-    tabMergingForm1->addRow(tr("Radius Z:"), tabMergingFieldMergeZ);
+    tabMergingForm1->addRow(tr("Radius X:"), tabMergingFieldRadiusX);
+    tabMergingForm1->addRow(tr("Radius Y:"), tabMergingFieldRadiusY);
+    tabMergingForm1->addRow(tr("Radius Z:"), tabMergingFieldRadiusZ);
     tabMergingForm1->addRow(tr("Min. size X:"), tabMergingFieldMinSizeX);
     tabMergingForm1->addRow(tr("Min. size Y:"), tabMergingFieldMinSizeY);
     tabMergingForm1->addRow(tr("Min. size Z:"), tabMergingFieldMinSizeZ);
@@ -2718,11 +2718,11 @@ void SoFiA::createWhatsThis()
     
     tabMergingGroupBox1->setWhatsThis(tr("<h3>steps.doMerge</h3><p>Merge detected pixels into final sources.</p>"));
     
-    tabMergingFieldMergeX->setWhatsThis(tr("<h3>merge.mergeX</h3><p>Merging radius in first dimension in pixels.</p>"));
+    tabMergingFieldRadiusX->setWhatsThis(tr("<h3>merge.radiusX</h3><p>Merging radius in first dimension in pixels.</p>"));
     
-    tabMergingFieldMergeY->setWhatsThis(tr("<h3>merge.mergeY</h3><p>Merging radius in second dimension in pixels.</p>"));
+    tabMergingFieldRadiusY->setWhatsThis(tr("<h3>merge.radiusY</h3><p>Merging radius in second dimension in pixels.</p>"));
     
-    tabMergingFieldMergeZ->setWhatsThis(tr("<h3>merge.mergeZ</h3><p>Merging radius in third dimension in pixels.</p>"));
+    tabMergingFieldRadiusZ->setWhatsThis(tr("<h3>merge.radiusZ</h3><p>Merging radius in third dimension in pixels.</p>"));
     
     tabMergingFieldMinSizeX->setWhatsThis(tr("<h3>merge.minSizeX</h3><p>Minimum required extent of genuine sources in first dimension. Sources smaller than this will be discarded.</p>"));
     

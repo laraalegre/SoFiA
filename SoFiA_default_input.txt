@@ -98,9 +98,9 @@ threshold.verbose               =       false
 
 # Merging module
 
-merge.mergeX                    =       3
-merge.mergeY                    =       3
-merge.mergeZ                    =       3
+merge.radiusX                   =       3
+merge.radiusY                   =       3
+merge.radiusZ                   =       3
 merge.minSizeX                  =       3
 merge.minSizeY                  =       3
 merge.minSizeZ                  =       2

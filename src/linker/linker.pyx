@@ -13,7 +13,7 @@ cdef extern from "RJJ_ObjGen.h":
 	cdef int CreateObjects( float * data_vals, int * flag_vals, 
 							int size_x, int size_y, int size_z, 
 							int chunk_x_start, int chunk_y_start, int chunk_z_start, 
-							int mergeX, int mergeY, int mergeZ, 
+							int radiusX, int radiusY, int radiusZ, 
 							int minSizeX, int minSizeY, int minSizeZ, 
 							int min_v_size, 
 							float intens_thresh_min, float intens_thresh_max, 
@@ -65,7 +65,7 @@ cdef extern from "RJJ_ObjGen.h":
 		int Get_srep_grid(int index)
 		int Get_srep_strings(int index)
 
-def link_objects(data, mask, mergeX = 0, mergeY = 0, mergeZ = 0, minSizeX = 1, minSizeY = 1, minSizeZ = 1, min_LOS = 1):
+def link_objects(data, mask, radiusX = 0, radiusY = 0, radiusZ = 0, minSizeX = 1, minSizeY = 1, minSizeZ = 1, min_LOS = 1):
 	"""
 	Given a data cube and a binary mask, create a labeled version of the mask.
 	In addition, close groups of objects can be linked together, so they have the same label.
@@ -80,7 +80,7 @@ def link_objects(data, mask, mergeX = 0, mergeY = 0, mergeZ = 0, minSizeX = 1, m
 	mask : array
 		The binary mask
 		
-	mergeX, mergeY, mergeZ : int
+	radiusX, radiusY, radiusZ : int
 		The merging length in all three dimensions
 		
 	minSizeX, minSizeY, minSizeZ : int
@@ -110,10 +110,10 @@ def link_objects(data, mask, mergeX = 0, mergeY = 0, mergeZ = 0, minSizeX = 1, m
 	mask : array
 		The labeled and linked integer mask
 	"""
-	return _link_objects(data.astype(np.single, copy = False), mask.astype(np.intc, copy = False), mergeX, mergeY, mergeZ, minSizeX, minSizeY, minSizeZ, min_LOS)
+	return _link_objects(data.astype(np.single, copy = False), mask.astype(np.intc, copy = False), radiusX, radiusY, radiusZ, minSizeX, minSizeY, minSizeZ, min_LOS)
 
 cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, np.ndarray[dtype = int, ndim = 3] mask,
-				   int mergeX = 3, int mergeY = 3, int mergeZ = 5,
+				   int radiusX = 3, int radiusY = 3, int radiusZ = 5,
 				   int minSizeX = 1, int minSizeY = 1, int minSizeZ = 1,
 				   int min_LOS = 1):
 		
@@ -178,7 +178,7 @@ cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, np.ndarray[dtype = 
 	CreateMetric(data_metric, xyz_order, size_x, size_y, size_z)
 		
 	# Create and threshold objects
-	NOobj = CreateObjects(<float *> data.data, <int *> mask.data, size_x, size_y, size_z, chunk_x_start, chunk_y_start, chunk_z_start, mergeX, mergeY, mergeZ, minSizeX, minSizeY, minSizeZ, min_v_size, intens_thresh_min, intens_thresh_max, flag_val, NOobj, detections, obj_ids, check_obj_ids, obj_limit, size_x, size_y, size_z, ss_mode, data_metric, xyz_order)
+	NOobj = CreateObjects(<float *> data.data, <int *> mask.data, size_x, size_y, size_z, chunk_x_start, chunk_y_start, chunk_z_start, radiusX, radiusY, radiusZ, minSizeX, minSizeY, minSizeZ, min_v_size, intens_thresh_min, intens_thresh_max, flag_val, NOobj, detections, obj_ids, check_obj_ids, obj_limit, size_x, size_y, size_z, ss_mode, data_metric, xyz_order)
 	ThresholdObjs(detections, NOobj, obj_limit, minSizeX, minSizeY, minSizeZ, min_v_size, intens_thresh_min, intens_thresh_max, min_LOS)
 
 	# Reset output mask
