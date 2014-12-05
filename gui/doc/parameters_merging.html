@@ -24,10 +24,18 @@
     <h2>Merging</h2>
     
     <p>
-      The settings below control how detections get merged into sources.
+      The settings below control how significant pixels detected by any of SoFiA&rsquo;s source finding algorithms get merged into final sources.
     </p>
     
     <h3>Merging</h3>
+    
+    <p>
+      Any source finding algorithm implemented in SoFiA will not create a final source catalogue, but instead produce a binary mask in which all pixels that are considered as significant are marked. In order to obtain a final source list, those pixels will need to be merged into sources, which is the purpose of the merging module.
+    </p>
+    
+    <p>
+      Merging of pixels into sources is controlled by two sets of parameters. The first set defines the maximum separation that two detected pixels are allowed to have in order to be considered as part of the same source. This maximum separation is controlled independently for each dimension, using the <code>merge.mergeX</code>, <code>merge.mergeY</code> and <code>merge.mergeZ</code> parameters. Once all pixels have been merged into sources, the size of each source is checked (again independently in each dimension), and sources falling below the size thresholds (specified with <code>merge.minSizeX</code>, <code>merge.minSizeX</code> and <code>merge.minSizeX</code>) are discarded. This allows many spurious detections, such as bright noise peaks, to be eliminated based on their small size.
+    </p>
     
     <table id="steps.doMerge">
         <tr>

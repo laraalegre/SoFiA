@@ -22,7 +22,15 @@
     <h1>Introduction</h1>
     
     <p>
-      SoFiA, the Source Finding Application, is a graphical user interface for the WALLABY/DINGO HI source finding pipeline. Its main purpose is to provide a comfortable and easy-to-use way of creating and modifying parameter files for the pipeline. Once a parameter file has been loaded or created, the pipeline can directly be invoked from within the user interface. Alternatively, parameter files created with SoFiA can be saved to disk, and the pipeline can then be run from the command line.
+      <strong>SoFiA</strong>, the <strong>So</strong>urce <strong>Fi</strong>nding <strong>A</strong>pplication, is the source finding and parameterisation pipeline of the <a href="http://www.atnf.csiro.au/research/WALLABY/">WALLABY</a> and <a href="http://internal.physics.uwa.edu.au/~mmeyer/dingo/">DINGO</a> survey projects. Its name is derived from the Greek word <strong>&sigma;&omicron;&phi;&#943;&alpha;</strong>, which means &lsquo;wisdom&rsquo;. While originally designed for the detection of compact, isolated sources in three-dimensional <strong>HI data cubes</strong> (in short: galaxies), SoFiA is versatile enough be be used on other three-dimensional data cubes, e.g. CO data, and potentially even two-dimensional images. Another feature of SoFiA is its modern graphical user interface that allows the user to conveniently control the pipeline settings, launch the pipeline, and inspect the output catalogue.
+    </p>
+    
+    <p>
+      At its core, SoFiA is a selection of Python and C++ modules that are fully controlled by a single <strong>parameter file</strong>. While the user interface provides a convenient way of automatically generating a parameter file based on the user&rsquo;s settings, parameter files are really just plain text files that can also be created manually in a text editor. Once a parameter file has been generated, the pipeline can be invoked from either the <strong>user interface</strong> or the <strong>command line</strong>. The latter option provides the flexibility to run SoFiA as part of a shell script, e.g. to automatically process a large batch of data cubes.
+    </p>
+    
+    <p>
+      This <strong>user manual</strong> describes both the user interface as well as the large number of control parameters of SoFiA. It is meant to guide the user through the large set of available options and provide a basic understanding of how the different filtering, source finding and parameterisation algorithms work. Additional help on each input parameter is available through the &lsquo;What&rsquo;s This?&rsquo; option in the user interface. It should be noted, though, that source finding is a fairly <strong>complex</strong> task that will strongly depend on the nature and quality of the data cube to be searched as well as the specific algorithms and settings to be used. We therefore encourage users to not rely under any circumstances on the default settings provided with SoFiA, but rather experiment with different settings and algorithms in order to obtain optimal results.
     </p>
     
     <p align="center">

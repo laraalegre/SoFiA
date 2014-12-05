@@ -24,10 +24,22 @@
     <h2>Parameterisation</h2>
     
     <p>
-      The settings below control the parameterisation and reliability calculation steps.
+      The settings in this section control the way in which the observational parameters of detected sources are calculated. In addition, SoFiA offers the possibility of estimating the reliability of each individual detection under certain circumstances.
     </p>
     
     <h3>Parameterisation</h3>
+    
+    <p>
+      Parameterisation is an important step of any source finding exercise, and the quality of the source parameters measured by SoFiA will determine the accuracy of any scientific analysis based on those parameters. In principal, SoFiA measures all parameters by integrating over the entire sources mask derived in the merging step, and the accuracy of the parameterisation will therefore depend of how accurate the source mask was determined by the combinations of source finding and merging.
+    </p>
+    
+    <p>
+      Simple threshold finders have the tendency to produce masks that are too small and miss some of the faint outer parts of sources that are below the detection threshold. In order to rectify this problem, SoFiA offers two methods of optimising the source mask. Both methods work by iteratively growing an initially small mask outwards until the integrated flux within the mask does not increase any further. The first methods, enabled with the <code>parameters.optimiseMask</code> parameter, uses an ellipse in the spatial domain and a constant size in the spectral domain as the mask shape. It is therefore particularly useful for sources that have approximately the shape of an elliptical cylinder in a three-dimensional data cube. The second method, enabled with the <code>parameters.dilateMask</code> parameter, instead dilates the original mask in all three dimensions and is therefore more appropriate for sources of arbitrary shape, such as galaxies that are both spatially and spectrally well-resolved.
+    </p>
+    
+    <p>
+      Another option offered by SoFiA is the possibility to fit a Busy Function (<a href="http://adsabs.harvard.edu/abs/2014MNRAS.438.1176W">Westmeier et al. 2014</a>) to the integrated spectrum of each source and determine basic source parameters from that fit. This is particularly useful for galaxies that are spatially unresolved. Parameterisation based on Busy Function fitting is usually more accurate than direct measurement of parameters such as peak flux or line width, because the fit is less sensitive to individual noise peaks in the data that would otherwise influence the measurement. Busy function fitting can be enabled with the <code>parameters.fitBusyFunction</code> parameter, and source parameters derived from the fit will be included in the output catalogue in addition to the &lsquo;traditional&rsquo; measurements of the same parameters.
+    </p>
     
     <table id="steps.doParameterise">
         <tr>
@@ -156,6 +168,18 @@
     </table>
     
     <h3>Reliability</h3>
+    
+    <p>
+      SoFiA can automatically estimate the reliability of individual sources and discard unreliable sources in certain circumstances, using the method introduced by <a href="http://adsabs.harvard.edu/abs/2012PASA...29..296S">Serra, Jurek &amp; Fl&ouml;er (2012)</a>. The method works by not only detecting and parameterising sources with positive flux, but also &lsquo;pseudo-sources&rsquo; with negative flux. Under the assumption that all negative sources are artefacts (e.g. noise peaks), one can then estimate the reliability of positive sources by comparing the regions of parameter space occupied by positive and negative sources. Simply speaking, a positive source located in a region of parameter space that is occupied by numerous negative sources is less likely to be genuine than a positive source located in a region of parameter space that is free of negative detections.
+    </p>
+    
+    <p>
+      In order for the reliability calculation to work and be accurate, a few conditions have to me met. Firstly, all noise and artefacts in the data cube must be centred on zero such that both positive and negative artefacts exist at a ratio of approximately&nbsp;1:1. Secondly, all genuine sources in the data cube must have positive flux (e.g., no absorption signals). Finally, the threshold of the source finder must be set to a fairly low value to ensure that a substantial number of negative (and positive) noise peaks and artefacts get detected. This is to ensure that the density of negative detections in parameter space is sufficiently high to be accurately measured.
+    </p>
+    
+    <p>
+      Several aspects of reliability calculation can be controlled by the user, including the smoothing kernel to be used in logarithmic parameter space (<code>reliability.kernel</code>) and the reliability threshold (<code>reliability.threshold</code>) to be used to discard all sources whose reliability is below that threshold.
+    </p>
     
     <table id="steps.doReliability">
         <tr>

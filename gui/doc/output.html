@@ -28,7 +28,7 @@
     </p>
     
     <ul>
-      <li>A simple <strong>ASCII file</strong> that contains the source catalogue in human-readable format. Each source is listed in a separate line, and the columns contain the source parameters. The file also contains a few header lines with additional information such as parameters names, units, etc.</li>
+      <li>A simple <strong>ASCII file</strong> that contains the source catalogue in human-readable format. Each source is listed in a separate line, while the columns list the individual source parameters. The file also contains a few header lines with additional information such as parameters names and units.</li>
       <li>An <strong>XML file</strong> that contains the source catalogue in <a href="http://www.ivoa.net/documents/VOTable/">VOTable</a> format to be used in <a href="http://www.ivoa.net/">Virtual Observatory</a> tools such as <a href="http://www.star.bris.ac.uk/~mbt/topcat/">TOPCAT</a>.</li>
     </ul>
     
@@ -41,7 +41,7 @@
     <ul>
       <li>A <strong>mask cube</strong> in FITS format that contains a pixel mask of all sources identified by SoFiA. The mask contains integer numbers that are equal to the unique source identification number. Mask files can also be read into SoFiA again to facilitate the parametrisation of sources that were detected in a previous source finding run.</li>
       <li>Maps of the <strong>0<sup>th</sup></strong> and <strong>1<sup>st</sup> moment</strong> of all detections in FITS format. These are integrated across all pixels masked as part of a source.</li>
-      <li>Small sub-cubes, so-called <strong>cubelets</strong>, of each individual source detected by SoFiA. This also includes <strong>0<sup>th</sup></strong>, <strong>1<sup>st</sup></strong> and <strong>2<sup>nd</sup> moment</strong> maps created from the cubelet, a <strong>position&ndash;velocity diagram</strong> along the morphological major axis of each source, and an <strong>integrated spectrum</strong> of the source. All these individual products will be stored in a sub-folder named &lsquo;objects&rsquo;. Maps and cubes are stored in FITS format, while the integrated spectrum is stored as a plain text file.</li>
+      <li>Small subcubes, so-called <strong>cubelets</strong>, of each individual source detected by SoFiA. This also includes <strong>0<sup>th</sup></strong>, <strong>1<sup>st</sup></strong> and <strong>2<sup>nd</sup> moment</strong> maps created from the cubelet, a <strong>position&ndash;velocity diagram</strong> along the morphological major axis of each source, and an <strong>integrated spectrum</strong> of the source. All these individual products will be stored in a separate sub-folder named <code>objects</code>. Maps and cubes are stored in FITS format, while the integrated spectrum is stored as a plain text file.</li>
     </ul>
     
     <p align="center">

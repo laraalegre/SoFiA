@@ -24,10 +24,14 @@
     <h2>Source Finding</h2>
     
     <p>
-      Here, the actual source finding algorithm can be selected and set up. Currently, only the smooth + clip source finder and a simple threshold finder are available.
+      In this section the settings for the actual source finding algorithms are described. SoFiA currently offers two different algorithms: the <em>Smooth&thinsp;+&thinsp;Clip finder</em> (which is the default source finder in SoFiA) and a simple <em>threshold finder</em>.
     </p>
     
     <h3>Smooth&thinsp;+&thinsp;Clip Finder</h3>
+    
+    <p>
+      The Smooth&thinsp;+&thinsp;Clip finder works by smoothing the data cube on different scales in all three dimensions, measuring the noise in each smoothed copy and then applying a relative flux threshold (in multiples of the noise level) to extract the significant pixels on each scale. A basic description of the algorithm can be found in <a href="http://adsabs.harvard.edu/abs/2012PASA...29..296S">Serra, Jurek &amp; Fl&ouml;er (2012)</a>. Several settings can be controlled by the user, including the range and type of filter kernels to be used in the smoothing (<code>SCfind.kernels</code>) as well as the flux threshold to be applied (<code>SCfind.threshold</code>).
+    </p>
     
     <table id="steps.doSCfind">
         <tr>
@@ -215,6 +219,10 @@
     </table>
     
     <h3>Threshold Finder</h3>
+    
+    <p>
+      The threshold finder is the most basic type of source finding algorithm in SoFiA. Using the <code>threshold.threshold</code> parameter, it simply applies a flux threshold (either relative or absolute as defined by <code>threshold.clipMethod</code>) to the data and considers all pixels above that threshold to be significant. The threshold finder is not particularly powerful on its own, but is usually applied in combination with an additional input filter such as the 2D&ndash;1D wavelet decomposition algorithm.
+    </p>
     
     <table id="steps.doThreshold">
         <tr>

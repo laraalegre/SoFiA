@@ -23,7 +23,15 @@
     
     <h2>Input Filter</h2>
     
+    <p>
+      This section describes the different input filtering options offered by SoFiA. Currently, three different filters are available, including a simple, three-dimensional <em>smoothing</em> filter, a basic <em>noise-scaling</em> filter and a three-dimensional <em>wavelet decomposition</em> algorithm. Their settings are explained below.
+    </p>
+    
     <h3>Smoothing</h3>
+    
+    <p>
+      This filter smoothes the data cube in all three dimensions by convolving with a specific kernel function selected by the user with the <code>smooth.kernel</code> parameter. Currently, Gaussian, boxcar and median filters are supported. The size of the kernel can be controlled independently in each of the three dimensions, using the <code>smooth.kernelX</code>, <code>smooth.kernelY</code> and <code>smooth.kernelZ</code> parameters.
+    </p>
     
     <table id="steps.doSmooth">
         <tr>
@@ -139,6 +147,10 @@
     </table>
     
     <h3>Noise Scaling</h3>
+    
+    <p>
+      The purpose of this filter is to automatically normalise the data cube by the local noise level. This can be helpful in situations where the noise varies across the data cube, e.g. as a function of frequency, which would be problematic for source finding algorithms that assume a constant noise level. Noise scaling can be applied to each of the three cube dimensions independently. Three different algorithms for measuring the local noise level, specified with the <code>scaleNoise.statistic</code> parameter, are currently offered by SoFiA: standard deviation, median absolute deviation and fitting of a Gaussian function to the negative part of the flux histogram.
+    </p>
     
     <table id="steps.doScaleNoise">
         <tr>
@@ -286,6 +298,14 @@
     
     <h3>Wavelet Filter</h3>
     
+    <p>
+      The purpose of the wavelet filter is to carry out a wavelet decomposition of the entire data cube in all three dimensions, using the 2D&ndash;1D wavelet reconstruction algorithm of <a href="http://adsabs.harvard.edu/abs/2012PASA...29..244F">Fl&ouml;er &amp; Winkel (2012)</a>. By carefully selecting the range of spatial and spectral scales to be used in the decomposition, structure at certain, undesirable scales can be filtered out, e.g. the small-scale structure associated with statistical noise in the cube. The range of wavelet scales to be used in the reconstruction can be specified by the user with the <code>wavelet.scaleXY</code> and <code>wavelet.scaleZ</code> parameters. In addition, a relative flux threshold, specified with the <code>wavelet.threshold</code> parameter, is applied to each wavelet scale, and only those components above that flux threshold are included in the reconstructed cube.
+    </p>
+    
+    <p>
+      Note that the wavelet filter does not do any source finding by itself, but simply generates a reconstructed wavelet cube. Any source finding must be done separately, e.g. by enabling SoFiA&rsquo;s <a href="parameters_sourcefinding.html#steps.doThreshold">threshold finder</a>.
+    </p>
+    
     <table id="steps.doWavelet">
         <tr>
             <td class="head">Parameter:</td><td class="body2">steps.doWavelet</td>
@@ -354,7 +374,7 @@
             <td class="head">Default:</td><td class="body"><code>-1</code></td>
         </tr>
         <tr>
-            <td class="head">Description:</td><td class="body">Number of <em>spatial</em> scales used in the decomposition. The default value of <code>-1</code> will automatically determine the appropriate number of scales depending on the actual data cube.</td>
+            <td class="head">Description:</td><td class="body">Number of <em>spatial</em> scales used in the decomposition. The default value of <code>-1</code> will automatically determine the appropriate number of scales based on the actual data cube.</td>
         </tr>
     </table>
     
@@ -372,7 +392,7 @@
             <td class="head">Default:</td><td class="body"><code>-1</code></td>
         </tr>
         <tr>
-            <td class="head">Description:</td><td class="body">Number of <em>spectral</em> scales used in the decomposition. The default value of <code>-1</code> will automatically determine the appropriate number of scales depending on the actual data cube.</td>
+            <td class="head">Description:</td><td class="body">Number of <em>spectral</em> scales used in the decomposition. The default value of <code>-1</code> will automatically determine the appropriate number of scales based on the actual data cube.</td>
         </tr>
     </table>
     

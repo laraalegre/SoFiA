@@ -23,7 +23,27 @@
     
     <h2>Input</h2>
     
+    <p>
+      This section describes the different input data products and selections offered by SoFiA, including input data cubes, mask cubes, weights cubes and functions, subcube definition, data flagging, and source finding in regions around optical sources.
+    </p>
+    
     <h3>Input Files</h3>
+    
+    <p>
+      SoFiA can read and process three types of input cubes, including the actual data cube to be searched, a mask cube of known sources and a weights cube to be applied prior to source finding.
+    </p>
+    
+    <p>
+      Specifying an input data cube with the <code>import.inFile</code> parameter is mandatory, and SoFiA currently only supports FITS data cubes. Cubes stored in other data formats will have to be converted to FITS format before they can be processed by SoFiA. While SoFiA was originally designed to find sources in three-dimensional data cubes, it can also process two-dimensional images. In this case, the third axis is treated as being only a single pixel wide, and all settings regarding the third axis in the different processing options offered by SoFiA will have to be adjusted to be consistent with that assumption.
+    </p>
+    
+    <p>
+      SoFiA can also read an initial mask cube, specified with the <code>import.maskFile</code> parameter, that marks the positions of known sources. This mask cube could, e.g., be from a previous run of SoFiA. This is useful in two situations: firstly, with source finding disabled, SoFiA can be used solely to parameterise sources at known positions as specified in the mask cube. Alternatively, SoFiA could be run multiple times with different source finding settings, in which case newly detected pixels would get added to any existing mask cube given in the input.
+    </p>
+    
+    <p>
+      Using the <code>import.weightsFile</code> parameter, SoFiA can also read and apply a weights cube which must have the same dimensions as the input data cube by which it is multiplied prior to source finding. This is useful, e.g., to normalise noise levels across the data cube in cases where the noise varies across the cube in a known fashion. Alternatively, noise variations can also be corrected by applying an analytic function specified by the <code>import.weightsFunction</code> parameter. The three dimensions of the cube are referred to as <code>x</code>, <code>y</code> and <code>z</code>, and a number of common mathematical functions and operators are supported by SoFiA. For example, <code>0.7 * sin(z / 2.1)</code> would apply a sinusoidal correction to the third (spectral) axis. Note that the weights function will not be applied whenever a weights cube is specified.
+    </p>
     
     <table id="import.inFile">
         <tr>
@@ -99,6 +119,10 @@
     
     <h3>Subcube</h3>
     
+    <p>
+      If the original input data cube is too large to fit into memory, or if only a small region of interest is to be processed, SoFiA can offer to only read and process a small subregion of the cube. After setting the <code>steps.doSubcube</code> parameter to <code>true</code>, the region can then be specified with the <code>import.subcube</code> parameter and can either be in pixels or in world coordinates as controlled by the <code>import.subcubeMode</code> parameter.
+    </p>
+    
     <table id="steps.doSubcube">
         <tr>
             <td class="head">Parameter:</td><td class="body2">steps.doSubcube</td>
@@ -155,6 +179,10 @@
     
     <h3>Flagging</h3>
     
+    <p>
+      SoFiA can offer to flag some regions of the data cube that are either affected by radio-frequency interference or contain other artefacts or emission to be excluded, such as Galactic foreground emission. An arbitrary number of pixel/channel ranges can be flagged prior to source finding using the <code>flag.regions</code> parameter. The pixel values in flagged regions are marked as blank and thus excluded from all subsequent processing.
+    </p>
+    
     <table id="steps.doFlag">
         <tr>
             <td class="head">Parameter:</td><td class="body2">steps.doFlag</td>
@@ -192,6 +220,18 @@
     </table>
     
     <h3>Optical Catalogue</h3>
+    
+    <p>
+      Sometimes it is not desirable to carry out a blind search of an entire data cube, but only small regions around the positions of known sources need to be search. This could be useful, e.g., to search for HI signals in the vicinity of known optical sources. To facilitate such a search mode, SoFiA offers the possibility to read in a source catalogue and automatically search for sources in small subcubes around the positions defined in the input catalogue.
+    </p>
+    
+    <p>
+      The spatial and spectral size of the subcubes can be set with the <code>optical.spatSize</code> and <code>optical.specSize</code> parameters, respectively. The input source catalogue is specified with the <code>optical.sourceCatalogue</code> parameter. Currently, SoFiA supports only CSV (comma-separated value) files as input catalogues, and they must contain at least four columns with the labels &lsquo;id&rsquo;, &lsquo;ra&rsquo;, &lsquo;dec&rsquo; and &lsquo;z&rsquo;. All spatial and spectral coordinates must be given in the native units of the input cube, e.g. in degrees and hertz (the default units of equatorial coordinates and frequencies in FITS files).
+    </p>
+    
+    <p>
+      SoFiA can either produce a separate output catalogue for each input position or alternatively merge all the individual output catalogues into a single catalogue. The behaviour can be controlled by the user with the <code>optical.storeMultiCat</code> parameter.
+    </p>
     
     <table id="steps.doOptical">
         <tr>

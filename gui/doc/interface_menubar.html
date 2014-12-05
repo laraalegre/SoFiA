@@ -31,10 +31,10 @@
       <li>
         <strong>File</strong>
         <ul>
-          <li><strong>New</strong> &ndash; Close current file and reset all parameter settings to their default values.</li>
+          <li><strong>New</strong> &ndash; Close the current file and reset all parameter settings to their default values.</li>
           <li><strong>Open</strong> &ndash; Open a file and read parameter settings.</li>
           <li><strong>Save</strong> &ndash; Save parameter settings to currently opened file.</li>
-          <li><strong>Save As</strong> &ndash; Save parameter settings to new file.</li>
+          <li><strong>Save As</strong> &ndash; Save parameter settings to a new file.</li>
           <li><strong>Quit</strong> &ndash; Exit from SoFiA. Any unsaved parameter settings will be lost. It will not be possible to exit from SoFiA while the pipeline is running.</li>
         </ul>
       </li>
@@ -42,7 +42,7 @@
         <strong>Pipeline</strong>
         <ul>
           <li><strong>Run Pipeline</strong> &ndash; Start the pipeline using the current parameter settings. SoFiA will save the current parameter settings to the currently opened file before invoking the pipeline. If no file is currently open, SoFiA will use a temporary file instead.</li>
-          <li><strong>Abort Pipeline</strong> &ndash; Abort the current pipeline run. All pipeline processes will be terminated immediately without waiting for them to finish. Hence, the pipeline will not produce any useful results in this case and will have to be restarted.</li>
+          <li><strong>Abort Pipeline</strong> &ndash; Abort the current pipeline run. All pipeline processes will be terminated immediately without waiting for them to finish. Hence, the pipeline is not likely to produce any useful results in this case and will have to be restarted.</li>
           <li><strong>Save Messages As</strong> &ndash; Save all pipeline messages to file.</li>
           <li><strong>Clear Messages</strong> &ndash; Clear the pipeline message interface. This will discard all previous pipeline output messages. If you wish to keep a copy of the pipeline messages, please save them before clearing the message interface.</li>
         </ul>
@@ -50,7 +50,7 @@
       <li>
         <strong>Analysis</strong>
         <ul>
-          <li><strong>View Catalogue</strong> &ndash; Display source catalogue after successfully running the pipeline. It is necessary to write the catalogue in VO table format for this to work.</li>
+          <li><strong>View Catalogue</strong> &ndash; Display the source catalogue after successfully running the pipeline. Note that the catalogue viewer will only read catalogues written in VO-compliant XML format and will not work with ASCII catalogues.</li>
         </ul>
       </li>
       <li>
@@ -64,7 +64,7 @@
         <strong>Help</strong>
         <ul>
           <li><strong>SoFiA Handbook</strong> &ndash; Open this handbook.</li>
-          <li><strong>What&rsquo;s This?</strong> &ndash; Select this option and then click into any of the input fields and buttons to display a comprehensive help message.</li>
+          <li><strong>What&rsquo;s This?</strong> &ndash; Selecting this option and then clicking into any of the input fields and buttons will display a comprehensive help message.</li>
           <li><strong>About SoFiA</strong> &ndash; Display basic information about SoFiA.</li>
         </ul>
       </li>
