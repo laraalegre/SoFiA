@@ -126,8 +126,8 @@ int WidgetSpreadsheet::loadCatalog(QString &filename)
     tableWidth  = 0;
     tableHeight = 0;
     buttonSort->clear();               // Clear sort button as well.
-    //buttonSort->addItem(QString(""));
     buttonSort->setEnabled(false);
+    buttonOrder->setEnabled(false);
     buttonReload->setEnabled(false);
     
     QDomDocument catalogue(currentFileName);
@@ -174,9 +174,6 @@ int WidgetSpreadsheet::loadCatalog(QString &filename)
         tableWidget->setHorizontalHeaderItem(i, headerItem);
     }
     
-    buttonSort->setEnabled(true);
-    buttonReload->setEnabled(true);
-    
     // Get all tags named TR (data rows):
     QDomNodeList rowTags = catalogue.elementsByTagName("TR");
     if(rowTags.isEmpty()) return 1;
@@ -213,6 +210,11 @@ int WidgetSpreadsheet::loadCatalog(QString &filename)
     
     tableWidget->resizeColumnsToContents();
     tableWidget->resizeRowsToContents();
+    
+    buttonSort->setEnabled(true);
+    buttonOrder->setEnabled(true);
+    buttonOrder->setChecked(false);
+    buttonReload->setEnabled(true);
     
     return 0;
 }
