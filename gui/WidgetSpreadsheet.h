@@ -52,6 +52,7 @@
   #include <QtGui/QFormLayout>
   #include <QtGui/QPushButton>
   #include <QtGui/QComboBox>
+  #include <QtGui/QCheckBox>
 #else
   #include <QtWidgets/QWidget>
   #include <QtWidgets/QTableWidget>
@@ -60,6 +61,7 @@
   #include <QtWidgets/QFormLayout>
   #include <QtWidgets/QPushButton>
   #include <QtWidgets/QComboBox>
+  #include <QtWidgets/QCheckBox>
 #endif
 
 class WidgetSpreadsheet : public QWidget
@@ -77,8 +79,12 @@ private:
     QTableWidget *tableWidget;
     QVBoxLayout  *mainLayout;
     
+    QIcon iconDialogClose;
+    QIcon iconViewRefresh;
+    
     QFormLayout *layoutSort;
     QWidget     *widgetSort;
+    QCheckBox   *buttonOrder;
     QComboBox   *buttonSort;
     QPushButton *buttonReload;
     QPushButton *buttonClose;
@@ -86,7 +92,8 @@ private:
     QWidget     *widgetControls;
     
 private slots:
-    void sortTable(int column);
+    void sortTable(int column = -1);
+    void changeSortOrder();
     void reloadCatalog();
     
 protected:

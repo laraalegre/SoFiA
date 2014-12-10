@@ -40,8 +40,13 @@ WidgetSpreadsheet::WidgetSpreadsheet(QWidget *parent)
     this->setParent(parent);
     
     // Create button icons:
-    QIcon iconDialogClose = QIcon::fromTheme("dialog-close", QIcon(":/icons/22/dialog-close.png"));
-    QIcon iconViewRefresh = QIcon::fromTheme("view-refresh", QIcon(":/icons/22/view-refresh.png"));
+    iconDialogClose.addFile(QString(":/icons/22/dialog-close.png"), QSize(22, 22));
+    iconDialogClose.addFile(QString(":/icons/16/dialog-close.png"), QSize(16, 16));
+    iconDialogClose = QIcon::fromTheme("dialog-close", iconDialogClose);
+    
+    iconViewRefresh.addFile(QString(":/icons/22/view-refresh.png"), QSize(22, 22));
+    iconViewRefresh.addFile(QString(":/icons/16/view-refresh.png"), QSize(16, 16));
+    iconViewRefresh = QIcon::fromTheme("view-refresh", iconViewRefresh);
     
     // Create table widget:
     tableWidget = new QTableWidget(this);
@@ -65,6 +70,10 @@ WidgetSpreadsheet::WidgetSpreadsheet(QWidget *parent)
     layoutSort->setSpacing(5);
     widgetSort->setLayout(layoutSort);
     
+    buttonOrder = new QCheckBox(tr("descending "), widgetControls);
+    buttonOrder->setChecked(false);
+    connect(buttonOrder, SIGNAL(toggled(bool)), this, SLOT(changeSortOrder()));
+    
     buttonReload = new QPushButton(tr("Reload"), widgetControls);
     buttonReload->setIcon(iconViewRefresh);
     buttonReload->setEnabled(false);
@@ -78,6 +87,7 @@ WidgetSpreadsheet::WidgetSpreadsheet(QWidget *parent)
     layoutControls->setContentsMargins(5, 5, 5, 5);
     layoutControls->setSpacing(10);
     layoutControls->addWidget(widgetSort);
+    layoutControls->addWidget(buttonOrder);
     layoutControls->addStretch();
     layoutControls->addWidget(buttonReload);
     layoutControls->addWidget(buttonClose);
@@ -116,7 +126,7 @@ int WidgetSpreadsheet::loadCatalog(QString &filename)
     tableWidth  = 0;
     tableHeight = 0;
     buttonSort->clear();               // Clear sort button as well.
-    buttonSort->addItem(QString(""));
+    //buttonSort->addItem(QString(""));
     buttonSort->setEnabled(false);
     buttonReload->setEnabled(false);
     
@@ -215,9 +225,21 @@ int WidgetSpreadsheet::loadCatalog(QString &filename)
 
 void WidgetSpreadsheet::sortTable(int column)
 {
-    column--;      // Ignore first, empty option in drop-down list (meaning: don't sort).
+    if(buttonOrder->isChecked()) tableWidget->sortItems(column, Qt::DescendingOrder);
+    else                         tableWidget->sortItems(column, Qt::AscendingOrder);
     
-    if(column >= 0 and column < tableWidget->columnCount()) tableWidget->sortItems(column);
+    return;
+}
+
+
+
+// ------------------------  //
+// SLOT TO CHANGE SORT ORDER //
+// ------------------------  //
+
+void WidgetSpreadsheet::changeSortOrder()
+{
+    sortTable(buttonSort->currentIndex());
     
     return;
 }
