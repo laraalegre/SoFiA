@@ -1331,27 +1331,79 @@ void SoFiA::createInterface()
     // ----------
     
     iconSoFiA.addFile(QString(":/icons/32/SoFiA.png"), QSize(32, 32));
+    iconSoFiA.addFile(QString(":/icons/22/SoFiA.png"), QSize(22, 22));
+    iconSoFiA.addFile(QString(":/icons/16/SoFiA.png"), QSize(16, 16));
     
     iconWhatsThis.addFile(QString(":/icons/22/whats-this.png"), QSize(22, 22));
     iconWhatsThis.addFile(QString(":/icons/16/whats-this.png"), QSize(16, 16));
     
-    iconDocumentNew     = QIcon::fromTheme("document-new", QIcon(":/icons/22/document-new.png"));
-    iconDocumentOpen    = QIcon::fromTheme("document-open", QIcon(":/icons/22/document-open.png"));
-    iconDocumentPreview = QIcon::fromTheme("document-preview", QIcon(":/icons/22/document-preview.png"));
-    iconDocumentSave    = QIcon::fromTheme("document-save", QIcon(":/icons/22/document-save.png"));
-    iconDocumentSaveAs  = QIcon::fromTheme("document-save-as", QIcon(":/icons/22/document-save-as.png"));
-    iconApplicationExit = QIcon::fromTheme("application-exit", QIcon(":/icons/22/application-exit.png"));
-    iconDialogOkApply   = QIcon::fromTheme("dialog-ok-apply", QIcon(":/icons/22/dialog-ok-apply.png"));
-    iconDialogCancel    = QIcon::fromTheme("dialog-cancel", QIcon(":/icons/22/dialog-cancel.png"));
-    iconDialogClose     = QIcon::fromTheme("dialog-close", QIcon(":/icons/22/dialog-close.png"));
-    iconGoPreviousView  = QIcon::fromTheme("go-previous-view", QIcon(":/icons/22/go-previous-view.png"));
-    iconGoNextView      = QIcon::fromTheme("go-next-view", QIcon(":/icons/22/go-next-view.png"));
-    iconEditClearList   = QIcon::fromTheme("edit-clear-list", QIcon(":/icons/22/edit-clear-list.png"));
-    iconFullScreen      = QIcon::fromTheme("view-fullscreen", QIcon(":/icons/22/view-fullscreen.png"));
-    iconHelpContents    = QIcon::fromTheme("help-contents", QIcon(":/icons/22/help-contents.png"));
-    iconHelpAbout       = QIcon::fromTheme("help-about", QIcon(":/icons/22/help-about.png"));
-    iconTaskComplete    = QIcon::fromTheme("task-complete", QIcon(":/icons/16/task-complete.png"));
-    iconTaskReject      = QIcon::fromTheme("task-reject", QIcon(":/icons/16/task-reject.png"));
+    iconDocumentNew.addFile(QString(":/icons/22/document-new.png"), QSize(22, 22));
+    iconDocumentNew.addFile(QString(":/icons/16/document-new.png"), QSize(16, 16));
+    iconDocumentNew     = QIcon::fromTheme("document-new", iconDocumentNew);
+    
+    iconDocumentOpen.addFile(QString(":/icons/22/document-open.png"), QSize(22, 22));
+    iconDocumentOpen.addFile(QString(":/icons/16/document-open.png"), QSize(16, 16));
+    iconDocumentOpen    = QIcon::fromTheme("document-open", iconDocumentOpen);
+    
+    iconDocumentPreview.addFile(QString(":/icons/22/document-preview.png"), QSize(22, 22));
+    iconDocumentPreview.addFile(QString(":/icons/16/document-preview.png"), QSize(16, 16));
+    iconDocumentPreview = QIcon::fromTheme("document-preview", iconDocumentPreview);
+    
+    iconDocumentSave.addFile(QString(":/icons/22/document-save.png"), QSize(22, 22));
+    iconDocumentSave.addFile(QString(":/icons/16/document-save.png"), QSize(16, 16));
+    iconDocumentSave    = QIcon::fromTheme("document-save", iconDocumentSave);
+    
+    iconDocumentSaveAs.addFile(QString(":/icons/22/document-save-as.png"), QSize(22, 22));
+    iconDocumentSaveAs.addFile(QString(":/icons/16/document-save-as.png"), QSize(16, 16));
+    iconDocumentSaveAs  = QIcon::fromTheme("document-save-as", iconDocumentSaveAs);
+    
+    iconApplicationExit.addFile(QString(":/icons/22/application-exit.png"), QSize(22, 22));
+    iconApplicationExit.addFile(QString(":/icons/16/application-exit.png"), QSize(16, 16));
+    iconApplicationExit = QIcon::fromTheme("application-exit", iconApplicationExit);
+    
+    iconDialogOkApply.addFile(QString(":/icons/22/dialog-ok-apply.png"), QSize(22, 22));
+    iconDialogOkApply.addFile(QString(":/icons/16/dialog-ok-apply.png"), QSize(16, 16));
+    iconDialogOkApply   = QIcon::fromTheme("dialog-ok-apply", iconDialogOkApply);
+    
+    iconDialogCancel.addFile(QString(":/icons/22/dialog-cancel.png"), QSize(22, 22));
+    iconDialogCancel.addFile(QString(":/icons/16/dialog-cancel.png"), QSize(16, 16));
+    iconDialogCancel    = QIcon::fromTheme("dialog-cancel", iconDialogCancel);
+    
+    iconDialogClose.addFile(QString(":/icons/22/dialog-close.png"), QSize(22, 22));
+    iconDialogClose.addFile(QString(":/icons/16/dialog-close.png"), QSize(16, 16));
+    iconDialogClose     = QIcon::fromTheme("dialog-close", iconDialogClose);
+    
+    iconGoPreviousView.addFile(QString(":/icons/22/go-previous-view.png"), QSize(22, 22));
+    iconGoPreviousView.addFile(QString(":/icons/16/go-previous-view.png"), QSize(16, 16));
+    iconGoPreviousView  = QIcon::fromTheme("go-previous-view", iconGoPreviousView);
+    
+    iconGoNextView.addFile(QString(":/icons/22/go-next-view.png"), QSize(22, 22));
+    iconGoNextView.addFile(QString(":/icons/16/go-next-view.png"), QSize(16, 16));
+    iconGoNextView      = QIcon::fromTheme("go-next-view", iconGoNextView);
+    
+    iconEditClearList.addFile(QString(":/icons/22/edit-clear-list.png"), QSize(22, 22));
+    iconEditClearList.addFile(QString(":/icons/16/edit-clear-list.png"), QSize(16, 16));
+    iconEditClearList   = QIcon::fromTheme("edit-clear-list", iconEditClearList);
+    
+    iconFullScreen.addFile(QString(":/icons/22/view-fullscreen.png"), QSize(22, 22));
+    iconFullScreen.addFile(QString(":/icons/16/view-fullscreen.png"), QSize(16, 16));
+    iconFullScreen      = QIcon::fromTheme("view-fullscreen", iconFullScreen);
+    
+    iconHelpContents.addFile(QString(":/icons/22/help-contents.png"), QSize(22, 22));
+    iconHelpContents.addFile(QString(":/icons/16/help-contents.png"), QSize(16, 16));
+    iconHelpContents    = QIcon::fromTheme("help-contents", iconHelpContents);
+    
+    iconHelpAbout.addFile(QString(":/icons/22/help-about.png"), QSize(22, 22));
+    iconHelpAbout.addFile(QString(":/icons/16/help-about.png"), QSize(16, 16));
+    iconHelpAbout       = QIcon::fromTheme("help-about", iconHelpAbout);
+    
+    iconTaskComplete.addFile(QString(":/icons/16/task-complete.png"), QSize(16, 16));
+    iconTaskComplete.addFile(QString(":/icons/22/task-complete.png"), QSize(22, 22));
+    iconTaskComplete    = QIcon::fromTheme("task-complete", iconTaskComplete);
+    
+    iconTaskReject.addFile(QString(":/icons/16/task-reject.png"), QSize(16, 16));
+    iconTaskReject.addFile(QString(":/icons/22/task-reject.png"), QSize(22, 22));
+    iconTaskReject      = QIcon::fromTheme("task-reject", iconTaskReject);
     
     // Create main widget that contains everything else
     // ------------------------------------------------

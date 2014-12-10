@@ -2,6 +2,27 @@
 
 <RCC version="1.0">
     <qresource>
+        <file>icons/16/document-new.png</file>
+        <file>icons/16/document-open.png</file>
+        <file>icons/16/document-preview.png</file>
+        <file>icons/16/document-save.png</file>
+        <file>icons/16/document-save-as.png</file>
+        <file>icons/16/application-exit.png</file>
+        <file>icons/16/dialog-ok-apply.png</file>
+        <file>icons/16/dialog-cancel.png</file>
+        <file>icons/16/dialog-close.png</file>
+        <file>icons/16/help-about.png</file>
+        <file>icons/16/go-home.png</file>
+        <file>icons/16/go-previous.png</file>
+        <file>icons/16/go-previous-view.png</file>
+        <file>icons/16/go-next-view.png</file>
+        <file>icons/16/edit-clear-list.png</file>
+        <file>icons/16/view-fullscreen.png</file>
+        <file>icons/16/help-contents.png</file>
+        <file>icons/16/view-refresh.png</file>
+        <file>icons/16/whats-this.png</file>
+        <file>icons/16/task-complete.png</file>
+        <file>icons/16/task-reject.png</file>
         <file>icons/22/document-new.png</file>
         <file>icons/22/document-open.png</file>
         <file>icons/22/document-preview.png</file>
@@ -21,9 +42,10 @@
         <file>icons/22/help-contents.png</file>
         <file>icons/22/view-refresh.png</file>
         <file>icons/22/whats-this.png</file>
-        <file>icons/16/whats-this.png</file>
-        <file>icons/16/task-complete.png</file>
-        <file>icons/16/task-reject.png</file>
+        <file>icons/22/task-complete.png</file>
+        <file>icons/22/task-reject.png</file>
+        <file>icons/16/SoFiA.png</file>
+        <file>icons/22/SoFiA.png</file>
         <file>icons/32/SoFiA.png</file>
         <file>../SoFiA_default_input.txt</file>
     </qresource>
