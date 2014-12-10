@@ -1299,6 +1299,28 @@ void SoFiA::showCatalogue()
 
 
 
+// -------------------------------
+// Slot to toggle full-screen mode
+// -------------------------------
+
+void SoFiA::toggleFullScreen()
+{
+    if(this->isFullScreen())
+    {
+        this->showNormal();
+        actionFullScreen->setChecked(false);
+    }
+    else
+    {
+        this->showFullScreen();
+        actionFullScreen->setChecked(true);
+    }
+    
+    return;
+}
+
+
+
 // --------------------------------------------
 // Function to create and set up user interface
 // --------------------------------------------
@@ -1325,6 +1347,7 @@ void SoFiA::createInterface()
     iconGoPreviousView  = QIcon::fromTheme("go-previous-view", QIcon(":/icons/22/go-previous-view.png"));
     iconGoNextView      = QIcon::fromTheme("go-next-view", QIcon(":/icons/22/go-next-view.png"));
     iconEditClearList   = QIcon::fromTheme("edit-clear-list", QIcon(":/icons/22/edit-clear-list.png"));
+    iconFullScreen      = QIcon::fromTheme("view-fullscreen", QIcon(":/icons/22/view-fullscreen.png"));
     iconHelpContents    = QIcon::fromTheme("help-contents", QIcon(":/icons/22/help-contents.png"));
     iconHelpAbout       = QIcon::fromTheme("help-about", QIcon(":/icons/22/help-about.png"));
     iconTaskComplete    = QIcon::fromTheme("task-complete", QIcon(":/icons/16/task-complete.png"));
@@ -2533,6 +2556,14 @@ void SoFiA::createInterface()
     actionShowCatalogue->setIcon(iconDocumentPreview);
     connect(actionShowCatalogue, SIGNAL(triggered()), this, SLOT(showCatalogue()));
     
+    actionFullScreen = new QAction(tr("Full Screen"), this);
+    actionFullScreen->setShortcut(Qt::Key_F11);
+    actionFullScreen->setCheckable(true);
+    actionFullScreen->setChecked(false);
+    actionFullScreen->setEnabled(true);
+    actionFullScreen->setIcon(iconFullScreen);
+    connect(actionFullScreen, SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
+    
     actionHelp = new QAction(tr("SoFiA Handbook"), this);
     actionHelp->setShortcut(Qt::Key_F1);
     actionHelp->setIcon(iconHelpContents);
@@ -2590,6 +2621,8 @@ void SoFiA::createInterface()
     menuSettings = new QMenu(tr("&Settings"), this);
     menuSettings->addAction(dockWidgetOutput->toggleViewAction());
     menuSettings->addAction(toolBar->toggleViewAction());
+    menuSettings->addSeparator();
+    menuSettings->addAction(actionFullScreen);
     
     menuHelp = new QMenu(tr("&Help"), this);
     menuHelp->addAction(actionHelp);

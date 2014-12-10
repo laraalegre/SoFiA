@@ -137,6 +137,7 @@ private slots:
     void pipelineProcessCancel();
     void pipelineProcessError(QProcess::ProcessError error);
     void showCatalogue();
+    void toggleFullScreen();
     
 private:
     QString currentFileName;
@@ -176,6 +177,7 @@ private:
     QIcon iconTaskComplete;
     QIcon iconTaskReject;
     QIcon iconWhatsThis;
+    QIcon iconFullScreen;
     
     QMenu      *menuFile;
     QMenu      *menuPipeline;
@@ -195,6 +197,7 @@ private:
     QAction    *actionSaveLogAs;
     QAction    *actionClearLog;
     QAction    *actionShowCatalogue;
+    QAction    *actionFullScreen;
     QAction    *actionHelp;
     QAction    *actionWhatsThis;
     QAction    *actionAbout;
