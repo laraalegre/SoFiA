@@ -16,9 +16,11 @@ greaterThan(QT_MAJOR_VERSION, 4)
 
 # Input
 HEADERS   += HelpBrowser.h \
+             TableWidget.h \
              WidgetSpreadsheet.h \
              SoFiA.h
 SOURCES   += HelpBrowser.cpp \
+             TableWidget.cpp \
              WidgetSpreadsheet.cpp \
              SoFiA.cpp \
              main.cpp

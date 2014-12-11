@@ -29,6 +29,7 @@
 /// ____________________________________________________________________ ///
 ///                                                                      ///
 
+#include "TableWidget.h"
 #include "WidgetSpreadsheet.h"
 
 // ----------- //
@@ -49,7 +50,7 @@ WidgetSpreadsheet::WidgetSpreadsheet(QWidget *parent)
     iconViewRefresh = QIcon::fromTheme("view-refresh", iconViewRefresh);
     
     // Create table widget:
-    tableWidget = new QTableWidget(this);
+    tableWidget = new TableWidget(this);
     tableWidth  = 0;
     tableHeight = 0;
     tableWidget->setColumnCount(tableWidth);
