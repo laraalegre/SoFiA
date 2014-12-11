@@ -35,6 +35,10 @@
 #define SOFIA_DEFAULT_SETTINGS ":/SoFiA_default_input.txt"
 #define SOFIA_TEMP_FILE "SoFiA_parameters.tmp"
 
+#define MESSAGE_INFO    0
+#define MESSAGE_WARNING 1
+#define MESSAGE_ERROR   2
+
 #include <iostream>
 
 #include <QtGlobal>

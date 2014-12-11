@@ -70,7 +70,7 @@ SoFiA::SoFiA(int argc, char *argv[])
         {
             QString messageText = tr("<p>Failed to read input file %1.</p>").arg(fileName.section('/', -1));
             QString statusText = tr("Failed to read input file %1.").arg(fileName.section('/', -1));
-            showMessage(2, messageText, statusText);
+            showMessage(MESSAGE_ERROR, messageText, statusText);
         }
         
         //std::cout << filename.toLocal8Bit().constData() << '\n';
@@ -107,7 +107,7 @@ SoFiA::~SoFiA()
 
 int SoFiA::showMessage(int severity, QString &messageText, QString &statusText)
 {
-    if(severity < 0 or severity > 2) severity = 0;
+    if(severity < MESSAGE_INFO or severity > MESSAGE_ERROR) severity = MESSAGE_INFO;
     
     if(!statusText.isEmpty())
     {
@@ -121,9 +121,9 @@ int SoFiA::showMessage(int severity, QString &messageText, QString &statusText)
         QMessageBox messageBox;
         messageBox.setWindowTitle(titleText[severity]);
         messageBox.setText(messageText);
-        if      (severity == 2) messageBox.setIcon(QMessageBox::Critical);
-        else if (severity == 1) messageBox.setIcon(QMessageBox::Warning);
-        else                    messageBox.setIcon(QMessageBox::Information);
+        if      (severity == MESSAGE_ERROR)   messageBox.setIcon(QMessageBox::Critical);
+        else if (severity == MESSAGE_WARNING) messageBox.setIcon(QMessageBox::Warning);
+        else                                  messageBox.setIcon(QMessageBox::Information);
         messageBox.exec();
     }
     
@@ -166,7 +166,7 @@ int SoFiA::setDefaults()
     {
         QString messageText = tr("<p>Failed to load default parameters.</p><p>Please close the programme and check your installation. SoFiA will not function properly without the default parameters.</p>");
         QString statusText = tr("Failed to load default parameters.");
-        showMessage(2, messageText, statusText);
+        showMessage(MESSAGE_ERROR, messageText, statusText);
         
         return 1;
     }
@@ -175,7 +175,7 @@ int SoFiA::setDefaults()
     
     QString messageText = QString("");
     QString statusText = tr("Parameters reset to default.");
-    showMessage(0, messageText, statusText);
+    showMessage(MESSAGE_INFO, messageText, statusText);
     
     this->setWindowTitle(tr("SoFiA"));
     
@@ -454,7 +454,7 @@ void SoFiA::loadSettings()
         {
             QString messageText = tr("<p>Failed to read input file %1.</p>").arg(newFileName.section('/', -1));
             QString statusText = tr("Failed to read input file %1.").arg(newFileName.section('/', -1));
-            showMessage(2, messageText, statusText);
+            showMessage(MESSAGE_ERROR, messageText, statusText);
         }
     }
     
@@ -527,7 +527,7 @@ int SoFiA::loadFile(QString &fileName)
         {
             QString messageText = tr("<p>No valid parameters found in input file %1.</p>").arg(fileName.section('/', -1));
             QString statusText = tr("No valid parameters found in input file %1.").arg(fileName.section('/', -1));
-            showMessage(2, messageText, statusText);
+            showMessage(MESSAGE_ERROR, messageText, statusText);
         }
         else
         {
@@ -538,7 +538,7 @@ int SoFiA::loadFile(QString &fileName)
             
             QString messageText = QString("");
             QString statusText = tr("Parameters loaded from %1.").arg(currentFileName.section('/', -1));
-            showMessage(0, messageText, statusText);
+            showMessage(MESSAGE_INFO, messageText, statusText);
             
             this->setWindowTitle(tr("SoFiA - %1").arg(currentFileName.section('/', -1)));
         }
@@ -567,7 +567,7 @@ void SoFiA::saveSettings()
         {
             QString messageText = tr("<p>Failed to write to output file %1.</p>").arg(currentFileName.section('/', -1));
             QString statusText = tr("Failed to write to output file %1.").arg(currentFileName.section('/', -1));
-            showMessage(2, messageText, statusText);
+            showMessage(MESSAGE_ERROR, messageText, statusText);
             
             currentFileName.clear();
             this->setWindowTitle(tr("SoFiA"));
@@ -598,7 +598,7 @@ void SoFiA::saveSettings()
         
         QString messageText = QString("");
         QString statusText = tr("Parameters saved to %1.").arg(currentFileName.section('/', -1));
-        showMessage(0, messageText, statusText);
+        showMessage(MESSAGE_INFO, messageText, statusText);
         
         this->setWindowTitle(tr("SoFiA - %1").arg(currentFileName.section('/', -1)));
     }
@@ -648,13 +648,13 @@ void SoFiA::saveLogAs()
         
         QString messageText = QString("");
         QString statusText  = tr("Pipeline messages written to %1.").arg(fileName.section('/', -1));
-        showMessage(0, messageText, statusText);
+        showMessage(MESSAGE_INFO, messageText, statusText);
     }
     else
     {
         QString messageText = tr("Failed to write to file %1. Pipeline messages not saved.").arg(fileName.section('/', -1));
         QString statusText  = tr("Failed to write pipeline messages to %1.").arg(fileName.section('/', -1));
-        showMessage(2, messageText, statusText);
+        showMessage(MESSAGE_ERROR, messageText, statusText);
     }
     
     return;
@@ -684,7 +684,7 @@ void SoFiA::clearLog()
         
         QString messageText = tr("");
         QString statusText  = tr("Pipeline messages cleared.");
-        showMessage(0, messageText, statusText);
+        showMessage(MESSAGE_INFO, messageText, statusText);
         
         updateActions();
     }
@@ -976,7 +976,7 @@ void SoFiA::aboutSoFiA()
 {
     QString messageText = tr("<h3>About SoFiA</h3><p>Version 0.3.2 (using Qt %1)</p><p>SoFiA, the <b>Source Finding Application</b>, is a 3D source finding pipeline designed to detect and parameterise galaxies in HI data cubes. The acronym SoFiA is based on the Greek word %2, which means wisdom.</p><p>SoFiA is free software: you can redistribute it and/or modify it under the terms of the <b>GNU General Public License</b> as published by the Free Software Foundation, either version 3 of the licence, or (at your option) any later version.</p><p>SoFiA is distributed in the hope that it will be useful, but <b>without any warranty</b>; without even the implied warranty of merchantability or fitness for a particular purpose. See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with SoFiA. If not, see <a href=\"http://www.gnu.org/licenses/\">http://www.gnu.org/licenses/</a>.</p><p>SoFiA uses the Oxygen icon set which is licensed under version&nbsp;3 of the <a href=\"http://www.gnu.org/licenses/lgpl-3.0.txt\">GNU Lesser General Public License</a>. For more details please visit the website of the <a href=\"http://www.oxygen-icons.org/\"><s>Oxygen project</s></a> (website no longer exists).</p><p>&copy; 2013&ndash;2014 The SoFiA Authors</p>").arg(QString(qVersion())).arg(QString::fromUtf8("σοφία"));
     QString statusText = QString("");
-    showMessage(0, messageText, statusText);
+    showMessage(MESSAGE_INFO, messageText, statusText);
     
     return;
 }
@@ -1005,7 +1005,7 @@ void SoFiA::runPipeline()
     {
         QString messageText = tr("<p>The pipeline is already running.</p>");
         QString statusText = tr("Pipeline already running.");
-        showMessage(0, messageText, statusText);
+        showMessage(MESSAGE_INFO, messageText, statusText);
     }
     else
     {
@@ -1114,7 +1114,7 @@ void SoFiA::pipelineProcessStarted()
 {
     QString messageText("");
     QString statusText = tr("Pipeline started.");
-    showMessage(0, messageText, statusText);
+    showMessage(MESSAGE_INFO, messageText, statusText);
     
     outputProgress->setValue(0);
     
@@ -1138,7 +1138,7 @@ void SoFiA::pipelineProcessFinished(int exitCode, QProcess::ExitStatus exitStatu
             // Pipeline finished successfully:
             QString messageText("");
             QString statusText = tr("Pipeline finished.");
-            showMessage(0, messageText, statusText);
+            showMessage(MESSAGE_INFO, messageText, statusText);
             
             outputText->setTextColor(Qt::darkGreen);
             outputText->append(QString("Pipeline finished with exit code %1.\n").arg(exitCode));
@@ -1150,7 +1150,7 @@ void SoFiA::pipelineProcessFinished(int exitCode, QProcess::ExitStatus exitStatu
             // Pipeline finished with error:
             QString messageText("");
             QString statusText = tr("Pipeline failed.");
-            showMessage(0, messageText, statusText);
+            showMessage(MESSAGE_INFO, messageText, statusText);
             
             outputText->setTextColor(Qt::red);
             outputText->append(QString("Pipeline failed with exit code %1.\n").arg(exitCode));
@@ -1161,7 +1161,7 @@ void SoFiA::pipelineProcessFinished(int exitCode, QProcess::ExitStatus exitStatu
         // Pipeline was aborted or crashed:
         QString messageText("");
         QString statusText = tr("Pipeline aborted.");
-        showMessage(2, messageText, statusText);
+        showMessage(MESSAGE_ERROR, messageText, statusText);
         
         outputText->setTextColor(Qt::red);
         outputText->append(QString("Pipeline aborted with exit code %1.\n").arg(exitCode));
@@ -1219,7 +1219,7 @@ void SoFiA::pipelineProcessError(QProcess::ProcessError error)
             
             messageText = tr("<p>Failed to launch pipeline. Please ensure that the pipeline is installed on your computer and you have permission to execute it.</p>");
             statusText = tr("Failed to launch pipeline.");
-            showMessage(2, messageText, statusText);
+            showMessage(MESSAGE_ERROR, messageText, statusText);
             break;
             
         case QProcess::Crashed:
@@ -1286,7 +1286,7 @@ void SoFiA::showCatalogue()
     {
         QString messageText = tr("<p>Failed to load source catalogue:</p><p>\"%1\"</p>").arg(filename);
         QString statusText  = tr("Failed to load source catalogue.");
-        showMessage(2, messageText, statusText);
+        showMessage(MESSAGE_ERROR, messageText, statusText);
     }
     else
     {
@@ -2916,7 +2916,7 @@ void SoFiA::closeEvent(QCloseEvent *event)
         
         QString messageText = tr("<p>The pipeline is still running!</p><p>If you wish to exit from SoFiA, you will need to either manually abort the pipeline or wait until the pipeline run has finished.</p>");
         QString statusText = tr("Pipeline still running.");
-        showMessage(1, messageText, statusText);
+        showMessage(MESSAGE_WARNING, messageText, statusText);
     }
     
     return;
