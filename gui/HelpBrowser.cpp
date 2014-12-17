@@ -1,6 +1,6 @@
 /// ____________________________________________________________________ ///
 ///                                                                      ///
-/// SoFiA 0.3.2 (HelpBrowser.cpp) - Source Finding Application           ///
+/// SoFiA 0.4.0 (HelpBrowser.cpp) - Source Finding Application           ///
 /// Copyright (C) 2013-2014 Tobias Westmeier                             ///
 /// ____________________________________________________________________ ///
 ///                                                                      ///
