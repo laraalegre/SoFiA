@@ -2635,8 +2635,8 @@ void SoFiA::createInterface()
     actionFullScreen->setIcon(iconFullScreen);
     connect(actionFullScreen, SIGNAL(triggered()), this, SLOT(toggleFullScreen()));
     
-    actionHelp = new QAction(tr("SoFiA Handbook"), this);
-    actionHelp->setShortcut(Qt::Key_F1);
+    actionHelp = new QAction(tr("SoFiA User Manual"), this);
+    actionHelp->setShortcut(QKeySequence::HelpContents);
     actionHelp->setIcon(iconHelpContents);
     connect(actionHelp, SIGNAL(triggered()), this, SLOT(showHandbook()));
     
@@ -2698,6 +2698,7 @@ void SoFiA::createInterface()
     menuHelp = new QMenu(tr("&Help"), this);
     menuHelp->addAction(actionHelp);
     menuHelp->addAction(actionWhatsThis);
+    menuHelp->addSeparator();
     menuHelp->addAction(actionAbout);
     
     this->menuBar()->addMenu(menuFile);
