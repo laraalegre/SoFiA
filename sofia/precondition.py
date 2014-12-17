@@ -55,16 +55,19 @@ def smooth(indata, type, kern_px, kern_py, kern_pz):
     
     kern_px,y,z: sigma of gaussian kernal/box size
     """
-
+    found_nan=numpy.isnan(indata).sum()
+    outdata=indata*1
+    if found_nan: outdata=numpy.nan_to_num(outdata)
     if type == "g":
-        outdata=ndimage.gaussian_filter(indata, (kern_pz, kern_px, kern_py))
+        outdata=ndimage.gaussian_filter(outdata, (kern_pz, kern_px, kern_py))
     elif type == "b":
-        outdata=ndimage.uniform_filter(indata, (kern_pz, kern_px, kern_py))
+        outdata=ndimage.uniform_filter(outdata, (kern_pz, kern_px, kern_py))
     #elif type == "m":
-    #    outdata=ndimage.filters.median_filter(input=indata, size=(kern_pz, kern_px, kern_py))
+    #    outdata=ndimage.filters.median_filter(input=outdata, size=(kern_pz, kern_px, kern_py))
     else:
         sys.stderr.write("ERROR: Smoothing type not recognized.\n")
         sys.exit()
+    if found_nan: outdata[numpy.isnan(indata)]=numpy.nan
     
     return outdata
 
