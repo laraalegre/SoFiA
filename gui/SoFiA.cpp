@@ -791,8 +791,10 @@ void SoFiA::updateFields()
     
     if(tabSourceFindingGroupBox1->isChecked())   toolBoxSF->setItemIcon(0, iconTaskComplete);
     else                                         toolBoxSF->setItemIcon(0, iconTaskReject);
-    if(tabSourceFindingGroupBox2->isChecked())   toolBoxSF->setItemIcon(1, iconTaskComplete);
+    if(tabSourceFindingGroupBox3->isChecked())   toolBoxSF->setItemIcon(1, iconTaskComplete);
     else                                         toolBoxSF->setItemIcon(1, iconTaskReject);
+    if(tabSourceFindingGroupBox2->isChecked())   toolBoxSF->setItemIcon(2, iconTaskComplete);
+    else                                         toolBoxSF->setItemIcon(2, iconTaskReject);
     
     if(tabMergingGroupBox1->isChecked())         toolBoxME->setItemIcon(0, iconTaskComplete);
     else                                         toolBoxME->setItemIcon(0, iconTaskReject);
@@ -1864,6 +1866,22 @@ void SoFiA::createInterface()
     
     
     
+    tabSourceFindingGroupBox3 = new QGroupBox(tr("Enable"), toolBoxSF);
+    tabSourceFindingGroupBox3->setObjectName("steps.doCNHI");
+    tabSourceFindingGroupBox3->setCheckable(true);
+    tabSourceFindingGroupBox3->setChecked(false);
+    connect(tabSourceFindingGroupBox3, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
+    
+    tabSourceFindingLabelCNHI = new QLabel(tr("This module does not have any settings yet."), tabSourceFindingGroupBox3);
+    
+    tabSourceFindingLayoutCNHI = new QVBoxLayout;
+    tabSourceFindingLayoutCNHI->addWidget(tabSourceFindingLabelCNHI);
+    tabSourceFindingLayoutCNHI->addStretch();
+    
+    tabSourceFindingGroupBox3->setLayout(tabSourceFindingLayoutCNHI);
+    
+    
+    
     tabSourceFindingGroupBox2 = new QGroupBox(tr("Enable"), toolBoxSF);
     tabSourceFindingGroupBox2->setObjectName("steps.doThreshold");
     tabSourceFindingGroupBox2->setCheckable(true);
@@ -1913,6 +1931,7 @@ void SoFiA::createInterface()
     tabSourceFindingWidgetControls->setLayout(tabSourceFindingLayoutControls);
     
     toolBoxSF->addItem(tabSourceFindingGroupBox1, iconTaskReject, tr("Smooth + Clip Finder"));
+    toolBoxSF->addItem(tabSourceFindingGroupBox3, iconTaskReject, tr("CNHI Finder"));
     toolBoxSF->addItem(tabSourceFindingGroupBox2, iconTaskReject, tr("Threshold Finder"));
     
     tabSourceFindingLayout->addWidget(toolBoxSF);

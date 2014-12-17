@@ -332,6 +332,10 @@ private:
     QComboBox    *tabSourceFindingFieldRmsMode2;
     QComboBox    *tabSourceFindingFieldClipMethod;
     
+    QGroupBox    *tabSourceFindingGroupBox3;
+    QLabel       *tabSourceFindingLabelCNHI;
+    QVBoxLayout  *tabSourceFindingLayoutCNHI;
+    
     QHBoxLayout  *tabSourceFindingLayoutControls;
     QWidget      *tabSourceFindingWidgetControls;
     QPushButton  *tabSourceFindingButtonPrev;
