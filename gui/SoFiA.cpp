@@ -2812,6 +2812,8 @@ void SoFiA::createWhatsThis()
     
     tabSourceFindingFieldKernels->setWhatsThis(tr("<h3>SCfind.kernels</h3><p>List of kernels to be used for smoothing. The format is:</p><p style=\"font-family:monospace;\">[[dx, dy, dz, 'type'], ...]</p><p>where <b>dx</b>, <b>dy</b>, and <b>dz</b> are the spatial and spectral kernel sizes (FWHM), and <b>'type'</b> can be boxcar (<b>'b'</b>) or Gaussian (<b>'g'</b>). Note that 'type' only applies to the spectral axis, and the spatial kernel is always Gaussian.</p>"));
     
+    tabSourceFindingGroupBox3->setWhatsThis(tr("<h3>steps.doCNHI</h3><p>Run the Characterised Noise HI (CNHI) source finder (<a href=\"http://adsabs.harvard.edu/abs/2012PASA...29..251J\">Jurek 2012</a>).</p>"));
+    
     tabSourceFindingGroupBox2->setWhatsThis(tr("<h3>steps.doThreshold</h3><p>Run the threshold finder on the data cube.</p>"));
     
     tabSourceFindingFieldThreshold2->setWhatsThis(tr("<h3>threshold.threshold</h3><p>Absolute or relative flux threshold for detections (see <b>threshold.clipMethod</b>).</p>"));
