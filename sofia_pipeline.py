@@ -27,6 +27,7 @@ from sofia import cubelets
 from sofia import parametrisation
 from sofia import wcs_coordinates
 from sofia import flag_cube
+from sofia import CNHI
 
 t0=time()
 
@@ -158,13 +159,13 @@ if Parameters['steps']['doSCfind']:
 # --- CNHI ---	
 if Parameters['steps']['doCNHI']:
 	print 'Running CNHI filter'
-	# still to be added
-
+	mask = mask + CNHI.find_sources(np_Cube, mask, **Parameters['CNHI'])
+ 
 # --- THRESHOLD ---	
 if Parameters['steps']['doThreshold']:
 	print 'Running threshold filter'
 	#mask+=threshold_filter.filter(np_Cube, dict_Header, **Parameters['threshold'])
-	threshold_filter.filter(mask,np_Cube, dict_Header, **Parameters['threshold'])
+	threshold_filter.filter(mask, np_Cube, dict_Header, **Parameters['threshold'])
 
 print 'Source finding complete.'
 print

@@ -87,6 +87,14 @@ SCfind.kernels                  =       [[ 0, 0, 0,'b'],[ 0, 0, 3,'b'],[ 0, 0, 7
 SCfind.kernelUnit               =       pixel
 SCfind.verbose                  =       true
 
+# CNHI finder module
+
+CNHI.p_req                      =       0.05
+CNHI.verbose                    =       1
+CNHI.min_scale                  =       4
+CNHI.max_scale                  =       -1
+CNHI.median_test                =       1
+CNHI.q_req                      =       3.8
 
 # Threshold finder module
 

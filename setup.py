@@ -11,7 +11,7 @@ import warnings
 from sofia import __version__ as version
 
 # Dependency checking
-dependencies = [['numpy', '1.7'], ['scipy', None]]
+dependencies = [['numpy', None], ['scipy', None]]
 
 for (pkg, minversion) in dependencies:
     try:
@@ -79,13 +79,19 @@ wavelet_src_files = [
     ]
 wavelet_src = [wavelet_src_base + f for f in wavelet_src_files]
 
+# CNHI finder code
+CNHI_src_base = 'src/CNHI/'
+CNHI_src_files = [
+    'CNHI.cpp'
+    ]
+CNHI_src = [CNHI_src_base + f for f in CNHI_src_files]
+
 # moment output module
 writemoment2_src_base = 'src/writemoment2/'
 writemoment2_src_files = [
     'writemoment2.c'
     ]
 writemoment2_src = [writemoment2_src_base + f for f in writemoment2_src_files]
-
 
 # Interface to the parametrization code
 parametrizer_src_base = 'src/parametrizer/'
@@ -119,6 +125,11 @@ setup(
             'wavelet',
             wavelet_src,
             extra_compile_args=['-O3'],
+            include_dirs=include_dirs),
+        Extension(
+            'CNHI',
+            CNHI_src,
+            extra_compile_args=['-I. -O3'],
             include_dirs=include_dirs),
         Extension(
             'writemoment2',

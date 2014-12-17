@@ -125,7 +125,14 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "writeCat.writeASCII": "bool", \
                  "writeCat.writeXML": "bool", \
                  "writeCat.writeSQL": "bool", \
-                 "writeCat.parameters": "array"}
+                 "writeCat.parameters": "array",\
+                 "CNHI.p_req": "float",\
+                 "CNHI.verbose": "int",\
+                 "CNHI.min_scale": "int",\
+                 "CNHI.max_scale": "int",\
+                 "CNHI.median_test": "int",\
+                 "CNHI.q_req": "float"
+    }
     
     # Loop through all lines:
     for linenr, line in enumerate(lines):
