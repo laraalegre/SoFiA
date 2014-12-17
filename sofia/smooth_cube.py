@@ -28,6 +28,9 @@ def smooth(indata, kernel, edgeMode, kernelX, kernelY, kernelZ):
 		sys.stderr.write("WARNING: All the smoothing kernels are set to zero; no smoothing is applied.\n")
 		outdata = indata
 	else:
+		found_nan=numpy.isnan(indata).sum()
+		outdata = indata*1
+		if found_nan: outdata=numpy.nan_to_num(outdata)
 		if type == "g" or kernel == "gaussian":
 			print 'The smoothing type is: Gaussian'
 			print 'The standard deviation for the Gaussian kernel (x,y,z) is: ', kernelX, kernelY, kernelZ
@@ -50,7 +53,8 @@ def smooth(indata, kernel, edgeMode, kernelX, kernelY, kernelZ):
 		else:
 			sys.stderr.write("ERROR: Smoothing type not recognised.\n")
 			sys.stderr.write("       The program continues without applying any smoothing.\n")
-			outdata = indata
+			#outdata = indata
+		if found_nan: outdata[numpy.isnan(indata)]=numpy.nan
 
 	return outdata
 
