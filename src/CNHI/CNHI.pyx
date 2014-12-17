@@ -11,9 +11,18 @@ cdef extern from "CNHI.h":
      
      cdef void CNHI_find_sources(float * data, int * mask, int verbose, int metric[9], float p_req, int tr_min, int tr_max, int flag_val, bint median_test, float q_req)
 
-def find_sources(data, mask, p_req = 0.05, min_scale = 4, max_scale = -1, verbose = 1, median_test = 1, q_req = 3.8, flag_val = 1):
-     
-     return _find_sources(data.astype(np.single, copy = False), mask.astype(np.intc, copy = False), p_req, min_scale, max_scale, verbose, flag_val, median_test, q_req)
+def find_sources(data, mask, p_req = 0.05, min_scale = 5, max_scale = -1, verbose = 1, median_test = 1, q_req = 3.8, flag_val = 1):
+
+     nan_mask = np.isnan(data)
+     found_nan=nan_mask.sum()
+     if found_nan:
+         data=np.nan_to_num(data)
+         mask = _find_sources(data.astype(np.single, copy = False), mask.astype(np.intc, copy = False), p_req, min_scale, max_scale, verbose, flag_val, median_test, q_req)
+         data[nan_mask]=np.nan
+     else:
+         mask = _find_sources(data.astype(np.single, copy = False), mask.astype(np.intc, copy = False), p_req, min_scale, max_scale, verbose, flag_val, median_test, q_req)
+
+     return mask
 
 cdef _find_sources(np.ndarray[dtype = float, ndim = 3] data, np.ndarray[dtype = int, ndim = 3] mask, float p_req, int min_scale, int max_scale, int verbose, int flag_val, int median_test, float q_req):
      
