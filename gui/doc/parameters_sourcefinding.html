@@ -24,13 +24,13 @@
     <h2>Source Finding</h2>
     
     <p>
-      In this section the settings for the actual source finding algorithms are described. SoFiA currently offers two different algorithms: the <em>Smooth&thinsp;+&thinsp;Clip finder</em> (which is the default source finder in SoFiA) and a simple <em>threshold finder</em>.
+      In this section the settings for the actual source finding algorithms are described. SoFiA offers three different algorithms: the <em>Smooth+Clip finder</em> (which is the default source finder in SoFiA), the <em>Characterised Noise HI finder</em>, and a simple <em>threshold finder</em>.
     </p>
     
-    <h3>Smooth&thinsp;+&thinsp;Clip Finder</h3>
+    <h3>Smooth+Clip Finder</h3>
     
     <p>
-      The Smooth&thinsp;+&thinsp;Clip finder works by smoothing the data cube on different scales in all three dimensions, measuring the noise in each smoothed copy and then applying a relative flux threshold (in multiples of the noise level) to extract the significant pixels on each scale. A basic description of the algorithm can be found in <a href="http://adsabs.harvard.edu/abs/2012PASA...29..296S">Serra, Jurek &amp; Fl&ouml;er (2012)</a>. Several settings can be controlled by the user, including the range and type of filter kernels to be used in the smoothing (<code>SCfind.kernels</code>) as well as the flux threshold to be applied (<code>SCfind.threshold</code>).
+      The Smooth+Clip (S+C) finder works by smoothing the data cube on different scales in all three dimensions, measuring the noise in each smoothed copy and then applying a relative flux threshold (in multiples of the noise level) to extract the significant pixels on each scale. A basic description of the algorithm can be found in <a href="http://adsabs.harvard.edu/abs/2012PASA...29..296S">Serra, Jurek &amp; Fl&ouml;er (2012)</a>. Several settings can be controlled by the user, including the range and type of filter kernels to be used in the smoothing (<code>SCfind.kernels</code>) as well as the flux threshold to be applied (<code>SCfind.threshold</code>).
     </p>
     
     <table id="steps.doSCfind">
@@ -218,10 +218,10 @@
         </tr>
     </table>
     
-    <h3>CNHI Finder</h3>
+    <h3>Characterised Noise HI Finder</h3>
     
     <p>
-        The Characterised Noise HI (CNHI) source finder was developed by <a href="http://adsabs.harvard.edu/abs/2012PASA...29..251J">Jurek (2012)</a> and uses the Kuiper test to identify regions of the data cube whose flux distribution is inconsistent with that of pure, statistical noise. There are currently no additional settings to control the CNHI finder.
+        The Characterised Noise HI (CNHI) finder was developed by <a href="http://adsabs.harvard.edu/abs/2012PASA...29..251J">Jurek (2012)</a> and uses the Kuiper test to identify regions of the data cube whose flux distribution is inconsistent with that of pure, statistical noise. There are currently no additional settings to control the CNHI finder.
     </p>
     
     <table id="steps.doCNHI">
@@ -239,6 +239,114 @@
         </tr>
         <tr>
             <td class="head">Description:</td><td class="body">If set to <code>true</code>, run the Characterised Noise HI (CNHI) source finder by <a href="http://adsabs.harvard.edu/abs/2012PASA...29..251J">Jurek (2012)</a>.</td>
+        </tr>
+    </table>
+    
+    <table id="CNHI.pReq">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">CNHI.pReq</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>1e-5</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Minimum probability requirement for detections to be considered genuine. Sensible values are typically in the range of about 10<sup>&minus;3</sup> to 10<sup>&minus;5</sup>.</td>
+        </tr>
+    </table>
+    
+    <table id="CNHI.qReq">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">CNHI.qReq</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>1.0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>3.8</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">This is the Q value of the Kuiper test, which is a heuristic parameter for assessing the quality/accuracy of the probability calculated from the Kuiper test. The minimum scale that the CNHI source finder processes is increased until it is sufficiently large to ensure that the required Q value is achieved. This requirement supersedes the user-specified minimum scale (see parameter <a href="#CNHI.minScale">CNHI.minScale</a>). The default value is <code>3.8</code>, which is the generally accepted minimally useful value.</td>
+        </tr>
+    </table>
+    
+    <table id="CNHI.minScale">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">CNHI.minScale</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>5</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">The minimum size of test regions.</td>
+        </tr>
+    </table>
+    
+    <table id="CNHI.maxScale">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">CNHI.maxScale</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>-1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>-1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">The maximum size of test regions. The default value of <code>-1</code> is a flag value that sets the maximum size to half of the size of the spectral axis.</td>
+        </tr>
+    </table>
+    
+    <table id="CNHI.medianTest">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">CNHI.medianTest</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>true</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">This parameter determines whether test regions need to have a median greater than that of the remaining data in order to be considered a source.</td>
+        </tr>
+    </table>
+    
+    <table id="CNHI.verbose">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">CNHI.verbose</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>0</code>&thinsp;&ndash;&thinsp;<code>2</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">An integer value that indicates the level of verbosity of the CNHI finder. Values of <code>0</code>, <code>1</code> and <code>2</code> correspond to <strong>none</strong>, <strong>minimal</strong> and <strong>maximal</strong>, respectively.</td>
         </tr>
     </table>
     

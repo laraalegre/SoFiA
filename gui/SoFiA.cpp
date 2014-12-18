@@ -708,6 +708,12 @@ void SoFiA::updateFields()
     n = tabInputFieldSpectralSize->text().toDouble();
     if(n < 0.0) tabInputFieldSpectralSize->setText("0.0");
     
+    // Check ranges in CNHI finder:
+    n = tabSourceFindingFieldPReq->text().toDouble();
+    if(n < 0.0) tabSourceFindingFieldPReq->setText("0.0");
+    n = tabSourceFindingFieldQReq->text().toDouble();
+    if(n < 1.0) tabSourceFindingFieldQReq->setText("1.0");
+    
     // Disable RMS mode field in threshold finder if clip mode is 'absolute':
     tabSourceFindingFieldRmsMode2->setEnabled(tabSourceFindingFieldClipMethod->currentIndex() == 0 and tabSourceFindingGroupBox2->isChecked());
     
@@ -1806,6 +1812,7 @@ void SoFiA::createInterface()
     
     tabSourceFindingLayout = new QVBoxLayout;
     
+    //S+C
     tabSourceFindingGroupBox1 = new QGroupBox(tr("Enable"), toolBoxSF);
     tabSourceFindingGroupBox1->setObjectName("steps.doSCfind");
     tabSourceFindingGroupBox1->setCheckable(true);
@@ -1866,22 +1873,66 @@ void SoFiA::createInterface()
     
     
     
+    //CNHI
     tabSourceFindingGroupBox3 = new QGroupBox(tr("Enable"), toolBoxSF);
     tabSourceFindingGroupBox3->setObjectName("steps.doCNHI");
     tabSourceFindingGroupBox3->setCheckable(true);
     tabSourceFindingGroupBox3->setChecked(false);
     connect(tabSourceFindingGroupBox3, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     
-    tabSourceFindingLabelCNHI = new QLabel(tr("This module does not have any settings yet."), tabSourceFindingGroupBox3);
+    tabSourceFindingForm3 = new QFormLayout;
     
-    tabSourceFindingLayoutCNHI = new QVBoxLayout;
-    tabSourceFindingLayoutCNHI->addWidget(tabSourceFindingLabelCNHI);
-    tabSourceFindingLayoutCNHI->addStretch();
+    tabSourceFindingFieldPReq  = new QLineEdit(tabSourceFindingGroupBox3);
+    tabSourceFindingFieldPReq->setObjectName("CNHI.pReq");
+    tabSourceFindingFieldPReq->setMaximumWidth(100);
+    tabSourceFindingFieldPReq->setMaxLength(10);
+    connect(tabSourceFindingFieldPReq, SIGNAL(editingFinished()), this, SLOT(updateFields()));
     
-    tabSourceFindingGroupBox3->setLayout(tabSourceFindingLayoutCNHI);
+    tabSourceFindingFieldQReq  = new QLineEdit(tabSourceFindingGroupBox3);
+    tabSourceFindingFieldQReq->setObjectName("CNHI.qReq");
+    tabSourceFindingFieldQReq->setMaximumWidth(100);
+    tabSourceFindingFieldQReq->setMaxLength(10);
+    connect(tabSourceFindingFieldQReq, SIGNAL(editingFinished()), this, SLOT(updateFields()));
+    
+    tabSourceFindingFieldMinScale = new QSpinBox(tabSourceFindingGroupBox3);
+    tabSourceFindingFieldMinScale->setObjectName("CNHI.minScale");
+    tabSourceFindingFieldMinScale->setMaximumWidth(100);
+    tabSourceFindingFieldMinScale->setMinimum(1);
+    tabSourceFindingFieldMinScale->setMaximum(50);
+    
+    tabSourceFindingFieldMaxScale = new QSpinBox(tabSourceFindingGroupBox3);
+    tabSourceFindingFieldMaxScale->setObjectName("CNHI.maxScale");
+    tabSourceFindingFieldMaxScale->setMaximumWidth(100);
+    tabSourceFindingFieldMaxScale->setMinimum(-1);
+    tabSourceFindingFieldMaxScale->setMaximum(50);
+    
+    tabSourceFindingMedianTest = new QCheckBox(tr("Enable "), tabSourceFindingGroupBox3);
+    tabSourceFindingMedianTest->setObjectName("CNHI.medianTest");
+    
+    //tabSourceFindingFieldVerbose = new QSpinBox(tabSourceFindingGroupBox3);
+    //tabSourceFindingFieldVerbose->setObjectName("CNHI.verbose");
+    //tabSourceFindingFieldVerbose->setMaximumWidth(100);
+    //tabSourceFindingFieldVerbose->setMinimum(0);
+    //tabSourceFindingFieldVerbose->setMaximum(2);
+    
+    tabSourceFindingFieldVerbose = new QComboBox(tabSourceFindingGroupBox3);
+    tabSourceFindingFieldVerbose->setObjectName("CNHI.verbose");
+    tabSourceFindingFieldVerbose->addItem(tr("None"), QVariant(QString("0")));
+    tabSourceFindingFieldVerbose->addItem(tr("Minimal"), QVariant(QString("1")));
+    tabSourceFindingFieldVerbose->addItem(tr("Maximal"), QVariant(QString("2")));
+    
+    tabSourceFindingForm3->addRow(tr("Probability:"), tabSourceFindingFieldPReq);
+    tabSourceFindingForm3->addRow(tr("Quality:"), tabSourceFindingFieldQReq);
+    tabSourceFindingForm3->addRow(tr("Min. scale:"), tabSourceFindingFieldMinScale);
+    tabSourceFindingForm3->addRow(tr("Max. scale:"), tabSourceFindingFieldMaxScale);
+    tabSourceFindingForm3->addRow(tr("Median test:"), tabSourceFindingMedianTest);
+    tabSourceFindingForm3->addRow(tr("Verbosity:"), tabSourceFindingFieldVerbose);
+    
+    tabSourceFindingGroupBox3->setLayout(tabSourceFindingForm3);
     
     
     
+    //Threshold
     tabSourceFindingGroupBox2 = new QGroupBox(tr("Enable"), toolBoxSF);
     tabSourceFindingGroupBox2->setObjectName("steps.doThreshold");
     tabSourceFindingGroupBox2->setCheckable(true);
@@ -2733,149 +2784,84 @@ void SoFiA::createInterface()
 
 void SoFiA::createWhatsThis()
 {
+    tabSourceFindingFieldMaxScale->setWhatsThis(tr("<h3>CNHI.maxScale</h3><p>The maximum size of test regions. The default value of <strong>-1</strong> is a flag value that sets the maximum size to half of the size of the spectral axis.</p>"));
+    tabSourceFindingMedianTest->setWhatsThis(tr("<h3>CNHI.medianTest</h3><p>This parameter determines whether test regions need to have a median greater than that of the remaining data in order to be considered a source.</p>"));
+    tabSourceFindingFieldMinScale->setWhatsThis(tr("<h3>CNHI.minScale</h3><p>The minimum size of test regions.</p>"));
+    tabSourceFindingFieldPReq->setWhatsThis(tr("<h3>CNHI.pReq</h3><p>Minimum probability requirement for detections to be considered genuine. Sensible values are typically in the range of about 10<sup>&minus;3</sup> to 10<sup>&minus;5</sup>.</p>"));
+    tabSourceFindingFieldQReq->setWhatsThis(tr("<h3>CNHI.qReq</h3><p>This is the Q value of the Kuiper test, which is a heuristic parameter for assessing the quality/accuracy of the probability calculated from the Kuiper test. The minimum scale that the CNHI source finder processes is increased until it is sufficiently large to ensure that the required Q value is achieved. This requirement supersedes the user-specified minimum scale (see parameter <strong>CNHI.minScale</strong>). The default value is <strong>3.8</strong>, which is the generally accepted minimally useful value.</p>"));
+    tabSourceFindingFieldVerbose->setWhatsThis(tr("<h3>CNHI.verbose</h3><p>An integer value that indicates the level of verbosity of the CNHI finder. Values of <strong>0</strong>, <strong>1</strong> and <strong>2</strong> correspond to <strong>none</strong>, <strong>minimal</strong> and <strong>maximal</strong>, respectively.</p>"));
+    tabInputFieldFlags->setWhatsThis(tr("<h3>flag.regions</h3><p>Pixel/channel range(s) to be flagged prior to source finding. Format:</p><p><code>[[x1, x2, y1, y2, z1, z2], ...]</code></p><p>A place holder, <code>''</code> (two single quotes), can be used for the upper range limit (<code>x2</code>, <code>y2</code>, and <code>z2</code>) to flag all the way to the end, e.g.</p><p><code>[[0, '', 0, '', 0, 19]]</code></p><p>will flag the first 20 channels of the entire cube. The default is an empty list, <code>[]</code>, which means to not flag anything.</p>"));
     tabInputFieldData->setWhatsThis(tr("<h3>import.inFile</h3><p>Full path and file name of the input data cube. This option is mandatory, and there is no default. Note that only <b>FITS</b> files are currently supported by SoFiA.</p>"));
-    
     tabInputFieldMask->setWhatsThis(tr("<h3>import.maskFile</h3><p>Full path and file name of an optional file containing a mask of pixels identified as part of a source, e.g. from a previous run of SoFiA. This can be used to re-parametrise sources without repeating the source finding step or to add more sources from a second source finding run. The default is to not read a mask cube.</p>"));
-    
-    tabInputFieldWeights->setWhatsThis(tr("<h3>import.weightsFile</h3><p>Full path and file name of an optional file containing the weights of pixels in the input cube. The weights will be applied before running the source finder. The default is to not apply weights.</p>"));
-    
-    tabInputFieldWeightsFunction->setWhatsThis(tr("<h3>import.weightsFunction</h3><p>Analytic function used to describe the data weights as a function of the three cube dimensions, <b>x</b>, <b>y</b>, and <b>z</b>. The default is to not apply weights. The following mathematical functions from Numpy are supported:<p><p style=\"font-family:monospace;\">sin(), cos(), tan(), arcsin(), arccos(), arctan(), arctan2(), sinh(), cosh(), tanh(), arcsinh(), arccosh(), arctanh(), exp(), log(), log10(), log2(), sqrt(), square(), power(), absolute(), fabs(), sign()</p><p>Note that the weights function is not applied whenever a weights cube is specified (see <b>import.weightsFile</b>).</p>"));
-    
-    tabInputFieldSubcube->setWhatsThis(tr("<h3>import.subcube</h3><p>This parameter defines a subcube to be read in and processed by SoFiA. Depending on the value of import.subcubeMode, the range is either specified in pixels as</p><p style=\"font-family:monospace;\">[x1, x2, y1, y2, z1, z2]</p><p>or in world coordinates as</p><p style=\"font-family:monospace;\">[x, y, z, rx, ry, rz]</p><p>In the latter case, <b>x</b>, <b>y</b> and <b>z</b> define the centre of the subcube, and <b>rx</b>, <b>ry</b> and <b>rz</b> specify the half-widths in the three dimensions. If world coordinates are used, all parameters must be in the native format as defined in the header of the data cube; e.g. if <span style=\"font-family:monospace;\">CUNIT3</span> is <span style=\"font-family:monospace;\">'Hz'</span> then both z and rz must be given in hertz. The default is an empty list, <span style=\"font-family:monospace;\">[]</span>, which means to read the entire cube.</p>"));
-    
-    tabInputGroupBox4->setWhatsThis(tr("<h3>steps.doSubcube</h3><p>If set to true, source finding will be carried out on a subcube to be defined by the <b>import.subcube</b> and <b>import.subcubeMode</b> options.</p>"));
-    
+    tabInputFieldSubcube->setWhatsThis(tr("<h3>import.subcube</h3><p>This parameter defines a subcube to be read in and processed by SoFiA. Depending on the value of import.subcubeMode, the range is either specified in pixels as</p><p><code>[x1, x2, y1, y2, z1, z2]</code></p><p>or in world coordinates as</p><p><code>[x, y, z, rx, ry, rz]</code></p><p>In the latter case, <code>x</code>, <code>y</code> and <code>z</code> define the centre of the subcube, and <code>rx</code>, <code>ry</code> and <code>rz</code> specify the half-widths in the three dimensions. If world coordinates are used, all parameters must be in the native format as defined in the header of the data cube; e.g. if <code>CUNIT3</code> is <code>'Hz'</code> then both <code>z</code> and <code>rz</code> must be given in hertz. The default is an empty list, <code>[]</code>, which means to read the entire cube.</p>"));
     tabInputFieldSubcubeMode->setWhatsThis(tr("<h3>import.subcubeMode</h3><p>This parameter defines whether import.subcube is specified in pixels (<b>pixel</b>) or in world coordinates (<b>world</b>).</p>"));
-    
-    tabInputGroupBox3->setWhatsThis(tr("<h3>steps.doFlag</h3><p>Flag pixel and channel ranges before proceeding. Details are specified with the <b>flag.regions</b> option.</p>"));
-    
-    tabInputFieldFlags->setWhatsThis(tr("<h3>flag.regions</h3><p>Pixel/channel range(s) to be flagged prior to source finding. Format:</p><p style=\"font-family:monospace;\">[[x1, x2, y1, y2, z1, z2], ...]</p><p>A place holder, <span style=\"font-family:monospace;\">''</span> (two single quotes), can be used for the upper range limit (x2, y2, and z2) to flag all the way to the end, e.g.</p><p style=\"font-family:monospace;\">[[0, '', 0, '', 0, 19]]</p><p>will flag the first 20 channels of the entire cube. The default is an empty list, <span style=\"font-family:monospace;\">[]</span>, which means to not flag anything.</p>"));
-    
-    tabInputGroupBox2->setWhatsThis(tr("<h3>steps.doOptical</h3><p>Run SoFiA on multiple, smaller subcubes centred on positions defined in an input source catalogue. A catalogue file will need to be specified (see parameter <b>optical.sourceCatalogue</b>). This could, e.g., be an optical galaxy catalogue with the aim to search for HI detections at the positions of all galaxies.</p>"));
-    
-    tabInputFieldCatalog->setWhatsThis(tr("<h3>optical.sourceCatalogue</h3><p>This defines the full path and file name of the input catalogue required for catalogue-based source finding (see parameter <b>steps.doOptical</b>). There is no default.</p>"));
-    
-    tabInputFieldSpatialSize->setWhatsThis(tr("<h3>optical.spatSize</h3><p>This defines the <b>spatial</b> size of the subcube to be searched around each catalogue position. The size must be specified in the <b>native units</b> of the data cube, e.g. in degrees.</p>"));
-    
-    tabInputFieldSpectralSize->setWhatsThis(tr("<h3>optical.specSize</h3><p>This defines the <b>spectral</b> size of the subcube to be searched around each catalogue position. The size must be specified in the <b>native units</b> of the data cube, e.g. in km/s or Hz.</p>"));
-    
-    tabInputFieldMultiCat->setWhatsThis(tr("<h3>optical.storeSingleCat</h3><p>If set to <b>true</b>, a separate output catalogue will be created for each input position, containing only the sources found in that subcube. In addition, a single, merged catalogue will also be created. By default this parameter is set to <b>false</b>, in which case only a single output catalogue file is generated.</p>"));
-    
-    tabInFilterGroupBox1->setWhatsThis(tr("<h3>steps.doSmooth</h3><p>Spatially and spectrally smooth cube prior to source finding.</p>"));
-    
-    tabInFilterFieldKernel->setWhatsThis(tr("<h3>smooth.kernel</h3><p>Type of smoothing kernel used in both spatial and spectral smoothing. Can be <b>gaussian</b>, <b>boxcar</b> or <b>median</b>.</p>"));
-    
-    tabInFilterFieldBorder->setWhatsThis(tr("<h3>smooth.edgeMode</h3><p>Behaviour near the edge of the cube. The following options are supported:</p><ul><li><b>constant:</b> assume constant value of 0</li><li><b>nearest:</b> assume constant value equal to edge pixel</li><li><b>reflect:</b> mirror values at edge, thereby including the edge pixel itself</li><li><b>mirror:</b> mirror values at position of outermost pixel, thereby excluding the edge pixel itself</li><li><b>wrap:</b> copy values from opposite edge of the array</li></ul>"));
-    
-    tabInFilterFieldSmoothingSpatialLon->setWhatsThis(tr("<h3>smooth.kernelX</h3><p>Kernel size in pixels for first coordinate. For Gaussian kernels the value refers to the FWHM.</p>"));
-    
-    tabInFilterFieldSmoothingSpatialLat->setWhatsThis(tr("<h3>smooth.kernelY</h3><p>Kernel size in pixels for second coordinate. For Gaussian kernels the value refers to the FWHM.</p>"));
-    
-    tabInFilterFieldSmoothingSpectral->setWhatsThis(tr("<h3>smooth.kernelZ</h3><p>Kernel size in pixels for third coordinate. For Gaussian kernels the value refers to the FWHM.</p>"));
-    
-    tabInFilterGroupBox2->setWhatsThis(tr("<h3>steps.doScaleNoise</h3><p>Automatically normalise noise levels prior to source finding.</p>"));
-    
-    tabInFilterFieldScaleX->setWhatsThis(tr("<h3>scaleNoise.scaleX</h3><p>Noise normalisation in first (spatial) dimension.</p>"));
-    
-    tabInFilterFieldScaleY->setWhatsThis(tr("<h3>scaleNoise.scaleY</h3><p>Noise normalisation in second (spatial) dimension.</p>"));
-    
-    tabInFilterFieldScaleZ->setWhatsThis(tr("<h3>scaleNoise.scaleZ</h3><p>Noise normalisation in third (spectral) dimension.</p>"));
-    
-    tabInFilterFieldStatistic->setWhatsThis(tr("<h3>scaleNoise.statistic</h3><p>Statistic used to measure the noise. This can be median absolute deviation (<b>mad</b>), standard deviation (<b>std</b>) or Gaussian fit to negative fluxes (<b>negative</b>).</p>"));
-    
-    tabInFilterFieldEdgeX->setWhatsThis(tr("<h3>scaleNoise.edgeX</h3><p>Size of edge (in pixels) to be excluded in first coordinate.</p>"));
-    
-    tabInFilterFieldEdgeY->setWhatsThis(tr("<h3>scaleNoise.edgeY</h3><p>Size of edge (in pixels) to be excluded in second coordinate.</p>"));
-    
-    tabInFilterFieldEdgeZ->setWhatsThis(tr("<h3>scaleNoise.edgeZ</h3><p>Size of edge (in pixels) to be excluded in third coordinate.</p>"));
-    
-    tabInFilterGroupBox3->setWhatsThis(tr("<h3>steps.doWavelet</h3><p>Decompose the data cube into wavelet components using the 2D&ndash;1D wavelet decomposition algorithm of <a href=\"http://adsabs.harvard.edu/abs/2012PASA...29..244F\">Fl&ouml;er et al. (2012)</a>.</p>"));
-    
-    tabInFilterField2d1dThreshold->setWhatsThis(tr("<h3>wavelet.threshold</h3><p>Flux threshold used in the wavelet reconstruction in multiples of the rms noise. Note that this threshold only determines which wavelet components are added to the decomposed cube; any source finding will be done separately, using a different flux threshold.</p>"));
-    
-    tabInFilterField2d1dIterations->setWhatsThis(tr("<h3>wavelet.iterations</h3><p>Number of iterations in the reconstruction process.</p>"));
-    
-    tabInFilterField2d1dScaleXY->setWhatsThis(tr("<h3>wavelet.scaleXY</h3><p>Number of spatial scales used in the decomposition. The default value of <b>-1</b> will automatically determine the appropriate number of scales based on the data cube.</p>"));
-    
-    tabInFilterField2d1dScaleZ->setWhatsThis(tr("<h3>wavelet.scaleZ</h3><p>Number of spectral scales used in the decomposition. The default value of <b>-1</b> will automatically determine the appropriate number of scales based on the data cube.</p>"));
-    
-    tabInFilterField2d1dPositivity->setWhatsThis(tr("<h3>wavelet.positivity</h3><p>If <b>true</b>, include only positive wavelet components in the decomposition.</p>"));
-    
-    tabSourceFindingGroupBox1->setWhatsThis(tr("<h3>steps.doSCfind</h3><p>Run the smooth + clip finder on the data cube.</p>"));
-    
-    tabSourceFindingFieldThreshold->setWhatsThis(tr("<h3>SCfind.threshold</h3><p>Flux threshold relative to the noise level.</p>"));
-    
-    tabSourceFindingFieldEdgeMode->setWhatsThis(tr("<h3>SCfind.edgeMode</h3><p>Behaviour near the edge of the cube. The following values are possible:<p><ul><li><b>constant:</b> assume constant value of 0</li><li><b>nearest:</b> assume constant value equal to edge pixel</li><li><b>reflect:</b> mirror values at edge, thereby including the edge pixel itself</li><li><b>mirror:</b> mirror values at position of outermost pixel, thereby excluding the edge pixel itself</li><li><b>wrap:</b> copy values from opposite edge of the array</li></ul>"));
-    
-    tabSourceFindingFieldRmsMode->setWhatsThis(tr("<h3>SCfind.rmsMode</h3><p>Noise determination method: Gaussian fit to negative flux histogram (<b>negative</b>), median absolute deviation (<b>mad</b>), or standard deviation (<b>std</b>).</p>"));
-    
-    tabSourceFindingFieldKunit->setWhatsThis(tr("<h3>SCfind.kernelUnit</h3><p>Are kernel parameters specified in <b>pixel</b> or <b>world</b> coordinates?</p>"));
-    
-    tabSourceFindingFieldKernels->setWhatsThis(tr("<h3>SCfind.kernels</h3><p>List of kernels to be used for smoothing. The format is:</p><p style=\"font-family:monospace;\">[[dx, dy, dz, 'type'], ...]</p><p>where <b>dx</b>, <b>dy</b>, and <b>dz</b> are the spatial and spectral kernel sizes (FWHM), and <b>'type'</b> can be boxcar (<b>'b'</b>) or Gaussian (<b>'g'</b>). Note that 'type' only applies to the spectral axis, and the spatial kernel is always Gaussian.</p>"));
-    
-    tabSourceFindingGroupBox3->setWhatsThis(tr("<h3>steps.doCNHI</h3><p>Run the Characterised Noise HI (CNHI) source finder (<a href=\"http://adsabs.harvard.edu/abs/2012PASA...29..251J\">Jurek 2012</a>).</p>"));
-    
-    tabSourceFindingGroupBox2->setWhatsThis(tr("<h3>steps.doThreshold</h3><p>Run the threshold finder on the data cube.</p>"));
-    
-    tabSourceFindingFieldThreshold2->setWhatsThis(tr("<h3>threshold.threshold</h3><p>Absolute or relative flux threshold for detections (see <b>threshold.clipMethod</b>).</p>"));
-    
-    tabSourceFindingFieldClipMethod->setWhatsThis(tr("<h3>threshold.clipMethod</h3><p>Define whether the flux threshold is <b>relative</b> to the noise level or in <b>absolute</b> flux units.</p>"));
-    
-    tabSourceFindingFieldRmsMode2->setWhatsThis(tr("<h3>threshold.rmsMode</h3><p>Noise determination method: Gaussian fit to negative flux histogram (<b>negative</b>), median absolute deviation (<b>mad</b>), or standard deviation (<b>std</b>).</p>"));
-    
-    tabMergingGroupBox1->setWhatsThis(tr("<h3>steps.doMerge</h3><p>Merge detected pixels into final sources.</p>"));
-    
-    tabMergingFieldRadiusX->setWhatsThis(tr("<h3>merge.radiusX</h3><p>Merging radius in first dimension in pixels.</p>"));
-    
-    tabMergingFieldRadiusY->setWhatsThis(tr("<h3>merge.radiusY</h3><p>Merging radius in second dimension in pixels.</p>"));
-    
-    tabMergingFieldRadiusZ->setWhatsThis(tr("<h3>merge.radiusZ</h3><p>Merging radius in third dimension in pixels.</p>"));
-    
+    tabInputFieldWeights->setWhatsThis(tr("<h3>import.weightsFile</h3><p>Full path and file name of an optional file containing the weights of pixels in the input cube. The weights will be applied before running the source finder. The default is to not apply weights.</p>"));
+    tabInputFieldWeightsFunction->setWhatsThis(tr("<h3>import.weightsFunction</h3><p>Analytic function used to describe the data weights as a function of the three cube dimensions, <b>x</b>, <b>y</b>, and <b>z</b>. The default is to not apply weights. The following mathematical functions from Numpy are supported:<p><p style=\"font-family:monospace;\">sin(), cos(), tan(), arcsin(), arccos(), arctan(), arctan2(), sinh(), cosh(), tanh(), arcsinh(), arccosh(), arctanh(), exp(), log(), log10(), log2(), sqrt(), square(), power(), absolute(), fabs(), sign()</p><p>Note that the weights function is not applied whenever a weights cube is specified (see <b>import.weightsFile</b>).</p>"));
     tabMergingFieldMinSizeX->setWhatsThis(tr("<h3>merge.minSizeX</h3><p>Minimum required extent of genuine sources in first dimension. Sources smaller than this will be discarded.</p>"));
-    
     tabMergingFieldMinSizeY->setWhatsThis(tr("<h3>merge.minSizeY</h3><p>Minimum required extent of genuine sources in second dimension. Sources smaller than this will be discarded.</p>"));
-    
     tabMergingFieldMinSizeZ->setWhatsThis(tr("<h3>merge.minSizeZ</h3><p>Minimum required extent of genuine sources in third dimension. Sources smaller than this will be discarded.</p>"));
-    
-    tabParametrisationGroupBox1->setWhatsThis(tr("<h3>steps.doParameterise</h3><p>Run the mask optimisation and source parametrisation module.</p>"));
-    
-    tabParametrisationButtonMaskOpt->setWhatsThis(tr("<h3>parameters.optimiseMask</h3><p>Run the mask optimisation algorithm based on fitting and <b>growing</b> ellipses to achieve more accurate flux measurements.</p>"));
-    
+    tabMergingFieldRadiusX->setWhatsThis(tr("<h3>merge.radiusX</h3><p>Merging radius in first dimension in pixels.</p>"));
+    tabMergingFieldRadiusY->setWhatsThis(tr("<h3>merge.radiusY</h3><p>Merging radius in second dimension in pixels.</p>"));
+    tabMergingFieldRadiusZ->setWhatsThis(tr("<h3>merge.radiusZ</h3><p>Merging radius in third dimension in pixels.</p>"));
+    tabInputFieldCatalog->setWhatsThis(tr("<h3>optical.sourceCatalogue</h3><p>This defines the full path and file name of the input catalogue required for catalogue-based source finding (see parameter <b>steps.doOptical</b>). There is no default.</p>"));
+    tabInputFieldSpatialSize->setWhatsThis(tr("<h3>optical.spatSize</h3><p>This defines the <b>spatial</b> size of the sub-cube to be searched around each catalogue position. The size must be specified in the <b>native units</b> of the data cube, e.g. in degrees.</p>"));
+    tabInputFieldSpectralSize->setWhatsThis(tr("<h3>optical.specSize</h3><p>This defines the <b>spectral</b> size of the sub-cube to be searched around each catalogue position. The size must be specified in the <b>native units</b> of the data cube, e.g. in km/s or Hz.</p>"));
+    tabInputFieldMultiCat->setWhatsThis(tr("<h3>optical.storeMultiCat</h3><p>If set to <b>true</b>, a separate output catalogue will be created for each input position, containing only the sources found in that subcube. In addition, a single, merged catalogue will also be created. By default this parameter is set to <b>false</b>, in which case only a single output catalogue file is generated.</p>"));
     tabParametrisationButtonDilateMask->setWhatsThis(tr("<h3>parameters.dilateMask</h3><p>Run the mask optimisation algorithm based on spatially <b>dilating</b> the initial mask to achieve more accurate flux measurements.</p>"));
-    
-    tabParametrisationButtonBusyFunction->setWhatsThis(tr("<h3>parameters.fitBusyFunction</h3><p>Fit the Busy Function (<a href=\"http://arxiv.org/abs/1311.5308\">Westmeier et al. 2013</a>) to the integrated spectrum for more accurate parametrisation.</p>"));
-    
-    tabParametrisationGroupBox2->setWhatsThis(tr("<h3>steps.doReliability</h3><p>Use negative detections to calculate the reliability of each source by comparing the distribution of positive and negative detections in parameter space (<a href=\"http://adsabs.harvard.edu/abs/2012PASA...29..296S\">Serra et al. 2012</a>). Note that this requires a flux threshold low enough to ensure that a substantial number of positive and negative noise peaks are detected.</p>"));
-    
-    tabParametrisationFieldRelMin->setWhatsThis(tr("<h3>reliability.threshold</h3><p>Discard sources whose reliability is below this threshold.</p>"));
-    
+    tabParametrisationButtonBusyFunction->setWhatsThis(tr("<h3>parameters.fitBusyFunction</h3><p>Fit the Busy Function (<a http://adsabs.harvard.edu/abs/2014MNRAS.438.1176W\">Westmeier et al. 2013</a>) to the integrated spectrum for more accurate parametrisation.</p>"));
+    tabParametrisationButtonMaskOpt->setWhatsThis(tr("<h3>parameters.optimiseMask</h3><p>Run the mask optimisation algorithm based on fitting and <b>growing</b> ellipses to achieve more accurate flux measurements.</p>"));
     tabParametrisationFieldRelKernel->setWhatsThis(tr("<h3>reliability.kernel</h3><p>Size of 3D smoothing kernel in log(parameter) space (see <b>reliability.parSpace</b>).</p>"));
-    
     tabParametrisationFieldRelPlot->setWhatsThis(tr("<h3>reliability.makePlot</h3><p>If set to <b>true</b>, a PDF file showing the distribution of positive and negative detections in parameter space will be created for diagnostic purposes.</p>"));
-    
-    tabOutputGroupBox2->setWhatsThis(tr("<h3>writeCat.parameters</h3><p>List of parameters to appear in source catalogue. Format:</p><p>['par1', 'par2', ...]</p><p>An asterisk, <span style=\"font-family:monospace;\">['*']</span>, means that all parameters are written to the catalogue (default behaviour).</p>"));
-    
-    tabOutputFieldBaseName->setWhatsThis(tr("<h3>writeCat.baseName</h3><p>By default, SoFiA will use the file name of the input data cube as the template for all output data file names, usually extended by a specific postfix based on the actual output data product. By setting the <b>writeCat.basename</b> parameter, a different template for all output file names can be specified.</p>"));
-    
-    tabOutputFieldDirectory->setWhatsThis(tr("<h3>writeCat.outputDir</h3><p>Optional directory path to which all output files are written. If not specified, the directory of the input cube will be used by default.</p>"));
-    
-    tabOutputButtonASCII->setWhatsThis(tr("<h3>writeCat.writeASCII</h3><p>Write catalogue in ASCII format.</p>"));
-    
-    tabOutputButtonXML->setWhatsThis(tr("<h3>writeCat.writeXML</h3><p>Write catalogue in VO table (XML) format.</p>"));
-    
-    tabOutputButtonSQL->setWhatsThis(tr("<h3>writeCat.writeSQL</h3><p>Write catalogue in SQL format (not yet implemented).</p>"));
-    
-    tabOutputButtonCompress->setWhatsThis(tr("<h3>writeCat.compress</h3><p>If set to true, use <a href=\"http://www.gzip.org/\">gzip</a> to compress all output files.</p>"));
-    
-    tabOutputButtonFilteredCube->setWhatsThis(tr("<h3>steps.doWriteFilteredCube</h3><p>Save a copy of the filtered data cube. Note that this will only work if at least one of the input filters was applied.</p>"));
-    
-    tabOutputButtonMask->setWhatsThis(tr("<h3>steps.doWriteMask</h3><p>Save source mask cube.</p>"));
-    
+    tabParametrisationFieldRelMin->setWhatsThis(tr("<h3>reliability.threshold</h3><p>Discard sources whose reliability is below this threshold.</p>"));
+    tabInFilterFieldEdgeX->setWhatsThis(tr("<h3>scaleNoise.edgeX</h3><p>Size of edge (in pixels) to be excluded in first coordinate.</p>"));
+    tabInFilterFieldEdgeY->setWhatsThis(tr("<h3>scaleNoise.edgeY</h3><p>Size of edge (in pixels) to be excluded in second coordinate.</p>"));
+    tabInFilterFieldEdgeZ->setWhatsThis(tr("<h3>scaleNoise.edgeZ</h3><p>Size of edge (in pixels) to be excluded in third coordinate.</p>"));
+    tabInFilterFieldScaleX->setWhatsThis(tr("<h3>scaleNoise.scaleX</h3><p>Noise normalisation in first (spatial) dimension.</p>"));
+    tabInFilterFieldScaleY->setWhatsThis(tr("<h3>scaleNoise.scaleY</h3><p>Noise normalisation in second (spatial) dimension.</p>"));
+    tabInFilterFieldScaleZ->setWhatsThis(tr("<h3>scaleNoise.scaleZ</h3><p>Noise normalisation in third (spectral) dimension.</p>"));
+    tabInFilterFieldStatistic->setWhatsThis(tr("<h3>scaleNoise.statistic</h3><p>Statistic used to measure the noise. This can be median absolute deviation (<b>mad</b>), standard deviation (<b>std</b>) or Gaussian fit to negative fluxes (<b>negative</b>).</p>"));
+    tabSourceFindingFieldEdgeMode->setWhatsThis(tr("<h3>SCfind.edgeMode</h3><p>Behaviour near the edge of the cube. The following values are possible:<p><ul><li><b>constant:</b> assume constant value of 0</li><li><b>nearest:</b> assume constant value equal to edge pixel</li><li><b>reflect:</b> mirror values at edge, thereby including the edge pixel itself</li><li><b>mirror:</b> mirror values at position of outermost pixel, thereby excluding the edge pixel itself</li><li><b>wrap:</b> copy values from opposite edge of the array</li></ul>"));
+    tabSourceFindingFieldKernels->setWhatsThis(tr("<h3>SCfind.kernels</h3><p>List of kernels to be used for smoothing. The format is:</p><p style=\"font-family:monospace;\">[[dx, dy, dz, 'type'], ...]</p><p>where <b>dx</b>, <b>dy</b>, and <b>dz</b> are the spatial and spectral kernel sizes (FWHM), and <b>'type'</b> can be boxcar (<b>'b'</b>) or Gaussian (<b>'g'</b>). Note that 'type' only applies to the spectral axis, and the spatial kernel is always Gaussian.</p>"));
+    tabSourceFindingFieldKunit->setWhatsThis(tr("<h3>SCfind.kernelUnit</h3><p>Are kernel parameters specified in <b>pixel</b> or <b>world</b> coordinates?</p>"));
+    tabSourceFindingFieldRmsMode->setWhatsThis(tr("<h3>SCfind.rmsMode</h3><p>Noise determination method: Gaussian fit to negative flux histogram (<b>negative</b>), median absolute deviation (<b>mad</b>), or standard deviation (<b>std</b>).</p>"));
+    tabSourceFindingFieldThreshold->setWhatsThis(tr("<h3>SCfind.threshold</h3><p>Flux threshold relative to the noise level.</p>"));
+    tabInFilterFieldBorder->setWhatsThis(tr("<h3>smooth.edgeMode</h3><p>Behaviour near the edge of the cube. The following options are supported:</p><ul><li><b>constant:</b> assume constant value of 0</li><li><b>nearest:</b> assume constant value equal to edge pixel</li><li><b>reflect:</b> mirror values at edge, thereby including the edge pixel itself</li><li><b>mirror:</b> mirror values at position of outermost pixel, thereby excluding the edge pixel itself</li><li><b>wrap:</b> copy values from opposite edge of the array</li></ul>"));
+    tabInFilterFieldKernel->setWhatsThis(tr("<h3>smooth.kernel</h3><p>Type of smoothing kernel used in both spatial and spectral smoothing. Can be <b>gaussian</b>, <b>boxcar</b> or <b>median</b>.</p>"));
+    tabInFilterFieldSmoothingSpatialLon->setWhatsThis(tr("<h3>smooth.kernelX</h3><p>Kernel size in pixels for first coordinate. For Gaussian kernels the value refers to the FWHM.</p>"));
+    tabInFilterFieldSmoothingSpatialLat->setWhatsThis(tr("<h3>smooth.kernelY</h3><p>Kernel size in pixels for second coordinate. For Gaussian kernels the value refers to the FWHM.</p>"));
+    tabInFilterFieldSmoothingSpectral->setWhatsThis(tr("<h3>smooth.kernelZ</h3><p>Kernel size in pixels for third coordinate. For Gaussian kernels the value refers to the FWHM.</p>"));
+    tabSourceFindingGroupBox3->setWhatsThis(tr("<h3>steps.doCNHI</h3><p>Run the Characterised Noise HI (CNHI) source finder (<a href=\"http://adsabs.harvard.edu/abs/2012PASA...29..251J\">Jurek 2012</a>).</p>"));
+    tabOutputButtonCubelets->setWhatsThis(tr("<h3>steps.doCubelets</h3><p>Create and save data products for each individual source, including sub-cubes, moment 0, 1 and 2 maps, integrated spectra and position&ndash;velocity diagrams.</p>"));
+    tabInputGroupBox3->setWhatsThis(tr("<h3>steps.doFlag</h3><p>Flag pixel and channel ranges before proceeding. Details are specified with the <b>flag.regions</b> option.</p>"));
+    tabMergingGroupBox1->setWhatsThis(tr("<h3>steps.doMerge</h3><p>Merge detected pixels into final sources.</p>"));
     tabOutputButtonMom0->setWhatsThis(tr("<h3>steps.doMom0</h3><p>Create and save moment-0 map of all detections.</p>"));
-    
     tabOutputButtonMom1->setWhatsThis(tr("<h3>steps.doMom1</h3><p>Create and save moment-1 map of all detections.</p>"));
-    
-    tabOutputButtonCubelets->setWhatsThis(tr("<h3>steps.doCubelets</h3><p>Create and save data products for each individual source, including subcubes, moment 0, 1 and 2 maps, integrated spectra and position&ndash;velocity diagrams.</p>"));
+    tabInputGroupBox2->setWhatsThis(tr("<h3>steps.doOptical</h3><p>Run SoFiA on multiple, smaller sub-cubes centred on positions defined in an input source catalogue. A catalogue file will need to be specified (see parameter <b>optical.sourceCatalogue</b>). This could, e.g., be an optical galaxy catalogue with the aim to search for HI detections at the positions of all galaxies.</p>"));
+    tabParametrisationGroupBox1->setWhatsThis(tr("<h3>steps.doParameterise</h3><p>Run the mask optimisation and source parametrisation module.</p>"));
+    tabParametrisationGroupBox2->setWhatsThis(tr("<h3>steps.doReliability</h3><p>Use negative detections to calculate the reliability of each source by comparing the distribution of positive and negative detections in parameter space (<a href=\"http://adsabs.harvard.edu/abs/2012PASA...29..296S\">Serra et al. 2012</a>). Note that this requires a flux threshold low enough to ensure that a substantial number of positive and negative noise peaks are detected.</p>"));
+    tabInFilterGroupBox2->setWhatsThis(tr("<h3>steps.doScaleNoise</h3><p>Automatically normalise noise levels prior to source finding.</p>"));
+    tabSourceFindingGroupBox1->setWhatsThis(tr("<h3>steps.doSCfind</h3><p>Run the smooth + clip finder on the data cube.</p>"));
+    tabInFilterGroupBox1->setWhatsThis(tr("<h3>steps.doSmooth</h3><p>Spatially and spectrally smooth cube prior to source finding.</p>"));
+    tabInputGroupBox4->setWhatsThis(tr("<h3>steps.doSubcube</h3><p>If set to true, source finding will be carried out on a subcube to be defined by the <b>import.subcube</b> and <b>import.subcubeMode</b> options.</p>"));
+    tabSourceFindingGroupBox2->setWhatsThis(tr("<h3>steps.doThreshold</h3><p>Run the threshold finder on the data cube.</p>"));
+    tabInFilterGroupBox3->setWhatsThis(tr("<h3>steps.doWavelet</h3><p>Decompose the data cube into wavelet components using the 2D&ndash;1D wavelet decomposition algorithm of <a href=\"http://adsabs.harvard.edu/abs/2012PASA...29..244F\">Fl&ouml;er et al. (2012)</a>.</p>"));
+    tabOutputButtonFilteredCube->setWhatsThis(tr("<h3>steps.doWriteFilteredCube</h3><p>Save a copy of the filtered data cube. Note that this will only work if at least one of the input filters was applied.</p>"));
+    tabOutputButtonMask->setWhatsThis(tr("<h3>steps.doWriteMask</h3><p>Save source mask cube.</p>"));
+    tabSourceFindingFieldClipMethod->setWhatsThis(tr("<h3>threshold.clipMethod</h3><p>Define whether the flux threshold is <b>relative</b> to the noise level or in <b>absolute</b> flux units.</p>"));
+    tabSourceFindingFieldRmsMode2->setWhatsThis(tr("<h3>threshold.rmsMode</h3><p>Noise determination method: Gaussian fit to negative flux histogram (<b>negative</b>), median absolute deviation (<b>mad</b>), or standard deviation (<b>std</b>).</p>"));
+    tabSourceFindingFieldThreshold2->setWhatsThis(tr("<h3>threshold.threshold</h3><p>Absolute or relative flux threshold for detections (see <b>threshold.clipMethod</b>).</p>"));
+    tabInFilterField2d1dIterations->setWhatsThis(tr("<h3>wavelet.iterations</h3><p>Number of iterations in the reconstruction process.</p>"));
+    tabInFilterField2d1dPositivity->setWhatsThis(tr("<h3>wavelet.positivity</h3><p>If <b>true</b>, include only positive wavelet components in the decomposition.</p>"));
+    tabInFilterField2d1dScaleXY->setWhatsThis(tr("<h3>wavelet.scaleXY</h3><p>Number of spatial scales used in the decomposition. The default value of <b>-1</b> will automatically determine the appropriate number of scales based on the data cube.</p>"));
+    tabInFilterField2d1dScaleZ->setWhatsThis(tr("<h3>wavelet.scaleZ</h3><p>Number of spectral scales used in the decomposition. The default value of <b>-1</b> will automatically determine the appropriate number of scales based on the data cube.</p>"));
+    tabInFilterField2d1dThreshold->setWhatsThis(tr("<h3>wavelet.threshold</h3><p>Flux threshold used in the wavelet reconstruction in multiples of the rms noise. Note that this threshold only determines which wavelet components are added to the decomposed cube; any source finding will be done separately, using a different flux threshold.</p>"));
+    tabOutputFieldBaseName->setWhatsThis(tr("<h3>writeCat.baseName</h3><p>By default, SoFiA will use the file name of the input data cube as the template for all output data file names, usually extended by a specific postfix based on the actual output data product. By setting the <b>writeCat.basename</b> parameter, a different template for all output file names can be specified.</p>"));
+    tabOutputButtonCompress->setWhatsThis(tr("<h3>writeCat.compress</h3><p>If set to true, use <a href=\"http://www.gzip.org/\">gzip</a> to compress all output files.</p>"));
+    tabOutputFieldDirectory->setWhatsThis(tr("<h3>writeCat.outputDir</h3><p>Optional directory path to which all output files are written. If not specified, the directory of the input cube will be used by default.</p>"));
+    tabOutputGroupBox2->setWhatsThis(tr("<h3>writeCat.parameters</h3><p>List of parameters to appear in source catalogue. Format:</p><p>['par1', 'par2', ...]</p><p>An asterisk, <span style=\"font-family:monospace;\">['*']</span>, means that all parameters are written to the catalogue (default behaviour).</p>"));
+    tabOutputButtonASCII->setWhatsThis(tr("<h3>writeCat.writeASCII</h3><p>Write catalogue in ASCII format.</p>"));
+    tabOutputButtonSQL->setWhatsThis(tr("<h3>writeCat.writeSQL</h3><p>Write catalogue in SQL format (not yet implemented).</p>"));
+    tabOutputButtonXML->setWhatsThis(tr("<h3>writeCat.writeXML</h3><p>Write catalogue in VO table (XML) format.</p>"));
     
     return;
 }

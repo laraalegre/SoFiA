@@ -92,7 +92,13 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "SCfind.rmsMode": "string", \
                  "SCfind.kernels": "array", \
                  "SCfind.kernelUnit": "string", \
-                 "SCfind.verbose": "bool", \
+                 "SCfind.verbose": "bool",\
+                 "CNHI.pReq": "float",\
+                 "CNHI.qReq": "float", \
+                 "CNHI.minScale": "int",\
+                 "CNHI.maxScale": "int",\
+                 "CNHI.medianTest": "bool",\
+                 "CNHI.verbose": "int",\
                  "wavelet.threshold": "float", \
                  "wavelet.scaleXY": "int", \
                  "wavelet.scaleZ": "int", \
@@ -125,13 +131,7 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "writeCat.writeASCII": "bool", \
                  "writeCat.writeXML": "bool", \
                  "writeCat.writeSQL": "bool", \
-                 "writeCat.parameters": "array",\
-                 "CNHI.p_req": "float",\
-                 "CNHI.verbose": "int",\
-                 "CNHI.min_scale": "int",\
-                 "CNHI.max_scale": "int",\
-                 "CNHI.median_test": "int",\
-                 "CNHI.q_req": "float"
+                 "writeCat.parameters": "array"
     }
     
     # Loop through all lines:

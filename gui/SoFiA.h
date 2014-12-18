@@ -333,8 +333,13 @@ private:
     QComboBox    *tabSourceFindingFieldClipMethod;
     
     QGroupBox    *tabSourceFindingGroupBox3;
-    QLabel       *tabSourceFindingLabelCNHI;
-    QVBoxLayout  *tabSourceFindingLayoutCNHI;
+    QFormLayout  *tabSourceFindingForm3;
+    QLineEdit    *tabSourceFindingFieldPReq;
+    QLineEdit    *tabSourceFindingFieldQReq;
+    QSpinBox     *tabSourceFindingFieldMinScale;
+    QSpinBox     *tabSourceFindingFieldMaxScale;
+    QCheckBox    *tabSourceFindingMedianTest;
+    QComboBox    *tabSourceFindingFieldVerbose;
     
     QHBoxLayout  *tabSourceFindingLayoutControls;
     QWidget      *tabSourceFindingWidgetControls;

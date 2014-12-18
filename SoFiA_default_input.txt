@@ -89,12 +89,12 @@ SCfind.verbose                  =       true
 
 # CNHI finder module
 
-CNHI.p_req                      =       0.05
+CNHI.pReq                       =       1e-5
+CNHI.qReq                       =       3.8
+CNHI.minScale                   =       5
+CNHI.maxScale                   =       -1
+CNHI.medianTest                 =       true
 CNHI.verbose                    =       1
-CNHI.min_scale                  =       4
-CNHI.max_scale                  =       -1
-CNHI.median_test                =       1
-CNHI.q_req                      =       3.8
 
 # Threshold finder module
 
