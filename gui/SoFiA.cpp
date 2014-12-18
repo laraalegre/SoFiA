@@ -1909,12 +1909,6 @@ void SoFiA::createInterface()
     tabSourceFindingMedianTest = new QCheckBox(tr("Enable "), tabSourceFindingGroupBox3);
     tabSourceFindingMedianTest->setObjectName("CNHI.medianTest");
     
-    //tabSourceFindingFieldVerbose = new QSpinBox(tabSourceFindingGroupBox3);
-    //tabSourceFindingFieldVerbose->setObjectName("CNHI.verbose");
-    //tabSourceFindingFieldVerbose->setMaximumWidth(100);
-    //tabSourceFindingFieldVerbose->setMinimum(0);
-    //tabSourceFindingFieldVerbose->setMaximum(2);
-    
     tabSourceFindingFieldVerbose = new QComboBox(tabSourceFindingGroupBox3);
     tabSourceFindingFieldVerbose->setObjectName("CNHI.verbose");
     tabSourceFindingFieldVerbose->addItem(tr("None"), QVariant(QString("0")));

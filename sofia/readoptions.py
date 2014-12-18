@@ -92,13 +92,13 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "SCfind.rmsMode": "string", \
                  "SCfind.kernels": "array", \
                  "SCfind.kernelUnit": "string", \
-                 "SCfind.verbose": "bool",\
-                 "CNHI.pReq": "float",\
+                 "SCfind.verbose": "bool", \
+                 "CNHI.pReq": "float", \
                  "CNHI.qReq": "float", \
-                 "CNHI.minScale": "int",\
-                 "CNHI.maxScale": "int",\
-                 "CNHI.medianTest": "bool",\
-                 "CNHI.verbose": "int",\
+                 "CNHI.minScale": "int", \
+                 "CNHI.maxScale": "int", \
+                 "CNHI.medianTest": "bool", \
+                 "CNHI.verbose": "int", \
                  "wavelet.threshold": "float", \
                  "wavelet.scaleXY": "int", \
                  "wavelet.scaleZ": "int", \
