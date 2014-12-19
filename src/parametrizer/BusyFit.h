@@ -11,7 +11,7 @@
 ///           Crawley WA 6009                                            ///
 ///           Australia                                                  ///
 ///                                                                      ///
-/// E-mail:   tobias.westmeier@uwa.edu.au                                ///
+/// E-mail:   tobias.westmeier [at] uwa.edu.au                           ///
 /// ____________________________________________________________________ ///
 ///                                                                      ///
 /// This program is free software: you can redistribute it and/or modify ///
