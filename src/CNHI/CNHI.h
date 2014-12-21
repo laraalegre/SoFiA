@@ -176,7 +176,7 @@ template<typename dtype, typename mtype, typename rtype>
 	  // e. Initialise the median_rem_pos value that indexes the median_rem array
 	  median_rem_pos = 0;
 	  while(data_LoS[tr_order[median_rem_pos]] <= median_rem[median_rem_pos]){ if(median_rem_pos < tr_size){ ++median_rem_pos; } else { break; } }
-	  
+
 	} else { median_rem_pos = 0; }
 
 	// f. Apply median test to test region if requested. Must be greater than or equal to median of remainder.
@@ -196,7 +196,7 @@ template<typename dtype, typename mtype, typename rtype>
 
 	  // update run_flag
 	  if(median_tr < median_rem[median_rem_pos]){ run_flag = false; }
-
+	  
 	}
 
 	if(run_flag){
@@ -324,26 +324,34 @@ template<typename dtype, typename mtype, typename rtype>
 	  
 	  // III) Use insertion sort to move new point to correct position.
 	  // IV) Update "to process" for final position of new point.
+	  if(proc_max < (tr_size - 1)){
+	    
+	    while((map_XtoI_pos[tr_order[proc_max]] > map_XtoI_pos[tr_order[proc_max + 1]])){
+	      
+	    
+	      p = tr_order[proc_max + 1];
+	      tr_order[proc_max + 1] = tr_order[proc_max];
+	      tr_order[proc_max] = p;
+	      ++proc_max;
+	      if(proc_max == (tr_size - 1) || proc_max == (NOz - 1)){ break; }
+	      
+	    }
 	  
-	  while((data_LoS[tr_order[proc_max]] > data_LoS[tr_order[proc_max + 1]]) && (proc_max < (tr_size - 1))){
-	    
-	    p = tr_order[proc_max + 1];
-	    tr_order[proc_max + 1] = tr_order[proc_max];
-	    tr_order[proc_max] = p;
-	    ++proc_max;
-	    if(proc_max == (tr_size - 1)){ break; }
-
 	  }
-	  while((data_LoS[tr_order[proc_min]] < data_LoS[tr_order[proc_min - 1]]) && (proc_min > 0)){
-	    
-	    p = tr_order[proc_min - 1];
-	    tr_order[proc_min - 1] = tr_order[proc_min];
-	    tr_order[proc_min] = p;
-	    --proc_min;
-	    if(proc_min == 0){ break; }
-
+	  if(proc_min > 0){
+	  
+	    while((map_XtoI_pos[tr_order[proc_min]] < map_XtoI_pos[tr_order[proc_min - 1]])){
+		
+	      p = tr_order[proc_min - 1];
+	      tr_order[proc_min - 1] = tr_order[proc_min];
+	      tr_order[proc_min] = p;
+	      --proc_min;
+	      if(proc_min == 0){ break; }
+	      
+	    }
+	  
 	  }
-
+	  
 	  // V) Apply  median test to test region if requested. Must be greater than or equal to median of remainder.
 	  run_flag = true;
 	  if(median_test){
@@ -367,7 +375,7 @@ template<typename dtype, typename mtype, typename rtype>
 	    if(median_tr < median_rem[median_rem_pos]){ run_flag = false; }
 	    
 	  }
-	  
+
 	  if(run_flag){
 
 	    // VI) For each element of test range in "to process" interval, test adjacent c.f.d. points and update D values.
@@ -401,7 +409,7 @@ template<typename dtype, typename mtype, typename rtype>
 		below = -1;
 		
 	      }
-	      
+
 	      // calculate c.f.d. distance to adjacent-below point
 	      if(below == -1){
 	      
@@ -412,7 +420,7 @@ template<typename dtype, typename mtype, typename rtype>
 		dist = ((double) p / (double) tr_size) - ((double) (below + k - p) / (double) (NOz - tr_size));
 		
 	      }
-	      
+
 	      // update D_min and D_max for the c.f.d. distance
 	      D_min = (dist <= D_min) ? dist : D_min;
 	      D_max = (dist >= D_max) ? dist : D_max;
@@ -432,7 +440,7 @@ template<typename dtype, typename mtype, typename rtype>
 		above = NOz;
 		
 	      }
-	      	      
+
 	      // calculate c.f.d. distance to adjacent-above point
 	      if(above == NOz){
 	      
@@ -544,7 +552,7 @@ template<typename dtype, typename mtype, typename rtype>
 
 	}
 
-	// for(k = 0; k <NOz; ++k)
+	// for(k = 0; k < NOz; ++k)
       }
       
       // update progress

@@ -1,4 +1,5 @@
 # distutils: language = c++
+# distutils: sources = CNHI.h
 
 # cython: boundscheck = False
 # cython: wraparound = False
