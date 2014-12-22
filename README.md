@@ -50,9 +50,9 @@ folder where the downloaded file was saved. Then follow the steps below.
    Download and unpack the zipped archive into a directory of your choice:
 
    > unzip SoFiA-[version].zip
-   
+
    or
-   
+
    > tar -xzvf SoFiA-[version].tar.gz
 
    where [version] is the downloaded version of SoFiA, e.g. 0.2. This will 
@@ -75,7 +75,7 @@ folder where the downloaded file was saved. Then follow the steps below.
 5. Launch SoFiA
 
     Open a new terminal window and type:
-    
+
     > SoFiA &
 
 
@@ -89,7 +89,10 @@ versions of all packages are installed and properly set up such that they
 can be found by Python and the GCC. On some systems it may be necessary to 
 explicitly install the GNU C++ compiler (g++, should normally be part of 
 the GCC) as well as the development packages (dev) of Qt and the GNU 
-Scientific Library. Please also see the [trouble shooting page](https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Trouble-Shooting) on the SoFiA wiki for more information on a few commonly encountered problems.
+Scientific Library. Please also see the trouble shooting page on the SoFiA 
+wiki for more information on a few commonly encountered problems:
+
+* https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Trouble-Shooting
 
 
 Documentation
@@ -107,8 +110,10 @@ Version history
 
 * SoFiA 0.4.0
   * Released 22/12/2014
-  * Adds several new features, including 2D–1D wavelet filtering, the CNHI finder, and optically motivated source finding.
-  * Fixes a few bugs and greatly improves the graphical user interface and documentation.
+  * Adds several new features, including 2D–1D wavelet filtering, the CNHI 
+    finder, and optically motivated source finding.
+  * Fixes a few bugs and greatly improves the graphical user interface and 
+    documentation.
   * See release notes for details:
     https://github.com/SoFiA-Admin/SoFiA/releases/tag/v0.4.0
 
