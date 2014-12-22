@@ -175,10 +175,15 @@ template<typename dtype, typename mtype, typename rtype>
 	
 	  // e. Initialise the median_rem_pos value that indexes the median_rem array
 	  median_rem_pos = 0;
-	  while(data_LoS[tr_order[median_rem_pos]] <= median_rem[median_rem_pos]){ if(median_rem_pos < tr_size){ ++median_rem_pos; } else { break; } }
-
+	  while(data_LoS[tr_order[median_rem_pos]] <= median_rem[median_rem_pos]){ 
+	    if(median_rem_pos < tr_size){ 	      
+	      ++median_rem_pos; 
+	      if(median_rem_pos == tr_size){ break; }
+	    } else { break; } 
+	  }
+	  
 	} else { median_rem_pos = 0; }
-
+	
 	// f. Apply median test to test region if requested. Must be greater than or equal to median of remainder.
 	run_flag = true;
 	if(median_test){
@@ -370,6 +375,8 @@ template<typename dtype, typename mtype, typename rtype>
 	    // update median_rem_pos 
 	    if((data_LoS[tr_order[proc_min]] <= median_rem[median_rem_pos]) && (data_LoS[tr_order[proc_max]] > median_rem[median_rem_pos])){ --median_rem_pos; }
 	    if((data_LoS[tr_order[proc_min]] > median_rem[median_rem_pos]) && (data_LoS[tr_order[proc_max]] <= median_rem[median_rem_pos])){ ++median_rem_pos; }
+	    median_rem_pos = (median_rem_pos < 0) ? 0 : median_rem_pos;
+	    median_rem_pos = (median_rem_pos > tr_size) ? tr_size : median_rem_pos;
 
 	    // update run_flag
 	    if(median_tr < median_rem[median_rem_pos]){ run_flag = false; }
