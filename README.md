@@ -89,7 +89,7 @@ versions of all packages are installed and properly set up such that they
 can be found by Python and the GCC. On some systems it may be necessary to 
 explicitly install the GNU C++ compiler (g++, should normally be part of 
 the GCC) as well as the development packages (dev) of Qt and the GNU 
-Scientific Library. 
+Scientific Library. Please also see the [trouble shooting page](https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Trouble-Shooting) on the SoFiA wiki for more information on a few commonly encountered problems.
 
 
 Documentation
