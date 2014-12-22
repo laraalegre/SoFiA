@@ -105,6 +105,13 @@ basic help is available at this stage.
 Version history
 ---------------
 
+* SoFiA 0.4.0
+  * Released 22/12/2014
+  * Adds several new features, including 2D–1D wavelet filtering, the CNHI finder, and optically motivated source finding.
+  * Fixes a few bugs and greatly improves the graphical user interface and documentation.
+  * See release notes for details:
+    https://github.com/SoFiA-Admin/SoFiA/releases/tag/v0.4.0
+
 * SoFiA 0.3.2
   * Released 25/08/2014
   * Adds several new features, including subcube processing and separate 
