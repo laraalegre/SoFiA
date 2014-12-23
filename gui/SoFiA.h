@@ -73,6 +73,7 @@
     #include <QtGui/QLabel>
     #include <QtGui/QLineEdit>
     #include <QtGui/QTextEdit>
+    #include <QtGui/QScrollBar>
     #include <QtGui/QPushButton>
     #include <QtGui/QCheckBox>
     #include <QtGui/QSpinBox>
@@ -97,6 +98,7 @@
     #include <QtWidgets/QLabel>
     #include <QtWidgets/QLineEdit>
     #include <QtWidgets/QTextEdit>
+    #include <QtWidgets/QScrollBar>
     #include <QtWidgets/QPushButton>
     #include <QtWidgets/QCheckBox>
     #include <QtWidgets/QSpinBox>

@@ -1060,7 +1060,7 @@ void SoFiA::pipelineProcessReadStd()
     QByteArray output = pipelineProcess->readAllStandardOutput();
     QString    outputStd(QString::fromUtf8(output));
     
-    outputStd.remove(QChar('\r'));       // Get rid of carriage returns in the output; they produce line break!
+    outputStd.remove(QChar('\r'));       // Get rid of carriage returns in the output
     
     unsigned int progress = outputProgress->value();
     
@@ -1084,7 +1084,8 @@ void SoFiA::pipelineProcessReadStd()
     if(!outputStd.isEmpty())
     {
         outputText->setTextColor(Qt::black);
-        outputText->append(outputStd);
+        outputText->insertPlainText(outputStd);
+	outputText->verticalScrollBar()->setValue(outputText->verticalScrollBar()->maximum());
     }
     
     return;
@@ -1106,7 +1107,8 @@ void SoFiA::pipelineProcessReadErr()
     if(!outputErr.isEmpty())
     {
         outputText->setTextColor(Qt::red);
-        outputText->append(outputErr);
+	outputText->insertPlainText(outputErr);
+	outputText->verticalScrollBar()->setValue(outputText->verticalScrollBar()->maximum());
     }
     
     return;
@@ -1149,7 +1151,8 @@ void SoFiA::pipelineProcessFinished(int exitCode, QProcess::ExitStatus exitStatu
             showMessage(MESSAGE_INFO, messageText, statusText);
             
             outputText->setTextColor(Qt::darkGreen);
-            outputText->append(QString("Pipeline finished with exit code %1.\n").arg(exitCode));
+	    outputText->insertPlainText(QString("Pipeline finished with exit code %1.\n").arg(exitCode));
+	    outputText->verticalScrollBar()->setValue(outputText->verticalScrollBar()->maximum());
             
             if(!spreadsheet->isHidden()) showCatalogue();  // Reload catalogue if currently visible.
         }
@@ -1161,7 +1164,8 @@ void SoFiA::pipelineProcessFinished(int exitCode, QProcess::ExitStatus exitStatu
             showMessage(MESSAGE_INFO, messageText, statusText);
             
             outputText->setTextColor(Qt::red);
-            outputText->append(QString("Pipeline failed with exit code %1.\n").arg(exitCode));
+	    outputText->insertPlainText(QString("Pipeline failed with exit code %1.\n").arg(exitCode));
+	    outputText->verticalScrollBar()->setValue(outputText->verticalScrollBar()->maximum());
         }
     }
     else
@@ -1172,7 +1176,8 @@ void SoFiA::pipelineProcessFinished(int exitCode, QProcess::ExitStatus exitStatu
         showMessage(MESSAGE_ERROR, messageText, statusText);
         
         outputText->setTextColor(Qt::red);
-        outputText->append(QString("Pipeline aborted with exit code %1.\n").arg(exitCode));
+	outputText->insertPlainText(QString("Pipeline aborted with exit code %1.\n").arg(exitCode));
+	outputText->verticalScrollBar()->setValue(outputText->verticalScrollBar()->maximum());
     }
     
     updateActions();
@@ -1223,7 +1228,8 @@ void SoFiA::pipelineProcessError(QProcess::ProcessError error)
     {
         case QProcess::FailedToStart:
             outputText->setTextColor(Qt::red);
-            outputText->append(QString("Error: Failed to launch pipeline.\n"));
+	    outputText->insertPlainText(QString("Error: Failed to launch pipeline.\n"));
+	    outputText->verticalScrollBar()->setValue(outputText->verticalScrollBar()->maximum());
             
             messageText = tr("<p>Failed to launch pipeline. Please ensure that the pipeline is installed on your computer and you have permission to execute it.</p>");
             statusText = tr("Failed to launch pipeline.");
@@ -1232,27 +1238,32 @@ void SoFiA::pipelineProcessError(QProcess::ProcessError error)
             
         case QProcess::Crashed:
             outputText->setTextColor(Qt::red);
-            outputText->append(QString("Error: Pipeline terminated prematurely.\n"));
+	    outputText->insertPlainText(QString("Error: Pipeline terminated prematurely.\n"));
+	    outputText->verticalScrollBar()->setValue(outputText->verticalScrollBar()->maximum());
             break;
             
         case QProcess::Timedout:
             outputText->setTextColor(Qt::red);
-            outputText->append(QString("Error: Pipeline timed out.\n"));
+	    outputText->insertPlainText(QString("Error: Pipeline timed out.\n"));
+	    outputText->verticalScrollBar()->setValue(outputText->verticalScrollBar()->maximum());
             break;
             
         case QProcess::WriteError:
             outputText->setTextColor(Qt::red);
-            outputText->append(QString("Error: Pipeline failed to receive input.\n"));
+	    outputText->insertPlainText(QString("Error: Pipeline failed to receive input.\n"));
+	    outputText->verticalScrollBar()->setValue(outputText->verticalScrollBar()->maximum());
             break;
             
         case QProcess::ReadError:
             outputText->setTextColor(Qt::red);
-            outputText->append(QString("Error: Failed to receive output from pipeline.\n"));
+	    outputText->insertPlainText(QString("Error: Failed to receive output from pipeline.\n"));
+	    outputText->verticalScrollBar()->setValue(outputText->verticalScrollBar()->maximum());
             break;
             
         default:
             outputText->setTextColor(Qt::red);
-            outputText->append(QString("Error: An unspecified error occurred.\n"));
+	    outputText->insertPlainText(QString("Error: An unspecified error occurred.\n"));
+	    outputText->verticalScrollBar()->setValue(outputText->verticalScrollBar()->maximum());
     }
     
     return;
