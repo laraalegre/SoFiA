@@ -1449,7 +1449,7 @@ void SoFiA::createInterface()
     tabs->addTab(tabInFilter,        tr("Input Filter"));
     tabs->addTab(tabSourceFinding,   tr("Source Finding"));
     tabs->addTab(tabMerging,         tr("Merging"));
-    tabs->addTab(tabParametrisation, tr("Parametrisation"));
+    tabs->addTab(tabParametrisation, tr("Parameterisation"));
     tabs->addTab(tabOutFilter,       tr("Output Filter"));
     tabs->addTab(tabOutput,          tr("Output"));
     
@@ -2173,7 +2173,7 @@ void SoFiA::createInterface()
     tabParametrisationWidgetControls = new QWidget(tabParametrisation);
     tabParametrisationWidgetControls->setLayout(tabParametrisationLayoutControls);
     
-    toolBoxPA->addItem(tabParametrisationGroupBox1, iconTaskReject, tr("Source Parametrisation"));
+    toolBoxPA->addItem(tabParametrisationGroupBox1, iconTaskReject, tr("Source Parameterisation"));
     toolBoxPA->addItem(tabParametrisationGroupBox2, iconTaskReject, tr("Reliability Calculation"));
     
     tabParametrisationLayout->addWidget(toolBoxPA);
@@ -2503,7 +2503,7 @@ void SoFiA::createInterface()
     tabOutputButtonParameterBFPar->setObjectName("parameterBFPar");
     tabOutputButtonParameterBFPar->setChecked(false);
     //tabOutputButtonParameterBFPar->setToolTip(tr("Best-fit Busy Function parameters (if enabled)"));
-    tabOutputButtonParameterBFPhys = new QCheckBox(tr("BF parametrisation "), tabOutputGroupBox2);
+    tabOutputButtonParameterBFPhys = new QCheckBox(tr("BF parameterisation "), tabOutputGroupBox2);
     tabOutputButtonParameterBFPhys->setObjectName("parameterBFPhys");
     tabOutputButtonParameterBFPhys->setChecked(false);
     //tabOutputButtonParameterBFPhys->setToolTip(tr("Physical parameters derived from Busy Function fit (if enabled)"));
@@ -2816,7 +2816,7 @@ void SoFiA::createWhatsThis()
     tabInputFieldSpectralSize->setWhatsThis(tr("<h3>optical.specSize</h3><p>This defines the <b>spectral</b> size of the sub-cube to be searched around each catalogue position. The size must be specified in the <b>native units</b> of the data cube, e.g. in km/s or Hz.</p>"));
     tabInputFieldMultiCat->setWhatsThis(tr("<h3>optical.storeMultiCat</h3><p>If set to <b>true</b>, a separate output catalogue will be created for each input position, containing only the sources found in that subcube. In addition, a single, merged catalogue will also be created. By default this parameter is set to <b>false</b>, in which case only a single output catalogue file is generated.</p>"));
     tabParametrisationButtonDilateMask->setWhatsThis(tr("<h3>parameters.dilateMask</h3><p>Run the mask optimisation algorithm based on spatially <b>dilating</b> the initial mask to achieve more accurate flux measurements.</p>"));
-    tabParametrisationButtonBusyFunction->setWhatsThis(tr("<h3>parameters.fitBusyFunction</h3><p>Fit the Busy Function (<a http://adsabs.harvard.edu/abs/2014MNRAS.438.1176W\">Westmeier et al. 2013</a>) to the integrated spectrum for more accurate parametrisation.</p>"));
+    tabParametrisationButtonBusyFunction->setWhatsThis(tr("<h3>parameters.fitBusyFunction</h3><p>Fit the Busy Function (<a http://adsabs.harvard.edu/abs/2014MNRAS.438.1176W\">Westmeier et al. 2013</a>) to the integrated spectrum for more accurate parameterisation.</p>"));
     tabParametrisationButtonMaskOpt->setWhatsThis(tr("<h3>parameters.optimiseMask</h3><p>Run the mask optimisation algorithm based on fitting and <b>growing</b> ellipses to achieve more accurate flux measurements.</p>"));
     tabParametrisationFieldRelKernel->setWhatsThis(tr("<h3>reliability.kernel</h3><p>Size of 3D smoothing kernel in log(parameter) space (see <b>reliability.parSpace</b>).</p>"));
     tabParametrisationFieldRelPlot->setWhatsThis(tr("<h3>reliability.makePlot</h3><p>If set to <b>true</b>, a PDF file showing the distribution of positive and negative detections in parameter space will be created for diagnostic purposes.</p>"));
@@ -2845,7 +2845,7 @@ void SoFiA::createWhatsThis()
     tabOutputButtonMom0->setWhatsThis(tr("<h3>steps.doMom0</h3><p>Create and save moment-0 map of all detections.</p>"));
     tabOutputButtonMom1->setWhatsThis(tr("<h3>steps.doMom1</h3><p>Create and save moment-1 map of all detections.</p>"));
     tabInputGroupBox2->setWhatsThis(tr("<h3>steps.doOptical</h3><p>Run SoFiA on multiple, smaller sub-cubes centred on positions defined in an input source catalogue. A catalogue file will need to be specified (see parameter <b>optical.sourceCatalogue</b>). This could, e.g., be an optical galaxy catalogue with the aim to search for HI detections at the positions of all galaxies.</p>"));
-    tabParametrisationGroupBox1->setWhatsThis(tr("<h3>steps.doParameterise</h3><p>Run the mask optimisation and source parametrisation module.</p>"));
+    tabParametrisationGroupBox1->setWhatsThis(tr("<h3>steps.doParameterise</h3><p>Run the mask optimisation and source parameterisation module.</p>"));
     tabParametrisationGroupBox2->setWhatsThis(tr("<h3>steps.doReliability</h3><p>Use negative detections to calculate the reliability of each source by comparing the distribution of positive and negative detections in parameter space (<a href=\"http://adsabs.harvard.edu/abs/2012PASA...29..296S\">Serra et al. 2012</a>). Note that this requires a flux threshold low enough to ensure that a substantial number of positive and negative noise peaks are detected.</p>"));
     tabInFilterGroupBox2->setWhatsThis(tr("<h3>steps.doScaleNoise</h3><p>Automatically normalise noise levels prior to source finding.</p>"));
     tabSourceFindingGroupBox1->setWhatsThis(tr("<h3>steps.doSCfind</h3><p>Run the smooth + clip finder on the data cube.</p>"));
