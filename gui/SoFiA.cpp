@@ -1064,20 +1064,23 @@ void SoFiA::pipelineProcessReadStd()
     
     unsigned int progress = outputProgress->value();
     
-    if(outputStd.contains(QString("--- SoFiA: Reading default parameters ---"))) progress = 0;
-    if(outputStd.contains(QString("--- SoFiA: Reading user parameters ---")))    progress = 5;
-    if(outputStd.contains(QString("--- SoFiA: Reading data cube(s) ---")))       progress = 10;
-    if(outputStd.contains(QString("--- SoFiA: Running input filters ---")))      progress = 15;
-    if(outputStd.contains(QString("--- SoFiA: Running source finder ---")))      progress = 25;
-    if(outputStd.contains(QString("--- SoFiA: Merging detections ---")))         progress = 40;
-    if(outputStd.contains(QString("--- SoFiA: Writing mask cube ---")))          progress = 50;
-    if(outputStd.contains(QString("--- SoFiA: Determining reliability ---")))    progress = 55;
-    if(outputStd.contains(QString("--- SoFiA: Writing raw catalogue ---")))      progress = 65;
-    if(outputStd.contains(QString("--- SoFiA: Writing moment maps ---")))        progress = 70;
-    if(outputStd.contains(QString("--- SoFiA: Parametrising sources ---")))      progress = 75;
-    if(outputStd.contains(QString("--- SoFiA: Writing cubelets ---")))           progress = 90;
-    if(outputStd.contains(QString("--- SoFiA: Writing output catalogue ---")))   progress = 95;
-    if(outputStd.contains(QString("--- SoFiA: Pipeline finished ---")))          progress = 100;
+    if(outputStd.contains(QString("--- SoFiA: Reading default parameters ---")))                progress = 0;
+    if(outputStd.contains(QString("--- SoFiA: Reading user parameters ---")))                   progress = 5;
+    if(outputStd.contains(QString("--- SoFiA: Reading data cube(s) ---")))                      progress = 10;
+    if(outputStd.contains(QString("--- SoFiA: Running input filters ---")))                     progress = 15;
+    if(outputStd.contains(QString("--- SoFiA: Running source finder ---")))                     progress = 25;
+    if(outputStd.contains(QString("--- SoFiA: Merging detections ---")))                        progress = 35;
+    if(outputStd.contains(QString("--- SoFiA: Determining reliability ---")))                   progress = 45;
+    if(outputStd.contains(QString("--- SoFiA: Removing unreliable sources ---")))               progress = 50;
+    if(outputStd.contains(QString("--- SoFiA: Parameterising sources ---")))                    progress = 55;
+    if(outputStd.contains(QString("--- SoFiA: Correcting parameters for sub-cube offset ---"))) progress = 65;
+    if(outputStd.contains(QString("--- SoFiA: Writing mask cube ---")))                         progress = 70;
+    if(outputStd.contains(QString("--- SoFiA: Writing moment-0 map ---")))                      progress = 75;
+    if(outputStd.contains(QString("--- SoFiA: Writing moment-1 map ---")))                      progress = 80;
+    if(outputStd.contains(QString("--- SoFiA: Writing cubelets ---")))                          progress = 85;
+    if(outputStd.contains(QString("--- SoFiA: Adding WCS position to catalogue ---")))          progress = 90;
+    if(outputStd.contains(QString("--- SoFiA: Writing output catalogue ---")))                  progress = 95;
+    if(outputStd.contains(QString("--- SoFiA: Pipeline finished ---")))                         progress = 100;
     
     outputProgress->setValue(progress);
     

@@ -260,7 +260,8 @@ if Parameters['steps']['doDebug']:
 
 if Parameters['steps']['doMerge'] and NRdet:
 	print "\n--- %.3f seconds since start"%(time()-t0)
-	print "\n--- SoFiA: Removing all sources that are not reliable ---"
+	print "\n--- SoFiA: Removing unreliable sources ---"
+	sys.stdout.flush()
 
 	# make sure that reliable is sorted
 	relList = list(reliable)
@@ -336,7 +337,7 @@ if Parameters['steps']['doDebug'] and NRdet:
 
 if Parameters['steps']['doParameterise'] and Parameters['steps']['doMerge'] and NRdet:
 	print "\n--- %.3f seconds since start"%(time()-t0)
-	print "\n--- SoFiA: Parametrising sources ---"
+	print "\n--- SoFiA: Parameterising sources ---"
 	sys.stdout.flush()
 #	np_Cube, dict_Header, mask, objects, catParNames, catParFormt = parametrisation.parametrise(np_Cube, dict_Header, mask, objects, catParNames, catParFormt, Parameters)
 	if Parameters['parameters']['dilateMask']: mask = parametrisation.dilate(np_Cube,mask,objects,catParNames,Parameters)
@@ -357,7 +358,7 @@ if Parameters['steps']['doParameterise'] and Parameters['steps']['doMerge'] and 
 
 if len(subcube) and Parameters['steps']['doMerge'] and NRdet:
 	print "\n--- %.3f seconds since start"%(time()-t0)
-	print "\n--- SoFiA: Correcting positional parameter values for subcube ---"
+	print "\n--- SoFiA: Correcting parameters for sub-cube offset ---"
 	sys.stdout.flush()
 	# list of parameters to correct for X, Y and Z offset
 	corrX=['Xg','Xm','Xmin','Xmax']
@@ -382,7 +383,8 @@ if len(subcube) and Parameters['steps']['doMerge'] and NRdet:
 
 if Parameters['steps']['doWriteMask'] and NRdet:
 	print "\n--- %.3f seconds since start"%(time()-t0)
-	print "\n--- SoFiA: Writing mask ---"
+	print "\n--- SoFiA: Writing mask cube ---"
+	sys.stdout.flush()
 	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.fits'%outroot,Parameters['writeCat']['compress'])
 
 
@@ -433,7 +435,7 @@ if Parameters['steps']['doCubelets'] and Parameters['steps']['doMerge'] and NRde
 
 if Parameters['steps']['doMerge'] and NRdet:
 	print "\n--- %.3f seconds since start"%(time()-t0)
-	print "\n--- SoFiA: Adding WCS position to catalog ---"
+	print "\n--- SoFiA: Adding WCS position to catalogue ---"
 	sys.stdout.flush()
 	objects, catParNames, catParFormt, catParUnits = wcs_coordinates.add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters)
 
