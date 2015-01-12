@@ -197,15 +197,15 @@ if Parameters['steps']['doMerge'] and NRdet:
 	# set catalog header	
 	if 'bunit' in dict_Header: dunits=dict_Header['bunit']
 	else: dunits='-'
-	catParNames = ('ID','Xg','Yg','Zg','Xm','Ym','Zm','Xmin','Xmax','Ymin','Ymax','Zmin','Zmax','NRvox','SNRmin','SNRmax','SNRsum')
+	catParNames = ('id','x_geo','y_geo','z_geo','x','y','z','x_min','x_max','y_min','y_max','z_min','z_max','n_pix','snr_min','snr_max','snr_sum')
 	catParUnits = ('-','pix','pix','chan','pix','pix','chan','pix','pix','pix','pix','chan','chan','-','-','-','-')
 	catParFormt = ('%10i', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%7i', '%7i', '%7i', '%7i', '%7i', '%7i', '%8i', '%12.3e', '%12.3e', '%12.3e')
 	# normalise flux parameters to global rms (this is done also if weights were applied, in case they are prop. to 1/sigma but not exactly = 1/sigma)
 	print 'Dividing flux parameters by global cube rms'
 	objects=np.array(objects)
-	objects[:,catParNames.index('SNRmin')]/=globalrms
-	objects[:,catParNames.index('SNRmax')]/=globalrms
-	objects[:,catParNames.index('SNRsum')]/=globalrms
+	objects[:,catParNames.index('snr_min')]/=globalrms
+	objects[:,catParNames.index('snr_max')]/=globalrms
+	objects[:,catParNames.index('snr_sum')]/=globalrms
 	objects=[list(jj) for jj in list(objects)]
 
 
@@ -232,7 +232,7 @@ if Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and N
 	objects,reliable = addrel.EstimateRel(np.array(objects), outroot, catParNames, **Parameters['reliability'])
 	print 'The following sources have been detected:', reliable
 	print
-	catParNames = tuple(list(catParNames) + ['NRpos',  'NRneg',  'Rel'])
+	catParNames = tuple(list(catParNames) + ['n_pos',  'n_neg',  'rel'])
 	catParUnits = tuple(list(catParUnits) + ['-','-','-'])
 	catParFormt = tuple(list(catParFormt) + ['%12.3e', '%12.3e', '%12.6f'])
 elif Parameters['steps']['doMerge'] and NRdet:
@@ -276,8 +276,8 @@ if Parameters['steps']['doMerge'] and NRdet:
 	objects = relObjects
 
 	tmpCatParNames = list(catParNames)
-	tmpCatParNames[0] = 'ID_old'
-	catParNames = tuple(['ID'] + tmpCatParNames)
+	tmpCatParNames[0] = 'id_old'
+	catParNames = tuple(['id'] + tmpCatParNames)
 
 	tmpCatParFormt = list(catParFormt)
 	catParFormt= tuple(['%10i'] + tmpCatParFormt)
@@ -361,9 +361,9 @@ if len(subcube) and Parameters['steps']['doMerge'] and NRdet:
 	print "\n--- SoFiA: Correcting parameters for sub-cube offset ---"
 	sys.stdout.flush()
 	# list of parameters to correct for X, Y and Z offset
-	corrX=['Xg','Xm','Xmin','Xmax']
-	corrY=['Yg','Ym','Ymin','Ymax']
-	corrZ=['Zg','Zm','Zmin','Zmax','BF_Z']
+	corrX=['x_geo','x','x_min','x_max']
+	corrY=['y_geo','y','y_min','y_max']
+	corrZ=['z_geo','z','z_min','z_max','bf_z']
 
 	if subcube[0]:
 		for pp in corrX:

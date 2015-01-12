@@ -13,12 +13,12 @@ def dilate(cube,mask,objects,cathead,Parameters):
     # stops dilating when (flux_new-flux_old)/flux_new < dilateThreshold
     for mm in range(1,mask.max()+1):
     	obj=objects[mm-1]
-    	xmin=obj[list(cathead).index('Xmin')]-dilatePixMax
-    	xmax=obj[list(cathead).index('Xmax')]+dilatePixMax
-    	ymin=obj[list(cathead).index('Ymin')]-dilatePixMax
-    	ymax=obj[list(cathead).index('Ymax')]+dilatePixMax
-    	zmin=obj[list(cathead).index('Zmin')]-dilateChan
-    	zmax=obj[list(cathead).index('Zmax')]+dilateChan
+    	xmin=obj[list(cathead).index('x_min')]-dilatePixMax
+    	xmax=obj[list(cathead).index('x_max')]+dilatePixMax
+    	ymin=obj[list(cathead).index('y_min')]-dilatePixMax
+    	ymax=obj[list(cathead).index('y_max')]+dilatePixMax
+    	zmin=obj[list(cathead).index('z_min')]-dilateChan
+    	zmax=obj[list(cathead).index('z_max')]+dilateChan
     	xmin=max(0,xmin)
     	xmax=min(xmax,cube.shape[2]-1)
     	ymin=max(0,ymin)
@@ -76,17 +76,17 @@ def parametrise(
     initcatalog = cp.PySourceCatalog()
     for obj in objects:
         newSource = cp.PySource()
-        newSource.ID = obj[cathead == 'ID']
+        newSource.ID = obj[cathead == 'id']
         newParamsDict = {
-            'X': cp.PyMeasurement('X', obj[cathead == 'Xg'], 0., ''),
-            'Y': cp.PyMeasurement('Y', obj[cathead == 'Yg'], 0., ''),
-            'Z': cp.PyMeasurement('Z', obj[cathead == 'Zg'], 0., ''),
-            'BBOX_X_MIN': cp.PyMeasurement('BBOX_X_MIN', obj[cathead == 'Xmin'], 0., ''),
-            'BBOX_X_MAX': cp.PyMeasurement('BBOX_X_MAX', obj[cathead == 'Xmax'], 0., ''),
-            'BBOX_Y_MIN': cp.PyMeasurement('BBOX_Y_MIN', obj[cathead == 'Ymin'], 0., ''),
-            'BBOX_Y_MAX': cp.PyMeasurement('BBOX_Y_MAX', obj[cathead == 'Ymax'], 0., ''),
-            'BBOX_Z_MIN': cp.PyMeasurement('BBOX_Z_MIN', obj[cathead == 'Zmin'], 0., ''),
-            'BBOX_Z_MAX': cp.PyMeasurement('BBOX_Z_MAX', obj[cathead == 'Zmax'], 0., ''),
+            'x': cp.PyMeasurement('x', obj[cathead == 'x_geo'], 0., ''),
+            'y': cp.PyMeasurement('y', obj[cathead == 'y_geo'], 0., ''),
+            'z': cp.PyMeasurement('z', obj[cathead == 'z_geo'], 0., ''),
+            'x_min': cp.PyMeasurement('x_min', obj[cathead == 'x_min'], 0., ''),
+            'x_max': cp.PyMeasurement('x_max', obj[cathead == 'x_max'], 0., ''),
+            'y_min': cp.PyMeasurement('y_min', obj[cathead == 'y_min'], 0., ''),
+            'y_max': cp.PyMeasurement('y_max', obj[cathead == 'y_max'], 0., ''),
+            'z_min': cp.PyMeasurement('z_min', obj[cathead == 'z_min'], 0., ''),
+            'z_max': cp.PyMeasurement('z_max', obj[cathead == 'z_max'], 0., ''),
             }
         newSource.setParameters(newParamsDict)
         initcatalog.insert(newSource)
@@ -105,30 +105,30 @@ def parametrise(
 
     # append the results to the objects array or reset
     replParam = [
-        'BBOX_X_MAX',
-        'BBOX_X_MIN',
-        'BBOX_Y_MAX',
-        'BBOX_Y_MIN',
-        'BBOX_Z_MAX',
-        'BBOX_Z_MIN',
-        'ID',
-        'X',
-        'Y',
-        'Z',
-        'NRvox',
+        'x_min',
+        'x_max',
+        'y_min',
+        'y_max',
+        'z_min',
+        'z_max',
+        'id',
+        'x',
+        'y',
+        'z',
+        'n_pix',
         ]
     origParam = [
-        'Xmax',
-        'Xmin',
-        'Ymax',
-        'Ymin',
-        'Zmax',
-        'Zmin',
-        'ID',
-        'Xm',
-        'Ym',
-        'Zm',
-        'NRvox',
+        'x_min',
+        'x_max',
+        'y_min',
+        'y_max',
+        'z_min',
+        'z_max',
+        'id',
+        'x',
+        'y',
+        'z',
+        'n_pix',
         ]
     d = results.getSources()
 
@@ -140,40 +140,40 @@ def parametrise(
     pars = d[d.keys()[index]].getParameters()
     cathead = list(cathead)
     newunits = {
-        'ID': '-',
-        'X': 'pix',
-        'Y': 'pix',
-        'Z': 'pix',
-        'BBOX_X_MAX': 'pix',
-        'BBOX_X_MIN': 'pix',
-        'BBOX_Y_MIN': 'pix',
-        'BBOX_Y_MAX': 'pix',
-        'BBOX_Z_MIN': 'chan',
-        'BBOX_Z_MAX': 'chan',
-        'W50': 'chan',
-        'W20': 'chan',
-        'Wm50': 'chan',
-        'F_Wm50': dunits,
-        'ELL_MAJ': 'pix',
-        'ELL_MIN': 'pix',
-        'ELL_PA': 'deg',
-        'F_TOT': dunits,
-        'BF_FLAG': '-',
-        'BF_CHI2': '-',
-        'BF_Z': 'chan',
-        'BF_A': dunits,
-        'BF_B1': 'chan**(-1)',
-        'BF_B2': 'chan**(-1)',
-        'BF_C': 'chan**(-2)',
-        'BF_XE0': 'chan',
-        'BF_XP0': 'chan',
-        'BF_W': 'chan',
-        'BF_W50': 'chan',
-        'BF_W20': 'chan',
-        'BF_F_PEAK': dunits,
-        'BF_F_INT': dunits,
-        'RMS_CUBE': dunits,
-        'F_PEAK': dunits,
+        'id': '-',
+        'x': 'pix',
+        'y': 'pix',
+        'z': 'pix',
+        'x_min': 'pix',
+        'x_max': 'pix',
+        'y_min': 'pix',
+        'y_max': 'pix',
+        'z_min': 'chan',
+        'z_max': 'chan',
+        'w50': 'chan',
+        'w20': 'chan',
+        'wm50': 'chan',
+        'f_wm50': dunits,
+        'ell_maj': 'pix',
+        'ell_min': 'pix',
+        'ell_pa': 'deg',
+        'f_tot': dunits,
+        'bf_flag': '-',
+        'bf_chi2': '-',
+        'bf_z': 'chan',
+        'bf_a': dunits,
+        'bf_b1': 'chan**(-1)',
+        'bf_b2': 'chan**(-1)',
+        'bf_c': 'chan**(-2)',
+        'bf_xe': 'chan',
+        'bf_xp': 'chan',
+        'bf_w': 'chan',
+        'bf_w50': 'chan',
+        'bf_w20': 'chan',
+        'bf_f_peak': dunits,
+        'bf_f_int': dunits,
+        'rms': dunits,
+        'f_peak': dunits,
         }
     catformt = list(catformt)
     catparunits = list(catparunits)
@@ -192,7 +192,7 @@ def parametrise(
         source_dict = d[i].getParameters()
 
         # check the source index
-        index = int(source_dict['ID'].getValue())
+        index = int(source_dict['id'].getValue())
         for j in sorted(source_dict):
             if j in replParam:
                 objects[index - 1][cathead.index(origParam[replParam.index(j)])] = \
@@ -204,7 +204,7 @@ def parametrise(
     cathead = np.array(cathead)
     catparunits = np.array(catparunits)
     catformt = np.array(catformt)
-    print 'The parameterisation has completed'
+    print 'Parameterisation completed.'
     print
 
     # print objects.shape,cathead.shape

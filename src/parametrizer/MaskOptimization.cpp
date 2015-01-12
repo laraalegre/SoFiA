@@ -97,9 +97,9 @@ int MaskOptimization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s
     
     if(searchRadiusX <= 0L)
     {
-        if(source->parameterDefined("BBOX_X_MIN") and source->parameterDefined("BBOX_X_MAX"))
+        if(source->parameterDefined("x_min") and source->parameterDefined("x_max"))
         {
-            searchRadiusX = static_cast<long>(source->getParameter("BBOX_X_MAX") - source->getParameter("BBOX_X_MIN"));
+            searchRadiusX = static_cast<long>(source->getParameter("x_max") - source->getParameter("x_min"));
         }
         else
         {
@@ -111,9 +111,9 @@ int MaskOptimization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s
     
     if(searchRadiusY <= 0L)
     {
-        if(source->parameterDefined("BBOX_Y_MIN") and source->parameterDefined("BBOX_Y_MAX"))
+        if(source->parameterDefined("y_min") and source->parameterDefined("y_max"))
         {
-            searchRadiusY = static_cast<long>(source->getParameter("BBOX_Y_MAX") - source->getParameter("BBOX_Y_MIN"));
+            searchRadiusY = static_cast<long>(source->getParameter("y_max") - source->getParameter("y_min"));
         }
         else
         {
@@ -127,9 +127,9 @@ int MaskOptimization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s
     {
         //double dz;
         
-        if(source->parameterDefined("BBOX_Z_MIN") and source->parameterDefined("BBOX_Z_MAX"))
+        if(source->parameterDefined("z_min") and source->parameterDefined("z_max"))
         {
-            searchRadiusZ = static_cast<long>(0.6 * (source->getParameter("BBOX_Z_MAX") - source->getParameter("BBOX_Z_MIN")));
+            searchRadiusZ = static_cast<long>(0.6 * (source->getParameter("z_max") - source->getParameter("z_min")));
         }
         /*else if(source->parameterDefined("W50") and !dataCube->getHeader("cdelt3", dz))
         {
@@ -244,9 +244,9 @@ int MaskOptimization::fitEllipse()
             
             if(value > 0.0)
             {
-                momX  += (static_cast<double>(x) - source->getParameter("X")) * (static_cast<double>(x) - source->getParameter("X")) * value;
-                momY  += (static_cast<double>(y) - source->getParameter("Y")) * (static_cast<double>(y) - source->getParameter("Y")) * value;
-                momXY += (static_cast<double>(x) - source->getParameter("X")) * (static_cast<double>(y) - source->getParameter("Y")) * value;
+                momX  += (static_cast<double>(x) - source->getParameter("x")) * (static_cast<double>(x) - source->getParameter("x")) * value;
+                momY  += (static_cast<double>(y) - source->getParameter("y")) * (static_cast<double>(y) - source->getParameter("y")) * value;
+                momXY += (static_cast<double>(x) - source->getParameter("x")) * (static_cast<double>(y) - source->getParameter("y")) * value;
                 sum   += value;
             }
         }
@@ -394,19 +394,19 @@ int MaskOptimization::growEllipse()
                             ++pixelCount;
                             
                             // Update bounding box:
-                            if(x < source->getParameter("BBOX_X_MIN")) source->setParameter("BBOX_X_MIN", x);
-                            if(x > source->getParameter("BBOX_X_MAX")) source->setParameter("BBOX_X_MAX", x);
-                            if(y < source->getParameter("BBOX_Y_MIN")) source->setParameter("BBOX_Y_MIN", y);
-                            if(y > source->getParameter("BBOX_Y_MAX")) source->setParameter("BBOX_Y_MAX", y);
-                            if(z < source->getParameter("BBOX_Z_MIN")) source->setParameter("BBOX_Z_MIN", z);
-                            if(z > source->getParameter("BBOX_Z_MAX")) source->setParameter("BBOX_Z_MAX", z);
+			    if(x < source->getParameter("x_min")) source->setParameter("x_min", x);
+			    if(x > source->getParameter("x_max")) source->setParameter("x_max", x);
+			    if(y < source->getParameter("y_min")) source->setParameter("y_min", y);
+			    if(y > source->getParameter("y_max")) source->setParameter("y_max", y);
+			    if(z < source->getParameter("z_min")) source->setParameter("z_min", z);
+			    if(z > source->getParameter("z_max")) source->setParameter("z_maxz", z);
                         }
                     }
                 }
             }
         }
         
-        source->setParameter("NRvox", pixelCount);
+        source->setParameter("n_pix", pixelCount);
     }
     
     return 0;

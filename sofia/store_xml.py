@@ -5,6 +5,8 @@ from xml.etree import ElementTree
 from xml.etree.ElementTree import Element, SubElement, tostring, XML
 from xml.dom import minidom
 from numpy import *
+import sys
+import os
 
 
 # example page:
@@ -75,18 +77,38 @@ def make_xml_from_array(
     table = SubElement(resource, 'TABLE', ID='sofia_cat', name='sofia_cat')
     description = SubElement(table, 'DESCRIPTION')
     description.text = 'Output catalogue from SoFiA'
+    
+    # Load list of parameters and unified content descriptors (UCDs)
+    parList = {};
+    fileUcdPath = os.environ['SOFIA_PIPELINE_PATH'];
+    fileUcdPath = fileUcdPath.replace("sofia_pipeline.py", "SoFiA_source_parameters.dat");
+    
+    try:
+        with open(fileUcdPath) as fileUcd:
+            for line in fileUcd:
+               (key, value) = line.split();
+               parList[key] = value;
+            #endfor
+        #endwith
+    except:
+        sys.stderr.write("WARNING: Failed to read UCD file.\n");
+    #endtryexcept
 
     # write the parameters in fields:
     if store_pars == ['*']:
         for i in cathead:
+            if (i in parList): ucdEntity = parList[i];
+            else: ucdEntity = "";
             field = SubElement(
-                table, 'FIELD', name=i, datatype='float', unit=catunits[cathead.index(i)]
+                table, 'FIELD', name=i, ucd=ucdEntity, datatype='float', unit=catunits[cathead.index(i)]
                 )
     else:
         for par in store_pars:
             index = list(cathead).index(par)
+            if (cathead[index] in parList): ucdEntity = parList[cathead[index]];
+            else: ucdEntity = "";
             field = SubElement(
-                table, 'FIELD', name=cathead[index], datatype='float', unit=catunits[index]
+                table, 'FIELD', name=cathead[index], ucd=ucdEntity, datatype='float', unit=catunits[index]
                 )
 
     # write the data....

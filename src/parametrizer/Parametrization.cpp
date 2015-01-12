@@ -121,9 +121,9 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
         return 1;
     }
     
-    double posX = s->getParameter("X");
-    double posY = s->getParameter("Y");
-    double posZ = s->getParameter("Z");
+    double posX = s->getParameter("x");
+    double posY = s->getParameter("y");
+    double posZ = s->getParameter("z");
     
     if(posX < 0.0 or posY < 0.0 or posZ < 0.0 or posX >= static_cast<double>(d->getSize(0)) or posY >= static_cast<double>(d->getSize(1)) or posZ >= static_cast<double>(d->getSize(2)))
     {
@@ -137,9 +137,9 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
     
     // Define sub-region to operate on:
     
-    if(source->parameterDefined("BBOX_X_MIN") and source->parameterDefined("BBOX_X_MAX"))
+    if(source->parameterDefined("x_min") and source->parameterDefined("x_max"))
     {
-        searchRadiusX = static_cast<long>(source->getParameter("BBOX_X_MAX") - source->getParameter("BBOX_X_MIN"));
+        searchRadiusX = static_cast<long>(source->getParameter("x_max") - source->getParameter("x_min"));
     }
     else
     {
@@ -148,9 +148,9 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
         std::cerr << "                            in the spatial domain instead." << std::endl;
     }
     
-    if(source->parameterDefined("BBOX_Y_MIN") and source->parameterDefined("BBOX_Y_MAX"))
+    if(source->parameterDefined("y_min") and source->parameterDefined("y_max"))
     {
-        searchRadiusY = static_cast<long>(source->getParameter("BBOX_Y_MAX") - source->getParameter("BBOX_Y_MIN"));
+        searchRadiusY = static_cast<long>(source->getParameter("y_max") - source->getParameter("y_min"));
     }
     else
     {
@@ -159,9 +159,9 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
         std::cerr << "                            in the spatial domain instead." << std::endl;
     }
     
-    if(source->parameterDefined("BBOX_Z_MIN") and source->parameterDefined("BBOX_Z_MAX"))
+    if(source->parameterDefined("z_min") and source->parameterDefined("z_max"))
     {
-        searchRadiusZ = static_cast<long>(0.6 * (source->getParameter("BBOX_Z_MAX") - source->getParameter("BBOX_Z_MIN")));
+        searchRadiusZ = static_cast<long>(0.6 * (source->getParameter("z_max") - source->getParameter("z_min")));
     }
     else
     {
@@ -325,9 +325,9 @@ int Parametrization::fitEllipse()
         
         if(fluxValue > 0.0)           // NOTE: Only positive pixels considered here!
         {
-            momX  += (static_cast<double>(data[i].x) - source->getParameter("X")) * (static_cast<double>(data[i].x) - source->getParameter("X")) * fluxValue;
-            momY  += (static_cast<double>(data[i].y) - source->getParameter("Y")) * (static_cast<double>(data[i].y) - source->getParameter("Y")) * fluxValue;
-            momXY += (static_cast<double>(data[i].x) - source->getParameter("X")) * (static_cast<double>(data[i].y) - source->getParameter("Y")) * fluxValue;
+            momX  += (static_cast<double>(data[i].x) - source->getParameter("x")) * (static_cast<double>(data[i].x) - source->getParameter("x")) * fluxValue;
+            momY  += (static_cast<double>(data[i].y) - source->getParameter("y")) * (static_cast<double>(data[i].y) - source->getParameter("y")) * fluxValue;
+            momXY += (static_cast<double>(data[i].x) - source->getParameter("x")) * (static_cast<double>(data[i].y) - source->getParameter("y")) * fluxValue;
             sum += fluxValue;
         }
     }
@@ -617,39 +617,39 @@ int Parametrization::fitBusyFunction()
 
 int Parametrization::writeParameters()
 {
-    source->setParameter("ID",       source->getSourceID());
-    source->setParameter("X",        centroidX);
-    source->setParameter("Y",        centroidY);
-    source->setParameter("Z",        centroidZ);
-    source->setParameter("W50",      lineWidthW50);
-    source->setParameter("W20",      lineWidthW20);
-    source->setParameter("Wm50",     lineWidthWm50);
-    source->setParameter("F_Wm50",   meanFluxWm50);
-    source->setParameter("F_PEAK",   peakFlux);
-    source->setParameter("F_TOT",    totalFlux);
+    source->setParameter("id",      source->getSourceID());
+    source->setParameter("x",       centroidX);
+    source->setParameter("y",       centroidY);
+    source->setParameter("z",       centroidZ);
+    source->setParameter("w50",     lineWidthW50);
+    source->setParameter("w20",     lineWidthW20);
+    source->setParameter("wm50",    lineWidthWm50);
+    source->setParameter("f_wm50",  meanFluxWm50);
+    source->setParameter("f_peak",  peakFlux);
+    source->setParameter("f_tot",   totalFlux);
     
-    source->setParameter("ELL_MAJ",  ellMaj);
-    source->setParameter("ELL_MIN",  ellMin);
-    source->setParameter("ELL_PA",   ellPA);
+    source->setParameter("ell_maj", ellMaj);
+    source->setParameter("ell_min", ellMin);
+    source->setParameter("ell_pa",  ellPA);
     
-    source->setParameter("RMS_CUBE", noiseSubCube);
+    source->setParameter("rms", noiseSubCube);
     
     if(doBusyFunction == true)
     {
-        source->setParameter("BF_FLAG",    busyFitSuccess);
-        source->setParameter("BF_CHI2",    busyFunctionChi2);
-        source->setParameter("BF_A",       busyFitParameters[0]);
-        source->setParameter("BF_B1",      busyFitParameters[1]);
-        source->setParameter("BF_B2",      busyFitParameters[2]);
-        source->setParameter("BF_C",       busyFitParameters[3]);
-        source->setParameter("BF_XE0",     busyFitParameters[4]);
-        source->setParameter("BF_XP0",     busyFitParameters[5]);
-        source->setParameter("BF_W",       busyFitParameters[6]);
-        source->setParameter("BF_Z",       busyFunctionCentroid);
-        source->setParameter("BF_W20",     busyFunctionW20);
-        source->setParameter("BF_W50",     busyFunctionW50);
-        source->setParameter("BF_F_PEAK",  busyFunctionFpeak);
-        source->setParameter("BF_F_INT",   busyFunctionFint);
+        source->setParameter("bf_flag",   busyFitSuccess);
+        source->setParameter("bf_chi2",   busyFunctionChi2);
+        source->setParameter("bf_a",      busyFitParameters[0]);
+        source->setParameter("bf_b1",     busyFitParameters[1]);
+        source->setParameter("bf_b2",     busyFitParameters[2]);
+        source->setParameter("bf_c",      busyFitParameters[3]);
+        source->setParameter("bf_xe",     busyFitParameters[4]);
+        source->setParameter("bf_xp",     busyFitParameters[5]);
+        source->setParameter("bf_w",      busyFitParameters[6]);
+        source->setParameter("bf_z",      busyFunctionCentroid);
+        source->setParameter("bf_w20",    busyFunctionW20);
+        source->setParameter("bf_w50",    busyFunctionW50);
+        source->setParameter("bf_f_peak", busyFunctionFpeak);
+        source->setParameter("bf_f_int",  busyFunctionFint);
     }
     
     return 0;

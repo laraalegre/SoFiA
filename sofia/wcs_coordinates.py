@@ -114,11 +114,11 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 				wcsin = Wcsprm(str(header))
 				wcsin.sptr('VOPT-F2W')
 				if header['naxis']==4:
-					objects = np.concatenate((objects,wcsin.p2s(np.concatenate((objects[:,catParNames.index('Xm'):catParNames.index('Xm')+3],np.zeros((objects.shape[0],1))),axis=1),0)['world'][:,:-1]),axis=1)
+					objects = np.concatenate((objects,wcsin.p2s(np.concatenate((objects[:,catParNames.index('x'):catParNames.index('x')+3],np.zeros((objects.shape[0],1))),axis=1),0)['world'][:,:-1]),axis=1)
 				else:
-					objects = np.concatenate((objects,wcsin.p2s(objects[:,catParNames.index('Xm'):catParNames.index('Xm')+3],0)['world']),axis=1)
+					objects = np.concatenate((objects,wcsin.p2s(objects[:,catParNames.index('x'):catParNames.index('x')+3],0)['world']),axis=1)
 				catParUnits = tuple(list(catParUnits) + [str(cc).replace(' ','') for cc in wcsin.cunit])
-				catParNames = tuple(list(catParNames) + [cc.split('--')[0]+'m' for cc in wcsin.ctype])
+				catParNames = tuple(list(catParNames) + [(cc.split('--')[0]).lower() for cc in wcsin.ctype])
 				catParFormt = tuple(list(catParFormt) + ['%15.7e', '%15.7e', '%15.7e'])
 
 			else:
@@ -138,11 +138,11 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 
 				wcsin = wcs.WCS(header)
 				if header['naxis']==4:
-					objects=np.concatenate((objects,wcsin.wcs_pix2world(np.concatenate((objects[:,catParNames.index('Xm'):catParNames.index('Xm')+3],np.zeros((objects.shape[0],1))),axis=1),0)[:,:-1]),axis=1)
+					objects=np.concatenate((objects,wcsin.wcs_pix2world(np.concatenate((objects[:,catParNames.index('x'):catParNames.index('x')+3],np.zeros((objects.shape[0],1))),axis=1),0)[:,:-1]),axis=1)
 				else:
-					objects=np.concatenate((objects,wcsin.wcs_pix2world(objects[:,catParNames.index('Xm'):catParNames.index('Xm')+3],0)),axis=1)
+					objects=np.concatenate((objects,wcsin.wcs_pix2world(objects[:,catParNames.index('x'):catParNames.index('x')+3],0)),axis=1)
 				catParUnits = tuple(list(catParUnits) + [str(cc).replace(' ','') for cc in wcsin.wcs.cunit])
-				catParNames = tuple(list(catParNames) + [cc.split('--')[0]+'m' for cc in wcsin.wcs.ctype])
+				catParNames = tuple(list(catParNames) + [(cc.split('--')[0]).lower() for cc in wcsin.wcs.ctype])
 				catParFormt = tuple(list(catParFormt) + ['%15.7e', '%15.7e', '%15.7e'])
 			if header['naxis']==4:
 				catParUnits = catParUnits[:-1]
