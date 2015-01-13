@@ -7,13 +7,13 @@ from functions import *
 
 # function to read in a cube and generate a cube with sigma levels 
 
-# this script is usefull to correct for variation in noise as function of frequency, noisy edges of cubes and channels with strong rfi
+# this script is useful to correct for variation in noise as function of frequency, noisy edges of cubes and channels with strong RFI
 
 def sigma_scale(cube,scaleX=False,scaleY=False,scaleZ=True,edgeX=0,edgeY=0,edgeZ=0,statistic="mad"):
         verbose = 0
         
         
-        # sigma scaling only works for 3D cubes, as it is mainyl designed to correct for differences in frequency
+        # sigma scaling only works for 3D cubes, as it is mainly designed to correct for differences in frequency
         
         
         
@@ -42,7 +42,7 @@ def sigma_scale(cube,scaleX=False,scaleY=False,scaleZ=True,edgeX=0,edgeY=0,edgeZ
         # check the dimensions of the cube (could be obtained from header information)
         dimensions = np.shape(cube)
 
-        # define the range over which stats are calculated
+        # define the range over which statistics are calculated
         z1 = edge_z1
         z2 = dimensions[0] - edge_z2
         y1 = edge_y1
