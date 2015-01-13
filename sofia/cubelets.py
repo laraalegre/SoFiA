@@ -42,20 +42,20 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot,compress):
       
 	# centers and bounding boxes 
 	#obj = np.array(objects[rr - 1])
-	Xc = obj[cathead=='Xm'][0]
-	Yc = obj[cathead=='Ym'][0]
-	Zc = obj[cathead=='Zm'][0]
-	Xmin = obj[cathead=='Xmin'][0]
-	Ymin = obj[cathead=='Ymin'][0]
-	Zmin = obj[cathead=='Zmin'][0]
-	Xmax = obj[cathead=='Xmax'][0]
-	Ymax = obj[cathead=='Ymax'][0]
-	Zmax = obj[cathead=='Zmax'][0]
+	Xc = obj[cathead=='x'][0]
+	Yc = obj[cathead=='y'][0]
+	Zc = obj[cathead=='z'][0]
+	Xmin = obj[cathead=='x_min'][0]
+	Ymin = obj[cathead=='y_min'][0]
+	Zmin = obj[cathead=='z_min'][0]
+	Xmax = obj[cathead=='x_max'][0]
+	Ymax = obj[cathead=='y_max'][0]
+	Zmax = obj[cathead=='z_max'][0]
 	
 	# if center of mass estimation is wrong replace by geometric center
-	if Xc < 0 or Xc > cubeDim[2]-1:  Xc = obj[cathead=='Xg'][0]
-	if Yc < 0 or Yc > cubeDim[1]-1:  Yc = obj[cathead=='Yg'][0]
-	if Zc < 0 or Zc > cubeDim[0]-1:  Zc = obj[cathead=='Zg'][0]
+	if Xc < 0 or Xc > cubeDim[2]-1:  Xc = obj[cathead=='x_geo'][0]
+	if Yc < 0 or Yc > cubeDim[1]-1:  Yc = obj[cathead=='y_geo'][0]
+	if Zc < 0 or Zc > cubeDim[0]-1:  Zc = obj[cathead=='z_geo'][0]
     
         cPixXNew = int(Xc)
         cPixYNew = int(Yc)
@@ -101,11 +101,11 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot,compress):
 	hdulist.close()
 	
 	# make PV diagram
-	if 'ELL_PA' in cathead:
+	if 'ell_pa' in cathead:
 		pv_sampling=10
 		pv_r=np.arange(-max(subcube.shape[1:]),max(subcube.shape[1:])-1+1./pv_sampling,1./pv_sampling)
-		pv_y=Yc-YminNew+pv_r*math.cos(float(obj[cathead=='ELL_PA'][0])/180*math.pi)
-		pv_x=Xc-XminNew-pv_r*math.sin(float(obj[cathead=='ELL_PA'][0])/180*math.pi)
+		pv_y=Yc-YminNew+pv_r*math.cos(float(obj[cathead=='ell_pa'][0])/180*math.pi)
+		pv_x=Xc-XminNew-pv_r*math.sin(float(obj[cathead=='ell_pa'][0])/180*math.pi)
 		pv_x,pv_y=pv_x[(pv_x>=0)*(pv_x<=subcube.shape[2]-1)],pv_y[(pv_x>=0)*(pv_x<=subcube.shape[2]-1)]
 		pv_x,pv_y=pv_x[(pv_y>=0)*(pv_y<=subcube.shape[1]-1)],pv_y[(pv_y>=0)*(pv_y<=subcube.shape[1]-1)]
 		pv_x.resize((1,pv_x.shape[0]))
