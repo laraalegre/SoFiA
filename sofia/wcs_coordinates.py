@@ -147,7 +147,7 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 			if header['naxis']==4:
 				catParUnits = catParUnits[:-1]
 				catParNames= catParNames[:-1]
-			print "WCS coordinates added to the catalog."
+			print "WCS coordinates added to the catalogue."
 				
 		except:
 			sys.stderr.write("WARNING: WCS conversion of parameters failed.\n")
