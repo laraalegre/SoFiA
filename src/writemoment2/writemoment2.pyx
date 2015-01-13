@@ -40,7 +40,7 @@ def writeMoment0(datacube,maskcube,filename,debug,header,compress):
     #if not 'cunit3' in header or header['cunit3'].lower()=='hz': dkms=abs(header['cdelt3'])/1.42040575177e+9*2.99792458e+5 # assuming Hz
     #elif header['cunit3'].lower()=='khz': dkms=abs(header['cdelt3'])/1.42040575177e+6*2.99792458e+5
     if not 'cunit3' in header or ('cunit3' in header and header['cunit3'].lower()=='hz'):
-      bunitExt = '.hz'
+      bunitExt = '.Hz'
     else: 
       bunitExt = '.'+header['cunit3']
     dkms=1. # no scaling, avoids crashing
@@ -79,7 +79,7 @@ def writeMoment1(datacube,maskcube,filename,debug,header,m0,compress):
     #if not 'cunit3' in header or header['cunit3'].lower()=='hz': m1*=2.99792458e+5/1.42040575177e+9 # assuming Hz
     #elif header['cunit3'].lower()=='khz': m1*=2.99792458e+5/1.42040575177e+6
     if not 'cunit3' in header or ('cunit3' in header and header['cunit3'].lower()=='hz'):
-      bunitExt = 'hz'
+      bunitExt = 'Hz'
     else: 
       bunitExt = header['cunit3']
     dkms=1. # no scaling, avoids crashing
