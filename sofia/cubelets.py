@@ -17,7 +17,7 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot,compress):
     else:
       outputDir = './objects/'
       
-    # chek if output directory exists and create it if not
+    # check if output directory exists and create it if not
     if os.path.exists(outputDir)==False:
       os.system('mkdir '+outputDir)
 
@@ -216,7 +216,7 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot,compress):
 	m2-=m1*m1
 	m2=np.sqrt(m2)
 	hdu = pyfits.PrimaryHDU(data=m2,header=header)
-        hdu.header['bunit']='km/s.km/s'
+        hdu.header['bunit']='km/s'
         hdu.header['datamin']=np.nanmin(m1)
         hdu.header['datamax']=np.nanmax(m1)
         del(hdu.header['crpix3'])
