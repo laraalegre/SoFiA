@@ -275,15 +275,22 @@ if Parameters['steps']['doMerge'] and NRdet:
 	relObjects = np.array(relObjects)
 	objects = relObjects
 
-	tmpCatParNames = list(catParNames)
-	tmpCatParNames[0] = 'id_old'
-	catParNames = tuple(['id'] + tmpCatParNames)
+	tmpCatParNames = list(catParNames);
+	#tmpCatParNames[0] = 'id_old'   WARNING: This is fatal, because it implicitly assumes that the first entry is 'id'!!!
+	#                                        New items must always be INSERTED at a particular position without ever 
+	#                                        OVERWRITING existing items in the list!
+	# Better:
+	tmpCatParNames.insert(1, "id_old");
+	catParNames = tuple(tmpCatParNames);
 
-	tmpCatParFormt = list(catParFormt)
-	catParFormt= tuple(['%10i'] + tmpCatParFormt)
-	tmpCatParUnits = list(catParUnits)
-	catParUnits= tuple(['-'] + tmpCatParUnits)
-
+	tmpCatParFormt = list(catParFormt);
+	tmpCatParFormt.insert(1, "%10i");
+	catParFormt= tuple(tmpCatParFormt);
+	
+	tmpCatParUnits = list(catParUnits);
+	tmpCatParUnits.insert(1, "-");
+	catParUnits= tuple(tmpCatParUnits);
+	
 	# in the mask file
 	mask *= -1
 	index = 1

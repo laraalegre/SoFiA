@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import sys
 from numpy import *
 import numpy as np
 
@@ -80,14 +81,16 @@ def make_ascii_from_array(
         header += header1[3:] + '\n' + header2[3:] + '\n' + header3[3:]
     else:
         for i in range(0, len(store_pars)):
-            index = list(cathead).index(store_pars[i])
-            header1 += store_pars[i].rjust(lenCathead[index])
-            header2 += catunits[index].rjust(lenCathead[index])
-            header3 += catNum[i].rjust(lenCathead[index])
+            if (store_pars[i] in cathead):
+                index = list(cathead).index(store_pars[i])
+                header1 += store_pars[i].rjust(lenCathead[index])
+                header2 += catunits[index].rjust(lenCathead[index])
+                header3 += catNum[index].rjust(lenCathead[index])
+            else:
+                sys.stderr.write("WARNING: Skipping undefined parameter \'" + str(store_pars[i]) + "\'.\n");
         header += header1[3:] + '\n' + header2[3:] + '\n' + header3[3:]
 
     if store_pars == ['*']:
-
         outputFormat = ''
         for i in range(0, len(catfmt)):
             outputFormat += catfmt[i] + ' '
@@ -98,14 +101,15 @@ def make_ascii_from_array(
 
         # copy all relevant parameters to a new array
         outputFormat = ''
-        for j in store_pars:
-            outputFormat += catfmt[list(cathead).index(j)] + ' '
+        for par in store_pars:
+            if (par in cathead): outputFormat += catfmt[list(cathead).index(par)] + ' '
         tmpObjects = []
         for obj in objects:
             tmpObjects.append([])
             for par in store_pars:
-                index = list(cathead).index(par)
-                tmpObjects[-1].append(obj[index])
+                if (par in cathead):
+                    index = list(cathead).index(par)
+                    tmpObjects[-1].append(obj[index])
         if compress:
 	  outname += '.gz'
         np.savetxt(outname, np.array(tmpObjects), fmt=outputFormat, header=header)

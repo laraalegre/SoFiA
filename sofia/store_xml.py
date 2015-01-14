@@ -88,11 +88,8 @@ def make_xml_from_array(
             for line in fileUcd:
                (key, value) = line.split();
                parList[key] = value;
-            #endfor
-        #endwith
     except:
         sys.stderr.write("WARNING: Failed to read UCD file.\n");
-    #endtryexcept
 
     # write the parameters in fields:
     if store_pars == ['*']:
@@ -104,12 +101,13 @@ def make_xml_from_array(
                 )
     else:
         for par in store_pars:
-            index = list(cathead).index(par)
-            if (cathead[index] in parList): ucdEntity = parList[cathead[index]];
-            else: ucdEntity = "";
-            field = SubElement(
-                table, 'FIELD', name=cathead[index], ucd=ucdEntity, datatype='float', unit=catunits[index]
-                )
+            if (par in cathead):
+                index = list(cathead).index(par)
+                if (cathead[index] in parList): ucdEntity = parList[cathead[index]];
+                else: ucdEntity = "";
+                field = SubElement(table, 'FIELD', name=cathead[index], ucd=ucdEntity, datatype='float', unit=catunits[index])
+            else:
+                sys.stderr.write("WARNING: Skipping undefined parameter \'" + str(par) + "\'.\n");
 
     # write the data....
     data = SubElement(table, 'DATA')
@@ -125,9 +123,10 @@ def make_xml_from_array(
         for obj in objects:
             tr = SubElement(tabledata, 'TR')
             for par in store_pars:
-                td = SubElement(tr, 'TD')
-                index = list(cathead).index(par)
-                td.text = (catfmt[index] % obj[index]).strip()
+                if (par in cathead):
+                    td = SubElement(tr, 'TD')
+                    index = list(cathead).index(par)
+                    td.text = (catfmt[index] % obj[index]).strip()
     
     if compress:
       import gzip

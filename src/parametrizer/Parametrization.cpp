@@ -626,7 +626,7 @@ int Parametrization::writeParameters()
     source->setParameter("wm50",    lineWidthWm50);
     source->setParameter("f_wm50",  meanFluxWm50);
     source->setParameter("f_peak",  peakFlux);
-    source->setParameter("f_tot",   totalFlux);
+    source->setParameter("f_int",   totalFlux);
     
     source->setParameter("ell_maj", ellMaj);
     source->setParameter("ell_min", ellMin);

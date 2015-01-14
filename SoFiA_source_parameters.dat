@@ -36,7 +36,7 @@ ell_maj    phys.angSize
 ell_min    phys.angSize
 ell_pa     pos.posAng
 f_peak     phot.flux.density;stat.max
-f_tot      phot.flux
+f_int      phot.flux
 f_wm50     phot.flux
 rms        instr.det.noise
 w20        spect.line.width
