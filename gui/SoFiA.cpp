@@ -267,7 +267,7 @@ int SoFiA::updateVariables()
     // Treat list of output parameters separately and check respective check boxes:
     QString listOutputPar;
     
-    if(tabOutputButtonParameterAll->isChecked())
+    if(not tabOutputGroupBox2->isChecked())
     {
         listOutputPar = QString("\'*\'");
     }
@@ -428,11 +428,11 @@ int SoFiA::setFields()
     
     if(listOutputPar.contains(QString("\'*\'")))
     {
-        tabOutputButtonParameterAll->setChecked(true);
+        tabOutputGroupBox2->setChecked(false);
     }
     else
     {
-        tabOutputButtonParameterAll->setChecked(false);
+        tabOutputGroupBox2->setChecked(true);
         
         tabOutputButtonParameter_id->setChecked(false);
         tabOutputButtonParameter_x_geo->setChecked(false);
@@ -756,7 +756,7 @@ void SoFiA::saveLogAs()
     }
     else
     {
-        QString messageText = tr("Failed to write to file %1. Pipeline messages not saved.").arg(fileName.section('/', -1));
+        QString messageText = tr("<p>Failed to write to file %1.</p><p>Pipeline messages not saved.</p>").arg(fileName.section('/', -1));
         QString statusText  = tr("Failed to write pipeline messages to %1.").arg(fileName.section('/', -1));
         showMessage(MESSAGE_ERROR, messageText, statusText);
     }
@@ -860,56 +860,56 @@ void SoFiA::updateFields()
     if(n < 0.0) tabInFilterFieldSmoothingSpectral->setText("0.0");
     
     // Disable output parameter buttons if "all" button is selected:
-    tabOutputButtonParameter_id->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_x_geo->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_y_geo->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_z_geo->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_x->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_y->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_z->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_x_min->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_x_max->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_y_min->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_y_max->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_z_min->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_z_max->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_n_pix->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_snr_min->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_snr_max->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_snr_sum->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_n_pos->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_n_neg->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_rel->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_bf_a->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_bf_b1->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_bf_b2->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_bf_c->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_bf_chi2->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_bf_flag->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_bf_f_int->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_bf_f_peak->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_bf_w->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_bf_w20->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_bf_w50->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_bf_xe->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_bf_xp->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_bf_z->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_ell_maj->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_ell_min->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_ell_pa->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_f_peak->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_f_int->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_f_wm50->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_rms->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_w20->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_w50->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_wm50->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_ra->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_dec->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_lon->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_lat->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_freq->setEnabled(!tabOutputButtonParameterAll->isChecked());
-    tabOutputButtonParameter_velo->setEnabled(!tabOutputButtonParameterAll->isChecked());
+    tabOutputButtonParameter_id->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_x_geo->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_y_geo->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_z_geo->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_x->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_y->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_z->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_x_min->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_x_max->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_y_min->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_y_max->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_z_min->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_z_max->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_n_pix->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_snr_min->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_snr_max->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_snr_sum->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_n_pos->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_n_neg->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_rel->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_bf_a->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_bf_b1->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_bf_b2->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_bf_c->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_bf_chi2->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_bf_flag->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_bf_f_int->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_bf_f_peak->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_bf_w->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_bf_w20->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_bf_w50->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_bf_xe->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_bf_xp->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_bf_z->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_ell_maj->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_ell_min->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_ell_pa->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_f_peak->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_f_int->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_f_wm50->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_rms->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_w20->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_w50->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_wm50->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_ra->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_dec->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_lon->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_lat->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_freq->setEnabled(tabOutputGroupBox2->isChecked());
+    tabOutputButtonParameter_velo->setEnabled(tabOutputGroupBox2->isChecked());
     
     // Set icons on vertical tabs:
     if((tabInputFieldData->text()).isEmpty())    toolBoxIP->setItemIcon(0, iconTaskReject);
@@ -945,6 +945,9 @@ void SoFiA::updateFields()
     
     if(tabOutputButtonASCII->isChecked() or tabOutputButtonXML->isChecked() or tabOutputButtonSQL->isChecked() or (tabOutputButtonFilteredCube->isEnabled() and tabOutputButtonFilteredCube->isChecked()) or tabOutputButtonMask->isChecked() or tabOutputButtonMom0->isChecked() or tabOutputButtonMom1->isChecked() or tabOutputButtonCubelets->isChecked()) toolBoxOP->setItemIcon(0, iconTaskComplete);
     else toolBoxOP->setItemIcon(0, iconTaskReject);
+    
+    if(tabOutputGroupBox2->isChecked())          toolBoxOP->setItemIcon(1, iconTaskComplete);
+    else                                         toolBoxOP->setItemIcon(1, iconTaskReject);
     
     updateActions();
     
@@ -1367,7 +1370,7 @@ void SoFiA::pipelineProcessError(QProcess::ProcessError error)
 	    outputText->insertPlainText(QString("Error: Failed to launch pipeline.\n"));
 	    outputText->verticalScrollBar()->setValue(outputText->verticalScrollBar()->maximum());
             
-            messageText = tr("<p>Failed to launch pipeline. Please ensure that the pipeline is installed on your computer and you have permission to execute it.</p>");
+            messageText = tr("<p>Failed to launch pipeline.</p><p>Please ensure that the pipeline is installed on your computer and you have permission to execute it.</p>");
             statusText = tr("Failed to launch pipeline.");
             showMessage(MESSAGE_ERROR, messageText, statusText);
             break;
@@ -2562,8 +2565,11 @@ void SoFiA::createInterface()
     tabOutputForm1->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
     tabOutputGroupBox1->setLayout(tabOutputForm1);
     
-    tabOutputGroupBox2 = new QGroupBox(tr("Parameter list"), toolBoxOP);
+    tabOutputGroupBox2 = new QGroupBox(tr("Enable"), toolBoxOP);
     tabOutputGroupBox2->setEnabled(true);
+    tabOutputGroupBox2->setCheckable(true);
+    tabOutputGroupBox2->setChecked(false);
+    connect(tabOutputGroupBox2, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     
     tabOutputForm2 = new QFormLayout;
     
@@ -2669,65 +2675,61 @@ void SoFiA::createInterface()
     tabOutputButtonParameter_freq      -> setObjectName("parameter_freq");
     tabOutputButtonParameter_velo      -> setObjectName("parameter_velo");
     
-    tabOutputButtonParameter_id        -> setChecked(false);
-    tabOutputButtonParameter_x_geo     -> setChecked(false);
-    tabOutputButtonParameter_y_geo     -> setChecked(false);
-    tabOutputButtonParameter_z_geo     -> setChecked(false);
-    tabOutputButtonParameter_x         -> setChecked(false);
-    tabOutputButtonParameter_y         -> setChecked(false);
-    tabOutputButtonParameter_z         -> setChecked(false);
-    tabOutputButtonParameter_x_min     -> setChecked(false);
-    tabOutputButtonParameter_x_max     -> setChecked(false);
-    tabOutputButtonParameter_y_min     -> setChecked(false);
-    tabOutputButtonParameter_y_max     -> setChecked(false);
-    tabOutputButtonParameter_z_min     -> setChecked(false);
-    tabOutputButtonParameter_z_max     -> setChecked(false);
-    tabOutputButtonParameter_n_pix     -> setChecked(false);
-    tabOutputButtonParameter_snr_min   -> setChecked(false);
-    tabOutputButtonParameter_snr_max   -> setChecked(false);
-    tabOutputButtonParameter_snr_sum   -> setChecked(false);
-    tabOutputButtonParameter_n_pos     -> setChecked(false);
-    tabOutputButtonParameter_n_neg     -> setChecked(false);
-    tabOutputButtonParameter_rel       -> setChecked(false);
-    tabOutputButtonParameter_bf_a      -> setChecked(false);
-    tabOutputButtonParameter_bf_b1     -> setChecked(false);
-    tabOutputButtonParameter_bf_b2     -> setChecked(false);
-    tabOutputButtonParameter_bf_c      -> setChecked(false);
-    tabOutputButtonParameter_bf_chi2   -> setChecked(false);
-    tabOutputButtonParameter_bf_flag   -> setChecked(false);
-    tabOutputButtonParameter_bf_f_int  -> setChecked(false);
-    tabOutputButtonParameter_bf_f_peak -> setChecked(false);
-    tabOutputButtonParameter_bf_w      -> setChecked(false);
-    tabOutputButtonParameter_bf_w20    -> setChecked(false);
-    tabOutputButtonParameter_bf_w50    -> setChecked(false);
-    tabOutputButtonParameter_bf_xe     -> setChecked(false);
-    tabOutputButtonParameter_bf_xp     -> setChecked(false);
-    tabOutputButtonParameter_bf_z      -> setChecked(false);
-    tabOutputButtonParameter_ell_maj   -> setChecked(false);
-    tabOutputButtonParameter_ell_min   -> setChecked(false);
-    tabOutputButtonParameter_ell_pa    -> setChecked(false);
-    tabOutputButtonParameter_f_peak    -> setChecked(false);
-    tabOutputButtonParameter_f_int     -> setChecked(false);
-    tabOutputButtonParameter_f_wm50    -> setChecked(false);
-    tabOutputButtonParameter_rms       -> setChecked(false);
-    tabOutputButtonParameter_w20       -> setChecked(false);
-    tabOutputButtonParameter_w50       -> setChecked(false);
-    tabOutputButtonParameter_wm50      -> setChecked(false);
-    tabOutputButtonParameter_ra        -> setChecked(false);
-    tabOutputButtonParameter_dec       -> setChecked(false);
-    tabOutputButtonParameter_lon       -> setChecked(false);
-    tabOutputButtonParameter_lat       -> setChecked(false);
-    tabOutputButtonParameter_freq      -> setChecked(false);
-    tabOutputButtonParameter_velo      -> setChecked(false);
-    
-    tabOutputButtonParameterAll = new QCheckBox(tr("All "), tabOutputGroupBox2);
-    tabOutputButtonParameterAll->setObjectName("parameterAll");
-    connect(tabOutputButtonParameterAll, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
+    tabOutputButtonParameter_id        -> setToolTip(tr("Unique identifier"));
+    tabOutputButtonParameter_x_geo     -> setToolTip(tr("X-coordinate of geometric centre"));
+    tabOutputButtonParameter_y_geo     -> setToolTip(tr("Y-coordinate of geometric centre"));
+    tabOutputButtonParameter_z_geo     -> setToolTip(tr("Z-coordinate of geometric centre"));
+    tabOutputButtonParameter_x         -> setToolTip(tr("X-coordinate of flux-weighted centre"));
+    tabOutputButtonParameter_y         -> setToolTip(tr("Y-coordinate of flux-weighted centre"));
+    tabOutputButtonParameter_z         -> setToolTip(tr("Z-coordinate of flux-weighted centre"));
+    tabOutputButtonParameter_x_min     -> setToolTip(tr("X-coordinate of lower boundary"));
+    tabOutputButtonParameter_x_max     -> setToolTip(tr("X-coordinate of upper boundary"));
+    tabOutputButtonParameter_y_min     -> setToolTip(tr("Y-coordinate of lower boundary"));
+    tabOutputButtonParameter_y_max     -> setToolTip(tr("Y-coordinate of upper boundary"));
+    tabOutputButtonParameter_z_min     -> setToolTip(tr("Z-coordinate of lower boundary"));
+    tabOutputButtonParameter_z_max     -> setToolTip(tr("Z-coordinate of upper boundary"));
+    tabOutputButtonParameter_n_pix     -> setToolTip(tr("Total number of spatial and spectral pixels"));
+    tabOutputButtonParameter_snr_min   -> setToolTip(tr("Signal-to-noise ratio of negative peak"));
+    tabOutputButtonParameter_snr_max   -> setToolTip(tr("Signal-to-noise ratio of positive peak"));
+    tabOutputButtonParameter_snr_sum   -> setToolTip(tr("Integrated signal-to-noise ratio"));
+    tabOutputButtonParameter_n_pos     -> setToolTip(tr("Number of spatial and spectral pixels with positive flux"));
+    tabOutputButtonParameter_n_neg     -> setToolTip(tr("Number of spatial and spectral pixels with negative flux"));
+    tabOutputButtonParameter_rel       -> setToolTip(tr("Reliability"));
+    tabOutputButtonParameter_bf_a      -> setToolTip(tr("Busy Function free parameter A"));
+    tabOutputButtonParameter_bf_b1     -> setToolTip(tr("Busy Function free parameter B<sub>1</sub>"));
+    tabOutputButtonParameter_bf_b2     -> setToolTip(tr("Busy Function free parameter B<sub>2</sub>"));
+    tabOutputButtonParameter_bf_c      -> setToolTip(tr("Busy Function free parameter C"));
+    tabOutputButtonParameter_bf_chi2   -> setToolTip(tr("Reduced &chi;<sup>2</sup> of Busy Function fit"));
+    tabOutputButtonParameter_bf_flag   -> setToolTip(tr("Success flag of Busy Function fit"));
+    tabOutputButtonParameter_bf_f_int  -> setToolTip(tr("Integrated flux derived from Busy Function fit"));
+    tabOutputButtonParameter_bf_f_peak -> setToolTip(tr("Peak flux density derived from Busy Function fit"));
+    tabOutputButtonParameter_bf_w      -> setToolTip(tr("Busy Function free parameter W"));
+    tabOutputButtonParameter_bf_w20    -> setToolTip(tr("Line width (w<sub>20</sub>) derived from Busy Function fit"));
+    tabOutputButtonParameter_bf_w50    -> setToolTip(tr("Line width (w<sub>50</sub>) derived from Busy Function fit"));
+    tabOutputButtonParameter_bf_xe     -> setToolTip(tr("Busy Function free parameter X<sub>e</sub>"));
+    tabOutputButtonParameter_bf_xp     -> setToolTip(tr("Busy Function free parameter X<sub>p</sub>"));
+    tabOutputButtonParameter_bf_z      -> setToolTip(tr("Line centroid derived from Busy Function fit"));
+    tabOutputButtonParameter_ell_maj   -> setToolTip(tr("Major axis of ellipse fitted to source"));
+    tabOutputButtonParameter_ell_min   -> setToolTip(tr("Minor axis of ellipse fitted to source"));
+    tabOutputButtonParameter_ell_pa    -> setToolTip(tr("Position angle of ellipse fitted to source"));
+    tabOutputButtonParameter_f_peak    -> setToolTip(tr("Peak flux density"));
+    tabOutputButtonParameter_f_int     -> setToolTip(tr("Integrated flux"));
+    tabOutputButtonParameter_f_wm50    -> setToolTip(tr("Integrated flux within w<sub>m50</sub> line width"));
+    tabOutputButtonParameter_rms       -> setToolTip(tr("RMS noise level"));
+    tabOutputButtonParameter_w20       -> setToolTip(tr("Line width (w<sub>20</sub>)"));
+    tabOutputButtonParameter_w50       -> setToolTip(tr("Line width (w<sub>50</sub>)"));
+    tabOutputButtonParameter_wm50      -> setToolTip(tr("Line width (w<sub>m50</sub>)"));
+    tabOutputButtonParameter_ra        -> setToolTip(tr("Right ascension of flux-weighted centre"));
+    tabOutputButtonParameter_dec       -> setToolTip(tr("Declination of flux-weighted centre"));
+    tabOutputButtonParameter_lon       -> setToolTip(tr("Longitude of flux-weighted centre"));
+    tabOutputButtonParameter_lat       -> setToolTip(tr("Latitude of flux-weighted centre"));
+    tabOutputButtonParameter_freq      -> setToolTip(tr("Frequency of flux-weighted centre"));
+    tabOutputButtonParameter_velo      -> setToolTip(tr("Radial velocity of flux-weighted centre"));
     
     tabOutputWidgetParameters = new QWidget(tabOutputGroupBox2);
     tabOutputLayoutParameters = new QGridLayout();
     tabOutputLayoutParameters->setContentsMargins(0, 0, 0, 0);
-    tabOutputLayoutParameters->setHorizontalSpacing(10);
+    tabOutputLayoutParameters->setHorizontalSpacing(20);
     tabOutputLayoutParameters->setVerticalSpacing(5);
     tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_id,        0, 0);
     tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_x,         1, 0);
@@ -2786,7 +2788,6 @@ void SoFiA::createInterface()
     tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_chi2,   5, 6);
     tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_flag,   6, 6);
     
-    tabOutputLayoutParameters->addWidget(tabOutputButtonParameterAll,        8, 6);
     tabOutputWidgetParameters->setLayout(tabOutputLayoutParameters);
     
     tabOutputForm2->addRow(tr(""), tabOutputWidgetParameters);
@@ -3167,13 +3168,22 @@ void SoFiA::closeEvent(QCloseEvent *event)
 {
     if(pipelineProcess->state() == QProcess::NotRunning)
     {
-        event->accept();
+        QMessageBox messageBox(this);
+        messageBox.setWindowTitle(tr("SoFiA - Quit"));
+        messageBox.setText(tr("<p>Do you wish to exit from SoFiA?</p><p>Note that any unsaved changes will be discarded.</p>"));
+        messageBox.setStandardButtons(QMessageBox::Cancel | QMessageBox::Ok);
+        messageBox.setDefaultButton(QMessageBox::Ok);
+        messageBox.setIcon(QMessageBox::Warning);
+        int choice = messageBox.exec();
+        
+        if(choice == QMessageBox::Ok) event->accept();
+        else event->ignore();
     }
     else
     {
         event->ignore();
         
-        QString messageText = tr("<p>The pipeline is still running!</p><p>If you wish to exit from SoFiA, you will need to either manually abort the pipeline or wait until the pipeline run has finished.</p>");
+        QString messageText = tr("<p>The pipeline is still running.</p><p>If you wish to exit from SoFiA, you will need to either manually abort the pipeline or wait until the pipeline run has finished.</p>");
         QString statusText = tr("Pipeline still running.");
         showMessage(MESSAGE_WARNING, messageText, statusText);
     }

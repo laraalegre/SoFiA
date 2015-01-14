@@ -470,7 +470,6 @@ private:
     QFormLayout  *tabOutputForm2;
     QGridLayout  *tabOutputLayoutParameters;
     QWidget      *tabOutputWidgetParameters;
-    QCheckBox    *tabOutputButtonParameterAll;
     
     QCheckBox    *tabOutputButtonParameter_id;
     QCheckBox    *tabOutputButtonParameter_x_geo;
