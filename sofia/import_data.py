@@ -67,7 +67,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 	else: 
 		print 'Loading cube: ' , inFile
 		subcube = []
-	f = pyfits.open(inFile,memmap=True)
+	f = pyfits.open(inFile,memmap=True,do_not_scale_image_data=True)
 	dict_Header = f[0].header
 
 	# check whether the number of dimensions is acceptable and read data accordingly
