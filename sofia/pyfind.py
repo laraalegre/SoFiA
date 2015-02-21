@@ -161,6 +161,7 @@ def SCfinder_mem(cube,header,t0,kernels=[[0,0,0,'b'],],threshold=3.5,sizeFilter=
     found_nan=np.isnan(cube).sum()
     # Measure noise in original cube
     rms=GetRMS(cube,rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
+    rms_sample=GetRMS(cube,rmsMode=rmsMode,zoomx=10,zoomy=10,zoomz=10,verbose=verbose)
     # Loop over all kernels
     for jj in kernels:
     	[kx,ky,kz,kt]=jj
@@ -185,7 +186,8 @@ def SCfinder_mem(cube,header,t0,kernels=[[0,0,0,'b'],],threshold=3.5,sizeFilter=
             if kt=='b': smoothedcube=nd.filters.uniform_filter1d(smoothedcube,kz,axis=0,mode=edgeMode)
             elif kt=='g': smoothedcube=nd.filters.gaussian_filter1d(smoothedcube,kz/2.355,axis=0,mode=edgeMode)
         if found_nan: smoothedcube[np.isnan(cube)]=np.nan
-        smoothedrms=GetRMS(smoothedcube,rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
+        smoothedrms=GetRMS(smoothedcube,rmsMode=rmsMode,zoomx=10,zoomy=10,zoomz=10,verbose=verbose)/rms_sample*rms
+        #smoothedrms=GetRMS(smoothedcube,rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
         if found_nan: smoothedcube=np.nan_to_num(smoothedcube)
         msk=msk+(smoothedcube>=threshold*smoothedrms)+(smoothedcube<=-threshold*smoothedrms)
         del(smoothedcube)
