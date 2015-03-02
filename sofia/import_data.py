@@ -40,13 +40,20 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			elif header['naxis']==2: subcube=wcsin.wcs_world2pix(array([[subcube[0]-subcube[2]/corrfact,subcube[1]-subcube[3]],[subcube[0]+subcube[2]/corrfact,subcube[1]+subcube[3]]]),0)
 			subcube=ravel(subcube,order='F')
 			# make sure min pix coord is < max pix coord for all axes
+			# this operation is meaningful because wcs_world2pix returns negative pixel coordinates only for pixels located before an axis' start
+			# (i.e., negative pixel coordinates should not be interpreted as counting backward from an axis' end)
 			if subcube[0]>subcube[1]: subcube[0],subcube[1]=subcube[1],subcube[0]
 			if subcube[2]>subcube[3]: subcube[2],subcube[3]=subcube[3],subcube[2]
 			if len(subcube)==6:
 				if subcube[4]>subcube[5]: subcube[4],subcube[5]=subcube[5],subcube[4]
-			# make sure to be within the cube boundaries
-			for ss in range(min(3,header['naxis'])): subcube[2*ss]=max(0,floor(subcube[2*ss]))
-			for ss in range(min(3,header['naxis'])): subcube[1+2*ss]=min(header['naxis%i'%(ss+1)],ceil(subcube[1+2*ss]))
+			# constrain subcube to be within the cube boundaries; if this is not possible then exit
+			for ss in range(min(3,header['naxis'])):
+				if ceil(subcube[1+2*ss])<0 or floor(subcube[2*ss])>=header['naxis%i'%(ss+1)]:
+					sys.stderr.write("ERROR: The requested subcube is outside the input cube along axis %i \n"%(ss))
+					raise SystemExit(1)
+				else:
+					subcube[2*ss]=max(0,floor(subcube[2*ss]))
+					subcube[1+2*ss]=min(header['naxis%i'%(ss+1)]-1,ceil(subcube[1+2*ss]))+1
 			subcube=list(subcube.astype(int))
 		elif (len(subcube)==6 or len(subcube)==4) and subcubeMode=='pixel':
 			# make sure pixel coordinates are integers
