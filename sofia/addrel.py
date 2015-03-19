@@ -69,7 +69,11 @@ class gaussian_kde_set_covariance(stats.gaussian_kde):
 		self._norm_factor = np.sqrt(np.linalg.det(2*np.pi*self.covariance)) * self.n
 
 def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],projections=[[2,0],[2,1],[0,1]],kernel=[0.15,0.05,0.1],doscatter=1,docontour=1,check_kernel=0,dostats=0,saverel=1,threshold=0.99,Nmin=0,dV=0.2,fMin=0,verb=0,makePlot=False):
-	if makePlot: import matplotlib.pyplot as plt
+	if makePlot:
+		import matplotlib
+		# this following line is used for running SoFiA remotely
+		matplotlib.use('Agg')
+		import matplotlib.pyplot as plt
 
 	########################################
 	### BUILD ARRAY OF SOURCE PARAMETERS ###
