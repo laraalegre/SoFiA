@@ -3,41 +3,6 @@
 def GaussianNoise(F,N0,s0):
     return N0*np.exp(-F**2/2/s0**2)
 
-#def GetRMS(cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=10000,nrbins=10000,verbose=0,min_hist_peak=0.05):
-#	sh=cube.shape
-#	x0,x1=int(mt.ceil((1-1./zoomx)*sh[2]/2)),int(mt.floor((1+1./zoomx)*sh[2]/2))+1
-#	y0,y1=int(mt.ceil((1-1./zoomy)*sh[1]/2)),int(mt.floor((1+1./zoomy)*sh[1]/2))+1
-#	z0,z1=int(mt.ceil((1-1./zoomz)*sh[0]/2)),int(mt.floor((1+1./zoomz)*sh[0]/2))+1
-#	if verbose: print '    Estimating rms on subcube (x,y,z zoom = %.0f,%.0f,%.0f) ...'%(zoomx,zoomy,zoomz)
-#	if verbose: print '    ... Subcube shape is',cube[z0:z1,y0:y1,x0:x1].shape,'...'
-#	sys.stdout.flush()
-#
-#	if rmsMode=='negative':
-#		cubemin=np.nanmin(cube)
-#		bins=np.arange(cubemin,abs(cubemin)/nrbins-1e-12,abs(cubemin)/nrbins)
-#		fluxval=(bins[:-1]+bins[1:])/2
-#		rmshisto=np.histogram(cube[z0:z1,y0:y1,x0:x1],bins=bins)[0]
-#
-#		nrsummedbins=0
-#		while rmshisto[-nrsummedbins-1:].sum()<min_hist_peak*rmshisto.sum():
-#			nrsummedbins+=1
-#		if nrsummedbins:
-#			if verbose: print '    ... adjusting bin size to get a fraction of voxels in central bin >=',min_hist_peak
-#			sys.stdout.flush()
-#			nrbins/=nrsummedbins
-#			bins=np.arange(cubemin,abs(cubemin)/nrbins-1e-12,abs(cubemin)/nrbins)
-#			fluxval=(bins[:-1]+bins[1:])/2
-#			rmshisto=np.histogram(cube[z0:z1,y0:y1,x0:x1],bins=bins)[0]
-#
-#		rms=abs(optimize.curve_fit(GaussianNoise,fluxval,rmshisto,p0=[rmshisto.max(),-fluxval[rmshisto<rmshisto.max()/2].max()*2/2.355])[0][1])
-#	elif rmsMode=='mad':
-#		rms=scipy.stats.nanmedian(abs(cube[z0:z1,y0:y1,x0:x1]-scipy.stats.nanmedian(cube[z0:z1,y0:y1,x0:x1],axis=None)),axis=None)/0.6745
-#	elif rmsMode=='std':
-#		rms=scipy.stats.nanstd(cube[z0:z1,y0:y1,x0:x1],axis=None)
-#	if verbose: print '    ... %s rms = %.2e (data units)'%(rmsMode,rms)
-#	sys.stdout.flush()
-#	return rms
-
 def SizeFilter(mskt,sfx,sfy,sfz,sbx,sby,sbz,zt,sizeFilter,edgeMode='constant',verbose=0):
 	mskt=nd.filters.gaussian_filter(mskt,[0,mt.sqrt(sfy**2+sby**2)/2.355,mt.sqrt(sfx**2+sbx**2)/2.355],mode=edgeMode)
 	if zt=='b': mskt=nd.filters.uniform_filter1d(mskt,max(sbz,sfz),axis=0,mode=edgeMode)
@@ -159,8 +124,13 @@ def SCfinder_mem(cube,header,t0,kernels=[[0,0,0,'b'],],threshold=3.5,sizeFilter=
     # Create binary mask array
     msk=np.zeros(cube.shape,'bool')
     found_nan=np.isnan(cube).sum()
-    # Measure noise in original cube
-    rms=GetRMS(cube,rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
+    # Set dn x dn x dn box boundaries where to measure noise (value of dn set in next line)
+    dn=100
+    n0=max(0,int(float(cube.shape[0]-dn)/2))
+    n1=max(0,int(float(cube.shape[1]-dn)/2))
+    n2=max(0,int(float(cube.shape[2]-dn)/2))
+    # Measure noise in original (sub-) cube
+    rms=GetRMS(cube[n0:cube.shape[0]-n0,n1:cube.shape[1]-n1,n2:cube.shape[2]-n2],rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
     #rms_sample=GetRMS(cube,rmsMode=rmsMode,zoomx=10,zoomy=10,zoomz=10,verbose=verbose)
     # Loop over all kernels
     for jj in kernels:
@@ -187,7 +157,7 @@ def SCfinder_mem(cube,header,t0,kernels=[[0,0,0,'b'],],threshold=3.5,sizeFilter=
             elif kt=='g': smoothedcube=nd.filters.gaussian_filter1d(smoothedcube,kz/2.355,axis=0,mode=edgeMode)
         if found_nan: smoothedcube[np.isnan(cube)]=np.nan
         #smoothedrms=GetRMS(smoothedcube,rmsMode=rmsMode,zoomx=10,zoomy=10,zoomz=10,verbose=verbose)/rms_sample*rms
-        smoothedrms=GetRMS(smoothedcube,rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
+        smoothedrms=GetRMS(smoothedcube[n0:cube.shape[0]-n0,n1:cube.shape[1]-n1,n2:cube.shape[2]-n2],rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
         if found_nan: smoothedcube=np.nan_to_num(smoothedcube)
         msk=msk+(smoothedcube>=threshold*smoothedrms)+(smoothedcube<=-threshold*smoothedrms)
         del(smoothedcube)
