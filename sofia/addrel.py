@@ -335,11 +335,11 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 			Np.resize(pshape)
 			Nn.resize(pshape)
 			plt.subplot(nr,nc,n_p)
-			plt.contour(x1,x2,Np,origin='lower',colors='b',levels=levs)
-			plt.contour(x1,x2,Nn,origin='lower',colors='r',levels=levs)
+			plt.contour(x1,x2,Np,origin='lower',colors='b',levels=levs,zorder=2)
+			plt.contour(x1,x2,Nn,origin='lower',colors='r',levels=levs,zorder=1)
 
-			if reliable.sum(): plt.scatter(pars[p1,pos][reliable],pars[p2,pos][reliable],marker='o',s=10,edgecolor='k')
-			if (pseudoreliable*(reliable==False)).sum(): plt.scatter(pars[p1,pos][pseudoreliable*(reliable==False)],pars[p2,pos][pseudoreliable*(reliable==False)],marker='x',s=40,edgecolor='0.5')
+			if reliable.sum(): plt.scatter(pars[p1,pos][reliable],pars[p2,pos][reliable],marker='o',s=10,edgecolor='k',facecolor='k',zorder=4)
+			if (pseudoreliable*(reliable==False)).sum(): plt.scatter(pars[p1,pos][pseudoreliable*(reliable==False)],pars[p2,pos][pseudoreliable*(reliable==False)],marker='x',s=40,edgecolor='0.5',zorder=3)
 
 			plt.xlim(lims[p1][0],lims[p1][1])
 			plt.ylim(lims[p2][0],lims[p2][1])
