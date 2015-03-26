@@ -4,6 +4,7 @@
 import numpy as np
 import scipy as sp
 from functions import *
+import sys
 
 # function to read in a cube and generate a cube with sigma levels 
 
@@ -30,6 +31,7 @@ def sigma_scale(cube,scaleX=False,scaleY=False,scaleZ=True,edgeX=0,edgeY=0,edgeZ
                 print 'Apply Standard Deviation (STD) statistic'
         if statistic == 'negative':
                 print 'Apply Negatice statistic'
+        sys.stdout.flush()
         
         
         edge_x1 = edgeX # the edge of the cube which is trimmed off when calculating the statistics
@@ -79,4 +81,5 @@ def sigma_scale(cube,scaleX=False,scaleY=False,scaleZ=True,edgeX=0,edgeY=0,edgeZ
         
         print 'Sigma cube is created'
         print
+        sys.stdout.flush()
         return cube
