@@ -396,29 +396,29 @@ if Parameters['steps']['doWriteMask'] and NRdet:
 
 
 
-# -------------------
-# ---- MAKE MOM0 ----
-# -------------------
+# ----------------------------
+# ---- MAKE MOM0 and MOM1 ----
+# ----------------------------
 
 if Parameters['steps']['doMom0'] or Parameters['steps']['doMom1']:
 	print "\n--- %.3f seconds since start"%(time()-t0)
-	print "\n--- SoFiA: Writing moment-0 map ---"
+	print "\n--- SoFiA: Writing moment maps ---"
 	sys.stdout.flush()
 	debug = 0
-	mom0_Image = writemoment2.writeMoment0(np_Cube, mask, outroot, debug, dict_Header,Parameters['writeCat']['compress'])
+	writemoment2.writeMoments(np_Cube, mask, outroot, debug, dict_Header,Parameters['writeCat']['compress'],Parameters['steps']['doMom0'],Parameters['steps']['doMom1'])
 
 
 
 # --------------------
 # ---- MAKE MOM1  ----
 # --------------------
-
-if Parameters['steps']['doMom1'] and NRdet:
-	print "\n--- %.3f seconds since start"%(time()-t0)
-	print "\n--- SoFiA: Writing moment-1 map ---"
-	sys.stdout.flush()
-	debug = 0
-	writemoment2.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image,Parameters['writeCat']['compress'])
+#
+#if Parameters['steps']['doMom1'] and NRdet:
+#	print "\n--- %.3f seconds since start"%(time()-t0)
+#	print "\n--- SoFiA: Writing moment-1 map ---"
+#	sys.stdout.flush()
+#	debug = 0
+#	writemoment2.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image,Parameters['writeCat']['compress'])
 
 
 
