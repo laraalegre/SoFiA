@@ -185,8 +185,8 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
     if(subRegionZ2 >= dataCube->getSize(2)) subRegionZ2 = dataCube->getSize(2) - 1L;
     
     // Extract all pixels belonging to the source and calculate local noise:
-    size_t counter = 0;
     noiseSubCube   = 0.0;
+	std::vector<double> rmsMad;
     
     for(long x = subRegionX1; x <= subRegionX2; x++)
     {
@@ -205,14 +205,14 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
                     dataPoint.y = y;
                     dataPoint.z = z;
                     dataPoint.value = tmpFlux;
-                    // ### WARNING: A std::bad_alloc exception occurs later on when dataPoint.value is set to a constant of 1.0! No idea why...
+                    // WARNING: A std::bad_alloc exception occurs later on when dataPoint.value is set to a constant of 1.0! No idea why...
+					// NOTE:    This may not be the case any longer according to a quick test on 2 April 2015.
                     
                     data.push_back(dataPoint);
                 }
-                else if(maskCube->getData(x, y, z) == 0 and !std::isnan(tmpFlux))
+                else if(maskCube->getData(x, y, z) == 0 and not std::isnan(tmpFlux))
                 {
-                    noiseSubCube += static_cast<double>(tmpFlux * tmpFlux);
-                    counter++;
+					rmsMad.push_back(static_cast<double>(tmpFlux));
                 }
             }
         }
@@ -224,13 +224,19 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
         return 1;
     }
     
-    if(counter == 0)
+    if(rmsMad.size() == 0)
     {
         std::cerr << "Warning (Parametrization): Noise calculation failed for source " << source->getSourceID() << "." << std::endl;
     }
     else
     {
-        noiseSubCube = sqrt(noiseSubCube / static_cast<double>(counter));
+		// Calculate the rms via the median absolute deviation (MAD):
+		double m = median(rmsMad);
+		for(size_t i = 0; i < rmsMad.size(); i++) rmsMad[i] = fabs(rmsMad[i] - m);
+		noiseSubCube = 1.4826 * median(rmsMad);
+		// NOTE: The factor of 1.4826 above is the approximate theoretical conversion factor
+		//       between the MAD and the standard deviation under the assumption that the 
+		//       data samples follow a normal distribution.
     }
     
     return 0;
@@ -632,7 +638,7 @@ int Parametrization::writeParameters()
     source->setParameter("ell_min", ellMin);
     source->setParameter("ell_pa",  ellPA);
     
-    source->setParameter("rms", noiseSubCube);
+    source->setParameter("rms",     noiseSubCube);
     
     if(doBusyFunction == true)
     {

@@ -209,3 +209,30 @@ long mathRound(double value)
 {
     return static_cast<long>(value + 0.5);
 }
+
+
+
+// Calculate median of vector of double values:
+
+double median(std::vector<double> &values)
+{
+	size_t sampleSize = values.size();
+	
+	switch(sampleSize)
+	{
+		case 0:
+			return std::numeric_limits<double>::quiet_NaN();
+			break;
+		case 1:
+			return values[0];
+			break;
+		case 2:
+			return (values[0] + values[1]) / 2.0;
+			break;
+		default:
+			// WARNING: The following will irrevocably change the order of vector elements!
+			std::sort(values.begin(), values.end());
+			if(sampleSize % 2 == 1) return values[sampleSize / 2];
+			else return (values[sampleSize / 2 - 1] + values[sampleSize / 2]) / 2.0;
+	}
+}

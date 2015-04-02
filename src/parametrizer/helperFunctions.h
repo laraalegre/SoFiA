@@ -14,6 +14,7 @@
 #include <limits>
 #include <iomanip>
 #include <typeinfo>
+#include <algorithm>
 
 
 // String functions:
@@ -39,6 +40,8 @@ double mathAbs(double value);
 
 long mathRound(float value);
 long mathRound(double value);
+
+double median(std::vector<double> &values);
 
 
 
