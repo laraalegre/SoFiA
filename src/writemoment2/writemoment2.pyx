@@ -57,7 +57,7 @@ def writeMoments(datacube,maskcube,filename,debug,header,compress,domom0,domom1)
   if domom0:
     print 'Writing moment-0' # in units of header['bunit']*km/s
     if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
-      if not 'cunit3' in header: dkms=abs(header['cdelt3'])/1e+3 # assuming m/s
+      if not 'cunit3' in header or header['cunit3'].lower()=='m/s': dkms=abs(header['cdelt3'])/1e+3 # assuming m/s
       elif header['cunit3'].lower()=='km/s': dkms=abs(header['cdelt3'])
       bunitExt = '.km/s'
     elif 'freq' in header['ctype3'].lower():
