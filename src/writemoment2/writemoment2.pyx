@@ -34,7 +34,7 @@ def regridMaskedChannels(datacube,header):
     pixscale=(1-header['crval3']/2.99792458e+8)/(1-z/2.99792458e+8)
   else:
     sys.stderr.write("WARNING: Cannot convert axis3 coordinates to frequency. Will ignore the effect of CELLSCAL = 1/F.\n")
-    pixscale=1.
+    pixscale=np.ones((header['naxis3']))
   x0,y0=header['crpix1']-1,header['crpix2']-1
   xs=np.arange(datacube.shape[2],dtype=float)-x0
   ys=np.arange(datacube.shape[1],dtype=float)-y0
