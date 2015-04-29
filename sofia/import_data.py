@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 # import default python libraries
-import astropy.io.fits as pyfits
+import astropy.io.fits as astropy
 import os
 import sys
 from numpy import *
@@ -26,7 +26,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			if found:
 				from astropy import wcs
 				from astropy.io import fits
-				hdulist = fits.open(inFile)
+				hdulist = fits.open(inFile, memmap=False)
 				header = hdulist[0].header
 				hdulist.close()
 	
@@ -74,7 +74,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 	else: 
 		print 'Loading cube: ' , inFile
 		subcube = []
-	f = pyfits.open(inFile,memmap=True,do_not_scale_image_data=True)
+	f = astropy.open(inFile,memmap=False,do_not_scale_image_data=True)
 	dict_Header = f[0].header
 
 	# check whether the number of dimensions is acceptable and read data accordingly
@@ -159,7 +159,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			# load the weights cube and convert it into a 3D array to be applied to the data 3D array
 			# (note that the data has been converted into a 3D array above)
 			print 'Loading and applying weights cube:', weightsFile
-			f=pyfits.open(weightsFile)
+			f=astropy.open(weightsFile, memmap=False)
 			dict_Weights_header=f[0].header
 			if dict_Weights_header['NAXIS']==3:
 				if len(subcube)==6: np_Cube*=f[0].data[subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
@@ -250,7 +250,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 
 		else:
 			print 'Loading mask cube: ' , maskFile
-			g = pyfits.open(maskFile)
+			g = astropy.open(maskFile,memmap=False)
 			mask = g[0].data
 			mask[mask>0]=1
 			g.close()
