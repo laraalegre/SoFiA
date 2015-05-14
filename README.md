@@ -92,7 +92,7 @@ the GCC) as well as the development packages (dev) of Qt and the GNU
 Scientific Library. Please also see the trouble shooting page on the SoFiA 
 wiki for more information on a few commonly encountered problems:
 
-* https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Trouble-Shooting
+* https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Troubleshooting
 
 
 Documentation
