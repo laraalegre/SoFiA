@@ -67,6 +67,7 @@ private:
     double meanFluxWm50;
     double peakFlux;
     double totalFlux;
+	double intSNR;
     double ellMaj;
     double ellMin;
     double ellPA;

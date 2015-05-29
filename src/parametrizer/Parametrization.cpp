@@ -23,6 +23,7 @@ Parametrization::Parametrization()
     meanFluxWm50         = 0.0;
     peakFlux             = 0.0;
     totalFlux            = 0.0;
+	intSNR               = 0.0;
     busyFitSuccess       = 0;
     busyFunctionChi2     = 0.0;
     busyFunctionCentroid = 0.0;
@@ -279,7 +280,7 @@ int Parametrization::measureCentroid()
 
 
 
-// Measure peak flux and integrated flux:
+// Measure peak flux, integrated flux and integrated S/N:
 
 int Parametrization::measureFlux()
 {
@@ -298,6 +299,13 @@ int Parametrization::measureFlux()
         totalFlux  += static_cast<double>(data[i].value);
         if(peakFlux < static_cast<double>(data[i].value)) peakFlux = static_cast<double>(data[i].value);
     }
+    
+    // Calculate integrated SNR:
+    intSNR = totalFlux / (noiseSubCube * sqrt(static_cast<double>(data.size())));
+	// WARNING The integrated SNR would need to be divided by the beam solid angle,
+	// WARNING but this will need to be done outside this module as no header
+	// WARNING information known at this stage. The current value would only be
+	// WARNING correct if the noise in adjacent pixels were uncorrelated.
     
     return 0;
 }
@@ -632,7 +640,8 @@ int Parametrization::writeParameters()
     source->setParameter("wm50",    lineWidthWm50);
     source->setParameter("f_wm50",  meanFluxWm50);
     source->setParameter("f_peak",  peakFlux);
-    source->setParameter("f_int",   totalFlux);
+	source->setParameter("f_int",   totalFlux);
+	source->setParameter("snr_int", intSNR);
     
     source->setParameter("ell_maj", ellMaj);
     source->setParameter("ell_min", ellMin);
