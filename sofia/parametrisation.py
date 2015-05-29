@@ -174,6 +174,7 @@ def parametrise(
         'bf_f_int': dunits,
         'rms': dunits,
         'f_peak': dunits,
+        'snr_int': '-'
         }
     catformt = list(catformt)
     catparunits = list(catparunits)

@@ -38,6 +38,7 @@ ell_pa     pos.posAng
 f_peak     phot.flux.density;stat.max
 f_int      phot.flux
 f_wm50     phot.flux
+snr_int    stat.snr
 rms        instr.det.noise
 w20        spect.line.width
 w50        spect.line.width
