@@ -115,6 +115,9 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "merge.minSizeY": "int", \
                  "merge.minSizeZ": "int", \
                  "reliability.parSpace": "array", \
+                 "reliability.autoKernel": "bool", \
+                 "reliability.negPerBin": "float", \
+                 "reliability.skellamTol": "float", \
                  "reliability.kernel": "array", \
                  "reliability.fMin": "float", \
                  "reliability.threshold": "float", \
