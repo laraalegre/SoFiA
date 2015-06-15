@@ -16,7 +16,7 @@ class gaussian_kde_set_covariance(stats.gaussian_kde):
 		self.inv_cov = np.linalg.inv(self.covariance)
 		self._norm_factor = np.sqrt(np.linalg.det(2*np.pi*self.covariance)) * self.n
 
-def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],projections=[[2,0],[2,1],[0,1]],autoKernel=True,neg_per_bin=5,skellam_tol=-0.2,kernel=[0.15,0.05,0.1],doscatter=1,docontour=1,doskellam=1,dostats=0,saverel=1,threshold=0.99,Nmin=0,dV=0.2,fMin=0,verb=0,makePlot=False):
+def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],projections=[[2,0],[2,1],[0,1]],autoKernel=True,negPerBin=5,skellamTol=-0.2,kernel=[0.15,0.05,0.1],doscatter=1,docontour=1,doskellam=1,dostats=0,saverel=1,threshold=0.99,Nmin=0,dV=0.2,fMin=0,verb=0,makePlot=False):
 
 	# matplotlib stuff
 	if makePlot:
@@ -99,9 +99,9 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 		# If autoKernel is True determine the kernel along each axis from the range covered
 		# by the negative sources along that axis.
 		# The kernel size along each axis is such that the number of sources per kernel width
-		# (sigma) is equal to 'neg_per_bin'.
+		# (sigma) is equal to 'negPerBin'.
 		# If autoKernel is False, use the kernel given by 'kernel' parameter (argument of EstimateRel).
-		if autoKernel: kernel=(pars[:,neg].max(axis=1)-pars[:,neg].min(axis=1))/(float(neg.sum())/neg_per_bin)
+		if autoKernel: kernel=(pars[:,neg].max(axis=1)-pars[:,neg].min(axis=1))/(float(neg.sum())/negPerBin)
 		else: kernel,grow_kernel=np.array(kernel),0
 		
 		print '# Trying kernel',kernel
@@ -142,14 +142,15 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 				sys.stderr.write("ERROR: maximum reliability larger than 1 -- something is wrong.\n")
 				sys.exit(1)
 
-			# calculate the reliability at the location of negative sources
+			# calculate the number of positive and negative sources at the location of negative sources
 			nNps=Np(pars[:,neg])*Npos
 			nNns=Nn(pars[:,neg])*Nneg
-			nRs=(nNps-nNns)/nNps
 
 			# I have verified that the integral NpI is equal to 0.85*Nps for a variety of
 			# reasonable kernels, so I use 0.85*Nps as a proxy for NpI (same for Nns)
 			if verb:
+				# calculate the reliability at the location of negative sources
+				nRs=(nNps-nNns)/nNps
 				# calculate formal uncertainty of R at the location of positive and negative sources
 				dRs=np.sqrt(Nps*Nns*(Nps+Nns))/Nps**2/np.sqrt(dV*0.85)
 				dnRs=np.sqrt(nNps*nNns*(nNps+nNns))/nNps**2/np.sqrt(dV*0.85)
@@ -195,8 +196,8 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 
 		else: grow_kernel=0
 
-		if delt[delt.shape[0]/2]>skellam_tol: grow_kernel=0
-		else: neg_per_bin+=1
+		if delt[delt.shape[0]/2]>skellamTol: grow_kernel=0
+		else: negPerBin+=1
 		
 	print '# Found good kernel'
 	
@@ -264,6 +265,10 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 			parsp=np.concatenate((pars[p1:p1+1],pars[p2:p2+1]),axis=0)
 
 			# derive Np and Nn density fields on the current projection
+			# Np and Nn calculated with *authomatic* covariance
+			#Np=stats.kde.gaussian_kde(parsp[:,pos])
+			#Nn=stats.kde.gaussian_kde(parsp[:,neg])
+			# Np and Nn calculated with *input* covariance
 			setcov=np.array(((kernel[p1]**2,0.0),(0.0,kernel[p2]**2)))
 			Np=gaussian_kde_set_covariance(parsp[:,pos],setcov)
 			Nn=gaussian_kde_set_covariance(parsp[:,neg],setcov)
