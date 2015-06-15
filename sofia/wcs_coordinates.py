@@ -107,7 +107,7 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 
 			# Fix headers where "per second" is written "/S" instead of "/s"
 			# (assuming they mean "per second" and not "per Siemens").
-			if '/S' in header['cunit3']:
+			if 'cunit3' in header and '/S' in header['cunit3']:
 				print 'WARNING: Converting "/S" to "/s" in CUNIT3.'
 				header['cunit3']=header['cunit3'].replace('/S','/s')
 			
