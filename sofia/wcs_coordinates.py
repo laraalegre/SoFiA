@@ -104,6 +104,12 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 			hdulist = fits.open(Parameters['import']['inFile'])
 			header = hdulist[0].header
 			hdulist.close()
+
+			# Fix headers where "per second" is written "/S" instead of "/s"
+			# (assuming they mean "per second" and not "per Siemens").
+			if '/S' in header['cunit3']:
+				print 'WARNING: Converting "/S" to "/s" in CUNIT3.'
+				header['cunit3']=header['cunit3'].replace('/S','/s')
 			
 			## check if there is a Nmap/GIPSY FITS header keyword value present
 			gipsyKey = [k for k in ['FREQ-OHEL','FREQ-OLSR','FREQ-RHEL','FREQ-RLSR'] if (k in [header[key] for key in header if ('CTYPE' in key)])]
@@ -138,7 +144,7 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 
 				wcsin = wcs.WCS(header)
 				xyz=objects[:,catParNames.index('x'):catParNames.index('x')+3].astype(float)
-				if header['cellscal'] == '1/F':
+				if 'cellscal' in header and header['cellscal'] == '1/F':
 					print 'WARNING: CELLSCAL keyword with value 1/F found.'
 					print 'Will take into account varying pixel scale when calculating wcs coordinates.'
 					x0,y0=header['crpix1']-1,header['crpix2']-1
