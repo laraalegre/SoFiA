@@ -155,6 +155,7 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot,compress):
 	# moment 0
 	if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
         	if not 'cunit3' in header: dkms=abs(header['cdelt3'])/1e+3 # assuming m/s
+        	elif header['cunit3'].lower()=='m/s': dkms=abs(header['cdelt3'])/1e+3
         	elif header['cunit3'].lower()=='km/s': dkms=abs(header['cdelt3'])
         elif 'freq' in header['ctype3'].lower():
         	if not 'cunit3' in header or header['cunit3'].lower()=='hz': dkms=abs(header['cdelt3'])/1.42040575177e+9*2.99792458e+5 # assuming Hz
