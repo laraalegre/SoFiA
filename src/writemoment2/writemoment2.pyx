@@ -25,28 +25,34 @@ def recursion(dictionary,optionsList,optionsDepth,counter=0):
     optionsList[len(optionsList)-1]+='='+str(dictionary)
     counter = 0
 
-def regridMaskedChannels(datacube,header,xs,ys,pixscale):
-  #print 'Regridding...'
-  #sys.stdout.flush()
-  #from scipy import interpolate
-  #z=(np.arange(1.,header['naxis3']+1)-header['crpix3'])*header['cdelt3']+header['crval3']
-  #if header['ctype3']=='VELO-HEL':
-  #  pixscale=(1-header['crval3']/2.99792458e+8)/(1-z/2.99792458e+8)
-  #else:
-  #  sys.stderr.write("WARNING: Cannot convert axis3 coordinates to frequency. Will ignore the effect of CELLSCAL = 1/F.\n")
-  #  pixscale=np.ones((header['naxis3']))
-  #x0,y0=header['crpix1']-1,header['crpix2']-1
-  #xs=np.arange(datacube.shape[2],dtype=float)-x0
-  #ys=np.arange(datacube.shape[1],dtype=float)-y0
-  #for zz in range(datacube.shape[0]):
-  #  regrid_channel=interpolate.RectBivariateSpline(ys*pixscale[zz],xs*pixscale[zz],datacube[zz])
-  #  datacube[zz]=regrid_channel(ys,xs)
-  #return datacube
+
+def regridMaskedChannels(datacube,maskcube,header):
   
+  maskcubeFlt = maskcube.astype('float')
+  maskcubeFlt[maskcubeFlt>1] = 1
+  
+  print 'Regridding...'
+  sys.stdout.flush()
   from scipy import interpolate
+  z=(np.arange(1.,header['naxis3']+1)-header['crpix3'])*header['cdelt3']+header['crval3']
+  if header['ctype3']=='VELO-HEL':
+    pixscale=(1-header['crval3']/2.99792458e+8)/(1-z/2.99792458e+8)
+  else:
+    sys.stderr.write("WARNING: Cannot convert axis3 coordinates to frequency. Will ignore the effect of CELLSCAL = 1/F.\n")
+    pixscale=np.ones((header['naxis3']))
+  x0,y0=header['crpix1']-1,header['crpix2']-1
+  xs=np.arange(datacube.shape[2],dtype=float)-x0
+  ys=np.arange(datacube.shape[1],dtype=float)-y0
   for zz in range(datacube.shape[0]):
     regrid_channel=interpolate.RectBivariateSpline(ys*pixscale[zz],xs*pixscale[zz],datacube[zz])
     datacube[zz]=regrid_channel(ys,xs)
+    regrid_channel_mask=interpolate.RectBivariateSpline(ys*pixscale[zz],xs*pixscale[zz],maskcubeFlt[zz])
+    maskcubeFlt[zz] = regrid_channel_mask(ys,xs)
+  
+  maskMin = maskcubeFlt.min()
+  datacube[abs(maskcubeFlt)<=abs(maskMin)] = 0
+  del maskcubeFlt
+  
   return datacube
 
 def writeMoments(datacube,maskcube,filename,debug,header,objects,catParNames,compress,domom0,domom1):
@@ -71,65 +77,7 @@ def writeMoments(datacube,maskcube,filename,debug,header,objects,catParNames,com
     if header['cellscal'] == '1/F':
       print 'WARNING: CELLSCAL keyword with value 1/F found.'
       print 'Will regrid masked cube before making moment images.'
-      #datacube=regridMaskedChannels(datacube,header)
-
-      print 'Regridding...'
-      sys.stdout.flush()
-      
-      # some preparations ...
-      z=(np.arange(1.,header['naxis3']+1)-header['crpix3'])*header['cdelt3']+header['crval3']
-      if header['ctype3']=='VELO-HEL':
-        pixscale=(1-header['crval3']/2.99792458e+8)/(1-z/2.99792458e+8)
-      else:
-        sys.stderr.write("WARNING: Cannot convert axis3 coordinates to frequency. Will ignore the effect of CELLSCAL = 1/F.\n")
-        pixscale=np.ones((header['naxis3']))
-      x0,y0=header['crpix1']-1,header['crpix2']-1
-      xs=np.arange(datacube.shape[2],dtype=float)-x0
-      ys=np.arange(datacube.shape[1],dtype=float)-y0
-      
-      
-      # regridding for subcubes around identified sources
-      maskedCubeReg = np.zeros(maskcube.shape)
-      maxMask = maskcube.max()
-      parNames = ['id','x_min','x_max','y_min','y_max','z_min','z_max']
-      parInd = []
-      for i in range(0,len(parNames)):
-        parInd.append(list(catParNames).index(parNames[i]))
-      for i in range(0,maxMask):
-      
-        # determine size of source and region to cut out
-        ind,x_min,x_max,y_min,y_max,z_min,z_max = [int(objects[i][parInd[j]]) for j in range(len(parNames))]
-        #int(objects[i][parInd[0]]),int(objects[i][parInd[1]]),int(objects[i][parInd[2]]),int(objects[i][parInd[3]]),int(objects[i][parInd[4]]),int(objects[i][parInd[5]]),int(objects[i][parInd[6]])
-        dx = max(x_max-x_min,1)
-        dy = max(y_max-y_min,1)
-        dz = max(z_max-z_min,1)
-        N = 3 # cut out region of 3*(source size) around the source
-        x_start = max(0,x_min-N*dx)
-        x_end   = min(datacube.shape[2],x_max+N*dx)
-        y_start = max(0,y_min-N*dy)
-        y_end   = min(datacube.shape[1],y_max+N*dy)
-        z_start = max(0,z_min-N*dz)
-        z_end   = min(datacube.shape[0],z_max+N*dz)
-        
-        # cut out subcube around object
-        cutCube = datacube[z_start:z_end,y_start:y_end,x_start:x_end]
-        cutMask = (maskcube[z_start:z_end,y_start:y_end,x_start:x_end]).astype('float')
-        cutMask[cutMask!=ind] = 0
-        cutMask[cutMask!=0] = 1
-        cutCube = cutCube*cutMask
-        
-        # regrid cut mask and source cubes
-        cutCube = regridMaskedChannels(cutCube,header,list(xs)[x_start:x_end],list(ys)[y_start:y_end],list(pixscale)[z_start:z_end])
-        cutMask = regridMaskedChannels(cutMask,header,list(xs)[x_start:x_end],list(ys)[y_start:y_end],list(pixscale)[z_start:z_end])
-        # range of values after regridding
-        minMask = cutMask.min()
-        # eliminate values in the mask that do not belong to the object
-        cutMask[abs(cutMask)<=abs(minMask)] = 0
-        cutMask[cutMask!=0] = 1
-        maskedCubeReg[z_start:z_end,y_start:y_end,x_start:x_end] += cutMask*cutCube
-        
-  datacube = maskedCubeReg   
-  del maskedCubeReg
+      datacube=regridMaskedChannels(datacube,maskcube,header)
   datacube = np.array(datacube, dtype=np.single)
   if domom0 or domom1:
     m0 = mom0(datacube)
