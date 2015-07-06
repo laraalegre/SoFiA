@@ -55,7 +55,7 @@ def regridMaskedChannels(datacube,maskcube,header):
   
   return datacube
 
-def writeMoments(datacube,maskcube,filename,debug,header,objects,catParNames,compress,domom0,domom1):
+def writeMoments(datacube,maskcube,filename,debug,header,compress,domom0,domom1):
   nrdetchan=(maskcube>0).sum(axis=0)
   if nrdetchan.max()<65535: nrdetchan=nrdetchan.astype('int16')
   else: nrdetchan=nrdetchan.astype('int32')
