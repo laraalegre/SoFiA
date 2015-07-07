@@ -91,6 +91,7 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 	nc=len(projections)/nr
 
 	grow_kernel=1 # set to 1 to start the following loop; if autoKernel=0 will do just one pass
+	deltOLD=-1e+9 # used to stop kernel growth if P-N stops moving closer to zero
 	
 	while grow_kernel:
 		# Set the variance (sigma**2) of Gaussian kernels for smoothing along each axis.
@@ -196,9 +197,12 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 
 		else: grow_kernel=0
 
-		if delt[delt.shape[0]/2]>skellamTol: grow_kernel=0
-		else: negPerBin+=1
-		
+		if delt[delt.shape[0]/2]>skellamTol or delt[delt.shape[0]/2]<deltOLD: grow_kernel=0
+		else:
+			deltOLD=delt[delt.shape[0]/2]
+			#print deltOLD,'<',skellamTol; sys.stdout.flush()
+			negPerBin+=1
+
 	print '# Found good kernel'
 	
 	####################
