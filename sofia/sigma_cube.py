@@ -55,7 +55,9 @@ def sigma_scale(cube,scaleX=False,scaleY=False,scaleZ=True,edgeX=0,edgeY=0,edgeZ
         if scaleZ == True:
             z_rms = np.zeros(dimensions[0])
             for i in range(len(z_rms)):
-                z_rms[i] = GetRMS(cube[i,y1:y2,x1:x2],rmsMode=statistic,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
+                if (np.isnan(cube[i,y1:y2,x1:x2])==False).sum():
+                    z_rms[i] = GetRMS(cube[i,y1:y2,x1:x2],rmsMode=statistic,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
+                else: z_rms[i]=0
             # scale the cube by the rms
             for i in range(len(z_rms)):
                 if z_rms[i] > 0:
@@ -64,7 +66,10 @@ def sigma_scale(cube,scaleX=False,scaleY=False,scaleZ=True,edgeX=0,edgeY=0,edgeZ
         if scaleY == True:
             y_rms = np.zeros(dimensions[1])
             for i in range(len(y_rms)):
-                y_rms[i] = GetRMS(cube[z1:z2,i,x1:x2],rmsMode=statistic,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
+                if (np.isnan(cube[z1:z2,i,x1:x2])==False).sum():
+                    y_rms[i] = GetRMS(cube[z1:z2,i,x1:x2],rmsMode=statistic,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
+                else: y_rms[i]=0
+                
             # scale the cube by the rms
             for i in range(len(y_rms)):
                 if y_rms[i] > 0:
@@ -73,7 +78,9 @@ def sigma_scale(cube,scaleX=False,scaleY=False,scaleZ=True,edgeX=0,edgeY=0,edgeZ
         if scaleX == True:
             x_rms = np.zeros(dimensions[2])
             for i in range(len(x_rms)):
-                x_rms[i] = GetRMS(cube[z1:z2,y1:y2,i],rmsMode=statistic,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
+                if (np.isnan(cube[z1:z2,y1:y2,i])==False).sum():
+                    x_rms[i] = GetRMS(cube[z1:z2,y1:y2,i],rmsMode=statistic,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
+                else: x_rms[i]=0
             # scale the cube by the rms
             for i in range(len(x_rms)):
                 if x_rms[i] > 0:
