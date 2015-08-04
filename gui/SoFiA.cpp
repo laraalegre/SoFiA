@@ -2545,6 +2545,10 @@ void SoFiA::createInterface()
     tabOutputButtonCompress->setChecked(false);
     //tabOutputButtonCompress->setToolTip(tr("Use gzip to compress all output files"));
     
+    tabOutputButtonOverwrite = new QCheckBox(tr("Enable "), tabOutputGroupBox1);
+    tabOutputButtonOverwrite->setObjectName("writeCat.overwrite");
+    tabOutputButtonOverwrite->setChecked(false);
+    
     tabOutputWidgetProducts = new QWidget(tabOutputGroupBox1);
     tabOutputLayoutProducts = new QHBoxLayout();
     tabOutputLayoutProducts->setContentsMargins(0, 0, 0, 0);
@@ -2562,6 +2566,7 @@ void SoFiA::createInterface()
     tabOutputForm1->addRow(tr("Source catalogue:"), tabOutputWidgetFormat);
     tabOutputForm1->addRow(tr("Data products:"), tabOutputWidgetProducts);
     tabOutputForm1->addRow(tr("Compression:"), tabOutputButtonCompress);
+    tabOutputForm1->addRow(tr("Overwrite files:"), tabOutputButtonOverwrite);
     tabOutputForm1->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
     tabOutputGroupBox1->setLayout(tabOutputForm1);
     
