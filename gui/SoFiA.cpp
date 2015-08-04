@@ -3173,16 +3173,16 @@ void SoFiA::closeEvent(QCloseEvent *event)
 {
     if(pipelineProcess->state() == QProcess::NotRunning)
     {
-        QMessageBox messageBox(this);
+        /*QMessageBox messageBox(this);
         messageBox.setWindowTitle(tr("SoFiA - Quit"));
         messageBox.setText(tr("<p>Do you wish to exit from SoFiA?</p><p>Note that any unsaved changes will be discarded.</p>"));
         messageBox.setStandardButtons(QMessageBox::Cancel | QMessageBox::Ok);
         messageBox.setDefaultButton(QMessageBox::Ok);
         messageBox.setIcon(QMessageBox::Warning);
-        int choice = messageBox.exec();
+        int choice = messageBox.exec();*/
         
-        if(choice == QMessageBox::Ok) event->accept();
-        else event->ignore();
+        /*if(choice == QMessageBox::Ok)*/ event->accept();
+        /*else event->ignore();*/
     }
     else
     {
