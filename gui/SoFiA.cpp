@@ -92,7 +92,7 @@ SoFiA::~SoFiA()
         // Temporary parameter file present, needs to be deleted
         if(QFile::remove(SOFIA_TEMP_FILE) == false)
         {
-            std::cerr << "Warning: Failed to remove temporary parameter file on exit." << std::endl;
+            std::cerr << "Warning: Failed to remove temporary parameter file on exit.\n";
         }
     }
     
@@ -718,7 +718,7 @@ void SoFiA::saveSettings()
 
 void SoFiA::saveSettingsAs()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("SoFia - Save Parameters"), QDir::currentPath());
+    QString fileName = QFileDialog::getSaveFileName(this, tr("SoFiA - Save Parameters"), QDir::currentPath());
     
     if(!fileName.isEmpty())
     {

@@ -255,7 +255,7 @@ void WidgetSpreadsheet::changeSortOrder()
 
 void WidgetSpreadsheet::reloadCatalog()
 {
-    if(!currentFileName.isEmpty() and loadCatalog(currentFileName) != 0) std::cerr << "Failed to reload catalogue." << std::endl;
+    if(!currentFileName.isEmpty() and loadCatalog(currentFileName) != 0) std::cerr << "Failed to reload catalogue.\n";
     
     return;
 }
