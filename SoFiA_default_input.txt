@@ -135,6 +135,7 @@ reliability.makePlot            =       false
 
 # Output module
 
+writeCat.overwrite              =       false
 writeCat.compress               =       false
 writeCat.outputDir              =       
 writeCat.basename               =       
