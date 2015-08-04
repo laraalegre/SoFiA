@@ -55,7 +55,7 @@ def regridMaskedChannels(datacube,maskcube,header):
   
   return datacube
 
-def writeMoments(datacube,maskcube,filename,debug,header,compress,domom0,domom1):
+def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, domom1, flagOverwrite):
   nrdetchan=(maskcube>0).sum(axis=0)
   if nrdetchan.max()<65535: nrdetchan=nrdetchan.astype('int16')
   else: nrdetchan=nrdetchan.astype('int32')
@@ -109,7 +109,12 @@ def writeMoments(datacube,maskcube,filename,debug,header,compress,domom0,domom1)
       name = '%s_mom0.fits'%filename
       if compress:
         name += '.gz'
-      hdu.writeto(name,output_verify='warn',clobber=True)
+      
+      # Check for overwrite flag:
+      if not flagOverwrite and os.path.exists(name):
+        sys.stderr.write("WARNING: Output file exists: " + name + ".\n")
+      else:
+        hdu.writeto(name,output_verify='warn',clobber=True)
   if domom1:
     print 'Writing moment-1'
     m1 = mom1(datacube,m0,header['crpix3'],header['crval3'],header['cdelt3'])
@@ -143,9 +148,15 @@ def writeMoments(datacube,maskcube,filename,debug,header,compress,domom0,domom1)
     if debug: hdu.writeto('%s_mom1.debug.fits'%filename,output_verify='warn',clobber=True)
     else: 
       name = '%s_mom1.fits'%filename
+      
       if compress:
         name += '.gz'
-      hdu.writeto(name,output_verify='warn',clobber=True)
+      
+      # Check for overwrite flag:
+      if not flagOverwrite and os.path.exists(name):
+        sys.stderr.write("WARNING: Output file exists: " + name + ".\n")
+      else:
+        hdu.writeto(name,output_verify='warn',clobber=True)
 
 
 def mom0(cube1):
