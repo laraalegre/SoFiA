@@ -1,8 +1,9 @@
 # Ignore binary directory:
 build/
 
-# Ignore C++ object files and executables:
+# Ignore C/C++ object files and executables:
 *.o
+*.so
 moc_*
 qrc_*
 Makefile
