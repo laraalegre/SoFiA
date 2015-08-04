@@ -125,6 +125,7 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "parameters.dilateThreshold":"float",\
                  "parameters.dilatePixMax":"int",\
                  "parameters.dilateChan":"int",\
+                 "writeCat.overwrite":"bool", \
                  "writeCat.compress":"bool", \
                  "writeCat.outputDir": "string", \
                  "writeCat.basename": "string", \
