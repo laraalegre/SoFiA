@@ -1222,9 +1222,10 @@ void SoFiA::pipelineProcessReadStd()
     
     if(!outputStd.isEmpty())
     {
+        outputText->moveCursor(QTextCursor::End);
         outputText->setTextColor(Qt::black);
         outputText->insertPlainText(outputStd);
-	outputText->verticalScrollBar()->setValue(outputText->verticalScrollBar()->maximum());
+        outputText->verticalScrollBar()->setValue(outputText->verticalScrollBar()->maximum());
     }
     
     return;
@@ -1245,9 +1246,10 @@ void SoFiA::pipelineProcessReadErr()
     
     if(!outputErr.isEmpty())
     {
+        outputText->moveCursor(QTextCursor::End);
         outputText->setTextColor(Qt::red);
-	outputText->insertPlainText(outputErr);
-	outputText->verticalScrollBar()->setValue(outputText->verticalScrollBar()->maximum());
+        outputText->insertPlainText(outputErr);
+        outputText->verticalScrollBar()->setValue(outputText->verticalScrollBar()->maximum());
     }
     
     return;
