@@ -2542,7 +2542,7 @@ void SoFiA::createInterface()
     //tabOutputButtonCubelets->setToolTip(tr("Individual cubelets, moment maps and spectra for each source"));
     connect(tabOutputButtonCubelets, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
     
-    tabOutputButtonCompress = new QCheckBox(tr("Gzip "), tabOutputGroupBox1);
+    tabOutputButtonCompress = new QCheckBox(tr("Enable "), tabOutputGroupBox1);
     tabOutputButtonCompress->setObjectName("writeCat.compress");
     tabOutputButtonCompress->setChecked(false);
     //tabOutputButtonCompress->setToolTip(tr("Use gzip to compress all output files"));
