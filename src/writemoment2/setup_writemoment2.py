@@ -1,3 +1,5 @@
+# usage: python setup_writemoment2.py build_ext --inplace
+
 import numpy
 from distutils.core import setup
 from distutils.extension import Extension

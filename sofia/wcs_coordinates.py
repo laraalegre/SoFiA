@@ -104,6 +104,12 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 			hdulist = fits.open(Parameters['import']['inFile'])
 			header = hdulist[0].header
 			hdulist.close()
+
+			# Fix headers where "per second" is written "/S" instead of "/s"
+			# (assuming they mean "per second" and not "per Siemens").
+			if 'cunit3' in header and '/S' in header['cunit3']:
+				print 'WARNING: Converting "/S" to "/s" in CUNIT3.'
+				header['cunit3']=header['cunit3'].replace('/S','/s')
 			
 			## check if there is a Nmap/GIPSY FITS header keyword value present
 			gipsyKey = [k for k in ['FREQ-OHEL','FREQ-OLSR','FREQ-RHEL','FREQ-RLSR'] if (k in [header[key] for key in header if ('CTYPE' in key)])]
@@ -137,10 +143,22 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 						header['crval%i'%(kk+1)]-=360
 
 				wcsin = wcs.WCS(header)
-				if header['naxis']==4:
-					objects=np.concatenate((objects,wcsin.wcs_pix2world(np.concatenate((objects[:,catParNames.index('x'):catParNames.index('x')+3],np.zeros((objects.shape[0],1))),axis=1),0)[:,:-1]),axis=1)
-				else:
-					objects=np.concatenate((objects,wcsin.wcs_pix2world(objects[:,catParNames.index('x'):catParNames.index('x')+3],0)),axis=1)
+				xyz=objects[:,catParNames.index('x'):catParNames.index('x')+3].astype(float)
+				if 'cellscal' in header and header['cellscal'] == '1/F':
+					print 'WARNING: CELLSCAL keyword with value 1/F found.'
+					print 'Will take into account varying pixel scale when calculating wcs coordinates.'
+					x0,y0=header['crpix1']-1,header['crpix2']-1
+					# Will calculate the pixscale factor of each channel as:
+					# pixscale = ref_frequency / frequency
+					if header['ctype3']=='VELO-HEL':
+						pixscale=(1-header['crval3']/2.99792458e+8)/(1-(((xyz[:,2]+1)-header['crpix3'])*header['cdelt3']+header['crval3'])/2.99792458e+8)
+					else:
+						sys.stderr.write("WARNING: Cannot convert axis3 coordinates to frequency. Will ignore the effect of CELLSCAL = 1/F.\n")
+						pixscale=1.
+					xyz[:,0]=(xyz[:,0]-x0)*pixscale+x0
+					xyz[:,1]=(xyz[:,1]-y0)*pixscale+y0
+				if header['naxis']==4: objects=np.concatenate((objects,wcsin.wcs_pix2world(np.concatenate((xyz,np.zeros((objects.shape[0],1))),axis=1),0)[:,:-1]),axis=1)
+				else: objects=np.concatenate((objects,wcsin.wcs_pix2world(xyz,0)),axis=1)
 				catParUnits = tuple(list(catParUnits) + [str(cc).replace(' ','') for cc in wcsin.wcs.cunit])
 				catParNames = tuple(list(catParNames) + [(cc.split('--')[0]).lower() for cc in wcsin.wcs.ctype])
 				catParFormt = tuple(list(catParFormt) + ['%15.7e', '%15.7e', '%15.7e'])

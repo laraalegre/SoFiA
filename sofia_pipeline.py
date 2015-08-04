@@ -408,7 +408,6 @@ if Parameters['steps']['doMom0'] or Parameters['steps']['doMom1']:
 	writemoment2.writeMoments(np_Cube, mask, outroot, debug, dict_Header,Parameters['writeCat']['compress'],Parameters['steps']['doMom0'],Parameters['steps']['doMom1'])
 
 
-
 # --------------------
 # ---- MAKE MOM1  ----
 # --------------------

@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 # import default python libraries
-import astropy.io.fits as pyfits
+import astropy.io.fits as astropy
 import os
 import sys
 from numpy import *
@@ -26,7 +26,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			if found:
 				from astropy import wcs
 				from astropy.io import fits
-				hdulist = fits.open(inFile)
+				hdulist = fits.open(inFile, memmap=False)
 				header = hdulist[0].header
 				hdulist.close()
 	
@@ -74,7 +74,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 	else: 
 		print 'Loading cube: ' , inFile
 		subcube = []
-	f = pyfits.open(inFile,memmap=True,do_not_scale_image_data=True)
+	f = astropy.open(inFile,memmap=False,do_not_scale_image_data=True)
 	dict_Header = f[0].header
 
 	# check whether the number of dimensions is acceptable and read data accordingly
@@ -85,7 +85,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 		print 'type: ', dict_Header['CTYPE1'], dict_Header['CTYPE2'], dict_Header['CTYPE3'] 
 		print 'dimensions: ', dict_Header['NAXIS1'], dict_Header['NAXIS2'], dict_Header['NAXIS3'] 
 		if len(subcube)==6:
-			np_Cube = f[0].data[subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
+			np_Cube = f[0].section[subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
 			dict_Header['crpix1']-=subcube[0]
 			dict_Header['crpix2']-=subcube[2]
 			dict_Header['crpix3']-=subcube[4]
@@ -101,11 +101,11 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			raise SystemExit(1)
 		else:
 			if len(subcube)==6:
-				np_Cube = f[0].data[0,subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
+				np_Cube = f[0].section[0,subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
 				dict_Header['crpix1']-=subcube[0]
 				dict_Header['crpix2']-=subcube[2]
 				dict_Header['crpix3']-=subcube[4]
-			elif not len(subcube): np_Cube = f[0].data[0]
+			elif not len(subcube): np_Cube = f[0].section[0]
 			else:
 				sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given). Ignore 4th axis.\n" % len(subcube))
 				raise SystemExit(1)
@@ -114,7 +114,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 		print 'type: ', dict_Header['CTYPE1'], dict_Header['CTYPE2']
 		print 'dimensions: ', dict_Header['NAXIS1'], dict_Header['NAXIS2']
 		if len(subcube)==4:
-			np_Cube = array([f[0].data[subcube[2]:subcube[3],subcube[0]:subcube[1]]])
+			np_Cube = array([f[0].section[subcube[2]:subcube[3],subcube[0]:subcube[1]]])
 			dict_Header['crpix1']-=subcube[0]
 			dict_Header['crpix2']-=subcube[2]
 		elif not len(subcube): np_Cube = array([f[0].data])
@@ -159,10 +159,10 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			# load the weights cube and convert it into a 3D array to be applied to the data 3D array
 			# (note that the data has been converted into a 3D array above)
 			print 'Loading and applying weights cube:', weightsFile
-			f=pyfits.open(weightsFile)
+			f=astropy.open(weightsFile, memmap=False)
 			dict_Weights_header=f[0].header
 			if dict_Weights_header['NAXIS']==3:
-				if len(subcube)==6: np_Cube*=f[0].data[subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
+				if len(subcube)==6: np_Cube*=f[0].section[subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
 				else: np_Cube*=f[0].data
 			elif dict_Weights_header['NAXIS']==4:
 				if dict_Weights_header['NAXIS4']!=1:
@@ -170,15 +170,15 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 					raise SystemExit(1)
 				else:
 					sys.stderr.write("WARNING: The weights cube has 4 axes; first axis ignored.\n")
-					if len(subcube)==6: np_Cube*=f[0].data[0,subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
-					else: np_Cube*=f[0].data[0]
+					if len(subcube)==6: np_Cube*=f[0].section[0,subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
+					else: np_Cube*=f[0].section[0]
 			elif dict_Weights_header['NAXIS']==2:
 				sys.stderr.write("WARNING: The weights cube has 2 axes; third axis added.\n")
-				if len(subcube)==6 or len(subcube)==4: np_Cube*=array([f[0].data[subcube[2]:subcube[3],subcube[0]:subcube[1]]])
+				if len(subcube)==6 or len(subcube)==4: np_Cube*=array([f[0].section[subcube[2]:subcube[3],subcube[0]:subcube[1]]])
 				else: np_Cube*=array([f[0].data])
 			elif dict_Weights_header['NAXIS']==1:
 				sys.stderr.write("WARNING: The weights cube has 1 axis; interpreted as third axis; first and second axes added.\n")
-				if len(subcube)==6: np_Cube*=reshape(f[0].data[subcube[4]:subcube[5]],(-1,1,1))
+				if len(subcube)==6: np_Cube*=reshape(f[0].section[subcube[4]:subcube[5]],(-1,1,1))
 				elif not len(subcube): np_Cube*=reshape(f[0].data,(-1,1,1))
 				else:
 					sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given).\n" % len(subcube))
@@ -250,7 +250,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 
 		else:
 			print 'Loading mask cube: ' , maskFile
-			g = pyfits.open(maskFile)
+			g = astropy.open(maskFile,memmap=False)
 			mask = g[0].data
 			mask[mask>0]=1
 			g.close()

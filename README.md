@@ -30,8 +30,8 @@ SoFiA:
         matplotlib (≥ 1.1; optional, only needed for reliability plot)
     Packages (C++):
         GCC (≥ 4.6)
-        GNU Scientific Library (≥ 1.15)
-        Qt (≥ 4.7)
+        GNU Scientific Library (≥ 1.15; including dev files)
+        Qt (≥ 4.7; including dev files and qmake)
 
 All of the above packages must be installed before SoFiA can be compiled and 
 run. It is recommended that you install them through your operating system’s 
@@ -92,7 +92,7 @@ the GCC) as well as the development packages (dev) of Qt and the GNU
 Scientific Library. Please also see the trouble shooting page on the SoFiA 
 wiki for more information on a few commonly encountered problems:
 
-* https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Trouble-Shooting
+* https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Troubleshooting
 
 
 Documentation

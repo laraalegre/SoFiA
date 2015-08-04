@@ -25,39 +25,66 @@ def recursion(dictionary,optionsList,optionsDepth,counter=0):
     optionsList[len(optionsList)-1]+='='+str(dictionary)
     counter = 0
 
-def regridMaskedChannels(datacube,header):
+
+def regridMaskedChannels(datacube,maskcube,header):
+  
+  maskcubeFlt = maskcube.astype('float')
+  maskcubeFlt[maskcubeFlt>1] = 1
+  
   print 'Regridding...'
   sys.stdout.flush()
   from scipy import interpolate
   z=(np.arange(1.,header['naxis3']+1)-header['crpix3'])*header['cdelt3']+header['crval3']
   if header['ctype3']=='VELO-HEL':
-    f=header['restfreq']*(1-z/2.99792458e+8) # from radio velocity to frequency
-    f0=header['restfreq']*(1-header['crval3']/2.99792458e+8)
-  pixsize0=abs(header['cdelt1'])
-  pixsize=f0*pixsize0/f
+    pixscale=(1-header['crval3']/2.99792458e+8)/(1-z/2.99792458e+8)
+  else:
+    sys.stderr.write("WARNING: Cannot convert axis3 coordinates to frequency. Will ignore the effect of CELLSCAL = 1/F.\n")
+    pixscale=np.ones((header['naxis3']))
   x0,y0=header['crpix1']-1,header['crpix2']-1
   xs=np.arange(datacube.shape[2],dtype=float)-x0
   ys=np.arange(datacube.shape[1],dtype=float)-y0
   for zz in range(datacube.shape[0]):
-    regrid_channel=interpolate.RectBivariateSpline(ys*pixsize[zz]/pixsize0,xs*pixsize[zz]/pixsize0,datacube[zz])
-    scale=pixsize[zz]/pixsize0
+    regrid_channel=interpolate.RectBivariateSpline(ys*pixscale[zz],xs*pixscale[zz],datacube[zz])
     datacube[zz]=regrid_channel(ys,xs)
+    regrid_channel_mask=interpolate.RectBivariateSpline(ys*pixscale[zz],xs*pixscale[zz],maskcubeFlt[zz])
+    maskcubeFlt[zz] = regrid_channel_mask(ys,xs)
+  
+  maskMin = maskcubeFlt.min()
+  datacube[abs(maskcubeFlt)<=abs(maskMin)] = 0
+  del maskcubeFlt
+  
   return datacube
 
 def writeMoments(datacube,maskcube,filename,debug,header,compress,domom0,domom1):
+  nrdetchan=(maskcube>0).sum(axis=0)
+  if nrdetchan.max()<65535: nrdetchan=nrdetchan.astype('int16')
+  else: nrdetchan=nrdetchan.astype('int32')
+  hdu = pyfits.PrimaryHDU(data=nrdetchan,header=header)
+  hdu.header['bunit']='Nchan'
+  hdu.header['datamin']=nrdetchan.min()
+  hdu.header['datamax']=nrdetchan.max()
+  del(hdu.header['crpix3'])
+  del(hdu.header['crval3'])
+  del(hdu.header['cdelt3'])
+  del(hdu.header['ctype3'])
+  name = '%s_nrch.fits'%filename
+  if compress:
+    name += '.gz'
+  hdu.writeto(name,output_verify='warn',clobber=True)
+  
   datacube[maskcube==0]=0
   if 'cellscal' in header:
     if header['cellscal'] == '1/F':
       print 'WARNING: CELLSCAL keyword with value 1/F found.'
       print 'Will regrid masked cube before making moment images.'
-      datacube=regridMaskedChannels(datacube,header)
+      datacube=regridMaskedChannels(datacube,maskcube,header)
   datacube = np.array(datacube, dtype=np.single)
   if domom0 or domom1:
     m0 = mom0(datacube)
   if domom0:
     print 'Writing moment-0' # in units of header['bunit']*km/s
     if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
-      if not 'cunit3' in header: dkms=abs(header['cdelt3'])/1e+3 # assuming m/s
+      if not 'cunit3' in header or header['cunit3'].lower()=='m/s': dkms=abs(header['cdelt3'])/1e+3 # assuming m/s
       elif header['cunit3'].lower()=='km/s': dkms=abs(header['cdelt3'])
       bunitExt = '.km/s'
     elif 'freq' in header['ctype3'].lower():
