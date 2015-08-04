@@ -21,7 +21,7 @@ def prettify(elem):
     return reparsed.toprettyxml(indent='')
 
 
-def make_xml(objects, outname):
+def make_xml(objects, outname, flagOverwrite):
     print 'Store the results to xml file: ', outname
     top = Element('VOTABLE')
     resource = SubElement(top, 'RESOURCE', name='SoFiA catalogue')
@@ -52,22 +52,19 @@ def make_xml(objects, outname):
 
     # print prettify(top)
     # print
-    f1 = open(outname, 'w+')
-    f1.write(prettify(top))
-    f1.close
+
+    # Check for overwrite flag:
+    if not flagOverwrite and os.path.exists(outname):
+        sys.stderr.write("ERROR: Output file exists: " + outname + ".\n")
+    else:
+        f1 = open(outname, 'w+')
+        f1.write(prettify(top))
+        f1.close
 
     return
 
 
-def make_xml_from_array(
-    objects,
-    cathead,
-    catunits,
-    catfmt,
-    store_pars,
-    outname,
-    compress
-    ):
+def make_xml_from_array(objects, cathead, catunits, catfmt, store_pars, outname, compress, flagOverwrite):
     print 'Store the results to xml file: ', outname
     top = Element('VOTABLE')
     resource = SubElement(top, 'RESOURCE', name='SoFiA catalogue')
@@ -127,15 +124,19 @@ def make_xml_from_array(
                     td = SubElement(tr, 'TD')
                     index = list(cathead).index(par)
                     td.text = (catfmt[index] % obj[index]).strip()
-    
-    if compress:
-      import gzip
-      f1 = gzip.open(outname+'.gz','wb')
+
+    if compress: outname += '.gz'
+
+    # Check for overwrite flag:
+    if not flagOverwrite and os.path.exists(outname):
+        sys.stderr.write("ERROR: Output file exists: " + outname + ".\n")
     else:
-      f1 = open(outname, 'w+')
-    f1.write(prettify(top))
-    f1.close
+        if compress:
+            import gzip
+            f1 = gzip.open(outname, 'wb')
+        else:
+            f1 = open(outname, 'w+')
+        f1.write(prettify(top))
+        f1.close
 
     return
-
-

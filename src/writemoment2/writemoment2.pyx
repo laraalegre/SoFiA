@@ -70,7 +70,12 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
   name = '%s_nrch.fits'%filename
   if compress:
     name += '.gz'
-  hdu.writeto(name,output_verify='warn',clobber=True)
+
+  # Check for overwrite flag:
+  if not flagOverwrite and os.path.exists(name):
+    sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
+  else:
+    hdu.writeto(name, output_verify = 'warn', clobber = True)
   
   datacube[maskcube==0]=0
   if 'cellscal' in header:
