@@ -112,7 +112,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
       
       # Check for overwrite flag:
       if not flagOverwrite and os.path.exists(name):
-        sys.stderr.write("WARNING: Output file exists: " + name + ".\n")
+        sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
       else:
         hdu.writeto(name,output_verify='warn',clobber=True)
   if domom1:
@@ -154,7 +154,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
       
       # Check for overwrite flag:
       if not flagOverwrite and os.path.exists(name):
-        sys.stderr.write("WARNING: Output file exists: " + name + ".\n")
+        sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
       else:
         hdu.writeto(name,output_verify='warn',clobber=True)
 

@@ -2,12 +2,13 @@
 import numpy as np
 import astropy.io.fits as pyfits
 import os
+import sys
 from sofia import writemoment
 import math
 from scipy.ndimage import map_coordinates
 
 
-def writeSubcube(cube,header,mask,objects,cathead,outroot,compress):
+def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOverwrite):
     
     # strip path variable to get the file name and the directory separately
     splitroot = outroot.split('/')
@@ -94,10 +95,16 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot,compress):
 	subcube = cube[ZminNew:ZmaxNew+1,YminNew:YmaxNew+1,XminNew:XmaxNew+1]
 	hdu = pyfits.PrimaryHDU(data=subcube,header=header)
 	hdulist = pyfits.HDUList([hdu])
-	name = outputDir+cubename+'_'+str(int(obj[0]))+'.fits'
+	name = outputDir + cubename + '_' + str(int(obj[0])) + '.fits'
 	if compress:
-	  name += '.gz'
-	hdulist.writeto(name,output_verify='warn',clobber=True)
+		name += '.gz'
+	
+	# Check for overwrite flag:
+	if not flagOverwrite and os.path.exists(name):
+		sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
+	else:
+		hdulist.writeto(name, output_verify = 'warn', clobber = True)
+	
 	hdulist.close()
 	
 	# make PV diagram
@@ -133,7 +140,12 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot,compress):
 		del hdulist[0].header['CRVAL3']
 		del hdulist[0].header['CRPIX3']
 		name = outputDir+cubename+'_'+str(int(obj[0]))+'_pv.fits'
-		hdulist.writeto(name,output_verify='warn',clobber=True)
+		
+		# Check for overwrite flag:
+		if not flagOverwrite and os.path.exists(name):
+			sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
+		else:
+			hdulist.writeto(name,output_verify='warn',clobber=True)
 		hdulist.close()
 
 	# remove all other sources from the mask
@@ -147,20 +159,25 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot,compress):
 	name = outputDir+cubename+'_'+str(int(obj[0]))+'_mask.fits'
 	if compress:
 	  name += '.gz'
-	hdulist.writeto(name,output_verify='warn',clobber=True)
+	
+	# Check for overwrite flag:
+	if not flagOverwrite and os.path.exists(name):
+		sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
+	else:
+		hdulist.writeto(name,output_verify='warn',clobber=True)
 	hdulist.close()
 	
 
 
 	# moment 0
 	if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
-        	if not 'cunit3' in header: dkms=abs(header['cdelt3'])/1e+3 # assuming m/s
-        	elif header['cunit3'].lower()=='m/s': dkms=abs(header['cdelt3'])/1e+3
-        	elif header['cunit3'].lower()=='km/s': dkms=abs(header['cdelt3'])
-        elif 'freq' in header['ctype3'].lower():
-        	if not 'cunit3' in header or header['cunit3'].lower()=='hz': dkms=abs(header['cdelt3'])/1.42040575177e+9*2.99792458e+5 # assuming Hz
-        	elif header['cunit3'].lower()=='khz': dkms=abs(header['cdelt3'])/1.42040575177e+6*2.99792458e+5
-        else: dkms=1. # no scaling, avoids crashing
+		if not 'cunit3' in header: dkms=abs(header['cdelt3'])/1e+3 # assuming m/s
+		elif header['cunit3'].lower()=='m/s': dkms=abs(header['cdelt3'])/1e+3
+		elif header['cunit3'].lower()=='km/s': dkms=abs(header['cdelt3'])
+	elif 'freq' in header['ctype3'].lower():
+		if not 'cunit3' in header or header['cunit3'].lower()=='hz': dkms=abs(header['cdelt3'])/1.42040575177e+9*2.99792458e+5 # assuming Hz
+		elif header['cunit3'].lower()=='khz': dkms=abs(header['cdelt3'])/1.42040575177e+6*2.99792458e+5
+		else: dkms=1. # no scaling, avoids crashing
 	m0=np.nan_to_num(subcube*submask.astype(bool)).sum(axis=0)
 	m0*=dkms
 	hdu = pyfits.PrimaryHDU(data=m0,header=header)
@@ -176,20 +193,25 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot,compress):
 	name = outputDir+cubename+'_'+str(int(obj[0]))+'_mom0.fits'
 	if compress:
 	  name += '.gz'
-	hdu.writeto(name,output_verify='warn',clobber=True)
+	
+	# Check for overwrite flag:
+	if not flagOverwrite and os.path.exists(name):
+		sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
+	else:
+		hdu.writeto(name,output_verify='warn',clobber=True)
 	
 	
 	# moment 1
 	m1=(np.arange(subcube.shape[0]).reshape((subcube.shape[0],1,1))*np.ones(subcube.shape)-header['crpix3']+1)*header['cdelt3']+header['crval3']
-        if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
-        	if not 'cunit3' in header: m1/=1e+3 # assuming m/s
-        	elif header['cunit3'].lower()=='km/s': pass
-        elif 'freq' in header['ctype3'].lower():
-        	if not 'cunit3' in header or header['cunit3'].lower()=='hz': m1*=2.99792458e+5/1.42040575177e+9 # assuming Hz
-        	elif header['cunit3'].lower()=='khz': m1*=2.99792458e+5/1.42040575177e+6
-        m0[m0==0]=np.nan
-        m0/=dkms
-        m1=np.divide(np.array(np.nan_to_num(m1*subcube*submask.astype('bool')).sum(axis=0)),m0)
+	if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
+		if not 'cunit3' in header: m1/=1e+3 # assuming m/s
+		elif header['cunit3'].lower()=='km/s': pass
+	elif 'freq' in header['ctype3'].lower():
+		if not 'cunit3' in header or header['cunit3'].lower()=='hz': m1*=2.99792458e+5/1.42040575177e+9 # assuming Hz
+		elif header['cunit3'].lower()=='khz': m1*=2.99792458e+5/1.42040575177e+6
+	m0[m0==0]=np.nan
+	m0/=dkms
+	m1=np.divide(np.array(np.nan_to_num(m1*subcube*submask.astype('bool')).sum(axis=0)),m0)
 	hdu = pyfits.PrimaryHDU(data=m1,header=header)
 	hdu.header['bunit']='km/s'
 	hdu.header['datamin']=np.nanmin(m1)
@@ -201,48 +223,64 @@ def writeSubcube(cube,header,mask,objects,cathead,outroot,compress):
 	name = outputDir+cubename+'_'+str(int(obj[0]))+'_mom1.fits'
 	if compress:
 	  name += '.gz'
-	hdu.writeto(name,output_verify='warn',clobber=True)
+	
+	# Check for overwrite flag:
+	if not flagOverwrite and os.path.exists(name):
+		sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
+	else:
+		hdu.writeto(name,output_verify='warn',clobber=True)
 	
 	
 	# moment 2
 	m2=(np.arange(subcube.shape[0]).reshape((subcube.shape[0],1,1))*np.ones(subcube.shape)-header['crpix3']+1)*header['cdelt3']+header['crval3']
 	if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
-        	if not 'cunit3' in header: m2/=1e+3 # assuming m/s
-        	elif header['cunit3'].lower()=='km/s': pass
-        elif 'freq' in header['ctype3'].lower():
-        	if not 'cunit3' in header or header['cunit3'].lower()=='hz': m2*=2.99792458e+5/1.42040575177e+9 # assuming Hz
-        	elif header['cunit3'].lower()=='khz': m2*=2.99792458e+5/1.42040575177e+6
+		if not 'cunit3' in header: m2/=1e+3 # assuming m/s
+		elif header['cunit3'].lower()=='km/s': pass
+	elif 'freq' in header['ctype3'].lower():
+		if not 'cunit3' in header or header['cunit3'].lower()=='hz': m2*=2.99792458e+5/1.42040575177e+9 # assuming Hz
+		elif header['cunit3'].lower()=='khz': m2*=2.99792458e+5/1.42040575177e+6
 	m2 = m2**2
 	m2=np.divide(np.array(np.nan_to_num(m2*subcube*submask.astype('bool')).sum(axis=0)),m0)
 	m2-=m1*m1
 	m2=np.sqrt(m2)
 	hdu = pyfits.PrimaryHDU(data=m2,header=header)
-        hdu.header['bunit']='km/s'
-        hdu.header['datamin']=np.nanmin(m1)
-        hdu.header['datamax']=np.nanmax(m1)
-        del(hdu.header['crpix3'])
-        del(hdu.header['crval3'])
-        del(hdu.header['cdelt3'])
-        del(hdu.header['ctype3'])
-        name = outputDir+cubename+'_'+str(int(obj[0]))+'_mom2.fits'
-        if compress:
-	  name += '.gz'
-        hdu.writeto(name,output_verify='warn',clobber=True)
+	hdu.header['bunit']='km/s'
+	hdu.header['datamin']=np.nanmin(m1)
+	hdu.header['datamax']=np.nanmax(m1)
+	del(hdu.header['crpix3'])
+	del(hdu.header['crval3'])
+	del(hdu.header['cdelt3'])
+	del(hdu.header['ctype3'])
+	name = outputDir+cubename+'_'+str(int(obj[0]))+'_mom2.fits'
+	if compress:
+		name += '.gz'
+	
+	# Check for overwrite flag:
+	if not flagOverwrite and os.path.exists(name):
+		sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
+	else:
+		hdu.writeto(name,output_verify='warn',clobber=True)
+	
 	
 	# spectra
 	spec = np.nansum(subcube*submask,axis=(1,2))
-	if compress:
-	  import gzip
-	  f = gzip.open(outputDir+cubename+'_'+str(int(obj[0]))+'_spec.txt.gz', 'wb')
+	
+	name = outputDir + cubename + '_' + str(int(obj[0])) + '_spec.txt'
+	if compress: name += '.gz'
+	
+	# Check for overwrite flag:
+	if not flagOverwrite and os.path.exists(name):
+		sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
 	else:
-	  f = open(outputDir+cubename+'_'+str(int(obj[0]))+'_spec.txt', 'w')
-	#f.write('# '+specTypeX+' ('+specUnitX+')'+'  '+specTypeY+' ('+specUnitY+')\n')
-	for i in range(0,len(spec)):
-	  xspec = cValZ + (i+ZminNew-cPixZ) * dZ
-	  f.write('%9.0f %15.6e %15.6e\n'%(i+ZminNew,xspec,spec[i]))
-	f.close()
-
-        
-        
-        
-	  
+		if compress:
+			import gzip
+			f = gzip.open(name, 'wb')
+		else:
+			f = open(name, 'w')
+		#f.write('# '+specTypeX+' ('+specUnitX+')'+'  '+specTypeY+' ('+specUnitY+')\n')
+		
+		for i in range(0,len(spec)):
+			xspec = cValZ + (i+ZminNew-cPixZ) * dZ
+			f.write('%9.0f %15.6e %15.6e\n'%(i+ZminNew,xspec,spec[i]))
+		
+		f.close()

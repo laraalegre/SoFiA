@@ -392,7 +392,7 @@ if Parameters['steps']['doWriteMask'] and NRdet:
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Writing mask cube ---"
 	sys.stdout.flush()
-	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.fits'%outroot,Parameters['writeCat']['compress'])
+	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.fits'%outroot, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
 
 
 
@@ -431,7 +431,7 @@ if Parameters['steps']['doCubelets'] and Parameters['steps']['doMerge'] and NRde
 	sys.stdout.flush()
 	objects = np.array(objects)
 	cathead = np.array(catParNames)
-	cubelets.writeSubcube(np_Cube, dict_Header, mask, objects, cathead, outroot,Parameters['writeCat']['compress'])
+	cubelets.writeSubcube(np_Cube, dict_Header, mask, objects, cathead, outroot, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
 
 
 

@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 import astropy.io.fits as pyfits
 import os
+import sys
 
 def removeOptions(dictionary):
   modDictionary = dictionary
@@ -21,7 +22,7 @@ def recursion(dictionary,optionsList,optionsDepth,counter=0):
     counter = 0
 
 
-def writeMask(cube,header,dictionary,filename,compress):
+def writeMask(cube, header, dictionary, filename, compress, flagOverwrite):
   header.add_history('SOURCE FINDING')
   optionsList = []
   optionsDepth = []
@@ -50,5 +51,10 @@ def writeMask(cube,header,dictionary,filename,compress):
   #name = os.path.splitext(filename)[0] + '_mask.fits'
   name = filename
   if compress:
-	  name += '.gz'
-  hdu.writeto(name,output_verify='warn',clobber=True)
+    name += '.gz'
+  
+  # Check for overwrite flag:
+  if not flagOverwrite and os.path.exists(name):
+    sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
+  else:
+    hdu.writeto(name,output_verify='warn',clobber=True)
