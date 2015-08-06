@@ -128,7 +128,6 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "parameters.dilateThreshold":"float",\
                  "parameters.dilatePixMax":"int",\
                  "parameters.dilateChan":"int",\
-                 "writeCat.overwrite":"bool", \
                  "writeCat.compress":"bool", \
                  "writeCat.outputDir": "string", \
                  "writeCat.basename": "string", \
@@ -143,57 +142,52 @@ def readPipelineOptions(filename = "pipeline.options"):
         if line[0] == "#":
             continue
         
-        try:
-            parameter, value = tuple(line.split("=", 1))
-            if len(parameter) < 1:
-                sys.stderr.write("WARNING: Option name missing in line {0:02d}: {1:s}\n".format(linenr + 1, line))
-                continue
+        parameter, value = tuple(line.split("=", 1))
+        if len(parameter) < 1:
+            sys.stderr.write("FATAL ERROR: Parameter name missing in line %i of parameter file %s:\n%s\n"%(linenr+1,filename,line))
+            sys.exit(1)
+        
+        subtasks = tasks
             
-            subtasks = tasks
-            
-            while True:
-                module = parameter.split(".")[0]
-                module = module.strip()
+        while True:
+            module = parameter.split(".")[0]
+            module = module.strip()
                 
-                if len(module) < 1:
-                    sys.stderr.write("WARNING: (Sub)key name too short in line {0:02d}: {1:s}\n".format(linenr + 1, line))
+            if len(module) < 1:
+                sys.stderr.write("FATAL ERROR: (Sub)key name too short in line %i of parameter file %s:\n%s\n"%(linenr+1,filename,line))
+                sys.exit(1)
+                
+            parameter = str(".").join(parameter.split(".")[1:])
+            parameter = parameter.strip()
+                
+            if not subtasks.has_key(module):
+                subtasks[module] = {}
+            subtasks = subtasks[module]
+                
+            if parameter.count(".") == 0:
+                if subtasks.has_key(parameter):
+                    sys.stderr.write("WARNING: Parameter already present in line %i of parameter file %s:\n%s\n"%(linenr+1,filename,line))
+                    sys.stderr.write('         Will ignore repeated parameter.\n')
                     break
-                
-                parameter = str(".").join(parameter.split(".")[1:])
-                parameter = parameter.strip()
-                
-                if not subtasks.has_key(module):
-                    subtasks[module] = {}
-                subtasks = subtasks[module]
-                
-                if parameter.count(".") == 0:
-                    if subtasks.has_key(parameter):
-                        sys.stderr.write("WARNING: Option already present in line {0:02d}: {1:s}\n".format(linenr + 1, line))
-                        break
-                    try:
-                        value = value.split('#')[0].strip()
-                        searchKey = module + "." + parameter
+                try:
+                    value = value.split('#')[0].strip()
+                    searchKey = module + "." + parameter
                         
-                        if searchKey in datatypes:
-                            if datatypes[searchKey] == "bool":
-                                subtasks[parameter] = str2bool(value)
-                            elif datatypes[searchKey] == "float":
-                                subtasks[parameter] = float(value)
-                            elif datatypes[searchKey] == "int":
-                                subtasks[parameter] = int(value)
-                            elif datatypes[searchKey] == "array":
-                                subtasks[parameter] = ast.literal_eval(value)
-                            else:
-                                subtasks[parameter] = str(value)
-                        else:
-                            sys.stderr.write("WARNING: No data type defined for parameter {0:s}.\n".format(searchKey))
-                            sys.stderr.write("         Guessing type based on value.\n")
-                            subtasks[parameter] = ast.literal_eval(value)
-                    except:
-                        sys.stderr.write("WARNING: Could not parse option in line {0:02d}: {1:s}\n".format(linenr + 1, line))
-                        break
-                    break
-        except:
-            pass
+                    if searchKey in datatypes:
+                        if datatypes[searchKey] == "bool": subtasks[parameter] = str2bool(value)
+                        elif datatypes[searchKey] == "float": subtasks[parameter] = float(value)
+                        elif datatypes[searchKey] == "int": subtasks[parameter] = int(value)
+                        elif datatypes[searchKey] == "array": subtasks[parameter] = ast.literal_eval(value)
+                        else: subtasks[parameter] = str(value)
+                    else:
+                        sys.stderr.write("WARNING: No data type defined for parameter %s.\n"%(searchKey))
+                        sys.stderr.write("         Guessing type based on value.\n")
+                        subtasks[parameter] = ast.literal_eval(value)
+                except:
+                    sys.stderr.write('FATAL ERROR: Could not parse option in line %i of user parameter file %s:\n'%(linenr+1,filename))
+                    sys.stderr.write('             %s\n'%(line))
+                    sys.stderr.write('             Expecting data type: %s\n'%(datatypes[searchKey]))
+                    sys.exit(1)
+                break
     
     return tasks
