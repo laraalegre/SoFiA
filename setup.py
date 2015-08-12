@@ -37,6 +37,7 @@ import numpy
 # Define include directories
 include_dirs = []
 include_dirs.append('src')
+include_dirs.append('src/linker')
 include_dirs.append(numpy.get_include())
 
 # Get external include directories from PATH

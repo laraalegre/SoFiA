@@ -1,5 +1,5 @@
 #include<iostream>
-#include "RJJ_ObjGen.h"
+#include<RJJ_ObjGen.h>
 
 using namespace std;
 
@@ -507,7 +507,7 @@ void object_props::CalcProps(){
   }
   for(g = 0; g < ((srep_size[5] - srep_size[4] + 1)); ++g){
     if((std::isinf(mini_obj_spec[g])) || (std::isnan(mini_obj_spec[g]))){ mini_obj_spec[g] = 0.0; }
-  }
+  }  
 
   // normalise velocity field array
   for(g = 0; g < ((srep_size[1] - srep_size[0] + 1) * (srep_size[3] - srep_size[2] + 1)); ++g){ 
@@ -2065,7 +2065,7 @@ object_props_dbl & object_props_dbl::operator = (const object_props_dbl & copied
   return *this;
     
 }
-
+  
 object_props_dbl::~object_props_dbl(){ 
 
   if(srep_grid != NULL){ delete [] srep_grid; srep_grid = NULL; } 

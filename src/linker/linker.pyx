@@ -10,23 +10,23 @@ import numpy as np
 from libcpp.vector cimport vector
 
 cdef extern from "RJJ_ObjGen.h":
-	cdef int CreateObjects( float * data_vals, int * flag_vals, 
+	cdef long int CreateObjects( float * data_vals, long int * flag_vals, 
 							int size_x, int size_y, int size_z, 
 							int chunk_x_start, int chunk_y_start, int chunk_z_start, 
 							int radiusX, int radiusY, int radiusZ, 
 							int minSizeX, int minSizeY, int minSizeZ, 
 							int min_v_size, 
 							float intens_thresh_min, float intens_thresh_max, 
-							int flag_value, 
-							int start_obj, vector[object_props *] & detections, vector[int] & obj_ids, vector[int] & check_obj_ids, int obj_limit, 
+							long int flag_value, 
+							long int start_obj, vector[object_props *] & detections, vector[long int] & obj_ids, vector[long int] & check_obj_ids, int obj_limit, 
 							int max_x_val, int max_y_val, int max_z_val, 
 							int ss_mode,
-							int * data_metric, int * xyz_order)
+							size_t * data_metric, int * xyz_order)
 
-	cdef void InitObjGen(vector[object_props *] & detections, int & NOobj, int obj_limit, vector[int] & obj_ids, vector[int] & check_obj_ids, int *& data_metric, int *& xyz_order)
-	cdef void FreeObjGen(vector[object_props *] & detections, int *& data_metric, int *& xyz_order)
-	cdef void ThresholdObjs(vector[object_props *] & detections, int NOobj, int obj_limit, int minSizeX, int minSizeY, int minSizeZ, int min_v_size, float intens_thresh_min, float intens_thresh_max, int min_LoS_count)
-	cdef void CreateMetric( int * data_metric, int * xyz_order, int size_x, int size_y, int size_z)
+	cdef void InitObjGen(vector[object_props *] & detections, long int & NOobj, int obj_limit, vector[long int] & obj_ids, vector[long int] & check_obj_ids, size_t *& data_metric, int *& xyz_order)
+	cdef void FreeObjGen(vector[object_props *] & detections, size_t *& data_metric, int *& xyz_order)
+	cdef void ThresholdObjs(vector[object_props *] & detections, long int NOobj, int obj_limit, int minSizeX, int minSizeY, int minSizeZ, int min_v_size, float intens_thresh_min, float intens_thresh_max, int min_LoS_count)
+	cdef void CreateMetric( size_t * data_metric, int * xyz_order, int size_x, int size_y, int size_z)
 
 	cdef cppclass object_props:
 		
@@ -110,9 +110,9 @@ def link_objects(data, mask, radiusX = 0, radiusY = 0, radiusZ = 0, minSizeX = 1
 	mask : array
 		The labeled and linked integer mask
 	"""
-	return _link_objects(data.astype(np.single, copy = False), mask.astype(np.intc, copy = False), radiusX, radiusY, radiusZ, minSizeX, minSizeY, minSizeZ, min_LOS)
+	return _link_objects(data.astype(np.single, copy = False), mask.astype(np.int_, copy = False), radiusX, radiusY, radiusZ, minSizeX, minSizeY, minSizeZ, min_LOS)
 
-cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, np.ndarray[dtype = int, ndim = 3] mask,
+cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, np.ndarray[dtype = long int, ndim = 3] mask,
 				   int radiusX = 3, int radiusY = 3, int radiusZ = 5,
 				   int minSizeX = 1, int minSizeY = 1, int minSizeZ = 1,
 				   int min_LOS = 1):
@@ -135,7 +135,7 @@ cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, np.ndarray[dtype = 
 					mask[z,y,x] = -99
 	
 	# Define arrays storing datacube geometry metric
-	cdef int * data_metric
+	cdef size_t * data_metric
 	cdef int * xyz_order	
 
 	# Chunking is disabled for this interface
@@ -151,17 +151,16 @@ cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, np.ndarray[dtype = 
 	cdef float intens_thresh_max = 1E10
 	
 	# Define value that is used to mark sources in the mask
-	cdef int flag_val = -1
+	cdef long int flag_val = -1
 	
 	# Specify size of allocated object groups 
 	cdef int obj_limit = 1000
 	
 	# Object and ID arrays; will be written to by the function
 	cdef vector[object_props *] detections
-	cdef vector[int] obj_ids
-	cdef int NO_obj_ids
-	cdef vector[int] check_obj_ids
-	cdef int NOobj = 0
+	cdef vector[long int] obj_ids
+	cdef vector[long int] check_obj_ids
+	cdef long int NOobj = 0
 	
 	# Define linking style: 1 for Rectangle, else ellipse
 	cdef int ss_mode = 0
@@ -178,7 +177,7 @@ cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, np.ndarray[dtype = 
 	CreateMetric(data_metric, xyz_order, size_x, size_y, size_z)
 		
 	# Create and threshold objects
-	NOobj = CreateObjects(<float *> data.data, <int *> mask.data, size_x, size_y, size_z, chunk_x_start, chunk_y_start, chunk_z_start, radiusX, radiusY, radiusZ, minSizeX, minSizeY, minSizeZ, min_v_size, intens_thresh_min, intens_thresh_max, flag_val, NOobj, detections, obj_ids, check_obj_ids, obj_limit, size_x, size_y, size_z, ss_mode, data_metric, xyz_order)
+	NOobj = CreateObjects(<float *> data.data, <long int *> mask.data, size_x, size_y, size_z, chunk_x_start, chunk_y_start, chunk_z_start, radiusX, radiusY, radiusZ, minSizeX, minSizeY, minSizeZ, min_v_size, intens_thresh_min, intens_thresh_max, flag_val, 0, detections, obj_ids, check_obj_ids, obj_limit, size_x, size_y, size_z, ss_mode, data_metric, xyz_order)
 	ThresholdObjs(detections, NOobj, obj_limit, minSizeX, minSizeY, minSizeZ, min_v_size, intens_thresh_min, intens_thresh_max, min_LOS)
 
 	# Reset output mask

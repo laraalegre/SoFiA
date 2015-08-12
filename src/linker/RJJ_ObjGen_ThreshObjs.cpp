@@ -1,5 +1,5 @@
 #include<iostream>
-#include "RJJ_ObjGen.h"
+#include<RJJ_ObjGen.h>
 
 using namespace std;
 
@@ -9,7 +9,7 @@ void ThresholdObjs(vector< object_props *> & detections, int NOobj, int obj_limi
   
   float progress;
   int i, j, k, obj_batch;
-  
+
   progress = 0.0;
   std::cout << "0 | |:| | : | |:| | 100% complete" << std::endl;
   for(k = 0; k < NOobj; ++k){
@@ -23,8 +23,8 @@ void ThresholdObjs(vector< object_props *> & detections, int NOobj, int obj_limi
       while(progress <= (((float) (k + 1)) / ((float) NOobj))){ std::cout << "*"; std::cout.flush(); progress+=0.05; }
       continue; 
 
-    }    
-
+    }
+	
     // count the number of LOSs through this object that contain an object section
     i = 0;
     for(j = 0; j < ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(1) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) + 1) * (detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(3) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(2) + 1)); ++j){
@@ -47,7 +47,7 @@ void ThresholdObjs(vector< object_props *> & detections, int NOobj, int obj_limi
       detections[obj_batch][(k - (obj_batch * obj_limit))].ReInit_size();
       detections[obj_batch][(k - (obj_batch * obj_limit))].Set_srep_update(0);
 
-    } 
+    }
     
     while(progress <= (((float) (k + 1)) / ((float) NOobj))){ std::cout << "*"; std::cout.flush(); progress+=0.05; }
       
