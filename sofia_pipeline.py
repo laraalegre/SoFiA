@@ -294,15 +294,24 @@ if Parameters['steps']['doMerge'] and NRdet:
 	# in the mask file
 	mask *= -1
 	index = 1
+	carParNames=np.array(catParNames)
 	for rr in reliable:
-        	mask[mask == -rr] = index
-        	index += 1
+		objrr=objects[objects[:,1]==rr][0]
+		Xmin = objrr[catParNames=='x_min']
+		Ymin = objrr[catParNames=='y_min']
+		Zmin = objrr[catParNames=='z_min']
+		Xmax = objrr[catParNames=='x_max']
+		Ymax = objrr[catParNames=='y_max']
+		Zmax = objrr[catParNames=='z_max']
+		mask[Zmin:Zmax+1,Ymin:Ymax+1,Xmin:Xmax+1][mask[Zmin:Zmax+1,Ymin:Ymax+1,Xmin:Xmax+1] == -rr] = index
+		index += 1
 	mask[mask < 0] = 0
+	catParNames=tuple(catParNames)
 
 
 	newRel = []
 	for i in range(0, len(relObjects)):
-        	newRel.append(i + 1)
+		newRel.append(i + 1)
 	reliable = np.array(newRel)
 	NRdet = objects.shape[0]
 
