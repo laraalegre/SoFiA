@@ -294,7 +294,7 @@ if Parameters['steps']['doMerge'] and NRdet:
 	# in the mask file
 	mask *= -1
 	index = 1
-	carParNames=np.array(catParNames)
+	catParNames=np.array(catParNames)
 	for rr in reliable:
 		objrr=objects[objects[:,1]==rr][0]
 		Xmin = objrr[catParNames=='x_min']
