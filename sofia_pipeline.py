@@ -137,11 +137,15 @@ if Parameters['steps']['doWriteFilteredCube'] and (Parameters['steps']['doSmooth
 if Parameters['steps']['doFlag'] or Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']:
 	print "Filtering complete"
 	print 
+	sys.stdout.flush()
 
 print "\n--- %.3f seconds since start"%(time()-t0)
 print "\n--- SoFiA: Measuring cube noise ---"
 sys.stdout.flush()
-globalrms=functions.GetRMS(np_Cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=1,verbose=True,sample=1)
+maxNrVox=1e+6
+sampleRms=int((float(np.array(np_Cube.shape).prod())/maxNrVox)**(1./len(np_cube.shape)))
+globalrms=functions.GetRMS(np_Cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=1,verbose=True,sample=sampleRms)
+print "\n--- %.3f seconds since start"%(time()-t0)
 
 
 # -----------------
