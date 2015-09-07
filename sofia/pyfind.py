@@ -42,7 +42,7 @@ def SortKernels(kernels):
 #	found_nan=np.isnan(cube).sum()
 #
 #	# Measure noise in original cube
-#	rms=(cube,rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
+#	rms=GetRMS(cube,rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
 #
 #	# Sort kernels
 #	uniquesky,velsmooth,velfshape=SortKernels(kernels)
@@ -94,7 +94,7 @@ def SortKernels(kernels):
 #				if kt=='b': cubexyz=nd.filters.uniform_filter1d(MaskedCube(cubexy,mskxy,maskScaleZ*rmsxyz*threshold),kz,axis=0,mode=edgeMode)
 #				elif kt=='g': cubexyz=nd.filters.gaussian_filter1d(MaskedCube(cubexy,mskxy,maskScaleZ*rmsxyz*threshold),kz/2.355,axis=0,mode=edgeMode)
 #				if found_nan: cubexyz[np.isnan(cube)]=np.nan
-#				rmsxyz=(cubexyz,rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
+#				rmsxyz=GetRMS(cubexyz,rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=1,verbose=verbose)
 #				if found_nan: cubexyz=np.nan_to_num(cubexyz)
 #			else: cubexyz,rmsxyz=cubexy,rmsxy
 #
@@ -131,7 +131,7 @@ def SCfinder_mem(cube,header,t0,kernels=[[0,0,0,'b'],],threshold=3.5,sizeFilter=
 
     # Measure noise in original cube with sampling "sampleRms"
     rms=GetRMS(cube,rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=1,verbose=verbose,sample=sampleRms)
-    #rms_sample=(cube,rmsMode=rmsMode,zoomx=10,zoomy=10,zoomz=10,verbose=verbose)
+    #rms_sample=GetRMS(cube,rmsMode=rmsMode,zoomx=10,zoomy=10,zoomz=10,verbose=verbose)
     # Loop over all kernels
     for jj in kernels:
     	[kx,ky,kz,kt]=jj
@@ -157,7 +157,7 @@ def SCfinder_mem(cube,header,t0,kernels=[[0,0,0,'b'],],threshold=3.5,sizeFilter=
             elif kt=='g': smoothedcube=nd.filters.gaussian_filter1d(smoothedcube,kz/2.355,axis=0,mode=edgeMode)
         if found_nan: smoothedcube[np.isnan(cube)]=np.nan
         #smoothedrms=GetRMS(smoothedcube,rmsMode=rmsMode,zoomx=10,zoomy=10,zoomz=10,verbose=verbose)/rms_sample*rms
-        smoothedrms=(smoothedcube,rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=1,verbose=verbose,sample=sampleRms)
+        smoothedrms=GetRMS(smoothedcube,rmsMode=rmsMode,zoomx=1,zoomy=1,zoomz=1,verbose=verbose,sample=sampleRms)
         if found_nan: smoothedcube=np.nan_to_num(smoothedcube)
         msk=msk+(smoothedcube>=threshold*smoothedrms)+(smoothedcube<=-threshold*smoothedrms)
         del(smoothedcube)
