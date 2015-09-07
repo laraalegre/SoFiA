@@ -100,7 +100,7 @@ np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters['steps'][
 # ---- PRECONDITIONING ----
 # -------------------------
 
-if Parameters['steps']['doFlag'] or Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise']:
+if Parameters['steps']['doFlag'] or Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']:
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Running input filters ---"
 	sys.stdout.flush()
@@ -136,8 +136,9 @@ if Parameters['steps']['doWriteFilteredCube'] and (Parameters['steps']['doSmooth
         print "SoFiA: Writing filtered cube"
         write_filtered_cube.writeFilteredCube(np_Cube, dict_Header, Parameters, '%s_filtered.fits' % outroot, Parameters['writeCat']['compress'])
 
-print "Filtering complete"
-print 
+if Parameters['steps']['doFlag'] or Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']:
+	print "Filtering complete"
+	print 
 
 # -----------------
 # ---- FILTERS ----
