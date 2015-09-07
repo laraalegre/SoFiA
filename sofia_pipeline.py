@@ -100,9 +100,10 @@ np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters['steps'][
 # ---- PRECONDITIONING ----
 # -------------------------
 
-print "\n--- %.3f seconds since start"%(time()-t0)
-print "\n--- SoFiA: Running input filters ---"
-sys.stdout.flush()
+if Parameters['steps']['doFlag'] or Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise']:
+	print "\n--- %.3f seconds since start"%(time()-t0)
+	print "\n--- SoFiA: Running input filters ---"
+	sys.stdout.flush()
 
 # ---- FLAGGING ----
 if Parameters['steps']['doFlag']:
