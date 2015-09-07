@@ -139,11 +139,12 @@ if Parameters['steps']['doFlag'] or Parameters['steps']['doSmooth'] or Parameter
 	print 
 	sys.stdout.flush()
 
+# ---- MEASURE GLOBAL SIGMA ----
 print "\n--- %.3f seconds since start"%(time()-t0)
 print "\n--- SoFiA: Measuring cube noise ---"
 sys.stdout.flush()
 maxNrVox=1e+6
-sampleRms=int((float(np.array(np_Cube.shape).prod())/maxNrVox)**(1./len(np_cube.shape)))
+sampleRms=max(1,int((float(np.array(np_Cube.shape).prod())/maxNrVox)**(1./min(3,len(np_cube.shape)))))
 globalrms=functions.GetRMS(np_Cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=1,verbose=True,sample=sampleRms)
 print "\n--- %.3f seconds since start"%(time()-t0)
 
