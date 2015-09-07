@@ -24,6 +24,7 @@ def GetRMS(cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=1,nrbins=10000,verbose=
 	y0,y1=int(mt.ceil((1-1./zoomy)*sh[1]/2)),int(mt.floor((1+1./zoomy)*sh[1]/2))+1
 	z0,z1=int(mt.ceil((1-1./zoomz)*sh[0]/2)),int(mt.floor((1+1./zoomz)*sh[0]/2))+1
 	if verbose: print '    Estimating rms on subcube (x,y,z zoom = %.0f,%.0f,%.0f) ...'%(zoomx,zoomy,zoomz)
+	if verbose: print '    Estimating rms on subcube sampling every %i voxels ...'%(sample)
 	if verbose: print '    ... Subcube shape is',cube[z0:z1:sample,y0:y1:sample,x0:x1:sample].shape,'...'
 
 	if rmsMode=='negative':
