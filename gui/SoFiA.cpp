@@ -75,6 +75,26 @@ SoFiA::SoFiA(int argc, char *argv[])
         
         //std::cout << filename.toLocal8Bit().constData() << '\n';
     }
+    else
+    {
+        // Check if there is a temporary file from a previous session:
+        if(QFile::exists(SOFIA_TEMP_FILE))
+        {
+            // Yes, there is one, so let’s load it to continue where we previously stopped:
+            QString sessionFileName = SOFIA_TEMP_FILE;
+            if(loadFile(sessionFileName))
+            {
+                QString messageText = tr("<p>Failed to read previous session file.</p>");
+                QString statusText = tr("Failed to read previous session file.");
+                showMessage(MESSAGE_ERROR, messageText, statusText);
+            }
+            
+            // Clear the current file name again (we don’t want it to be set
+            // to the temporary session file name):
+            currentFileName.clear();
+            this->setWindowTitle(tr("SoFiA"));
+        }
+    }
     
     return;
 }
@@ -87,14 +107,14 @@ SoFiA::SoFiA(int argc, char *argv[])
 
 SoFiA::~SoFiA()
 {
-    if(QFile::exists(SOFIA_TEMP_FILE))
+    /*if(QFile::exists(SOFIA_TEMP_FILE))
     {
         // Temporary parameter file present, needs to be deleted
         if(QFile::remove(SOFIA_TEMP_FILE) == false)
         {
             std::cerr << "Warning: Failed to remove temporary parameter file on exit.\n";
         }
-    }
+    }*/
     
     return;
 }
@@ -1153,32 +1173,32 @@ void SoFiA::runPipeline()
     }
     else
     {
-        bool flagTmpFile = false;
         if(dockWidgetOutput->isHidden()) dockWidgetOutput->show();
         
         QString command("python");
         QStringList arguments;
-        
-        if(currentFileName.isEmpty())
-        {
-            currentFileName = SOFIA_TEMP_FILE;
-            flagTmpFile = true;
-        }
         
         QString SOFIA_FULL_PATH = getenv("SOFIA_PIPELINE_PATH");
         
         // Replace name of pipeline if optically motivated source finding is requested:
         if(tabInputGroupBox2->isChecked()) SOFIA_FULL_PATH.replace("sofia_pipeline.py", "optical_find.py");
         
-        arguments << SOFIA_FULL_PATH.toUtf8().data() << currentFileName;
-        saveSettings();
-        
-        if(flagTmpFile == true)
+        QString originalFileName = currentFileName;        // Remember current file name
+        currentFileName = SOFIA_TEMP_FILE;                 // Set current file name to default temporary file
+        saveSettings();                                    // Save settings under current (temporary) file name
+        currentFileName = originalFileName;                // Revert current file name to original again
+        if(currentFileName.isEmpty())
         {
-            currentFileName.clear();
             this->setWindowTitle(tr("SoFiA"));
         }
+        else
+        {
+            this->setWindowTitle(tr("SoFiA - %1").arg(currentFileName.section('/', -1)));
+        }
+        // NOTE: This complicated approach can be simplified in the future by introducing a file name or some kind
+        //       of flag to be passed on to the saveSettings() function.
         
+        arguments << SOFIA_FULL_PATH.toUtf8().data() << SOFIA_TEMP_FILE;
         pipelineProcess->start(command, arguments);
     }
     
@@ -3176,16 +3196,16 @@ void SoFiA::closeEvent(QCloseEvent *event)
 {
     if(pipelineProcess->state() == QProcess::NotRunning)
     {
-        /*QMessageBox messageBox(this);
+        QMessageBox messageBox(this);
         messageBox.setWindowTitle(tr("SoFiA - Quit"));
         messageBox.setText(tr("<p>Do you wish to exit from SoFiA?</p><p>Note that any unsaved changes will be discarded.</p>"));
         messageBox.setStandardButtons(QMessageBox::Cancel | QMessageBox::Ok);
         messageBox.setDefaultButton(QMessageBox::Ok);
         messageBox.setIcon(QMessageBox::Warning);
-        int choice = messageBox.exec();*/
+        int choice = messageBox.exec();
         
-        /*if(choice == QMessageBox::Ok)*/ event->accept();
-        /*else event->ignore();*/
+        if(choice == QMessageBox::Ok) event->accept();
+        else event->ignore();
     }
     else
     {
