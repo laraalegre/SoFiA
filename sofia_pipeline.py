@@ -85,6 +85,72 @@ else:
     outroot = outputDir + outroot
 
 
+
+# -------------------------------------------------------
+# ---- DEFINE OUTPUT FILE NAMES AND CHECK OVERWRITES ----
+# -------------------------------------------------------
+
+def checkOverwrite(outputFile,isFile=True,isDir=False):
+	if isFile and os.path.exists(outputFile):
+		sys.stderr.write("ERROR: SoFiA will create the output file %s but the file already exists.\n"%outputFile)
+		sys.stderr.write("       You can do one of the following:\n")
+		sys.stderr.write("       1) rename existing file\n")
+		sys.stderr.write("       2) change basename and/or output directory in GUI or SoFiA parameter file\n")
+		sys.stderr.write("       3) enable overwrite in GUI or SoFiA parameter file\n")
+		sys.exit(1)
+	elif isDir and os.path.exists(outputFile) and os.listdir(outputFile)!=[]:
+		sys.stderr.write("ERROR: SoFiA will create the output directory %s but the directory already exists and is not empty.\n"%outputFile)
+		sys.stderr.write("       You can do one of the following:\n")
+		sys.stderr.write("       1) rename existing directory\n")
+		sys.stderr.write("       2) change basename and/or output directory in GUI or SoFiA parameter file\n")
+		sys.stderr.write("       3) enable overwrite in GUI or SoFiA parameter file\n")
+
+outputFilteredCube='%s_filtered.fits'%outroot
+outputSkellamPDF='%s_skel.pdf'%outroot
+outputScatterPDF='%s_scat.pdf'%outroot
+outputContoursPDF='%s_cont.pdf'%outroot
+outputMaskCube='%s_mask.fits'%outroot
+outputMom0Image='%s_mom0.fits'%outroot
+outputNrchImage='%s_nrch.fits'%outroot
+outputMom1Image='%s_mom1.fits'%outroot
+outputCubeletsDir='%s/objects/'%outroot
+outputCatXml='%s_cat.xml'%outroot
+outputCatAscii='%s_cat.ascii'%outroot
+
+if not Parameters['writeCat']['overwrite']:
+	# Output filtered cube
+	if Parameters['steps']['doWriteFilteredCube'] and (Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']):
+		checkOverwrite(outputFilteredCube)
+
+	# Reliability plots
+	if Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and Parameters['reliability']['makePlot']:
+		checkOverwrite(outputSkellamPDF)
+		checkOverwrite(outputScatterPDF)
+		checkOverwrite(outputContoursPDF)
+
+	# Output mask
+	if Parameters['steps']['doWriteMask']:
+		checkOverwrite(outputMaskCube)
+		
+	# Moment images
+	if Parameters['steps']['doMom0']:
+		checkOverwrite(outputMom0Image)
+		checkOverwrite(outputNrchImage)
+	if Parameters['steps']['doMom1']:
+		checkOverwrite(outputMom1Image)
+
+	# Cubelets directory
+	if Parameters['steps']['doCubelets'] and Parameters['steps']['doMerge']:
+		checkOverwrite(outputCubeletsDir,isFile=False,isDir=True)
+
+	# Output catalogs
+	if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge'] and Parameters['writeCat']['writeXML']:
+		checkOverwrite(outputCatXml)
+	if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge'] and Parameters['writeCat']['writeASCII']:
+		checkOverwrite(outputCatAscii)
+
+
+
 # ---------------------
 # ---- IMPORT DATA ----
 # ---------------------
@@ -132,7 +198,7 @@ if Parameters['steps']['doWavelet']:
 # --- WRITE FILTERED CUBE ---
 if Parameters['steps']['doWriteFilteredCube'] and (Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']):
         print "SoFiA: Writing filtered cube"
-        write_filtered_cube.writeFilteredCube(np_Cube, dict_Header, Parameters, '%s_filtered.fits' % outroot, Parameters['writeCat']['compress'])
+        write_filtered_cube.writeFilteredCube(np_Cube, dict_Header, Parameters, outputFilteredCube, Parameters['writeCat']['compress'])
 
 if Parameters['steps']['doFlag'] or Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']:
 	print "Filtering complete"
@@ -412,7 +478,7 @@ if Parameters['steps']['doWriteMask'] and NRdet:
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Writing mask cube ---"
 	sys.stdout.flush()
-	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.fits'%outroot, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
+	writemask.writeMask(mask, dict_Header, Parameters, outputMaskCube, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
 
 
 
@@ -476,10 +542,10 @@ if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge'] and NRde
 	print "\n--- SoFiA: Writing output catalogue ---"
 	sys.stdout.flush()
 	if Parameters['writeCat']['writeXML'] and Parameters['steps']['doMerge'] and NRdet:
-		store_xml.make_xml_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'],outroot + '_cat.xml',Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
+		store_xml.make_xml_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatXml, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
 		#store_xml.make_xml(results, outroot + '_cat.xml', Parameters['writeCat']['overwrite'])
 	if Parameters['writeCat']['writeASCII'] and Parameters['steps']['doMerge'] and NRdet:
-		store_ascii.make_ascii_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outroot+'_cat.ascii',Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
+		store_ascii.make_ascii_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatAscii, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
 		#store_ascii.make_ascii(results, Parameters['writeCat']['parameters'], outroot + '_cat.ascii', Parameters['writeCat']['overwrite'])
 
 
