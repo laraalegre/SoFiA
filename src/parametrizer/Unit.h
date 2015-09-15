@@ -39,51 +39,51 @@
 class Unit
 {
 public:
-                     Unit();
-                     Unit(const Unit &unit);
-                     Unit(const std::string &value);
-    
-    int              getPrefix();
-    
-    int              set(const std::string &value);
-    std::string      printString(const unsigned int mode = UNIT_STD);
-    
-    void             invert();
-    
-    void             clear();
-    bool             isEmpty();
-    bool             isDefined();
-    
-    Unit &           operator =  (const Unit &unit);
-    bool             operator == (const Unit &cmpUnit);
-    bool             operator == (const std::string &cmpUnitStr);
-    bool             operator != (const Unit &cmpUnit);
-    bool             operator != (const std::string &cmpUnitStr);
-    Unit &           operator *= (const Unit &factor);
-    Unit &           operator *= (const std::string &factorStr);
-    Unit             operator *  (const Unit &factor);
-    Unit             operator *  (const std::string &factorStr);
-    
+	Unit();
+	Unit(const Unit &unit);
+	Unit(const std::string &value);
+	
+	int              getPrefix();
+	
+	int              set(const std::string &value);
+	std::string      printString(const unsigned int mode = UNIT_STD);
+	
+	void             invert();
+	
+	void             clear();
+	bool             isEmpty();
+	bool             isDefined();
+	
+	Unit &           operator =  (const Unit &unit);
+	bool             operator == (const Unit &cmpUnit);
+	bool             operator == (const std::string &cmpUnitStr);
+	bool             operator != (const Unit &cmpUnit);
+	bool             operator != (const std::string &cmpUnitStr);
+	Unit &           operator *= (const Unit &factor);
+	Unit &           operator *= (const std::string &factorStr);
+	Unit             operator *  (const Unit &factor);
+	Unit             operator *  (const std::string &factorStr);
+	
 private:
-    int              prefixes;
-    std::vector<int> units;
-    
-    
-    
-    // List of base units:
-    
-    static std::vector<std::string> createBaseUnitList();
-    static const std::vector<std::string> baseUnitList;
-    
-    // Function for definition of named units:
-    
-    static std::map<std::string, std::vector<int> > createUnitMap();
-    static const std::map<std::string, std::vector<int> > unitMap;
-    
-    // Function for definition of named prefixes:
-    
-    static std::map<std::string, int> createPrefixMap();
-    static const std::map<std::string, int> prefixMap;
+	int              prefixes;
+	std::vector<int> units;
+	
+	
+	
+	// List of base units:
+	
+	static std::vector<std::string> createBaseUnitList();
+	static const std::vector<std::string> baseUnitList;
+	
+	// Function for definition of named units:
+	
+	static std::map<std::string, std::vector<int> > createUnitMap();
+	static const std::map<std::string, std::vector<int> > unitMap;
+	
+	// Function for definition of named prefixes:
+	
+	static std::map<std::string, int> createPrefixMap();
+	static const std::map<std::string, int> prefixMap;
 };
 
 #endif

@@ -44,64 +44,64 @@
 class BusyFit
 {
 public:
-    BusyFit();
-    
-    int     setup(size_t n, double *newData, double *newSigma, int newOrder = 2, bool noPlot = false, bool relax = false);
-    int     setFreeParameters(bool newMask[BUSYFIT_FREE_PARAM]);
-    int     fit();
-    int     fit(double new_a, double new_b1, double new_b2, double new_c, double new_xe0, double new_xp0, double new_w);
-    int     getResult(double *parValues, double *parUncert, double &chi2);
-    int     getParameters(double &posX, double &w50, double &w20, double &Fpeak, double &Fint);
-    
+	BusyFit();
+	
+	int     setup(size_t n, double *newData, double *newSigma, int newOrder = 2, bool noPlot = false, bool relax = false);
+	int     setFreeParameters(bool newMask[BUSYFIT_FREE_PARAM]);
+	int     fit();
+	int     fit(double new_a, double new_b1, double new_b2, double new_c, double new_xe0, double new_xp0, double new_w);
+	int     getResult(double *parValues, double *parUncert, double &chi2);
+	int     getParameters(double &posX, double &w50, double &w20, double &Fpeak, double &Fint);
+	
 private:
-    struct data
-    {
-        size_t  nChannels;
-        double *values;
-        double *sigma;
-        bool    mask[BUSYFIT_FREE_PARAM];
-    } spectrum;
-    
-    double  init_a;
-    double  init_b1, init_b2;
-    double  init_c;
-    double  init_xe0, init_xp0;
-    double  init_w;
-    
-    double  a;
-    double  b1, b2;
-    double  c;
-    double  xe0, xp0;
-    double  w;
-    
-    double  err_a;
-    double  err_b1, err_b2;
-    double  err_c;
-    double  err_xe0, err_xp0;
-    double  err_w;
-    
-    double  chiSquare;
-    int     order;
-    
-    bool    flagNoPlot;
-    bool    flagRelax;
-    
-    int     fitWithEstimates();
-    int     LMSolver();
-    void    print_state(size_t p, size_t iter, gsl_multifit_fdfsolver *s);
-    int     printResult();
-    int     plotResult();
-    double  B(double x, int order = 2);
-    double  B2(double x);
-    //double  dB(double x);
-    
-    // The following functions have to be static so they can be pointed to:
-    static int expb_f   (const gsl_vector *x, void *d, gsl_vector *f);
-    static int expb_f2  (const gsl_vector *x, void *d, gsl_vector *f);
-    static int expb_df  (const gsl_vector *x, void *d, gsl_matrix *J);
-    static int expb_df2 (const gsl_vector *x, void *d, gsl_matrix *J);
-    static int expb_fdf (const gsl_vector *x, void *d, gsl_vector *f, gsl_matrix *J);
-    static int expb_fdf2(const gsl_vector *x, void *d, gsl_vector *f, gsl_matrix *J);
+	struct data
+	{
+		size_t  nChannels;
+		double *values;
+		double *sigma;
+		bool    mask[BUSYFIT_FREE_PARAM];
+	} spectrum;
+	
+	double  init_a;
+	double  init_b1, init_b2;
+	double  init_c;
+	double  init_xe0, init_xp0;
+	double  init_w;
+	
+	double  a;
+	double  b1, b2;
+	double  c;
+	double  xe0, xp0;
+	double  w;
+	
+	double  err_a;
+	double  err_b1, err_b2;
+	double  err_c;
+	double  err_xe0, err_xp0;
+	double  err_w;
+	
+	double  chiSquare;
+	int     order;
+	
+	bool    flagNoPlot;
+	bool    flagRelax;
+	
+	int     fitWithEstimates();
+	int     LMSolver();
+	void    print_state(size_t p, size_t iter, gsl_multifit_fdfsolver *s);
+	int     printResult();
+	int     plotResult();
+	double  B(double x, int order = 2);
+	double  B2(double x);
+	//double  dB(double x);
+	
+	// The following functions have to be static so they can be pointed to:
+	static int expb_f   (const gsl_vector *x, void *d, gsl_vector *f);
+	static int expb_f2  (const gsl_vector *x, void *d, gsl_vector *f);
+	static int expb_df  (const gsl_vector *x, void *d, gsl_matrix *J);
+	static int expb_df2 (const gsl_vector *x, void *d, gsl_matrix *J);
+	static int expb_fdf (const gsl_vector *x, void *d, gsl_vector *f, gsl_matrix *J);
+	static int expb_fdf2(const gsl_vector *x, void *d, gsl_vector *f, gsl_matrix *J);
 };
 
 #endif

@@ -49,24 +49,24 @@ double median(std::vector<double> &values);
 
 template <typename T> std::string numberToString(T number, int decimals = -1, bool scientific = false)
 {
-    std::ostringstream convert;
-    
-    if(decimals >= 0 and (typeid(T) == typeid(float) or typeid(T) == typeid(double)))
-    {
-        if(decimals > std::numeric_limits<T>::digits10 + 1) decimals = std::numeric_limits<T>::digits10 + 1;
-        
-        // Choose between fixed-point and scientific notation for float and double types:
-        if(scientific == true) convert << std::scientific;
-        else                   convert << std::fixed;
-        
-        // Set the number of digits for float and double types:
-        convert << std::setprecision(decimals);
-    }
-    
-    // Let's hope that this makes any sense for a particular type T:
-    convert << number;
-    
-    return convert.str();
+	std::ostringstream convert;
+	
+	if(decimals >= 0 and (typeid(T) == typeid(float) or typeid(T) == typeid(double)))
+	{
+		if(decimals > std::numeric_limits<T>::digits10 + 1) decimals = std::numeric_limits<T>::digits10 + 1;
+		
+		// Choose between fixed-point and scientific notation for float and double types:
+		if(scientific == true) convert << std::scientific;
+		else                   convert << std::fixed;
+		
+		// Set the number of digits for float and double types:
+		convert << std::setprecision(decimals);
+	}
+	
+	// Let's hope that this makes any sense for a particular type T:
+	convert << number;
+	
+	return convert.str();
 };
 
 
@@ -77,9 +77,9 @@ template <typename T> std::string numberToString(T number, int decimals = -1, bo
 // when converted to float, but -3 when converted to int!
 template <typename T> T stringToNumber(const std::string &strToConvert)
 {
-    std::stringstream stringStream(strToConvert);
-    T result;
-    return stringStream >> result ? result : 0;
+	std::stringstream stringStream(strToConvert);
+	T result;
+	return stringStream >> result ? result : 0;
 };
 
 
