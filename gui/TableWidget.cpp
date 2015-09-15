@@ -37,44 +37,44 @@
 
 TableWidget::TableWidget(QWidget *parent)
 {
-    this->setParent(parent);
-    
-    // Create icons:
-    iconCopy.addFile(QString(":/icons/16/edit-copy.png"), QSize(16, 16));
-    iconCopy.addFile(QString(":/icons/22/edit-copy.png"), QSize(22, 22));
-    iconCopy = QIcon::fromTheme("edit-copy", iconCopy);
-    
-    iconSelectAll.addFile(QString(":/icons/16/edit-select-all.png"), QSize(16, 16));
-    iconSelectAll.addFile(QString(":/icons/22/edit-select-all.png"), QSize(22, 22));
-    iconSelectAll = QIcon::fromTheme("edit-select-all", iconSelectAll);
-    
-    iconClearSelection.addFile(QString(":/icons/16/edit-clear.png"), QSize(16, 16));
-    iconClearSelection.addFile(QString(":/icons/22/edit-clear.png"), QSize(22, 22));
-    iconClearSelection = QIcon::fromTheme("edit-clear", iconClearSelection);
-    
-    // Set up actions:
-    actionCopy = new QAction(tr("Copy"), this);
-    actionCopy->setShortcut(QKeySequence::Copy);
-    actionCopy->setEnabled(false);
-    actionCopy->setIcon(iconCopy);
-    connect(actionCopy, SIGNAL(triggered()), this, SLOT(copy()));
-    
-    actionSelectAll = new QAction(tr("Select All"), this);
-    actionSelectAll->setShortcut(QKeySequence::SelectAll);
-    actionSelectAll->setEnabled(true);
-    actionSelectAll->setIcon(iconSelectAll);
-    connect(actionSelectAll, SIGNAL(triggered()), this, SLOT(selectEverything()));
-    
-    actionClearSelection = new QAction(tr("Clear Selection"), this);
-    actionClearSelection->setShortcut(Qt::Key_Escape);
-    actionClearSelection->setEnabled(false);
-    actionClearSelection->setIcon(iconClearSelection);
-    connect(actionClearSelection, SIGNAL(triggered()), this, SLOT(selectNothing()));
-    
-    // React to change in item selection:
-    connect(this, SIGNAL(itemSelectionChanged()), this, SLOT(updateActions()));
-    
-    return;
+	this->setParent(parent);
+	
+	// Create icons:
+	iconCopy.addFile(QString(":/icons/16/edit-copy.png"), QSize(16, 16));
+	iconCopy.addFile(QString(":/icons/22/edit-copy.png"), QSize(22, 22));
+	iconCopy = QIcon::fromTheme("edit-copy", iconCopy);
+	
+	iconSelectAll.addFile(QString(":/icons/16/edit-select-all.png"), QSize(16, 16));
+	iconSelectAll.addFile(QString(":/icons/22/edit-select-all.png"), QSize(22, 22));
+	iconSelectAll = QIcon::fromTheme("edit-select-all", iconSelectAll);
+	
+	iconClearSelection.addFile(QString(":/icons/16/edit-clear.png"), QSize(16, 16));
+	iconClearSelection.addFile(QString(":/icons/22/edit-clear.png"), QSize(22, 22));
+	iconClearSelection = QIcon::fromTheme("edit-clear", iconClearSelection);
+	
+	// Set up actions:
+	actionCopy = new QAction(tr("Copy"), this);
+	actionCopy->setShortcut(QKeySequence::Copy);
+	actionCopy->setEnabled(false);
+	actionCopy->setIcon(iconCopy);
+	connect(actionCopy, SIGNAL(triggered()), this, SLOT(copy()));
+	
+	actionSelectAll = new QAction(tr("Select All"), this);
+	actionSelectAll->setShortcut(QKeySequence::SelectAll);
+	actionSelectAll->setEnabled(true);
+	actionSelectAll->setIcon(iconSelectAll);
+	connect(actionSelectAll, SIGNAL(triggered()), this, SLOT(selectEverything()));
+	
+	actionClearSelection = new QAction(tr("Clear Selection"), this);
+	actionClearSelection->setShortcut(Qt::Key_Escape);
+	actionClearSelection->setEnabled(false);
+	actionClearSelection->setIcon(iconClearSelection);
+	connect(actionClearSelection, SIGNAL(triggered()), this, SLOT(selectNothing()));
+	
+	// React to change in item selection:
+	connect(this, SIGNAL(itemSelectionChanged()), this, SLOT(updateActions()));
+	
+	return;
 }
 
 
@@ -85,50 +85,50 @@ TableWidget::TableWidget(QWidget *parent)
 
 void TableWidget::copy()
 {
-    // Get a list of all selected ranges:
-    QList<QTableWidgetSelectionRange> selectedRanges = this->selectedRanges();
-    if(selectedRanges.isEmpty()) return;
-    
-    // Establish the outer boundary of all selections:
-    int leftColumn  = this->columnCount() - 1;
-    int rightColumn = 0;
-    int topRow      = this->rowCount() - 1;
-    int bottomRow   = 0;
-    
-    for(int i = 0; i < selectedRanges.size(); i++)
-    {
-        QTableWidgetSelectionRange range = selectedRanges.at(i);
-        
-        if(range.leftColumn()  < leftColumn)  leftColumn  = range.leftColumn();
-        if(range.rightColumn() > rightColumn) rightColumn = range.rightColumn();
-        if(range.topRow()      < topRow)      topRow      = range.topRow();
-        if(range.bottomRow()   > bottomRow)   bottomRow   = range.bottomRow();
-    }
-    
-    if(bottomRow < topRow or rightColumn < leftColumn) return;
-    
-    // Loop through selection range and extract data:
-    QString outputText;
-    
-    for(int i = topRow; i <= bottomRow; i++)
-    {
-        for(int j = leftColumn; j <= rightColumn; j++)
-        {
-            if(this->item(i, j)->isSelected())
-            {
-                outputText += this->item(i, j)->text();
-            }
-            
-            if (j < rightColumn) outputText += "\t";
-            else                 outputText += "\n";
-        }
-    }
-    
-    // Copy data to clipboard:
-    QClipboard *clipboard = QApplication::clipboard();
-    clipboard->setText(outputText);
-    
-    return;
+	// Get a list of all selected ranges:
+	QList<QTableWidgetSelectionRange> selectedRanges = this->selectedRanges();
+	if(selectedRanges.isEmpty()) return;
+	
+	// Establish the outer boundary of all selections:
+	int leftColumn  = this->columnCount() - 1;
+	int rightColumn = 0;
+	int topRow      = this->rowCount() - 1;
+	int bottomRow   = 0;
+	
+	for(int i = 0; i < selectedRanges.size(); i++)
+	{
+		QTableWidgetSelectionRange range = selectedRanges.at(i);
+		
+		if(range.leftColumn()  < leftColumn)  leftColumn  = range.leftColumn();
+		if(range.rightColumn() > rightColumn) rightColumn = range.rightColumn();
+		if(range.topRow()      < topRow)      topRow      = range.topRow();
+		if(range.bottomRow()   > bottomRow)   bottomRow   = range.bottomRow();
+	}
+	
+	if(bottomRow < topRow or rightColumn < leftColumn) return;
+	
+	// Loop through selection range and extract data:
+	QString outputText;
+	
+	for(int i = topRow; i <= bottomRow; i++)
+	{
+		for(int j = leftColumn; j <= rightColumn; j++)
+		{
+			if(this->item(i, j)->isSelected())
+			{
+				outputText += this->item(i, j)->text();
+			}
+			
+			if (j < rightColumn) outputText += "\t";
+			else                 outputText += "\n";
+		}
+	}
+	
+	// Copy data to clipboard:
+	QClipboard *clipboard = QApplication::clipboard();
+	clipboard->setText(outputText);
+	
+	return;
 }
 
 
@@ -139,9 +139,9 @@ void TableWidget::copy()
 
 void TableWidget::selectEverything()
 {
-    this->selectAll();
-    
-    return;
+	this->selectAll();
+	
+	return;
 }
 
 
@@ -152,9 +152,9 @@ void TableWidget::selectEverything()
 
 void TableWidget::selectNothing()
 {
-    this->selectionModel()->clearSelection();
-    
-    return;
+	this->selectionModel()->clearSelection();
+	
+	return;
 }
 
 
@@ -165,12 +165,12 @@ void TableWidget::selectNothing()
 
 void TableWidget::updateActions()
 {
-    QList<QTableWidgetSelectionRange> selectedRanges = this->selectedRanges();
-    
-    actionCopy->setEnabled(not selectedRanges.isEmpty());
-    actionClearSelection->setEnabled(not selectedRanges.isEmpty());
-    
-    return;
+	QList<QTableWidgetSelectionRange> selectedRanges = this->selectedRanges();
+	
+	actionCopy->setEnabled(not selectedRanges.isEmpty());
+	actionClearSelection->setEnabled(not selectedRanges.isEmpty());
+	
+	return;
 }
 
 
@@ -181,16 +181,16 @@ void TableWidget::updateActions()
 
 void TableWidget::contextMenuEvent(QContextMenuEvent *event)
 {
-    QMenu menuContext(this);
-    
-    menuContext.addAction(actionCopy);
-    menuContext.addSeparator();
-    menuContext.addAction(actionSelectAll);
-    menuContext.addAction(actionClearSelection);
-    
-    menuContext.exec(event->globalPos());
-    
-    return;
+	QMenu menuContext(this);
+	
+	menuContext.addAction(actionCopy);
+	menuContext.addSeparator();
+	menuContext.addAction(actionSelectAll);
+	menuContext.addAction(actionClearSelection);
+	
+	menuContext.exec(event->globalPos());
+	
+	return;
 }
 
 
@@ -201,10 +201,10 @@ void TableWidget::contextMenuEvent(QContextMenuEvent *event)
 
 void TableWidget::keyPressEvent(QKeyEvent *event)
 {
-    if(event->matches(QKeySequence::Copy)) this->copy();
-    if(event->matches(QKeySequence::SelectAll)) this->selectEverything();
-    else if(event->key() == Qt::Key_Escape) this->selectNothing();
-    else QTableWidget::keyPressEvent(event);
-    
-    return;
+	if(event->matches(QKeySequence::Copy)) this->copy();
+	if(event->matches(QKeySequence::SelectAll)) this->selectEverything();
+	else if(event->key() == Qt::Key_Escape) this->selectNothing();
+	else QTableWidget::keyPressEvent(event);
+	
+	return;
 }

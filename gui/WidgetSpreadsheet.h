@@ -45,62 +45,62 @@
 
 // Import correct headers depending on Qt version:
 #if QT_VERSION < 0x050000
-  #include <QtGui/QWidget>
-  #include <QtGui/QTableWidget>
-  #include <QtGui/QTableWidgetItem>
-  #include <QtGui/QLayout>
-  #include <QtGui/QFormLayout>
-  #include <QtGui/QPushButton>
-  #include <QtGui/QComboBox>
-  #include <QtGui/QCheckBox>
+	#include <QtGui/QWidget>
+	#include <QtGui/QTableWidget>
+	#include <QtGui/QTableWidgetItem>
+	#include <QtGui/QLayout>
+	#include <QtGui/QFormLayout>
+	#include <QtGui/QPushButton>
+	#include <QtGui/QComboBox>
+	#include <QtGui/QCheckBox>
 #else
-  #include <QtWidgets/QWidget>
-  #include <QtWidgets/QTableWidget>
-  #include <QtWidgets/QTableWidgetItem>
-  #include <QtWidgets/QLayout>
-  #include <QtWidgets/QFormLayout>
-  #include <QtWidgets/QPushButton>
-  #include <QtWidgets/QComboBox>
-  #include <QtWidgets/QCheckBox>
+	#include <QtWidgets/QWidget>
+	#include <QtWidgets/QTableWidget>
+	#include <QtWidgets/QTableWidgetItem>
+	#include <QtWidgets/QLayout>
+	#include <QtWidgets/QFormLayout>
+	#include <QtWidgets/QPushButton>
+	#include <QtWidgets/QComboBox>
+	#include <QtWidgets/QCheckBox>
 #endif
 
 class WidgetSpreadsheet : public QWidget
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+	
 public:
-    WidgetSpreadsheet(QWidget *parent = 0);
-    int loadCatalog(QString &filename);
-    
+	WidgetSpreadsheet(QWidget *parent = 0);
+	int loadCatalog(QString &filename);
+	
 private:
-    QString currentFileName;
-    int tableWidth;
-    int tableHeight;
-    QTableWidget *tableWidget;
-    QVBoxLayout  *mainLayout;
-    
-    QIcon iconDialogClose;
-    QIcon iconViewRefresh;
-    
-    QFormLayout *layoutSort;
-    QWidget     *widgetSort;
-    QCheckBox   *buttonOrder;
-    QComboBox   *buttonSort;
-    QPushButton *buttonReload;
-    QPushButton *buttonClose;
-    QHBoxLayout *layoutControls;
-    QWidget     *widgetControls;
-    
+	QString currentFileName;
+	int tableWidth;
+	int tableHeight;
+	QTableWidget *tableWidget;
+	QVBoxLayout  *mainLayout;
+	
+	QIcon iconDialogClose;
+	QIcon iconViewRefresh;
+	
+	QFormLayout *layoutSort;
+	QWidget     *widgetSort;
+	QCheckBox   *buttonOrder;
+	QComboBox   *buttonSort;
+	QPushButton *buttonReload;
+	QPushButton *buttonClose;
+	QHBoxLayout *layoutControls;
+	QWidget     *widgetControls;
+	
 private slots:
-    void sortTable(int column = -1);
-    void changeSortOrder();
-    void reloadCatalog();
-    
+	void sortTable(int column = -1);
+	void changeSortOrder();
+	void reloadCatalog();
+	
 protected:
-    virtual void closeEvent(QCloseEvent *event);
-    
+	virtual void closeEvent(QCloseEvent *event);
+	
 signals:
-    void widgetClosed();
+	void widgetClosed();
 };
 
 #endif

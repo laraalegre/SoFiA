@@ -33,19 +33,19 @@
 
 // Import correct headers depending on Qt version:
 #if QT_VERSION < 0x050000
-    #include <QtGui/QApplication>
+	#include <QtGui/QApplication>
 #else
-    #include <QtWidgets/QApplication>
+	#include <QtWidgets/QApplication>
 #endif
 
 #include "SoFiA.h"
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);
-    
-    SoFiA pipelineInterface(argc, argv);
-    pipelineInterface.show();
-    
-    return app.exec();
+	QApplication app(argc, argv);
+	
+	SoFiA pipelineInterface(argc, argv);
+	pipelineInterface.show();
+	
+	return app.exec();
 }

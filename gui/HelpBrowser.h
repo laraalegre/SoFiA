@@ -38,39 +38,39 @@
 
 // Import correct headers depending on Qt version:
 #if QT_VERSION < 0x050000
-    #include <QtGui/QApplication>
-    #include <QtGui/QWidget>
-    #include <QtGui/QTextBrowser>
-    #include <QtGui/QPushButton>
-    #include <QtGui/QHBoxLayout>
-    #include <QtGui/QVBoxLayout>
+	#include <QtGui/QApplication>
+	#include <QtGui/QWidget>
+	#include <QtGui/QTextBrowser>
+	#include <QtGui/QPushButton>
+	#include <QtGui/QHBoxLayout>
+	#include <QtGui/QVBoxLayout>
 #else
-    #include <QtWidgets/QApplication>
-    #include <QtWidgets/QWidget>
-    #include <QtWidgets/QTextBrowser>
-    #include <QtWidgets/QPushButton>
-    #include <QtWidgets/QHBoxLayout>
-    #include <QtWidgets/QVBoxLayout>
+	#include <QtWidgets/QApplication>
+	#include <QtWidgets/QWidget>
+	#include <QtWidgets/QTextBrowser>
+	#include <QtWidgets/QPushButton>
+	#include <QtWidgets/QHBoxLayout>
+	#include <QtWidgets/QVBoxLayout>
 #endif
 
 
 class HelpBrowser : public QWidget
 {
-    Q_OBJECT
-    
+	Q_OBJECT
+	
 public:
-    HelpBrowser(const QString &path, const QString &page, QWidget *parent = 0);
-    static void showPage(const QString &page);
-    
+	HelpBrowser(const QString &path, const QString &page, QWidget *parent = 0);
+	static void showPage(const QString &page);
+	
 private slots:
-    void updateWindowTitle();
-    
+	void updateWindowTitle();
+	
 private:
-    QTextBrowser *textBrowser;
-    
-    QPushButton  *buttonHome;
-    QPushButton  *buttonBack;
-    QPushButton  *buttonClose;
+	QTextBrowser *textBrowser;
+	
+	QPushButton  *buttonHome;
+	QPushButton  *buttonBack;
+	QPushButton  *buttonClose;
 };
 
 #endif
