@@ -55,9 +55,9 @@ SoFiA::SoFiA(int argc, char *argv[])
 	spreadsheet = new WidgetSpreadsheet(this);
 	spreadsheet->hide();
 	
-	// Load parameter file if specified:
 	if(argc > 1)
 	{
+		// Load parameter file if specified:
 		QString fileName = QString(argv[1]);
 		
 		if(!fileName.isEmpty() and fileName[0] != '/')
@@ -69,31 +69,14 @@ SoFiA::SoFiA(int argc, char *argv[])
 		if(loadFile(fileName))
 		{
 			QString messageText = tr("<p>Failed to read input file %1.</p>").arg(fileName.section('/', -1));
-			QString statusText = tr("Failed to read input file %1.").arg(fileName.section('/', -1));
+			QString statusText  = tr("Failed to read input file %1.").arg(fileName.section('/', -1));
 			showMessage(MESSAGE_ERROR, messageText, statusText);
 		}
-		
-		//std::cout << filename.toLocal8Bit().constData() << '\n';
 	}
 	else
 	{
-		// Check if there is a temporary file from a previous session:
-		if(QFile::exists(SOFIA_TEMP_FILE))
-		{
-			// Yes, there is one, so let’s load it to continue where we previously stopped:
-			QString sessionFileName = SOFIA_TEMP_FILE;
-			if(loadFile(sessionFileName))
-			{
-				QString messageText = tr("<p>Failed to read previous session file.</p>");
-				QString statusText = tr("Failed to read previous session file.");
-				showMessage(MESSAGE_ERROR, messageText, statusText);
-			}
-			
-			// Clear the current file name again (we don’t want it to be set
-			// to the temporary session file name):
-			currentFileName.clear();
-			this->setWindowTitle(tr("SoFiA"));
-		}
+		// Else try to restore previous session:
+		loadSession();
 	}
 	
 	return;
@@ -107,16 +90,64 @@ SoFiA::SoFiA(int argc, char *argv[])
 
 SoFiA::~SoFiA()
 {
-	/*if(QFile::exists(SOFIA_TEMP_FILE))
-	 *    {
-	 *        // Temporary parameter file present, needs to be deleted
-	 *        if(QFile::remove(SOFIA_TEMP_FILE) == false)
-	 *        {
-	 *            std::cerr << "Warning: Failed to remove temporary parameter file on exit.\n";
-}
-}*/
+	// Save current session:
+	saveSession();
 	
 	return;
+}
+
+
+
+// ---------------------------------
+// Function to load previous session
+// ---------------------------------
+
+int SoFiA::loadSession()
+{
+	// Check if there is a temporary file from a previous session:
+	if(QFile::exists(SOFIA_TEMP_FILE))
+	{
+		// Yes, there is one, so let’s load it to continue where we previously stopped:
+		QString sessionFileName  = SOFIA_TEMP_FILE;
+		QString originalFileName = currentFileName;        // Remember original current file name, if any
+		
+		if(loadFile(sessionFileName))
+		{
+			QString messageText = tr("<p>Failed to read previous session file.</p>");
+			QString statusText = tr("Failed to read previous session file.");
+			showMessage(MESSAGE_ERROR, messageText, statusText);
+			return 1;
+		}
+		
+		currentFileName = originalFileName;                // Revert current file name to original again
+		if(currentFileName.isEmpty()) this->setWindowTitle(tr("SoFiA"));
+		else this->setWindowTitle(tr("SoFiA - %1").arg(currentFileName.section('/', -1)));
+		
+		QString messageText = QString("");
+		QString statusText = tr("Previous session restored.");
+		showMessage(MESSAGE_INFO, messageText, statusText);
+	}
+	
+	return 0;
+}
+
+
+
+// --------------------------------
+// Function to save current session
+// --------------------------------
+
+int SoFiA::saveSession()
+{
+	QString originalFileName = currentFileName;            // Remember original current file name, if any
+	currentFileName = SOFIA_TEMP_FILE;                     // Set current file name to default temporary file
+	saveSettings();                                        // Save settings under temporary file name
+	
+	currentFileName = originalFileName;                    // Revert current file name to original again
+	if(currentFileName.isEmpty()) this->setWindowTitle(tr("SoFiA"));
+	else this->setWindowTitle(tr("SoFiA - %1").arg(currentFileName.section('/', -1)));
+	
+	return 0;
 }
 
 
@@ -1183,21 +1214,10 @@ void SoFiA::runPipeline()
 		// Replace name of pipeline if optically motivated source finding is requested:
 		if(tabInputGroupBox2->isChecked()) SOFIA_FULL_PATH.replace("sofia_pipeline.py", "optical_find.py");
 		
-		QString originalFileName = currentFileName;        // Remember current file name
-		currentFileName = SOFIA_TEMP_FILE;                 // Set current file name to default temporary file
-		saveSettings();                                    // Save settings under current (temporary) file name
-		currentFileName = originalFileName;                // Revert current file name to original again
-		if(currentFileName.isEmpty())
-		{
-			this->setWindowTitle(tr("SoFiA"));
-		}
-		else
-		{
-			this->setWindowTitle(tr("SoFiA - %1").arg(currentFileName.section('/', -1)));
-		}
-		// NOTE: This complicated approach can be simplified in the future by introducing a file name or some kind
-		//       of flag to be passed on to the saveSettings() function.
+		// Save current parameter settings to session file:
+		saveSession();
 		
+		// Run pipeline on session file:
 		arguments << SOFIA_FULL_PATH.toUtf8().data() << SOFIA_TEMP_FILE;
 		pipelineProcess->start(command, arguments);
 	}
@@ -3198,7 +3218,7 @@ void SoFiA::closeEvent(QCloseEvent *event)
 	{
 		QMessageBox messageBox(this);
 		messageBox.setWindowTitle(tr("SoFiA - Quit"));
-		messageBox.setText(tr("<p>Do you wish to exit from SoFiA?</p><p>Note that any unsaved changes will be discarded.</p>"));
+		messageBox.setText(tr("<p>Do you wish to exit from SoFiA?</p><p>Note that any unsaved changes may be lost.</p>"));
 		messageBox.setStandardButtons(QMessageBox::Cancel | QMessageBox::Ok);
 		messageBox.setDefaultButton(QMessageBox::Ok);
 		messageBox.setIcon(QMessageBox::Warning);

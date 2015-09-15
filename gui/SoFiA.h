@@ -33,7 +33,7 @@
 #define PIPELINEINTERFACE_H
 
 #define SOFIA_DEFAULT_SETTINGS ":/SoFiA_default_input.txt"
-#define SOFIA_TEMP_FILE "SoFiA_parameters.tmp"
+#define SOFIA_TEMP_FILE "SoFiA_session.par"
 
 #define MESSAGE_INFO    0
 #define MESSAGE_WARNING 1
@@ -160,6 +160,8 @@ private:
 	int  updateVariables();
 	int  setFields();
 	int  setDefaults();
+	int  loadSession();
+	int  saveSession();
 	int  showMessage(int severity, QString &messageText, QString &statusText);
 	void createInterface();
 	void createWhatsThis();

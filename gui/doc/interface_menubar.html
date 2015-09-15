@@ -35,13 +35,13 @@
           <li><strong>Open</strong> &ndash; Open a file and read parameter settings.</li>
           <li><strong>Save</strong> &ndash; Save parameter settings to currently opened file.</li>
           <li><strong>Save As</strong> &ndash; Save parameter settings to a new file.</li>
-          <li><strong>Quit</strong> &ndash; Exit from SoFiA. Any unsaved parameter settings will be lost. It will not be possible to exit from SoFiA while the pipeline is running.</li>
+          <li><strong>Quit</strong> &ndash; Exit from SoFiA. Any unsaved parameter settings may be lost, although SoFiA will save all current settings to a temporary session file which will be restored when SoFiA is re-launched from within the same directory. It will not be possible to exit from SoFiA while the pipeline is running.</li>
         </ul>
       </li>
       <li>
         <strong>Pipeline</strong>
         <ul>
-          <li><strong>Run Pipeline</strong> &ndash; Start the pipeline using the current parameter settings. SoFiA will save the current parameter settings to the currently opened file before invoking the pipeline. If no file is currently open, SoFiA will use a temporary file instead.</li>
+          <li><strong>Run Pipeline</strong> &ndash; Start the pipeline using the current parameter settings. SoFiA will save the current parameter settings to a temporary session file before invoking the pipeline.</li>
           <li><strong>Abort Pipeline</strong> &ndash; Abort the current pipeline run. All pipeline processes will be terminated immediately without waiting for them to finish. Hence, the pipeline is not likely to produce any useful results in this case and will have to be restarted.</li>
           <li><strong>Save Messages As</strong> &ndash; Save all pipeline messages to file.</li>
           <li><strong>Clear Messages</strong> &ndash; Clear the pipeline message interface. This will discard all previous pipeline output messages. If you wish to keep a copy of the pipeline messages, please save them before clearing the message interface.</li>
