@@ -126,6 +126,7 @@ private slots:
 	void saveSettingsAs();
 	void saveLogAs();
 	void clearLog();
+	void parameterChanged();
 	void resetToDefault();
 	void showHandbook(const QString &page = QString("index.html"));
 	void aboutSoFiA();
@@ -147,8 +148,7 @@ private slots:
 	
 private:
 	QString currentFileName;
-	
-	//QMap<QWidget*, QString> parameter;
+	bool settingsChanged;
 	QMap<QString, QString> parameters;
 	
 	QProcess   *pipelineProcess;
@@ -166,6 +166,7 @@ private:
 	void createInterface();
 	void createWhatsThis();
 	void updateActions();
+	void updateWindowTitle();
 	
 	QIcon iconSoFiA;
 	QIcon iconDocumentNew;
