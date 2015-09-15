@@ -33,7 +33,7 @@
 #define PIPELINEINTERFACE_H
 
 #define SOFIA_DEFAULT_SETTINGS ":/SoFiA_default_input.txt"
-#define SOFIA_TEMP_FILE "SoFiA_session.par"
+#define SOFIA_TEMP_FILE "SoFiA.session"
 
 #define MESSAGE_INFO    0
 #define MESSAGE_WARNING 1
