@@ -29,6 +29,35 @@ from sofia import wcs_coordinates
 from sofia import flag_cube
 from sofia import CNHI
 
+
+
+# -------------------------------------------------------
+# ---- DEFINE OUTPUT FILE NAMES AND CHECK OVERWRITES ----
+# -------------------------------------------------------
+
+def checkOverwrite(outputFile, isFile=True, isDir=False):
+	if isFile and os.path.exists(outputFile):
+		sys.stderr.write("ERROR: SoFiA will create the output file %s, but that file already exists.\n"%outputFile)
+		sys.stderr.write("       You can do one of the following:\n")
+		sys.stderr.write("       1) enable overwrite in GUI or parameter file\n")
+		sys.stderr.write("       2) rename existing file\n")
+		sys.stderr.write("       3) change base name and/or output directory in GUI or parameter file\n")
+		sys.exit(1)
+	elif isDir and os.path.exists(outputFile) and os.listdir(outputFile) != []:
+		sys.stderr.write("ERROR: SoFiA will create the output directory %s, but that directory already exists and is not empty.\n"%outputFile)
+		sys.stderr.write("       You can do one of the following:\n")
+		sys.stderr.write("       1) enable overwrite in GUI or parameter file\n")
+		sys.stderr.write("       2) rename existing directory\n")
+		sys.stderr.write("       3) change base name and/or output directory in GUI or parameter file\n")
+	return
+
+
+
+
+# --------------------------------
+# ---- START OF SoFiA PIPELINE ---
+# --------------------------------
+
 t0=time()
 
 # ---------------------------------
@@ -61,10 +90,10 @@ User_Parameters = readoptions.readPipelineOptions(parameter_file)
 
 # Overwrite default parameters with user parameters (if exist):
 for task in User_Parameters.iterkeys():
-        if(task in Parameters):
-                for key in User_Parameters[task].iterkeys():
-                        if(key in Parameters[task]):
-                                Parameters[task][key] = User_Parameters[task][key]
+	if(task in Parameters):
+		for key in User_Parameters[task].iterkeys():
+			if(key in Parameters[task]):
+				Parameters[task][key] = User_Parameters[task][key]
 
 # Define the base and output directory name used for output files (defaults to input file 
 # name if writeCat.basename is found to be invalid):
@@ -72,50 +101,30 @@ outputBase = Parameters['writeCat']['basename']
 outputDir  = Parameters['writeCat']['outputDir']
 
 if((not outputBase) or outputBase.isspace() or ("/" in outputBase) or ("\\" in outputBase) or (outputBase == ".") or (outputBase == "..")):
-    outroot = Parameters['import']['inFile'].split('/')[-1]
-    if((outroot.lower()).endswith(".fits") and len(outroot) > 5):
-        outroot = outroot[0:-5]
+	outroot = Parameters['import']['inFile'].split('/')[-1]
+	if((outroot.lower()).endswith(".fits") and len(outroot) > 5):
+		outroot = outroot[0:-5]
 else:
-    outroot = outputBase
+	outroot = outputBase
 
 if((not outputDir) or (not os.path.isdir(outputDir)) or (outputDir.isspace())):
-    outroot = Parameters['import']['inFile'][0:len(Parameters['import']['inFile'])-len(Parameters['import']['inFile'].split('/')[-1])]+outroot
+	outroot = Parameters['import']['inFile'][0:len(Parameters['import']['inFile'])-len(Parameters['import']['inFile'].split('/')[-1])]+outroot
 else:
-    if outputDir[-1] != '/': outputDir += '/'
-    outroot = outputDir + outroot
+	if outputDir[-1] != '/': outputDir += '/'
+	outroot = outputDir + outroot
 
-
-
-# -------------------------------------------------------
-# ---- DEFINE OUTPUT FILE NAMES AND CHECK OVERWRITES ----
-# -------------------------------------------------------
-
-def checkOverwrite(outputFile,isFile=True,isDir=False):
-	if isFile and os.path.exists(outputFile):
-		sys.stderr.write("ERROR: SoFiA will create the output file %s but the file already exists.\n"%outputFile)
-		sys.stderr.write("       You can do one of the following:\n")
-		sys.stderr.write("       1) rename existing file\n")
-		sys.stderr.write("       2) change basename and/or output directory in GUI or SoFiA parameter file\n")
-		sys.stderr.write("       3) enable overwrite in GUI or SoFiA parameter file\n")
-		sys.exit(1)
-	elif isDir and os.path.exists(outputFile) and os.listdir(outputFile)!=[]:
-		sys.stderr.write("ERROR: SoFiA will create the output directory %s but the directory already exists and is not empty.\n"%outputFile)
-		sys.stderr.write("       You can do one of the following:\n")
-		sys.stderr.write("       1) rename existing directory\n")
-		sys.stderr.write("       2) change basename and/or output directory in GUI or SoFiA parameter file\n")
-		sys.stderr.write("       3) enable overwrite in GUI or SoFiA parameter file\n")
-
-outputFilteredCube='%s_filtered.fits'%outroot
-outputSkellamPDF='%s_skel.pdf'%outroot
-outputScatterPDF='%s_scat.pdf'%outroot
-outputContoursPDF='%s_cont.pdf'%outroot
-outputMaskCube='%s_mask.fits'%outroot
-outputMom0Image='%s_mom0.fits'%outroot
-outputNrchImage='%s_nrch.fits'%outroot
-outputMom1Image='%s_mom1.fits'%outroot
-outputCubeletsDir='%s/objects/'%outroot
-outputCatXml='%s_cat.xml'%outroot
-outputCatAscii='%s_cat.ascii'%outroot
+# Check if any output file already exists:
+outputFilteredCube = '%s_filtered.fits'%outroot
+outputSkellamPDF   = '%s_skel.pdf'%outroot
+outputScatterPDF   = '%s_scat.pdf'%outroot
+outputContoursPDF  = '%s_cont.pdf'%outroot
+outputMaskCube     = '%s_mask.fits'%outroot
+outputMom0Image    = '%s_mom0.fits'%outroot
+outputNrchImage    = '%s_nrch.fits'%outroot
+outputMom1Image    = '%s_mom1.fits'%outroot
+outputCubeletsDir  = '%s/objects/'%outroot
+outputCatXml       = '%s_cat.xml'%outroot
+outputCatAscii     = '%s_cat.ascii'%outroot
 
 if not Parameters['writeCat']['overwrite']:
 	# Output filtered cube
@@ -139,11 +148,11 @@ if not Parameters['writeCat']['overwrite']:
 	if Parameters['steps']['doMom1']:
 		checkOverwrite(outputMom1Image)
 
-	# Cubelets directory
+	# Cubelet directory
 	if Parameters['steps']['doCubelets'] and Parameters['steps']['doMerge']:
 		checkOverwrite(outputCubeletsDir,isFile=False,isDir=True)
 
-	# Output catalogs
+	# Output catalogues
 	if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge'] and Parameters['writeCat']['writeXML']:
 		checkOverwrite(outputCatXml)
 	if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge'] and Parameters['writeCat']['writeASCII']:
