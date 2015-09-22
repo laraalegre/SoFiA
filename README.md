@@ -108,6 +108,16 @@ basic help is available at this stage.
 Version history
 ---------------
 
+* SoFiA 0.5.0
+  * Released 22/09/2015
+  * Adds several new features, including GUI sessions, automated kernel
+    size determination in reliability calculation and Unified Content
+    Descriptors for source parameters (UCDs).
+  * Fixes a few bugs in handling WCS information and merging detections
+    into sources.
+  * See release notes for details:
+    https://github.com/SoFiA-Admin/SoFiA/releases/tag/v0.5.0
+
 * SoFiA 0.4.0
   * Released 22/12/2014
   * Adds several new features, including 2D–1D wavelet filtering, the CNHI 
