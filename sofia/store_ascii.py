@@ -60,7 +60,7 @@ def make_ascii_from_array(objects, cathead, catunits, catfmt, store_pars, outnam
     # print catfmt
     for j in catfmt:
         lenCathead.append(
-            int(j.split('%')[1].split('e')[0].split('f')[0].split('i')[0].split('d')[0].split('.')[0]) + 1
+            int(j.split('%')[1].split('e')[0].split('f')[0].split('i')[0].split('d')[0].split('.')[0].split('s')[0]) + 1
             )
 
     # lenCathead[0] -= 2
