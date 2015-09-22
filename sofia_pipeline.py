@@ -31,9 +31,9 @@ from sofia import CNHI
 
 
 
-# -------------------------------------------------------
-# ---- DEFINE OUTPUT FILE NAMES AND CHECK OVERWRITES ----
-# -------------------------------------------------------
+# --------------------------------------
+# ---- FUNCTION TO CHECK OVERWRITES ----
+# --------------------------------------
 
 def checkOverwrite(outputFile, isFile=True, isDir=False):
 	if isFile and os.path.exists(outputFile):
