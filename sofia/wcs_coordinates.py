@@ -243,7 +243,7 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 				iau_names[src][0] = "SoFiA " + iau_equinox + iau_pos
 
 			objects = np.concatenate((objects, iau_names), axis = 1)
-			catParUnits = tuple(list(catParUnits) + [""])
+			catParUnits = tuple(list(catParUnits) + ["-"])
 			catParNames = tuple(list(catParNames) + ["name"])
 			catParFormt = tuple(list(catParFormt) + ["%30s"])
 
