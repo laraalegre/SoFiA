@@ -540,7 +540,7 @@ int SoFiA::setFields()
 		tabOutputButtonParameter_velo->setChecked(false);
 		
 		if(listOutputPar.contains(QString("\'id\'")))        tabOutputButtonParameter_id->setChecked(true);
-		if(listOutputPar.contains(QString("\'iname\'")))     tabOutputButtonParameter_name->setChecked(true);
+		if(listOutputPar.contains(QString("\'name\'")))      tabOutputButtonParameter_name->setChecked(true);
 		if(listOutputPar.contains(QString("\'x_geo\'")))     tabOutputButtonParameter_x_geo->setChecked(true);
 		if(listOutputPar.contains(QString("\'y_geo\'")))     tabOutputButtonParameter_y_geo->setChecked(true);
 		if(listOutputPar.contains(QString("\'z_geo\'")))     tabOutputButtonParameter_z_geo->setChecked(true);
