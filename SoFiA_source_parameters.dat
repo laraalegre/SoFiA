@@ -1,4 +1,5 @@
 id         meta.id
+name       meta.id
 x_geo      pos.cartesian.x
 y_geo      pos.cartesian.x
 z_geo      pos.cartesian.x
