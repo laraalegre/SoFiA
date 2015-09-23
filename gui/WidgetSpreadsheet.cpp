@@ -122,8 +122,8 @@ int WidgetSpreadsheet::loadCatalog(QString &filename)
 	if(filename.isEmpty()) return 1;
 	
 	currentFileName = filename;
-	tableWidget->clear();              // Clear the existing table. This will automatically delete all QTableWidgetItem objects 
-	// created before, so no memory will be leaked.
+	tableWidget->clear();              // Clear the existing table. This will automatically delete all QTableWidgetItem objects
+	                                   // created before, so no memory will be leaked.
 	tableWidth  = 0;
 	tableHeight = 0;
 	buttonSort->clear();               // Clear sort button as well.
@@ -151,6 +151,8 @@ int WidgetSpreadsheet::loadCatalog(QString &filename)
 	tableWidth = headerTags.size();
 	tableWidget->setColumnCount(tableWidth);
 	
+	QStringList datatype;    // This will store the data type of each column for later use.
+	
 	// Extract all header names:
 	for(int i = 0; i < headerTags.size(); i++)
 	{
@@ -158,12 +160,13 @@ int WidgetSpreadsheet::loadCatalog(QString &filename)
 		QDomNamedNodeMap fieldAttributes = field.attributes();
 		QDomNode attribute = fieldAttributes.namedItem("name");
 		QDomNode unit      = fieldAttributes.namedItem("unit");
+		datatype.append((fieldAttributes.namedItem("datatype")).nodeValue());
 		
 		QString headerText = attribute.nodeValue().trimmed();
 		
 		buttonSort->addItem(headerText);
 		
-		if(!unit.isNull() and unit.nodeValue() != "-")
+		if(not unit.isNull() and unit.nodeValue() != "-")
 		{
 			headerText.append("\n(");
 			headerText.append(unit.nodeValue());
@@ -194,13 +197,16 @@ int WidgetSpreadsheet::loadCatalog(QString &filename)
 			{
 				QDomNode cell = cellTags.item(j);
 				
-				if(!cell.isNull() and cell.hasChildNodes())
+				if(not cell.isNull() and cell.hasChildNodes())
 				{
 					QDomNode entry = cell.firstChild();
 					QString  text  = entry.nodeValue().trimmed();
 					double   value = text.toDouble();
 					QTableWidgetItem* cellItem = new QTableWidgetItem();
-					cellItem->setData(Qt::DisplayRole, value);
+					
+					if(datatype[j] == "char") cellItem->setData(Qt::DisplayRole, text);
+					else                      cellItem->setData(Qt::DisplayRole, value);
+					
 					cellItem->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 					cellItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
 					tableWidget->setItem(i, j, cellItem);

@@ -190,22 +190,22 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 
 			iau_names = np.empty([n_src, 1], dtype=object)
 
-			if(header["ctype1"][:4] == "RA--"):
+			if header["ctype1"][:4] == "RA--":
 				# Equatorial coordinates try to figure out equinox:
 				iau_coord = "equ"
-				if("equinox" in header):
-					if(int(header["equinox"]) == 2000): iau_equinox = "J"
-					elif(int(header["equinox"]) == 1950): iau_equinox = "B"
+				if "equinox" in header:
+					if int(header["equinox"]) == 2000: iau_equinox = "J"
+					elif int(header["equinox"]) == 1950: iau_equinox = "B"
 					else: iau_equinox = "X"
-				elif("epoch" in header):
+				elif "epoch" in header:
 					# Assume that EPOCH has been abused to record the equinox:
-					if(int(header["epoch"]) == 2000): iau_equinox = "J"
-					elif(int(header["epoch"]) == 1950): iau_equinox = "B"
+					if int(header["epoch"]) == 2000: iau_equinox = "J"
+					elif int(header["epoch"]) == 1950: iau_equinox = "B"
 					else: iau_equinox = "X"
 				else:
 					# Unknown equinox:
 					iau_equinox = "X"
-			elif(header["ctype1"][:4] == "GLON"):
+			elif header["ctype1"][:4] == "GLON":
 				# Galactic coordinates:
 				iau_coord = "gal"
 				iau_equinox = "G"
@@ -218,7 +218,7 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 				lon = objects[src][n_par - 3]
 				lat = objects[src][n_par - 2]
 
-				if(iau_coord == "equ"):
+				if iau_coord == "equ":
 					ra = lon / 15.0   # convert assumed degrees to hours
 					ra_h = int(ra)
 					ra_m = int((ra - ra_h) * 60.0)
@@ -231,12 +231,12 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 					dec_s = (dec - dec_d - (dec_m / 60.0)) * 3600.0
 
 					iau_pos = "{0:02d}{1:02d}{2:05.2f}".format(ra_h, ra_m, ra_s)
-					if(dec_sgn < 0): iau_pos += "-"
+					if dec_sgn < 0: iau_pos += "-"
 					else: iau_pos += "+"
 					iau_pos += "{0:02d}{1:02d}{2:04.1f}".format(dec_d, dec_m, dec_s)
 				else:
 					iau_pos = "{0:08.4f}".format(lon)
-					if(lat < 0.0): iau_pos += "-"
+					if lat < 0.0: iau_pos += "-"
 					else: iau_pos += "+"
 					iau_pos += "{0:07.4f}".format(abs(lat))
 

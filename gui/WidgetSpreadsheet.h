@@ -37,6 +37,7 @@
 #include <QtGlobal>
 
 #include <QtCore/QString>
+#include <QtCore/QStringList>
 #include <QtCore/QFile>
 
 #include <QtGui/QCloseEvent>

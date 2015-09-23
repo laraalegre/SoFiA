@@ -29,8 +29,6 @@ def make_xml(objects, outname, flagOverwrite):
     description.text = 'Output catalogue from SoFiA'
     coocys = SubElement(resource, 'COOSYS', ID='J2000')
     table = SubElement(resource, 'TABLE', ID='sofia_cat', name='sofia_cat')
-    description = SubElement(table, 'DESCRIPTION')
-    description.text = 'Output catalogue from SoFiA'
 
     # write the parameters in fields:
     sources = objects.getSources()
@@ -72,8 +70,6 @@ def make_xml_from_array(objects, cathead, catunits, catfmt, store_pars, outname,
     description.text = 'Output catalogue from SoFiA'
     coocys = SubElement(resource, 'COOSYS', ID='J2000')
     table = SubElement(resource, 'TABLE', ID='sofia_cat', name='sofia_cat')
-    description = SubElement(table, 'DESCRIPTION')
-    description.text = 'Output catalogue from SoFiA'
     
     # Load list of parameters and unified content descriptors (UCDs)
     parList = {};
@@ -91,18 +87,18 @@ def make_xml_from_array(objects, cathead, catunits, catfmt, store_pars, outname,
     # write the parameters in fields:
     if store_pars == ['*']:
         for i in cathead:
-            if (i in parList): ucdEntity = parList[i];
-            else: ucdEntity = "";
-            field = SubElement(
-                table, 'FIELD', name=i, ucd=ucdEntity, datatype='float', unit=catunits[cathead.index(i)]
-                )
+            if i in parList: ucdEntity = parList[i]
+            else: ucdEntity = ""
+            if catfmt[cathead.index(i)] == "%30s": field = SubElement(table, 'FIELD', name=i, ucd=ucdEntity, datatype='char', arraysize='30', unit=catunits[cathead.index(i)])
+            else: field = SubElement(table, 'FIELD', name=i, ucd=ucdEntity, datatype='float', unit=catunits[cathead.index(i)])
     else:
         for par in store_pars:
-            if (par in cathead):
+            if par in cathead:
                 index = list(cathead).index(par)
-                if (cathead[index] in parList): ucdEntity = parList[cathead[index]];
-                else: ucdEntity = "";
-                field = SubElement(table, 'FIELD', name=cathead[index], ucd=ucdEntity, datatype='float', unit=catunits[index])
+                if cathead[index] in parList: ucdEntity = parList[cathead[index]]
+                else: ucdEntity = ""
+                if catfmt[index] == "%30s": field = SubElement(table, 'FIELD', name=cathead[index], ucd=ucdEntity, datatype='char', arraysize='30', unit=catunits[index])
+                else: field = SubElement(table, 'FIELD', name=cathead[index], ucd=ucdEntity, datatype='float', unit=catunits[index])
             else:
                 sys.stderr.write("WARNING: Skipping undefined parameter \'" + str(par) + "\'.\n");
 
