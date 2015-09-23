@@ -63,6 +63,7 @@ WidgetSpreadsheet::WidgetSpreadsheet(QWidget *parent)
 	
 	widgetSort = new QWidget(widgetControls);
 	buttonSort = new QComboBox(widgetSort);
+	buttonSort->setMinimumWidth(100);
 	buttonSort->setEnabled(false);
 	connect(buttonSort, SIGNAL(currentIndexChanged(int)), this, SLOT(sortTable(int)));
 	layoutSort = new QFormLayout;

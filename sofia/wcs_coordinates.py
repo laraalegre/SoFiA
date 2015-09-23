@@ -184,7 +184,7 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 			print "WCS coordinates added to the catalogue."
 
 			# Create IAU-compliant source name:
-			# WARNING: This currently assumes a regular, three-dimensional data cube!
+			# WARNING: This currently assumes a regular, ≥ 2-dim. data cube where the first two axes are longitude and latitude.
 			n_src = objects.shape[0]
 			n_par = objects.shape[1]
 
