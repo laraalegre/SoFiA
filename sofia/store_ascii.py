@@ -77,12 +77,14 @@ def make_ascii_from_array(objects, cathead, catunits, catfmt, store_pars, outnam
             header3 += catNum[i].rjust(lenCathead[i])
         header += header1[3:] + '\n' + header2[3:] + '\n' + header3[3:]
     else:
+        count = 0
         for i in range(0, len(store_pars)):
             if (store_pars[i] in cathead):
                 index = list(cathead).index(store_pars[i])
                 header1 += store_pars[i].rjust(lenCathead[index])
                 header2 += catunits[index].rjust(lenCathead[index])
-                header3 += catNum[index].rjust(lenCathead[index])
+                header3 += catNum[count].rjust(lenCathead[index])
+                count += 1
             else:
                 sys.stderr.write("WARNING: Skipping undefined parameter \'" + str(store_pars[i]) + "\'.\n");
         header += header1[3:] + '\n' + header2[3:] + '\n' + header3[3:]
@@ -118,4 +120,4 @@ def make_ascii_from_array(objects, cathead, catunits, catfmt, store_pars, outnam
         if not flagOverwrite and os.path.exists(outname):
             sys.stderr.write("ERROR: Output file exists: " + outname + ".\n")
         else:
-            np.savetxt(outname, np.array(tmpObjects), fmt=outputFormat, header=header)
+            np.savetxt(outname, np.array(tmpObjects, dtype=object), fmt=outputFormat, header=header)
