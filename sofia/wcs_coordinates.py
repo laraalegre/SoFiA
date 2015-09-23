@@ -194,16 +194,14 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 				# Equatorial coordinates try to figure out equinox:
 				iau_coord = "equ"
 				if "equinox" in header:
-					if int(header["equinox"]) == 2000: iau_equinox = "J"
-					elif int(header["equinox"]) == 1950: iau_equinox = "B"
-					else: iau_equinox = "X"
+					if int(header["equinox"]) >= 2000: iau_equinox = "J"
+					else: iau_equinox = "B"
 				elif "epoch" in header:
 					# Assume that EPOCH has been abused to record the equinox:
-					if int(header["epoch"]) == 2000: iau_equinox = "J"
-					elif int(header["epoch"]) == 1950: iau_equinox = "B"
-					else: iau_equinox = "X"
+					if int(header["epoch"]) >= 2000: iau_equinox = "J"
+					else: iau_equinox = "B"
 				else:
-					# Unknown equinox:
+					# Equinox undefined:
 					iau_equinox = "X"
 			elif header["ctype1"][:4] == "GLON":
 				# Galactic coordinates:
@@ -219,7 +217,7 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 				lat = objects[src][n_par - 2]
 
 				if iau_coord == "equ":
-					ra = lon / 15.0   # convert assumed degrees to hours
+					ra = lon / 15.0    # convert assumed degrees to hours
 					ra_h = int(ra)
 					ra_m = int((ra - ra_h) * 60.0)
 					ra_s = (ra - ra_h - (ra_m / 60.0)) * 3600.0
