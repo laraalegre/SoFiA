@@ -326,6 +326,7 @@ int SoFiA::updateVariables()
 	else
 	{
 		if(tabOutputButtonParameter_id->isChecked())        listOutputPar.append(QString("\'id\',"));
+		if(tabOutputButtonParameter_name->isChecked())      listOutputPar.append(QString("\'name\',"));
 		if(tabOutputButtonParameter_x_geo->isChecked())     listOutputPar.append(QString("\'x_geo\',"));
 		if(tabOutputButtonParameter_y_geo->isChecked())     listOutputPar.append(QString("\'y_geo\',"));
 		if(tabOutputButtonParameter_z_geo->isChecked())     listOutputPar.append(QString("\'z_geo\',"));
@@ -487,6 +488,7 @@ int SoFiA::setFields()
 		tabOutputGroupBox2->setChecked(true);
 		
 		tabOutputButtonParameter_id->setChecked(false);
+		tabOutputButtonParameter_name->setChecked(false);
 		tabOutputButtonParameter_x_geo->setChecked(false);
 		tabOutputButtonParameter_y_geo->setChecked(false);
 		tabOutputButtonParameter_z_geo->setChecked(false);
@@ -538,6 +540,7 @@ int SoFiA::setFields()
 		tabOutputButtonParameter_velo->setChecked(false);
 		
 		if(listOutputPar.contains(QString("\'id\'")))        tabOutputButtonParameter_id->setChecked(true);
+		if(listOutputPar.contains(QString("\'iname\'")))     tabOutputButtonParameter_name->setChecked(true);
 		if(listOutputPar.contains(QString("\'x_geo\'")))     tabOutputButtonParameter_x_geo->setChecked(true);
 		if(listOutputPar.contains(QString("\'y_geo\'")))     tabOutputButtonParameter_y_geo->setChecked(true);
 		if(listOutputPar.contains(QString("\'z_geo\'")))     tabOutputButtonParameter_z_geo->setChecked(true);
@@ -897,6 +900,7 @@ void SoFiA::updateFields()
 	
 	// Disable output parameter buttons if "all" button is selected:
 	tabOutputButtonParameter_id->setEnabled(tabOutputGroupBox2->isChecked());
+	tabOutputButtonParameter_name->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_x_geo->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_y_geo->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_z_geo->setEnabled(tabOutputGroupBox2->isChecked());
@@ -2707,6 +2711,7 @@ void SoFiA::createInterface()
 	tabOutputForm2 = new QFormLayout;
 	
 	tabOutputButtonParameter_id        = new QCheckBox(tr("id"), tabOutputGroupBox2);
+	tabOutputButtonParameter_name      = new QCheckBox(tr("name"), tabOutputGroupBox2);
 	tabOutputButtonParameter_x_geo     = new QCheckBox(tr("x_geo"), tabOutputGroupBox2);
 	tabOutputButtonParameter_y_geo     = new QCheckBox(tr("y_geo"), tabOutputGroupBox2);
 	tabOutputButtonParameter_z_geo     = new QCheckBox(tr("z_geo"), tabOutputGroupBox2);
@@ -2758,6 +2763,7 @@ void SoFiA::createInterface()
 	tabOutputButtonParameter_velo      = new QCheckBox(tr("velo"), tabOutputGroupBox2);
 	
 	tabOutputButtonParameter_id        -> setObjectName("parameter_id");
+	tabOutputButtonParameter_name      -> setObjectName("parameter_name");
 	tabOutputButtonParameter_x_geo     -> setObjectName("parameter_x_geo");
 	tabOutputButtonParameter_y_geo     -> setObjectName("parameter_y_geo");
 	tabOutputButtonParameter_z_geo     -> setObjectName("parameter_z_geo");
@@ -2809,6 +2815,7 @@ void SoFiA::createInterface()
 	tabOutputButtonParameter_velo      -> setObjectName("parameter_velo");
 	
 	tabOutputButtonParameter_id        -> setToolTip(tr("Unique identifier"));
+	tabOutputButtonParameter_name      -> setToolTip(tr("IAU-compliant source name"));
 	tabOutputButtonParameter_x_geo     -> setToolTip(tr("X-coordinate of geometric centre"));
 	tabOutputButtonParameter_y_geo     -> setToolTip(tr("Y-coordinate of geometric centre"));
 	tabOutputButtonParameter_z_geo     -> setToolTip(tr("Z-coordinate of geometric centre"));
@@ -2860,6 +2867,7 @@ void SoFiA::createInterface()
 	tabOutputButtonParameter_velo      -> setToolTip(tr("Radial velocity of flux-weighted centre"));
 	
 	connect(tabOutputButtonParameter_id,        SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	connect(tabOutputButtonParameter_name,      SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_x_geo,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_y_geo,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_z_geo,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
@@ -2916,12 +2924,13 @@ void SoFiA::createInterface()
 	tabOutputLayoutParameters->setHorizontalSpacing(20);
 	tabOutputLayoutParameters->setVerticalSpacing(5);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_id,        0, 0);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_x,         1, 0);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_y,         2, 0);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_z,         3, 0);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_x_geo,     4, 0);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_y_geo,     5, 0);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_z_geo,     6, 0);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_name,      1, 0);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_x,         2, 0);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_y,         3, 0);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_z,         4, 0);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_x_geo,     5, 0);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_y_geo,     6, 0);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_z_geo,     7, 0);
 	
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_x_min,     0, 1);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_x_max,     1, 1);

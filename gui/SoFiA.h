@@ -477,6 +477,7 @@ private:
 	QWidget      *tabOutputWidgetParameters;
 	
 	QCheckBox    *tabOutputButtonParameter_id;
+	QCheckBox    *tabOutputButtonParameter_name;
 	QCheckBox    *tabOutputButtonParameter_x_geo;
 	QCheckBox    *tabOutputButtonParameter_y_geo;
 	QCheckBox    *tabOutputButtonParameter_z_geo;
