@@ -146,7 +146,7 @@ SoFiA::SoFiA(int argc, char *argv[])
 		loadSession();
 	}
 	
-	settingsChanged = false;           // This will record whether any setting are changed by the user
+	settingsChanged = false;           // This will record whether any settings are changed by the user
 	
 	return;
 }
