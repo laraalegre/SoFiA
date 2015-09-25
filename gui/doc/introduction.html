@@ -30,7 +30,26 @@
     </p>
     
     <p>
-      This <strong>user manual</strong> describes both the user interface as well as the large number of control parameters of SoFiA. It is meant to guide the user through the large set of available options and provide a basic understanding of how the different filtering, source finding and parameterisation algorithms work. Additional help on each input parameter is available through the &lsquo;What&rsquo;s This?&rsquo; option in the user interface. It should be noted, though, that source finding is a fairly <strong>complex</strong> task that will strongly depend on the nature and quality of the data cube to be searched as well as the specific algorithms and settings to be used. We therefore encourage users to not rely under any circumstances on the default settings provided with SoFiA, but rather experiment with different settings and algorithms in order to obtain optimal results.
+      This <strong>user manual</strong> describes both the user interface as well as the large number of control parameters of SoFiA. It is meant to guide the user through the large set of available options and provide a basic understanding of how the different filtering, source finding and parameterisation algorithms work. Additional help on each input parameter is available through the &lsquo;What&rsquo;s This?&rsquo; option in the user interface. It should be noted, though, that source finding is a fairly <strong>complex</strong> task that will strongly depend on the nature and quality of the data cube to be searched as well as the specific algorithms and settings to be used. We therefore encourage users to <strong>not rely</strong> under any circumstances <strong>on the default settings</strong> provided with SoFiA, but rather experiment with different settings and algorithms in order to obtain optimal results.
+    </p>
+    
+    <h2>Configuring SoFiA</h2>
+    
+    <p>
+      A few aspects of SoFiA&rsquo;s behaviour can be configured by the user, either through the settings provided by the user interface, or by manually editing the hidden configuration file named <code>.SoFiA</code> in the user&rsquo;s home directory. Currently, the following settings are available:
+    </p>
+    
+    <ul>
+      <li><code>showToolbar = true</code>/<code>false</code> &ndash; Show/hide the toolbar of the user interface.</li>
+      <li><code>showPipeline = true</code>/<code>false</code> &ndash; Show/hide the pipeline message terminal of the user interface. Note that the message window will automatically reappear whenever the pipeline is launched.</li>
+      <li><code>pipelinePosition = &lt;pos&gt;</code> &ndash; Integer value defining the docking position of the pipeline message window. Possible values are: <code>1</code> (left), <code>2</code> (right), <code>4</code> (top), <code>8</code> (bottom).</li>
+      <li><code>saveSession = true</code>/<code>false</code> &ndash; If set to <code>true</code>, the current parameter settings in SoFiA will be saved to a session file in the current working directory on exit (named <code>SoFiA.session</code>). When relaunching SoFiA from within the same directory, the previous settings will be automatically restored. If set to <code>false</code>, parameter settings will not be remembered, and any existing session file in the current directory will be deleted on exit.</li>
+      <li><code>windowWidth = &lt;width&gt;</code> &ndash; Initial width of the SoFiA window in pixels. Values must be in the range of 480 to 2048. Note that the width will be adjusted to fit the contents if too small.</li>
+      <li><code>windowHeight = &lt;height&gt;</code> &ndash; Initial height of the SoFiA window in pixels. Values must be in the range of 360 to 2048. Note that the height will be adjusted to fit the contents if too small.</li>
+    </ul>
+    
+    <p>
+      It is generally advisable to not edit the configuration file by hand, but to use the settings available through the graphical user interface instead. When exiting from SoFiA, the current state of the window will automatically be saved and restored at the beginning of the next session.
     </p>
     
     <p align="center">

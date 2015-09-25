@@ -33,7 +33,15 @@
 #define PIPELINEINTERFACE_H
 
 #define SOFIA_DEFAULT_SETTINGS ":/SoFiA_default_input.txt"
-#define SOFIA_TEMP_FILE "SoFiA.session"
+#define SOFIA_TEMP_FILE        "SoFiA.session"
+#define SOFIA_RC_FILE          ".SoFiA"
+
+#define SOFIA_RC_TOOLBAR       "showToolbar"
+#define SOFIA_RC_PIPELINE      "showPipeline"
+#define SOFIA_RC_PIPELINEPOS   "pipelinePosition"
+#define SOFIA_RC_SESSION       "saveSession"
+#define SOFIA_RC_WINWIDTH      "windowWidth"
+#define SOFIA_RC_WINHEIGHT     "windowHeight"
 
 #define MESSAGE_INFO    0
 #define MESSAGE_WARNING 1
@@ -144,12 +152,25 @@ private slots:
 	void pipelineProcessCancel();
 	void pipelineProcessError(QProcess::ProcessError error);
 	void showCatalogue();
+	void toggleToolbar();
+	void togglePipeline();
+	void togglePipeline(bool state);
+	void toggleSaveOnExit();
 	void toggleFullScreen();
 	
 private:
 	QString currentFileName;
+	QString settingsFileName;
 	bool settingsChanged;
 	QMap<QString, QString> parameters;
+	bool shutdownInitiated;
+	
+	bool settingsPipeline;
+	int  settingsPipelinePosition;
+	bool settingsToolbar;
+	bool settingsSession;
+	int  settingsWindowWidth;
+	int  settingsWindowHeight;
 	
 	QProcess   *pipelineProcess;
 	
@@ -206,6 +227,9 @@ private:
 	QAction    *actionSaveLogAs;
 	QAction    *actionClearLog;
 	QAction    *actionShowCatalogue;
+	QAction    *actionToolbar;
+	QAction    *actionPipeline;
+	QAction    *actionSaveOnExit;
 	QAction    *actionFullScreen;
 	QAction    *actionHelp;
 	QAction    *actionWhatsThis;

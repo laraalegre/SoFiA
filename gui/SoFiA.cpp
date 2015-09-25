@@ -40,6 +40,72 @@
 
 SoFiA::SoFiA(int argc, char *argv[])
 {
+	// The following is required to distinguish between user- and shutdown-related changes:
+	shutdownInitiated = false;
+	
+	// Set default settings:
+	settingsPipeline = true;
+	settingsPipelinePosition = Qt::TopDockWidgetArea;
+	settingsToolbar  = true;
+	settingsSession  = true;
+	settingsWindowWidth  = 640;
+	settingsWindowHeight = 480;
+	
+	// Read SoFiA settings file in home directory, if present:
+	QString homeDirectory = QDir::homePath();
+	
+	if(not homeDirectory.isEmpty() and homeDirectory != "/")
+	{
+		settingsFileName = homeDirectory + "/" + SOFIA_RC_FILE;
+		
+		QFile inFile(settingsFileName);
+		
+		if(inFile.open(QIODevice::ReadOnly | QIODevice::Text))
+		{
+			std::cerr << "\nInformation: Reading user settings from file\n  " << settingsFileName.toStdString() << '\n';
+			
+			QTextStream inStream(&inFile);
+			QString keyname;
+			QString value;
+			
+			while(not inStream.atEnd())
+			{
+				QString line = inStream.readLine().trimmed();
+				
+				if(not line.isEmpty() and not line.startsWith("#"))
+				{
+					keyname = line.section(QChar('='), 0, 0).trimmed();
+					value   = line.section(QChar('='), 1).trimmed();
+					
+					if     (keyname == SOFIA_RC_PIPELINE)    settingsPipeline = (value == "true");
+					else if(keyname == SOFIA_RC_TOOLBAR)     settingsToolbar  = (value == "true");
+					else if(keyname == SOFIA_RC_SESSION)     settingsSession  = (value == "true");
+					else if(keyname == SOFIA_RC_PIPELINEPOS)
+					{
+						settingsPipelinePosition = value.toInt();
+						// Default to top if ill-defined:
+						settingsPipelinePosition = settingsPipelinePosition == Qt::LeftDockWidgetArea or settingsPipelinePosition == Qt::RightDockWidgetArea or settingsPipelinePosition == Qt::TopDockWidgetArea or settingsPipelinePosition == Qt::BottomDockWidgetArea ? settingsPipelinePosition : Qt::TopDockWidgetArea;
+					}
+					else if(keyname == SOFIA_RC_WINWIDTH)
+					{
+						settingsWindowWidth = value.toInt();
+						if(settingsWindowWidth < 480 or settingsWindowWidth > 2048) settingsWindowWidth = 640;
+					}
+					else if(keyname == SOFIA_RC_WINHEIGHT)
+					{
+						settingsWindowHeight = value.toInt();
+						if(settingsWindowHeight < 360 or settingsWindowHeight > 2048) settingsWindowHeight = 480;
+					}
+				}
+			}
+			
+			inFile.close();
+		}
+		else std::cerr << "\nWarning: No user settings found in home directory. Using default settings.\n";
+	}
+	else std::cerr << "\nWarning: Failed to locate home directory. Using default settings.\n";
+	
+	// Create pipeline process, but don't run it yet:
 	pipelineProcess = new QProcess(this);
 	connect(pipelineProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(pipelineProcessReadStd()));
 	connect(pipelineProcess, SIGNAL(readyReadStandardError()), this, SLOT(pipelineProcessReadErr()));
@@ -47,6 +113,7 @@ SoFiA::SoFiA(int argc, char *argv[])
 	connect(pipelineProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(pipelineProcessFinished(int, QProcess::ExitStatus)));
 	connect(pipelineProcess, SIGNAL(error(QProcess::ProcessError)), this, SLOT(pipelineProcessError(QProcess::ProcessError)));
 	
+	// Create user interface:
 	this->createInterface();
 	this->setDefaults();
 	this->setAcceptDrops(true);        // Enable drag and drop
@@ -79,7 +146,7 @@ SoFiA::SoFiA(int argc, char *argv[])
 		loadSession();
 	}
 	
-	settingsChanged = false;
+	settingsChanged = false;           // This will record whether any setting are changed by the user
 	
 	return;
 }
@@ -92,8 +159,40 @@ SoFiA::SoFiA(int argc, char *argv[])
 
 SoFiA::~SoFiA()
 {
-	// Save current session:
-	saveSession();
+	// Either save or remove session file:
+	if(settingsSession)
+	{
+		saveSession();
+	}
+	else if(QFile::exists(SOFIA_TEMP_FILE) and not QFile::remove(SOFIA_TEMP_FILE))
+	{
+		std::cerr << "Warning: Failed to remove temporary session file on exit.\n";
+	}
+	
+	// Save user settings:
+	if(not settingsFileName.isEmpty())
+	{
+		QFile outFile(settingsFileName);
+		
+		if(not outFile.open(QIODevice::WriteOnly | QIODevice::Text))
+		{
+			std::cerr << "\nError: Failed to save user settings to home directory.\n";
+		}
+		else
+		{
+			QTextStream outStream(&outFile);
+			
+			outStream << "# User-defined global settings for SoFiA\n\n";
+			outStream << SOFIA_RC_TOOLBAR <<  "       =  " << (settingsToolbar  ? "true" : "false") << '\n';
+			outStream << SOFIA_RC_PIPELINE <<  "      =  " << (settingsPipeline ? "true" : "false") << '\n';
+			outStream << SOFIA_RC_PIPELINEPOS <<   "  =  " << this->dockWidgetArea(dockWidgetOutput) << '\n';
+			outStream << SOFIA_RC_SESSION <<  "       =  " << (settingsSession  ? "true" : "false") << '\n';
+			outStream << SOFIA_RC_WINWIDTH << "       =  " << (this->size()).width() << '\n';
+			outStream << SOFIA_RC_WINHEIGHT << "      =  " << (this->size()).height() << endl;
+		
+			outFile.close();
+		}
+	}
 	
 	return;
 }
@@ -677,21 +776,20 @@ int SoFiA::loadFile(QString &fileName)
 		QString messageText = tr("<p>No valid parameters found in input file %1.</p>").arg(fileName.section('/', -1));
 		QString statusText = tr("No valid parameters found in input file %1.").arg(fileName.section('/', -1));
 		showMessage(MESSAGE_ERROR, messageText, statusText);
+		return 1;
 	}
-	else
-	{
-		currentFileName = fileName;
-		
-		setFields();
-		updateFields();
-		
-		QString messageText = QString("");
-		QString statusText = tr("Parameters loaded from %1.").arg(currentFileName.section('/', -1));
-		showMessage(MESSAGE_INFO, messageText, statusText);
-		
-		settingsChanged = false;
-		updateWindowTitle();
-	}
+	
+	currentFileName = fileName;
+	
+	setFields();
+	updateFields();
+	
+	QString messageText = QString("");
+	QString statusText = tr("Parameters loaded from %1.").arg(currentFileName.section('/', -1));
+	showMessage(MESSAGE_INFO, messageText, statusText);
+	
+	settingsChanged = false;
+	updateWindowTitle();
 	
 	return 0;
 }
@@ -1520,6 +1618,61 @@ void SoFiA::toggleFullScreen()
 		this->showFullScreen();
 		actionFullScreen->setChecked(true);
 	}
+	
+	return;
+}
+
+
+
+// ------------------------------
+// Slot to toggle toolbar setting
+// ------------------------------
+
+void SoFiA::toggleToolbar()
+{
+	settingsToolbar = actionToolbar->isChecked();
+	toolBar->setVisible(settingsToolbar);
+	
+	return;
+}
+
+
+
+// -------------------------------
+// Slot to toggle pipeline setting
+// -------------------------------
+
+void SoFiA::togglePipeline(bool state)
+{
+	// React to external reasons for message window to (dis)appear
+	// (but ignore programme shutdown as cause):
+	if(not shutdownInitiated)
+	{
+		settingsPipeline = state;
+		actionPipeline->setChecked(settingsPipeline);
+	}
+	
+	return;
+}
+
+void SoFiA::togglePipeline()
+{
+	// React to regular change of settingsPipeline value:
+	settingsPipeline = actionPipeline->isChecked();
+	dockWidgetOutput->setVisible(settingsPipeline);
+	
+	return;
+}
+
+
+
+// -----------------------------------
+// Slot to toggle save-on-exit setting
+// -----------------------------------
+
+void SoFiA::toggleSaveOnExit()
+{
+	settingsSession = actionSaveOnExit->isChecked();
 	
 	return;
 }
@@ -3068,7 +3221,9 @@ void SoFiA::createInterface()
 	dockWidgetOutput->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 	dockWidgetOutput->setContentsMargins(5, 5, 5, 5);
 	dockWidgetOutput->toggleViewAction()->setText(tr("Show Pipeline Messages"));
-	this->addDockWidget(Qt::TopDockWidgetArea, dockWidgetOutput);
+	dockWidgetOutput->setVisible(settingsPipeline);
+	connect(dockWidgetOutput, SIGNAL(visibilityChanged(bool)), this, SLOT(togglePipeline(bool)));
+	this->addDockWidget(Qt::DockWidgetArea(settingsPipelinePosition), dockWidgetOutput);
 	
 	// Set up actions
 	// --------------
@@ -3123,6 +3278,24 @@ void SoFiA::createInterface()
 	actionShowCatalogue->setIcon(iconDocumentPreview);
 	connect(actionShowCatalogue, SIGNAL(triggered()), this, SLOT(showCatalogue()));
 	
+	actionToolbar = new QAction(tr("Show Toolbar"), this);
+	actionToolbar->setCheckable(true);
+	actionToolbar->setChecked(settingsToolbar);            // Note that value of settingsToolbar must be known at this point!
+	actionToolbar->setEnabled(true);
+	connect(actionToolbar, SIGNAL(triggered()), this, SLOT(toggleToolbar()));
+	
+	actionPipeline = new QAction(tr("Show Pipeline Messages"), this);
+	actionPipeline->setCheckable(true);
+	actionPipeline->setChecked(settingsPipeline);          // Note that value of settingsPipeline must be known at this point!
+	actionPipeline->setEnabled(true);
+	connect(actionPipeline, SIGNAL(triggered()), this, SLOT(togglePipeline()));
+	
+	actionSaveOnExit = new QAction(tr("Save Session on Exit"), this);
+	actionSaveOnExit->setCheckable(true);
+	actionSaveOnExit->setChecked(settingsSession);         // Note that value of settingsSession must be known at this point!
+	actionSaveOnExit->setEnabled(true);
+	connect(actionSaveOnExit, SIGNAL(triggered()), this, SLOT(toggleSaveOnExit()));
+	
 	actionFullScreen = new QAction(tr("Full Screen"), this);
 	actionFullScreen->setShortcut(Qt::Key_F11);
 	actionFullScreen->setCheckable(true);
@@ -3161,6 +3334,7 @@ void SoFiA::createInterface()
 	toolBar->setMovable(false);
 	toolBar->setAllowedAreas(Qt::AllToolBarAreas);
 	toolBar->toggleViewAction()->setText(tr("Show Toolbar"));
+	toolBar->setVisible(settingsToolbar);
 	
 	// Set up menu
 	// -----------
@@ -3186,8 +3360,9 @@ void SoFiA::createInterface()
 	menuView->addAction(actionShowCatalogue);
 	
 	menuSettings = new QMenu(tr("&Settings"), this);
-	menuSettings->addAction(dockWidgetOutput->toggleViewAction());
-	menuSettings->addAction(toolBar->toggleViewAction());
+	menuSettings->addAction(actionToolbar);
+	menuSettings->addAction(actionPipeline);
+	menuSettings->addAction(actionSaveOnExit);
 	menuSettings->addSeparator();
 	menuSettings->addAction(actionFullScreen);
 	
@@ -3214,7 +3389,8 @@ void SoFiA::createInterface()
 	
 	this->addToolBar(Qt::TopToolBarArea, toolBar);
 	this->setCentralWidget(widgetMain);
-	this->resize(600, 300);
+	this->setContextMenuPolicy(Qt::NoContextMenu);    // This will prevent automatic context menus that allow hiding parts of the UI.
+	this->resize(settingsWindowWidth, settingsWindowHeight);
 	this->setWindowIcon(iconSoFiA);
 	updateWindowTitle();
 	
@@ -3374,12 +3550,17 @@ void SoFiA::closeEvent(QCloseEvent *event)
 			messageBox.setIcon(QMessageBox::Warning);
 			int choice = messageBox.exec();
 			
-			if(choice == QMessageBox::Ok) event->accept();
+			if(choice == QMessageBox::Ok)
+			{
+				shutdownInitiated = true;
+				event->accept();
+			}
 			else event->ignore();
 		}
 		else
 		{
 			// No unsaved changes found, quit SoFiA:
+			shutdownInitiated = true;
 			event->accept();
 		}
 	}
