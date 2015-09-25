@@ -62,7 +62,7 @@ SoFiA::SoFiA(int argc, char *argv[])
 		
 		if(inFile.open(QIODevice::ReadOnly | QIODevice::Text))
 		{
-			std::cerr << "\nInformation: Reading user settings from file\n  " << settingsFileName.toStdString() << '\n';
+			std::cerr << "\nInformation: Reading user settings from file " << settingsFileName.toStdString() << '\n';
 			
 			QTextStream inStream(&inFile);
 			QString keyname;
