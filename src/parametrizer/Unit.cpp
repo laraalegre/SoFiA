@@ -296,14 +296,14 @@ int Unit::set(const std::string &value)
 	// Tokenise string using spaces:
 	if(stringTok(unitString, tokens, " ") != 0)
 	{
-		std::cerr << "Error (Unit): Failed to tokenise unit string." << std::endl;
+		std::cerr << "Error (Unit): Failed to tokenise unit string.\n";
 		this->clear();
 		return 1;
 	}
 	
 	if(tokens.size() < 1)
 	{
-		std::cerr << "Error (Unit): Failed to tokenise unit string." << std::endl;
+		std::cerr << "Error (Unit): Failed to tokenise unit string.\n";
 		this->clear();
 		return 1;
 	}
@@ -376,8 +376,8 @@ int Unit::set(const std::string &value)
 			
 			if(success == false)
 			{
-				std::cerr << "Error (Unit): Unknown unit: \'" << value << "\'."   << std::endl;
-				std::cerr << "              Creating dimensionless unit instead." << std::endl;
+				std::cerr << "Error (Unit): Unknown unit: \'" << value << "\'.\n";
+				std::cerr << "              Creating dimensionless unit instead.\n";
 				clear();
 				return 1;
 			}

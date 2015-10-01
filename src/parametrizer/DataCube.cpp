@@ -76,14 +76,14 @@ template <typename T> int DataCube<T>::createNewCube(long dx, long dy, long dz)
 	
 	if(typeid(T) != typeid(char) and typeid(T) != typeid(short) and typeid(T) != typeid(long) and typeid(T) != typeid(float) and typeid(T) != typeid(double))
 	{
-		std::cerr << "Error (DataCube): Unsupported data type of new cube;" << std::endl;
-		std::cerr << "                  must be char, short, long, float, or double." << std::endl;
+		std::cerr << "Error (DataCube): Unsupported data type of new cube;\n";
+		std::cerr << "                  must be char, short, long, float, or double.\n";
 		return 1;
 	}
 	
 	if(dx < 1L or dy < 1L or dz < 1L)
 	{
-		std::cerr << "Error (DataCube): Invalid array dimensions of new cube." << std::endl;
+		std::cerr << "Error (DataCube): Invalid array dimensions of new cube.\n";
 		return 1;
 	}
 	
@@ -91,7 +91,7 @@ template <typename T> int DataCube<T>::createNewCube(long dx, long dy, long dz)
 	
 	if(data == 0)
 	{
-		std::cerr << "Error (DataCube): Not enough memory to create data cube." << std::endl;
+		std::cerr << "Error (DataCube): Not enough memory to create data cube.\n";
 		this->clear();
 		return 1;
 	}
@@ -149,20 +149,20 @@ template <typename T> int DataCube<T>::createNewCubeFromPointer(long dx, long dy
 	
 	if(typeid(T) != typeid(char) and typeid(T) != typeid(short) and typeid(T) != typeid(long) and typeid(T) != typeid(float) and typeid(T) != typeid(double))
 	{
-		std::cerr << "Error (DataCube): Unsupported data type of new cube;" << std::endl;
-		std::cerr << "                  must be char, short, long, float, or double." << std::endl;
+		std::cerr << "Error (DataCube): Unsupported data type of new cube;\n";
+		std::cerr << "                  must be char, short, long, float, or double.\n";
 		return 1;
 	}
 	
 	if(dx < 1L or dy < 1L or dz < 1L)
 	{
-		std::cerr << "Error (DataCube): Invalid array dimensions of new cube." << std::endl;
+		std::cerr << "Error (DataCube): Invalid array dimensions of new cube.\n";
 		return 1;
 	}
 	
 	if(d == 0)
 	{
-		std::cerr << "Error (DataCube): Null pointer provided." << std::endl;
+		std::cerr << "Error (DataCube): Null pointer provided.\n";
 		return 1;
 	}
 	
@@ -346,7 +346,7 @@ template <typename T> int DataCube<T>::multiplyData(DataCube &factor)
 	{
 		if(numberPixels[i] != factor.getSize(i))
 		{
-			std::cerr << "Error (DataCube): Cannot multiply cubes; sizes differ." << std::endl;
+			std::cerr << "Error (DataCube): Cannot multiply cubes; sizes differ.\n";
 			return 1;
 		}
 	}
@@ -363,7 +363,7 @@ template <typename T> int DataCube<T>::multiplyData(DataCube &factor)
 			{
 				if(factor.getDataR(mFac, x, y, z))
 				{
-					std::cerr << "Error (DataCube): Cannot multiply cubes; failed to read from cube." << std::endl;
+					std::cerr << "Error (DataCube): Cannot multiply cubes; failed to read from cube.\n";
 					return 1;
 				}
 				
@@ -585,45 +585,45 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *        case BYTE_IMG:
  *            if(typeid(char) != typeid(T))
  *            {
- *                std::cerr << "Warning (DataCube): Type mismatch between data and FITS file (8 bit int)." << std::endl;
- *                std::cerr << "                    Automatic type casting will be performed." << std::endl;
+ *                std::cerr << "Warning (DataCube): Type mismatch between data and FITS file (8 bit int).\n";
+ *                std::cerr << "                    Automatic type casting will be performed.\n";
  *            }
  *            break;
  *            
  *        case SHORT_IMG:
  *            if(typeid(short) != typeid(T))
  *            {
- *                std::cerr << "Warning (DataCube): Type mismatch between data and FITS file (16 bit int)." << std::endl;
- *                std::cerr << "                    Automatic type casting will be performed." << std::endl;
+ *                std::cerr << "Warning (DataCube): Type mismatch between data and FITS file (16 bit int).\n";
+ *                std::cerr << "                    Automatic type casting will be performed.\n";
  *            }
  *            break;
  *            
  *        case LONG_IMG:
  *            if(typeid(long) != typeid(T))
  *            {
- *                std::cerr << "Warning (DataCube): Type mismatch between data and FITS file (32 bit int)." << std::endl;
- *                std::cerr << "                    Automatic type casting will be performed." << std::endl;
+ *                std::cerr << "Warning (DataCube): Type mismatch between data and FITS file (32 bit int).\n";
+ *                std::cerr << "                    Automatic type casting will be performed.\n";
  *            }
  *            break;
  *            
  *        case FLOAT_IMG:
  *            if(typeid(float) != typeid(T))
  *            {
- *                std::cerr << "Warning (DataCube): Type mismatch between data and FITS file (32 bit float)." << std::endl;
- *                std::cerr << "                    Automatic type casting will be performed." << std::endl;
+ *                std::cerr << "Warning (DataCube): Type mismatch between data and FITS file (32 bit float).\n";
+ *                std::cerr << "                    Automatic type casting will be performed.\n";
  *            }
  *            break;
  *            
  *        case DOUBLE_IMG:
  *            if(typeid(double) != typeid(T))
  *            {
- *                std::cerr << "Warning (DataCube): Type mismatch between data and FITS file (64 bit float)." << std::endl;
- *                std::cerr << "                    Automatic type casting will be performed." << std::endl;
+ *                std::cerr << "Warning (DataCube): Type mismatch between data and FITS file (64 bit float).\n";
+ *                std::cerr << "                    Automatic type casting will be performed.\n";
  *            }
  *            break;
  *            
  *        default:
- *            std::cerr << "Error (DataCube): Unsupported FITS data type (" << bitpixEquiv << ")." << std::endl;
+ *            std::cerr << "Error (DataCube): Unsupported FITS data type (" << bitpixEquiv << ").\n";
  *            fits_close_file(filePointer, &status);
  *            return 1;
  *    }
@@ -641,7 +641,7 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *    if(dimension < 1 or dimension > 4)
  *    {
  *        fits_close_file(filePointer, &status);
- *        std::cerr << "Error (DataCube): FITS file must have 1, 2, or 3 dimensions." << std::endl;
+ *        std::cerr << "Error (DataCube): FITS file must have 1, 2, or 3 dimensions.\n";
  *        return 1;
  *    }
  *    
@@ -658,14 +658,14 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *    if(numberPixels[0] < 1 or numberPixels[1] < 1 or numberPixels[2] < 1 or numberPixels[3] < 1)
  *    {
  *        fits_close_file(filePointer, &status);
- *        std::cerr << "Error (DataCube): Illegal cube dimensions encountered." << std::endl;
+ *        std::cerr << "Error (DataCube): Illegal cube dimensions encountered.\n";
  *        return 1;
  *    }
  *    
  *    if(numberPixels[3] > 1)
  *    {
  *        fits_close_file(filePointer, &status);
- *        std::cerr << "Error (DataCube): FITS file must have 1, 2, or 3 dimensions." << std::endl;
+ *        std::cerr << "Error (DataCube): FITS file must have 1, 2, or 3 dimensions.\n";
  *        return 1;
  *    }
  *    
@@ -751,7 +751,7 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *    
  *    if(getHeader("BUNIT", unitString) != 0)
  *    {
- *        std::cerr << "Warning (DataCube): Keyword BUNIT missing; brightness unit unknown." << std::endl;
+ *        std::cerr << "Warning (DataCube): Keyword BUNIT missing; brightness unit unknown.\n";
  *        unitFlux.set("brightness", 1.0, 0.0, UNIT_NONE);
  *    }
  *    else
@@ -767,7 +767,7 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *        {
  *            if(unitFlux.set("brightness", 1.0, 0.0, unitString) != 0)
  *            {
- *                std::cerr << "Warning (DataCube): Unknown brightness unit \'" << unitString <<  "\'." << std::endl;
+ *                std::cerr << "Warning (DataCube): Unknown brightness unit \'" << unitString <<  "\'.\n";
  *            }
  *        }
  *    }
@@ -782,13 +782,13 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *        if(iterSpat != typeSpat.end())
  *        {
  *            // Valid type keyword:
- *            std::cerr << "Warning (DataCube): Keyword CUNIT1 missing; using FITS default." << std::endl;
+ *            std::cerr << "Warning (DataCube): Keyword CUNIT1 missing; using FITS default.\n";
  *            unitLon.set("longitude", 1.0, 0.0, iterSpat->second);
  *        }
  *        else
  *        {
  *            // Invalid type keyword:
- *            std::cerr << "Warning (DataCube): Keyword CUNIT1 missing and CTYPE1 unknown." << std::endl;
+ *            std::cerr << "Warning (DataCube): Keyword CUNIT1 missing and CTYPE1 unknown.\n";
  *            unitLon.set("longitude", 1.0, 0.0, UNIT_NONE);
  *        }
  *    }
@@ -803,7 +803,7 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *        {
  *            if(unitLon.set("longitude", 1.0, 0.0, unitString) != 0)
  *            {
- *                std::cerr << "Warning (DataCube): Unknown longitude unit \'" << unitString <<  "\'." << std::endl;
+ *                std::cerr << "Warning (DataCube): Unknown longitude unit \'" << unitString <<  "\'.\n";
  *            }
  *        }
  *    }
@@ -818,13 +818,13 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *        if(iterSpat != typeSpat.end())
  *        {
  *            // Valid type keyword:
- *            std::cerr << "Warning (DataCube): Keyword CUNIT2 missing; using FITS default." << std::endl;
+ *            std::cerr << "Warning (DataCube): Keyword CUNIT2 missing; using FITS default.\n";
  *            unitLat.set("latitude", 1.0, 0.0, iterSpat->second);
  *        }
  *        else
  *        {
  *            // Invalid type keyword:
- *            std::cerr << "Warning (DataCube): Keyword CUNIT2 missing and CTYPE2 unknown." << std::endl;
+ *            std::cerr << "Warning (DataCube): Keyword CUNIT2 missing and CTYPE2 unknown.\n";
  *            unitLat.set("latitude", 1.0, 0.0, UNIT_NONE);
  *        }
  *    }
@@ -839,7 +839,7 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *        {
  *            if(unitLat.set("latitude", 1.0, 0.0, unitString) != 0)
  *            {
- *                std::cerr << "Warning (DataCube): Unknown latitude unit \'" << unitString <<  "\'." << std::endl;
+ *                std::cerr << "Warning (DataCube): Unknown latitude unit \'" << unitString <<  "\'.\n";
  *            }
  *        }
  *    }
@@ -854,13 +854,13 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *        if(iterSpec != typeSpec.end())
  *        {
  *            // Valid type keyword:
- *            std::cerr << "Warning (DataCube): Keyword CUNIT3 missing; using FITS default." << std::endl;
+ *            std::cerr << "Warning (DataCube): Keyword CUNIT3 missing; using FITS default.\n";
  *            unitSpec.set("spectral", 1.0, 0.0, iterSpec->second);
  *        }
  *        else
  *        {
  *            // Invalid type keyword:
- *            std::cerr << "Warning (DataCube): Keyword CUNIT3 missing and CTYPE3 unknown." << std::endl;
+ *            std::cerr << "Warning (DataCube): Keyword CUNIT3 missing and CTYPE3 unknown.\n";
  *            unitSpec.set("spectral", 1.0, 0.0, UNIT_NONE);
  *        }
  *    }
@@ -871,7 +871,7 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *        
  *        if(unitSpec.set("spectral", 1.0, 0.0, unitString) != 0)
  *        {
- *            std::cerr << "Warning (DataCube): Unknown spectral unit \'" << unitString <<  "\'." << std::endl;
+ *            std::cerr << "Warning (DataCube): Unknown spectral unit \'" << unitString <<  "\'.\n";
  *        }
  *    }
  *    
@@ -898,7 +898,7 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *    if(dataRow == 0)
  *    {
  *        fits_close_file(filePointer, &status);
- *        std::cerr << "Error (DataCube): Not enough memory to read FITS file." << std::endl;
+ *        std::cerr << "Error (DataCube): Not enough memory to read FITS file.\n";
  *        return 1;
  *    }
  *    
@@ -908,7 +908,7 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *    {
  *        delete[] dataRow;
  *        fits_close_file(filePointer, &status);
- *        std::cerr << "Error (DataCube): Not enough memory to read FITS file." << std::endl;
+ *        std::cerr << "Error (DataCube): Not enough memory to read FITS file.\n";
  *        return 1;
  *    }
  *    
@@ -959,7 +959,7 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *            }
  *            else
  *            {
- *                std::cerr << "Error (DataCube): Unsupported data type (" << typeid(T).name() << ")." << std::endl;
+ *                std::cerr << "Error (DataCube): Unsupported data type (" << typeid(T).name() << ").\n";
  *                fits_close_file(filePointer, &status);
  *                delete[] dataRow;
  *                this->clear();
@@ -996,8 +996,8 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *    
  *    // Lastly, try to read WCS from FITS file:
  *    
- *    if(wcs.readFitsFile(fileName)) std::cerr << "Warning (DataCube): No valid WCS definition found." << std::endl;
- *    else                           std::cout << "DataCube: Valid WCS definition found." << std::endl;
+ *    if(wcs.readFitsFile(fileName)) std::cerr << "Warning (DataCube): No valid WCS definition found.\n";
+ *    else                           std::cout << "DataCube: Valid WCS definition found.\n";
  *    
  *    return 0;
  * }
@@ -1015,13 +1015,13 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  * {
  *    if(fileName.empty())
  *    {
- *        std::cerr << "Error (DataCube): Cannot create output file; no file name specified." << std::endl;
+ *        std::cerr << "Error (DataCube): Cannot create output file; no file name specified.\n";
  *        return 1;
  *    }
  *    
  *    if(!this->isDefined())
  *    {
- *        std::cerr << "Error (DataCube): Cannot create output file; no data present." << std::endl;
+ *        std::cerr << "Error (DataCube): Cannot create output file; no data present.\n";
  *        return 1;
  *    }
  *    
@@ -1036,7 +1036,7 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *    
  *    if(status != 0)
  *    {
- *        std::cerr << "Error (DataCube): Opening of FITS file " << fileNameHeader << " failed." << std::endl;
+ *        std::cerr << "Error (DataCube): Opening of FITS file " << fileNameHeader << " failed.\n";
  *        fits_report_error(stderr, status);
  *        return 1;
  *    }
@@ -1046,7 +1046,7 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *    
  *    if(status != 0)
  *    {
- *        std::cerr << "Error (DataCube): Creation of FITS file " << fileName << " failed." << std::endl;
+ *        std::cerr << "Error (DataCube): Creation of FITS file " << fileName << " failed.\n";
  *        fits_report_error(stderr, status);
  *        status = 0;
  *        fits_close_file(hfptr, &status);
@@ -1058,7 +1058,7 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *    
  *    if(status != 0)
  *    {
- *        std::cerr << "Error (DataCube): Failed to copy header to output FITS file." << std::endl;
+ *        std::cerr << "Error (DataCube): Failed to copy header to output FITS file.\n";
  *        fits_report_error(stderr, status);
  *        status = 0;
  *        fits_close_file(fptr, &status);
@@ -1100,7 +1100,7 @@ template <typename T> Measurement<double> DataCube<T>::getUnitSpec()
  *            else if(typeid(T) == typeid(double)) fits_write_pix(fptr, TDOUBLE, firstpix, numberPixels[0], pix, &status);
  *            else
  *            {
- *                std::cerr << "Error (DataCube): Unsupported data type (" << typeid(T).name() << ")." << std::endl;
+ *                std::cerr << "Error (DataCube): Unsupported data type (" << typeid(T).name() << ").\n";
  *                fits_close_file(fptr, &status);
  *                return 1;
  *            }
@@ -1207,7 +1207,7 @@ template <typename T> int DataCube<T>::getHeader(const std::string &keyName, std
 	
 	if(header.getEntry(searchKey, result) != 0)
 	{
-		std::cerr << "Warning (DataCube): Header key \'" << searchKey << "\' not found." << std::endl;
+		std::cerr << "Warning (DataCube): Header key \'" << searchKey << "\' not found.\n";
 		return 1;
 	}
 	
@@ -1221,7 +1221,7 @@ template <typename T> int DataCube<T>::getHeader(const std::string &keyName, int
 	
 	if(header.getEntry(searchKey, result) != 0)
 	{
-		std::cerr << "Warning (DataCube): Header key \'" << searchKey << "\' not found." << std::endl;
+		std::cerr << "Warning (DataCube): Header key \'" << searchKey << "\' not found.\n";
 		return 1;
 	}
 	
@@ -1235,7 +1235,7 @@ template <typename T> int DataCube<T>::getHeader(const std::string &keyName, lon
 	
 	if(header.getEntry(searchKey, result) != 0)
 	{
-		std::cerr << "Warning (DataCube): Header key \'" << searchKey << "\' not found." << std::endl;
+		std::cerr << "Warning (DataCube): Header key \'" << searchKey << "\' not found.\n";
 		return 1;
 	}
 	
@@ -1249,7 +1249,7 @@ template <typename T> int DataCube<T>::getHeader(const std::string &keyName, flo
 	
 	if(header.getEntry(searchKey, result) != 0)
 	{
-		std::cerr << "Warning (DataCube): Header key \'" << searchKey << "\' not found." << std::endl;
+		std::cerr << "Warning (DataCube): Header key \'" << searchKey << "\' not found.\n";
 		return 1;
 	}
 	
@@ -1263,7 +1263,7 @@ template <typename T> int DataCube<T>::getHeader(const std::string &keyName, dou
 	
 	if(header.getEntry(searchKey, result) != 0)
 	{
-		std::cerr << "Warning (DataCube): Header key \'" << searchKey << "\' not found." << std::endl;
+		std::cerr << "Warning (DataCube): Header key \'" << searchKey << "\' not found.\n";
 		return 1;
 	}
 	

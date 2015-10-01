@@ -39,13 +39,13 @@ int ModuleParametrisation::run(float *d, short *m, long dx, long dy, long dz, So
 	
 	if(d == 0 or m == 0)
 	{
-		std::cerr << "Error (ModParam): Invalid data pointer provided." << std::endl;
+		std::cerr << "Error (ModParam): Invalid data pointer provided.\n";
 		return 1;
 	}
 	
 	if(dx <= 0 or dy <= 0 or dz <= 0)
 	{
-		std::cerr << "Error (ModParam): Invalid data cube dimensions." << std::endl;
+		std::cerr << "Error (ModParam): Invalid data cube dimensions.\n";
 		return 1;
 	}
 	
@@ -66,7 +66,7 @@ int ModuleParametrisation::run(float *d, short *m, long dx, long dy, long dz, So
 		
 		if(source == 0)
 		{
-			std::cerr << "Error (ModParam): Failed to find requested catalogue source " << i << "." << std::endl;
+			std::cerr << "Error (ModParam): Failed to find requested catalogue source " << i << ".\n";
 			return 1;
 		}
 		
@@ -79,7 +79,7 @@ int ModuleParametrisation::run(float *d, short *m, long dx, long dy, long dz, So
 			
 			if(maskOptimization.optimize(&dataCube, &maskCube, source) != 0)
 			{
-				std::cerr << "Error (ModParam): Mask optimisation failed for source " << source->getSourceID() << "." << std::endl;
+				std::cerr << "Error (ModParam): Mask optimisation failed for source " << source->getSourceID() << ".\n";
 			}
 		}
 		
@@ -90,7 +90,7 @@ int ModuleParametrisation::run(float *d, short *m, long dx, long dy, long dz, So
 		
 		if(parametrization.parametrize(&dataCube, &maskCube, source, doBusyFunction) != 0)
 		{
-			std::cerr << "Error (ModParam): Parametrisation failed for source " << source->getSourceID() << "." << std::endl;
+			std::cerr << "Error (ModParam): Parametrisation failed for source " << source->getSourceID() << ".\n";
 		}
 	}
 	

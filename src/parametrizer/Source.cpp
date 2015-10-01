@@ -78,7 +78,7 @@ int Source::setParameter(const std::string &parameter, double value, double unce
 	Measurement<double> tmp;
 	if(tmp.set(parameter, value, uncertainty, unit) != 0)
 	{
-		std::cerr << "Error (Source): Failed to set source parameter." << std::endl;
+		std::cerr << "Error (Source): Failed to set source parameter.\n";
 		return 1;
 	}
 	parameters[tmp.getName()]=tmp;
@@ -95,7 +95,7 @@ Measurement<double> Source::getParameterMeasurement(const std::string &parameter
 	
 	if (parameters.find(parameter)==parameters.end())
 	{
-		std::cerr << "Error (Source): Source parameter \'" << parameter << "\' not found." << std::endl;
+		std::cerr << "Error (Source): Source parameter \'" << parameter << "\' not found.\n";
 		Measurement<double> tmp;
 		if(std::numeric_limits<double>::has_quiet_NaN)
 		{
@@ -120,7 +120,7 @@ double Source::getParameter(const std::string &parameter)
 	
 	if (parameters.find(parameter)==parameters.end())
 	{
-		std::cerr << "Error (Source): Source parameter \'" << parameter << "\' not found." << std::endl;
+		std::cerr << "Error (Source): Source parameter \'" << parameter << "\' not found.\n";
 		Measurement<double> tmp;
 		if(std::numeric_limits<double>::has_quiet_NaN)
 		{

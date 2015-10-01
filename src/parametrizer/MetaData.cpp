@@ -70,7 +70,7 @@ int MetaData::getKey(unsigned int position, std::string &result)
 {
 	if(header.empty() or position < 0 or position >= header.size())
 	{
-		std::cerr << "Error (MetaData): Invalid header position." << std::endl;
+		std::cerr << "Error (MetaData): Invalid header position.\n";
 		return 1;
 	}
 	else
@@ -84,7 +84,7 @@ int MetaData::getValue(unsigned int position, std::string &result)
 {
 	if(header.empty() or position < 0 or position >= header.size())
 	{
-		std::cerr << "Error (MetaData): Invalid header position." << std::endl;
+		std::cerr << "Error (MetaData): Invalid header position.\n";
 		return 1;
 	}
 	else
@@ -98,7 +98,7 @@ int MetaData::getType(unsigned int position, int &result)
 {
 	if(header.empty() or position < 0 or position >= header.size())
 	{
-		std::cerr << "Error (MetaData): Invalid header position." << std::endl;
+		std::cerr << "Error (MetaData): Invalid header position.\n";
 		return 1;
 	}
 	else
@@ -116,7 +116,7 @@ int MetaData::addEntry(const std::string &newKey, const std::string &newValue, i
 {
 	if(newKey.empty() or newValue.empty())
 	{
-		std::cerr << "Error (MetaData): Cannot add header entry; key or value missing." << std::endl;
+		std::cerr << "Error (MetaData): Cannot add header entry; key or value missing.\n";
 		return 1;
 	}
 	
@@ -136,7 +136,7 @@ int MetaData::addEntry(const std::string &newKey, float newValue)
 {
 	if(newKey.empty())
 	{
-		std::cerr << "Error (MetaData): Cannot add header entry; key missing." << std::endl;
+		std::cerr << "Error (MetaData): Cannot add header entry; key missing.\n";
 		return 1;
 	}
 	
@@ -156,7 +156,7 @@ int MetaData::addEntry(const std::string &newKey, double newValue)
 {
 	if(newKey.empty())
 	{
-		std::cerr << "Error (MetaData): Cannot add header entry; key missing." << std::endl;
+		std::cerr << "Error (MetaData): Cannot add header entry; key missing.\n";
 		return 1;
 	}
 	
@@ -176,7 +176,7 @@ int MetaData::addEntry(const std::string &newKey, int newValue)
 {
 	if(newKey.empty())
 	{
-		std::cerr << "Error (MetaData): Cannot add header entry; key missing." << std::endl;
+		std::cerr << "Error (MetaData): Cannot add header entry; key missing.\n";
 		return 1;
 	}
 	
@@ -196,7 +196,7 @@ int MetaData::addEntry(const std::string &newKey, long newValue)
 {
 	if(newKey.empty())
 	{
-		std::cerr << "Error (MetaData): Cannot add header entry; key missing." << std::endl;
+		std::cerr << "Error (MetaData): Cannot add header entry; key missing.\n";
 		return 1;
 	}
 	
@@ -216,7 +216,7 @@ int MetaData::addEntry(const std::string &newKey, bool newValue)
 {
 	if(newKey.empty())
 	{
-		std::cerr << "Error (MetaData): Cannot add header entry; key missing." << std::endl;
+		std::cerr << "Error (MetaData): Cannot add header entry; key missing.\n";
 		return 1;
 	}
 	
@@ -241,7 +241,7 @@ int MetaData::addEntry(const std::string &newKey, float newValue, std::string &u
 {
 	if(newKey.empty())
 	{
-		std::cerr << "Error (MetaData): Cannot add header entry; key missing." << std::endl;
+		std::cerr << "Error (MetaData): Cannot add header entry; key missing.\n";
 		return 1;
 	}
 	
@@ -261,7 +261,7 @@ int MetaData::addEntry(const std::string &newKey, double newValue, std::string &
 {
 	if(newKey.empty())
 	{
-		std::cerr << "Error (MetaData): Cannot add header entry; key missing." << std::endl;
+		std::cerr << "Error (MetaData): Cannot add header entry; key missing.\n";
 		return 1;
 	}
 	
@@ -286,7 +286,7 @@ int MetaData::modifyEntry(const std::string &key, const std::string &value)
 {
 	if(key.empty() or value.empty())
 	{
-		std::cerr << "Error (MetaData): Cannot modify header entry; key or value missing." << std::endl;
+		std::cerr << "Error (MetaData): Cannot modify header entry; key or value missing.\n";
 		return 1;
 	}
 	
@@ -294,7 +294,7 @@ int MetaData::modifyEntry(const std::string &key, const std::string &value)
 	
 	if(position == header.size())
 	{
-		std::cerr << "Warning (MetaData): Key \'" << key << "\' not found; creating new header entry." << std::endl;
+		std::cerr << "Warning (MetaData): Key \'" << key << "\' not found; creating new header entry.\n";
 		if(addEntry(key, value) != 0) return 1;
 	}
 	else
@@ -313,7 +313,7 @@ int MetaData::getEntry(const std::string &key, int &value)
 {
 	if(key.empty())
 	{
-		std::cerr << "Error (MetaData): Cannot get header entry; no key specified." << std::endl;
+		std::cerr << "Error (MetaData): Cannot get header entry; no key specified.\n";
 		return 1;
 	}
 	
@@ -321,7 +321,7 @@ int MetaData::getEntry(const std::string &key, int &value)
 	
 	if(position == header.size())
 	{
-		std::cerr << "Error (MetaData): Header entry \'" << key << "\' not found." << std::endl;
+		std::cerr << "Error (MetaData): Header entry \'" << key << "\' not found.\n";
 		return 1;
 	}
 	
@@ -334,7 +334,7 @@ int MetaData::getEntry(const std::string &key, long &value)
 {
 	if(key.empty())
 	{
-		std::cerr << "Error (MetaData): Cannot get header entry; no key specified." << std::endl;
+		std::cerr << "Error (MetaData): Cannot get header entry; no key specified.\n";
 		return 1;
 	}
 	
@@ -342,7 +342,7 @@ int MetaData::getEntry(const std::string &key, long &value)
 	
 	if(position == header.size())
 	{
-		std::cerr << "Error (MetaData): Header entry \'" << key << "\' not found." << std::endl;
+		std::cerr << "Error (MetaData): Header entry \'" << key << "\' not found.\n";
 		return 1;
 	}
 	
@@ -355,7 +355,7 @@ int MetaData::getEntry(const std::string &key, float &value)
 {
 	if(key.empty())
 	{
-		std::cerr << "Error (MetaData): Cannot get header entry; no key specified." << std::endl;
+		std::cerr << "Error (MetaData): Cannot get header entry; no key specified.\n";
 		return 1;
 	}
 	
@@ -363,7 +363,7 @@ int MetaData::getEntry(const std::string &key, float &value)
 	
 	if(position == header.size())
 	{
-		std::cerr << "Error (MetaData): Header entry \'" << key << "\' not found." << std::endl;
+		std::cerr << "Error (MetaData): Header entry \'" << key << "\' not found.\n";
 		return 1;
 	}
 	
@@ -376,7 +376,7 @@ int MetaData::getEntry(const std::string &key, double &value)
 {
 	if(key.empty())
 	{
-		std::cerr << "Error (MetaData): Cannot get header entry; no key specified." << std::endl;
+		std::cerr << "Error (MetaData): Cannot get header entry; no key specified.\n";
 		return 1;
 	}
 	
@@ -384,7 +384,7 @@ int MetaData::getEntry(const std::string &key, double &value)
 	
 	if(position == header.size())
 	{
-		std::cerr << "Error (MetaData): Header entry \'" << key << "\' not found." << std::endl;
+		std::cerr << "Error (MetaData): Header entry \'" << key << "\' not found.\n";
 		return 1;
 	}
 	
@@ -397,7 +397,7 @@ int MetaData::getEntry(const std::string &key, std::string &value)
 {
 	if(key.empty())
 	{
-		std::cerr << "Error (MetaData): Cannot get header entry; no key specified." << std::endl;
+		std::cerr << "Error (MetaData): Cannot get header entry; no key specified.\n";
 		return 1;
 	}
 	
@@ -405,7 +405,7 @@ int MetaData::getEntry(const std::string &key, std::string &value)
 	
 	if(position == header.size())
 	{
-		std::cerr << "Error (MetaData): Header entry \'" << key << "\' not found." << std::endl;
+		std::cerr << "Error (MetaData): Header entry \'" << key << "\' not found.\n";
 		return 1;
 	}
 	

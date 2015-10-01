@@ -49,47 +49,47 @@ int Parametrization::parametrize(DataCube<float> *d, DataCube<short> *m, Source 
 	
 	if(loadData(d, m, s) != 0)
 	{
-		std::cerr << "Error (Parametrization): No data found; source parametrisation failed." << std::endl;
+		std::cerr << "Error (Parametrization): No data found; source parametrisation failed.\n";
 		return 1;
 	}
 	
 	if(createIntegratedSpectrum() != 0)
 	{
-		std::cerr << "Error (Parametrization): Failed to create integrated spectrum." << std::endl;
+		std::cerr << "Error (Parametrization): Failed to create integrated spectrum.\n";
 		return 1;
 	}
 	
 	if(measureCentroid() != 0)
 	{
-		std::cerr << "Warning (Parametrization): Failed to measure source centroid." << std::endl;
+		std::cerr << "Warning (Parametrization): Failed to measure source centroid.\n";
 	}
 	
 	if(measureFlux() != 0)
 	{
-		std::cerr << "Warning (Parametrization): Source flux measurement failed." << std::endl;
+		std::cerr << "Warning (Parametrization): Source flux measurement failed.\n";
 	}
 	
 	if(measureLineWidth() != 0)
 	{
-		std::cerr << "Warning (Parametrization): Failed to measure source line width." << std::endl;
+		std::cerr << "Warning (Parametrization): Failed to measure source line width.\n";
 	}
 	
 	if(fitEllipse() != 0)
 	{
-		std::cerr << "Warning (Parametrization): Ellipse fit failed." << std::endl;
+		std::cerr << "Warning (Parametrization): Ellipse fit failed.\n";
 	}
 	
 	if(doBusyFunction == true)
 	{
 		if(fitBusyFunction() != 0)
 		{
-			std::cerr << "Warning (Parametrization): Failed to fit Busy Function." << std::endl;
+			std::cerr << "Warning (Parametrization): Failed to fit Busy Function.\n";
 		}
 	}
 	
 	if(writeParameters() != 0)
 	{
-		std::cerr << "Error (Parametrization): Failed to write parameters to source." << std::endl;
+		std::cerr << "Error (Parametrization): Failed to write parameters to source.\n";
 		return 1;
 	}
 	
@@ -106,19 +106,19 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 	
 	if(d == 0 or m == 0 or s == 0)
 	{
-		std::cerr << "Error (Parametrization): Cannot load data; invalid pointer provided." << std::endl;
+		std::cerr << "Error (Parametrization): Cannot load data; invalid pointer provided.\n";
 		return 1;
 	}
 	
 	if(!d->isDefined() or !m->isDefined() or !s->isDefined())
 	{
-		std::cerr << "Error (Parametrization): Cannot load data; source or data cube undefined." << std::endl;
+		std::cerr << "Error (Parametrization): Cannot load data; source or data cube undefined.\n";
 		return 1;
 	}
 	
 	if(d->getSize(0) != m->getSize(0) or d->getSize(1) != m->getSize(1) or d->getSize(2) != m->getSize(2))
 	{
-		std::cerr << "Error (Parametrization): Mask and data cube have different sizes." << std::endl;
+		std::cerr << "Error (Parametrization): Mask and data cube have different sizes.\n";
 		return 1;
 	}
 	
@@ -128,7 +128,7 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 	
 	if(posX < 0.0 or posY < 0.0 or posZ < 0.0 or posX >= static_cast<double>(d->getSize(0)) or posY >= static_cast<double>(d->getSize(1)) or posZ >= static_cast<double>(d->getSize(2)))
 	{
-		std::cerr << "Error (Parametrization): Source position outside cube range." << std::endl;
+		std::cerr << "Error (Parametrization): Source position outside cube range.\n";
 		return 1;
 	}
 	
@@ -146,7 +146,7 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 	{
 		searchRadiusX = PARAMETRIZATION_DEFAULT_SPATIAL_RADIUS;
 		std::cerr << "Warning (MaskOptimization): No bounding box defined; using default search radius\n";
-		std::cerr << "                            in the spatial domain instead." << std::endl;
+		std::cerr << "                            in the spatial domain instead.\n";
 	}
 	
 	if(source->parameterDefined("y_min") and source->parameterDefined("y_max"))
@@ -157,7 +157,7 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 	{
 		searchRadiusY = PARAMETRIZATION_DEFAULT_SPATIAL_RADIUS;
 		std::cerr << "Warning (MaskOptimization): No bounding box defined; using default search radius\n";
-		std::cerr << "                            in the spatial domain instead." << std::endl;
+		std::cerr << "                            in the spatial domain instead.\n";
 	}
 	
 	if(source->parameterDefined("z_min") and source->parameterDefined("z_max"))
@@ -168,7 +168,7 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 	{
 		searchRadiusZ = PARAMETRIZATION_DEFAULT_SPECTRAL_RADIUS;
 		std::cerr << "Warning (MaskOptimization): No bounding box defined; using default search radius\n";
-		std::cerr << "                            in the spectral domain instead." << std::endl;
+		std::cerr << "                            in the spectral domain instead.\n";
 	}
 	
 	subRegionX1 = static_cast<long>(posX) - searchRadiusX;
@@ -221,13 +221,13 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 	
 	if(data.empty() == true)
 	{
-		std::cerr << "Error (Parametrization): No data found for source " << source->getSourceID() << "." << std::endl;
+		std::cerr << "Error (Parametrization): No data found for source " << source->getSourceID() << ".\n";
 		return 1;
 	}
 	
 	if(rmsMad.size() == 0)
 	{
-		std::cerr << "Warning (Parametrization): Noise calculation failed for source " << source->getSourceID() << "." << std::endl;
+		std::cerr << "Warning (Parametrization): Noise calculation failed for source " << source->getSourceID() << ".\n";
 	}
 	else
 	{
@@ -251,7 +251,7 @@ int Parametrization::measureCentroid()
 {
 	if(data.empty() or spectrum.empty())
 	{
-		std::cerr << "Error (Parametrization): No data loaded." << std::endl;
+		std::cerr << "Error (Parametrization): No data loaded.\n";
 		return 1;
 	}
 	
@@ -286,7 +286,7 @@ int Parametrization::measureFlux()
 {
 	if(data.empty() == true)
 	{
-		std::cerr << "Error (Parametrization): No data loaded." << std::endl;
+		std::cerr << "Error (Parametrization): No data loaded.\n";
 		return 1;
 	}
 	
@@ -318,13 +318,13 @@ int Parametrization::fitEllipse()
 {
 	if(data.empty() == true)
 	{
-		std::cerr << "Error (Parametrization): No data loaded." << std::endl;
+		std::cerr << "Error (Parametrization): No data loaded.\n";
 		return 1;        
 	}
 	
 	if(totalFlux <= 0.0)
 	{
-		std::cerr << "Error (Parametrization): Cannot fit ellipse, source flux <= 0." << std::endl;
+		std::cerr << "Error (Parametrization): Cannot fit ellipse, source flux <= 0.\n";
 		return 1;        
 	}
 	
@@ -374,7 +374,7 @@ int Parametrization::createIntegratedSpectrum()
 {
 	if(data.empty() == true)
 	{
-		std::cerr << "Error (Parametrization): No data loaded." << std::endl;
+		std::cerr << "Error (Parametrization): No data loaded.\n";
 		return 1;
 	}
 	
@@ -419,7 +419,7 @@ int Parametrization::measureLineWidth()
 {
 	if(data.empty() == true or spectrum.empty() == true)
 	{
-		std::cerr << "Error (Parametrization): No data loaded." << std::endl;
+		std::cerr << "Error (Parametrization): No data loaded.\n";
 		return 1;
 	}
 	
@@ -438,7 +438,7 @@ int Parametrization::measureLineWidth()
 	
 	if(i >= spectrum.size())
 	{
-		std::cerr << "Error (Parametrization): Calculation of W50 failed (1)." << std::endl;
+		std::cerr << "Error (Parametrization): Calculation of W50 failed (1).\n";
 		lineWidthW50 = 0.0;
 		return 1;
 	}
@@ -452,7 +452,7 @@ int Parametrization::measureLineWidth()
 	
 	if(i < 0)
 	{
-		std::cerr << "Error (Parametrization): Calculation of W50 failed (2)." << std::endl;
+		std::cerr << "Error (Parametrization): Calculation of W50 failed (2).\n";
 		lineWidthW50 = 0.0;
 		return 1;
 	}
@@ -462,7 +462,7 @@ int Parametrization::measureLineWidth()
 	
 	if(lineWidthW50 <= 0.0)
 	{
-		std::cerr << "Error (Parametrization): Calculation of W50 failed (3)." << std::endl;
+		std::cerr << "Error (Parametrization): Calculation of W50 failed (3).\n";
 		lineWidthW50 = 0.0;
 		return 1;
 	}
@@ -474,7 +474,7 @@ int Parametrization::measureLineWidth()
 	
 	if(i >= spectrum.size())
 	{
-		std::cerr << "Error (Parametrization): Calculation of W20 failed (1)." << std::endl;
+		std::cerr << "Error (Parametrization): Calculation of W20 failed (1).\n";
 		lineWidthW20 = 0.0;
 		return 1;
 	}
@@ -488,7 +488,7 @@ int Parametrization::measureLineWidth()
 	
 	if(i < 0)
 	{
-		std::cerr << "Error (Parametrization): Calculation of W20 failed (2)." << std::endl;
+		std::cerr << "Error (Parametrization): Calculation of W20 failed (2).\n";
 		lineWidthW20 = 0.0;
 		return 1;
 	}
@@ -498,7 +498,7 @@ int Parametrization::measureLineWidth()
 	
 	if(lineWidthW20 <= 0.0)
 	{
-		std::cerr << "Error (Parametrization): Calculation of W20 failed (3)." << std::endl;
+		std::cerr << "Error (Parametrization): Calculation of W20 failed (3).\n";
 		lineWidthW20 = 0.0;
 		return 1;
 	}
@@ -521,7 +521,7 @@ int Parametrization::measureLineWidth()
 	
 	if(i >= spectrum.size())
 	{
-		std::cerr << "Error (Parametrization): Calculation of Wm50 failed." << std::endl;
+		std::cerr << "Error (Parametrization): Calculation of Wm50 failed.\n";
 		return 1;
 	}
 	
@@ -541,7 +541,7 @@ int Parametrization::measureLineWidth()
 	
 	if(i < 0)
 	{
-		std::cerr << "Error (Parametrization): Calculation of Wm50 failed." << std::endl;
+		std::cerr << "Error (Parametrization): Calculation of Wm50 failed.\n";
 		return 1;
 	}
 	
@@ -552,7 +552,7 @@ int Parametrization::measureLineWidth()
 	
 	if(meanFluxWm50 <= 0)
 	{
-		std::cerr << "Error (Parametrization): Calculation of Wm50 failed." << std::endl;
+		std::cerr << "Error (Parametrization): Calculation of Wm50 failed.\n";
 		meanFluxWm50 = 0.0;
 		return 1;
 	}
@@ -563,7 +563,7 @@ int Parametrization::measureLineWidth()
 	
 	if(i >= spectrum.size())
 	{
-		std::cerr << "Error (Parametrization): Calculation of Wm50 failed." << std::endl;
+		std::cerr << "Error (Parametrization): Calculation of Wm50 failed.\n";
 		meanFluxWm50 = 0.0;
 		return 1;
 	}
@@ -577,7 +577,7 @@ int Parametrization::measureLineWidth()
 	
 	if(i < 0)
 	{
-		std::cerr << "Error (Parametrization): Calculation of Wm50 failed." << std::endl;
+		std::cerr << "Error (Parametrization): Calculation of Wm50 failed.\n";
 		lineWidthWm50 = 0.0;
 		meanFluxWm50 = 0.0;
 		return 1;
@@ -588,7 +588,7 @@ int Parametrization::measureLineWidth()
 	
 	if(lineWidthWm50 <= 0)
 	{
-		std::cerr << "Error (Parametrization): Calculation of Wm50 failed." << std::endl;
+		std::cerr << "Error (Parametrization): Calculation of Wm50 failed.\n";
 		lineWidthWm50 = 0.0;
 		meanFluxWm50 = 0.0;
 		return 1;
@@ -605,7 +605,7 @@ int Parametrization::fitBusyFunction()
 {
 	if(data.empty() or spectrum.empty())
 	{
-		std::cerr << "Error (Parametrization): No data loaded." << std::endl;
+		std::cerr << "Error (Parametrization): No data loaded.\n";
 		return 1;
 	}
 	

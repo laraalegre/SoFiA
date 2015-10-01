@@ -30,25 +30,25 @@ int MaskOptimization::optimize(DataCube<float> *d, DataCube<short> *m, Source *s
 {
 	if(loadData(d, m, s) != 0)
 	{
-		std::cerr << "Error (MaskOptimization): Mask optimisation failed." << std::endl;
+		std::cerr << "Error (MaskOptimization): Mask optimisation failed.\n";
 		return 1;
 	}
 	
 	if(createMomentMap() != 0)
 	{
-		std::cerr << "Error (MaskOptimization): Mask optimisation failed." << std::endl;
+		std::cerr << "Error (MaskOptimization): Mask optimisation failed.\n";
 		return 1;
 	}
 	
 	if(fitEllipse() != 0)
 	{
-		std::cerr << "Error (MaskOptimization): Mask optimisation failed." << std::endl;
+		std::cerr << "Error (MaskOptimization): Mask optimisation failed.\n";
 		return 1;
 	}
 	
 	if(growEllipse() != 0)
 	{
-		std::cerr << "Error (MaskOptimization): Mask optimisation failed." << std::endl;
+		std::cerr << "Error (MaskOptimization): Mask optimisation failed.\n";
 		return 1;
 	}
 	
@@ -63,19 +63,19 @@ int MaskOptimization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s
 {
 	if(d == 0 or m == 0 or s == 0)
 	{
-		std::cerr << "Error (MaskOptimization): Cannot load data; invalid pointer provided." << std::endl;
+		std::cerr << "Error (MaskOptimization): Cannot load data; invalid pointer provided.\n";
 		return 1;
 	}
 	
 	if(!d->isDefined() or !m->isDefined() or !s->isDefined())
 	{
-		std::cerr << "Error (MaskOptimization): Cannot load data; source or data cube undefined." << std::endl;
+		std::cerr << "Error (MaskOptimization): Cannot load data; source or data cube undefined.\n";
 		return 1;
 	}
 	
 	if(d->getSize(0) != m->getSize(0) or d->getSize(1) != m->getSize(1) or d->getSize(2) != m->getSize(2))
 	{
-		std::cerr << "Error (MaskOptimization): Mask and data cube have different sizes." << std::endl;
+		std::cerr << "Error (MaskOptimization): Mask and data cube have different sizes.\n";
 		return 1;
 	}
 	
@@ -85,7 +85,7 @@ int MaskOptimization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s
 	
 	if(x < 0.0 or y < 0.0 or z < 0.0 or x >= static_cast<double>(d->getSize(0)) or y >= static_cast<double>(d->getSize(1)) or z >= static_cast<double>(d->getSize(2)))
 	{
-		std::cerr << "Error (MaskOptimization): Source position outside cube boundaries." << std::endl;
+		std::cerr << "Error (MaskOptimization): Source position outside cube boundaries.\n";
 		return 1;
 	}
 	
@@ -105,7 +105,7 @@ int MaskOptimization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s
 		{
 			searchRadiusX = MASKOPTIMIZATION_DEFAULT_SPATIAL_RADIUS;
 			std::cerr << "Warning (MaskOptimization): No bounding box defined; using default search radius\n";
-			std::cerr << "                            in the spatial domain instead." << std::endl;
+			std::cerr << "                            in the spatial domain instead.\n";
 		}
 	}
 	
@@ -119,7 +119,7 @@ int MaskOptimization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s
 		{
 			searchRadiusY = MASKOPTIMIZATION_DEFAULT_SPATIAL_RADIUS;
 			std::cerr << "Warning (MaskOptimization): No bounding box defined; using default search radius\n";
-			std::cerr << "                            in the spatial domain instead." << std::endl;
+			std::cerr << "                            in the spatial domain instead.\n";
 		}
 	}
 	
@@ -143,7 +143,7 @@ int MaskOptimization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s
 		{
 			searchRadiusZ = MASKOPTIMIZATION_DEFAULT_SPECTRAL_RADIUS;
 			std::cerr << "Warning (MaskOptimization): No bounding box defined; using default search radius\n";
-			std::cerr << "                            in the spectral domain instead." << std::endl;
+			std::cerr << "                            in the spectral domain instead.\n";
 		}
 	}
 	
@@ -177,19 +177,19 @@ int MaskOptimization::createMomentMap()
 	
 	if(!dataCube->isDefined() or !maskCube->isDefined() or !source->isDefined())
 	{
-		std::cerr << "Error (MaskOptimization): Cannot create moment map; no data provided." << std::endl;
+		std::cerr << "Error (MaskOptimization): Cannot create moment map; no data provided.\n";
 		return 1;
 	}
 	
 	if(momentMap.createNewCube(dx, dy, 1L))
 	{
-		std::cerr << "Error (MaskOptimization): Failed to create moment map." << std::endl;
+		std::cerr << "Error (MaskOptimization): Failed to create moment map.\n";
 		return 1;
 	}
 	
 	if(momentMap.floodFill(0.0))
 	{
-		std::cerr << "Error (MaskOptimization): Initialisation of moment map failed." << std::endl;
+		std::cerr << "Error (MaskOptimization): Initialisation of moment map failed.\n";
 		return 1;
 	}
 	
@@ -219,13 +219,13 @@ int MaskOptimization::fitEllipse()
 {
 	if(!momentMap.isDefined())
 	{
-		std::cerr << "Error (MaskOptimization): Cannot fit ellipse; moment map undefined." << std::endl;
+		std::cerr << "Error (MaskOptimization): Cannot fit ellipse; moment map undefined.\n";
 		return 1;
 	}
 	
 	if(!source->isDefined())
 	{
-		std::cerr << "Error (MaskOptimization): Cannot fit ellipse; no source specified." << std::endl;
+		std::cerr << "Error (MaskOptimization): Cannot fit ellipse; no source specified.\n";
 		return 1;
 	}
 	
@@ -254,7 +254,7 @@ int MaskOptimization::fitEllipse()
 	
 	if(sum <= 0.0)
 	{
-		std::cerr << "Error (MaskOptimization): Cannot fit ellipse; no positive flux found." << std::endl;
+		std::cerr << "Error (MaskOptimization): Cannot fit ellipse; no positive flux found.\n";
 		return 1;
 	}
 	
@@ -286,19 +286,19 @@ int MaskOptimization::growEllipse()
 {
 	if(!momentMap.isDefined())
 	{
-		std::cerr << "Error (MaskOptimization): Cannot grow ellipse; moment map undefined." << std::endl;
+		std::cerr << "Error (MaskOptimization): Cannot grow ellipse; moment map undefined.\n";
 		return 1;
 	}
 	
 	if(!source->isDefined())
 	{
-		std::cerr << "Error (MaskOptimization): Cannot grow ellipse; no source specified." << std::endl;
+		std::cerr << "Error (MaskOptimization): Cannot grow ellipse; no source specified.\n";
 		return 1;
 	}
 	
 	if(ellA <= 0.0 or ellB <= 0.0)
 	{
-		std::cerr << "Error (MaskOptimization): Cannot grow ellipse; ellipse parameters undefined." << std::endl;
+		std::cerr << "Error (MaskOptimization): Cannot grow ellipse; ellipse parameters undefined.\n";
 		return 1;
 	}
 	
@@ -358,8 +358,8 @@ int MaskOptimization::growEllipse()
 	
 	if(iteration > MASKOPTIMIZATION_ITERATIONS or iteration <= 1)
 	{
-		std::cerr << "Warning (MaskOptimization): Failed to converge or flux negative" << std::endl;
-		std::cerr << "                            for source " << source->getSourceID() << "." << std::endl;
+		std::cerr << "Warning (MaskOptimization): Failed to converge or flux negative\n";
+		std::cerr << "                            for source " << source->getSourceID() << ".\n";
 	}
 	else
 	{

@@ -114,7 +114,7 @@ template <typename T> int Measurement<T>::set(const std::string &newName, T newV
 	
 	if(iter == conversionMap.end())
 	{
-		std::cerr << "Error (Measurement): Invalid conversion mode." << std::endl;
+		std::cerr << "Error (Measurement): Invalid conversion mode.\n";
 		return 1;
 	}
 	
@@ -195,7 +195,7 @@ template <typename T> int Measurement<T>::convert(T &newValue, T &newUncertainty
 	
 	if(iter == conversionMap.end())
 	{
-		std::cerr << "Error (Measurement): Invalid conversion mode." << std::endl;
+		std::cerr << "Error (Measurement): Invalid conversion mode.\n";
 		return 1;
 	}
 	
@@ -205,7 +205,7 @@ template <typename T> int Measurement<T>::convert(T &newValue, T &newUncertainty
 	// Check that unit is correct:
 	if(this->unit != newUnit)
 	{
-		std::cerr << "Error (Measurement): Wrong dimension encountered; cannot convert." << std::endl;
+		std::cerr << "Error (Measurement): Wrong dimension encountered; cannot convert.\n";
 		return 1;
 	}
 	
@@ -225,7 +225,7 @@ template <typename T> int Measurement<T>::invert()
 {
 	if(this->value == static_cast<T>(0.0))
 	{
-		std::cerr << "Error (Measurement): Value is zero; cannot invert." << std::endl;
+		std::cerr << "Error (Measurement): Value is zero; cannot invert.\n";
 		return 1;
 	}
 	
@@ -295,7 +295,7 @@ template <typename T> Measurement<T> &Measurement<T>::operator += (Measurement<T
 {
 	if(this->unit != measurement.unit)
 	{
-		std::cerr << "Error (Measurement): Cannot add measurements; dimensions differ." << std::endl;
+		std::cerr << "Error (Measurement): Cannot add measurements; dimensions differ.\n";
 		return *this;
 	}
 	
@@ -322,7 +322,7 @@ template <typename T> Measurement<T> &Measurement<T>::operator -= (Measurement<T
 {
 	if(this->unit != measurement.unit)
 	{
-		std::cerr << "Error (Measurement): Cannot subtract measurements; dimensions differ." << std::endl;
+		std::cerr << "Error (Measurement): Cannot subtract measurements; dimensions differ.\n";
 		return *this;
 	}
 	
@@ -374,7 +374,7 @@ template <typename T> Measurement<T> &Measurement<T>::operator /= (const Measure
 	
 	if(divisor.invert() != 0)
 	{
-		std::cerr << "Error (Measurement): Cannot divide measurements; divisor is zero." << std::endl;
+		std::cerr << "Error (Measurement): Cannot divide measurements; divisor is zero.\n";
 		return *this;
 	}
 	

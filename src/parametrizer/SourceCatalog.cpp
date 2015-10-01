@@ -55,7 +55,7 @@ unsigned long SourceCatalog::first()
 	
 	if(iter == sources.end())
 	{
-		std::cerr << "Error (Catalog): No sources found in catalogue." << std::endl;
+		std::cerr << "Error (Catalog): No sources found in catalogue.\n";
 		return 1;
 	}
 	
@@ -73,7 +73,7 @@ unsigned long SourceCatalog::last()
 	
 	if(iter == sources.end())
 	{
-		std::cerr << "Error (Catalog): No sources found in catalogue." << std::endl;
+		std::cerr << "Error (Catalog): No sources found in catalogue.\n";
 		return 1;
 	}
 	
@@ -94,7 +94,7 @@ int SourceCatalog::insert(Source &source)
 	
 	if(ret.second == false)
 	{
-		std::cerr << "Warning (Catalog): Source already exists; replacing current entry." << std::endl;
+		std::cerr << "Warning (Catalog): Source already exists; replacing current entry.\n";
 		update(sourceID, source);
 		
 		return 1;
@@ -114,7 +114,7 @@ int SourceCatalog::update(unsigned long sourceID, Source &source)
 	
 	if(iter == sources.end())
 	{
-		std::cerr << "Warning (Catalog): Source does not exist; creating new entry." << std::endl;
+		std::cerr << "Warning (Catalog): Source does not exist; creating new entry.\n";
 		insert(source);
 		
 		return 1;
@@ -136,7 +136,7 @@ int SourceCatalog::remove(unsigned long sourceID)
 	
 	if(iter == sources.end())
 	{
-		std::cerr << "Error (Catalog): Source ID not found; failed to remove source." << std::endl;
+		std::cerr << "Error (Catalog): Source ID not found; failed to remove source.\n";
 		
 		return 1;
 	}
@@ -157,7 +157,7 @@ Source *SourceCatalog::getSource(unsigned long sourceID)
 	
 	if(iter == sources.end())
 	{
-		std::cerr << "Error (Catalog): Source ID not found." << std::endl;
+		std::cerr << "Error (Catalog): Source ID not found.\n";
 		return 0;
 	}
 	else
@@ -191,7 +191,7 @@ int SourceCatalog::readDuchampFile(const char *filename)
 	
 	if(!fp.is_open())
 	{
-		std::cerr << "Error (Catalog): Opening of catalogue " << filename << " failed." << std::endl;
+		std::cerr << "Error (Catalog): Opening of catalogue " << filename << " failed.\n";
 		return 1;
 	}
 	
@@ -254,8 +254,8 @@ int SourceCatalog::readDuchampFile(const char *filename)
 							}
 							else
 							{
-								std::cerr << "Warning (Catalog): Failed to read RA/Dec from Duchamp file." << std::endl;
-								std::cerr << "                   Parameter will be omitted." << std::endl;
+								std::cerr << "Warning (Catalog): Failed to read RA/Dec from Duchamp file.\n";
+								std::cerr << "                   Parameter will be omitted.\n";
 							}
 						}
 						else

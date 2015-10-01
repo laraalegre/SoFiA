@@ -85,7 +85,7 @@ int BusyFit::setup(size_t n, double *newData, double *newSigma, int newOrder, bo
 {
 	if(n < 10)
 	{
-		std::cerr << "Error (BusyFit): Not enough spectral channels to fit." << std::endl;
+		std::cerr << "Error (BusyFit): Not enough spectral channels to fit.\n";
 		return 1;
 	}
 	
@@ -98,7 +98,7 @@ int BusyFit::setup(size_t n, double *newData, double *newSigma, int newOrder, bo
 	
 	if(newOrder != 2 and newOrder != 4)
 	{
-		std::cerr << "Warning (BusyFit): Unsupported polynomial order (" << newOrder << "); using 2 instead." << std::endl;
+		std::cerr << "Warning (BusyFit): Unsupported polynomial order (" << newOrder << "); using 2 instead.\n";
 		order = 2;
 	}
 	else
@@ -122,7 +122,7 @@ int BusyFit::fit()
 {
 	if(spectrum.nChannels == 0 or spectrum.values == 0 or spectrum.sigma == 0)
 	{
-		std::cerr << "Error (BusyFit): No valid data found." << std::endl;
+		std::cerr << "Error (BusyFit): No valid data found.\n";
 		return 2;
 	}
 	
@@ -179,8 +179,8 @@ int BusyFit::fit()
 	}
 	else
 	{
-		std::cerr << "Warning (BusyFit): Failed to find line flanks." << std::endl;
-		std::cerr << "                   Calculating moments instead." << std::endl;
+		std::cerr << "Warning (BusyFit): Failed to find line flanks.\n";
+		std::cerr << "                   Calculating moments instead.\n";
 		
 		// Calculate first moment to use as xe0 and xp0:
 		double sum = 0.0;
@@ -239,7 +239,7 @@ int BusyFit::fit(double new_a, double new_b1, double new_b2, double new_c, doubl
 {
 	if(spectrum.nChannels == 0 or spectrum.values == 0 or spectrum.sigma == 0)
 	{
-		std::cerr << "Error (BusyFit): No valid data found." << std::endl;
+		std::cerr << "Error (BusyFit): No valid data found.\n";
 		return 2;
 	}
 	
@@ -277,7 +277,7 @@ int BusyFit::fitWithEstimates()
 		spectrum.mask[3] = false;
 		spectrum.mask[5] = false;
 		
-		std::cerr << "Warning (BusyFit): Repeating fit without polynomial component (C = 0)." << std::endl;
+		std::cerr << "Warning (BusyFit): Repeating fit without polynomial component (C = 0).\n";
 		
 		// Fit again with c and xp0 fixed to 0:
 		status = LMSolver();
@@ -293,14 +293,14 @@ int BusyFit::fitWithEstimates()
 		if(a <= 0.0 or b1 <= 0.0 or b2 <= 0.0 or w <= 0.0 or c < 0)
 		{
 			// Warn that some parameters are negative:
-			std::cerr << "Warning (BusyFit): Fit successful, but some parameters zero or negative.\n" << std::endl;
+			std::cerr << "Warning (BusyFit): Fit successful, but some parameters zero or negative.\n\n";
 			return 1;
 		}
 	}
 	else
 	{
 		// Failure:
-		std::cerr << "Error (BusyFit): Failed to fit spectrum." << std::endl;
+		std::cerr << "Error (BusyFit): Failed to fit spectrum.\n";
 		return 2;
 	}
 	
@@ -333,7 +333,7 @@ int BusyFit::plotResult()
 	}
 	else
 	{
-		std::cerr << "Error (BusyFit): Unable to write output files." << std::endl;;
+		std::cerr << "Error (BusyFit): Unable to write output files.\n";
 		return 1;
 	}
 	
