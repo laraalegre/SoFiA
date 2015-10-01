@@ -62,7 +62,7 @@ SoFiA::SoFiA(int argc, char *argv[])
 		
 		if(inFile.open(QIODevice::ReadOnly | QIODevice::Text))
 		{
-			std::cerr << "\nInformation: Reading user settings from file " << settingsFileName.toStdString() << '\n';
+			std::cerr << "\nInformation: Reading user settings from file " << settingsFileName.toStdString() << "\n";
 			
 			QTextStream inStream(&inFile);
 			QString keyname;
@@ -183,13 +183,13 @@ SoFiA::~SoFiA()
 			QTextStream outStream(&outFile);
 			
 			outStream << "# User-defined global settings for SoFiA\n\n";
-			outStream << SOFIA_RC_TOOLBAR <<  "       =  " << (settingsToolbar  ? "true" : "false") << '\n';
-			outStream << SOFIA_RC_PIPELINE <<  "      =  " << (settingsPipeline ? "true" : "false") << '\n';
-			outStream << SOFIA_RC_PIPELINEPOS <<   "  =  " << this->dockWidgetArea(dockWidgetOutput) << '\n';
-			outStream << SOFIA_RC_SESSION <<  "       =  " << (settingsSession  ? "true" : "false") << '\n';
-			outStream << SOFIA_RC_WINWIDTH << "       =  " << (this->size()).width() << '\n';
+			outStream << SOFIA_RC_TOOLBAR <<  "       =  " << (settingsToolbar  ? "true" : "false") << "\n";
+			outStream << SOFIA_RC_PIPELINE <<  "      =  " << (settingsPipeline ? "true" : "false") << "\n";
+			outStream << SOFIA_RC_PIPELINEPOS <<   "  =  " << this->dockWidgetArea(dockWidgetOutput) << "\n";
+			outStream << SOFIA_RC_SESSION <<  "       =  " << (settingsSession  ? "true" : "false") << "\n";
+			outStream << SOFIA_RC_WINWIDTH << "       =  " << (this->size()).width() << "\n";
 			outStream << SOFIA_RC_WINHEIGHT << "      =  " << (this->size()).height() << endl;
-		
+			
 			outFile.close();
 		}
 	}
