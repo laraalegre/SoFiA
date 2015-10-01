@@ -956,7 +956,7 @@ void SoFiA::updateFields()
 	tabSourceFindingFieldRmsMode2->setEnabled(tabSourceFindingFieldClipMethod->currentIndex() == 0 and tabSourceFindingGroupBox2->isChecked());
 	
 	// Enable/disable writing of filtered cube when no filters are selected:
-	tabOutputButtonFilteredCube->setEnabled(tabInFilterGroupBox1->isChecked() or tabInFilterGroupBox2->isChecked() or tabInFilterGroupBox3->isChecked());
+	tabOutputButtonFilteredCube->setEnabled(tabInFilterGroupBox1->isChecked() or tabInFilterGroupBox2->isChecked() or tabInFilterGroupBox3->isChecked() or not (tabInputFieldWeights->text()).isEmpty() or not (tabInputFieldWeightsFunction->text()).isEmpty());
 	
 	// Enable output filter fields when respective parameter is selected:
 	tabOutFilterFieldW50Min->setEnabled(tabOutFilterButtonW50->isChecked());
@@ -1860,6 +1860,7 @@ void SoFiA::createInterface()
 	tabInputLayoutWeights = new QHBoxLayout;
 	tabInputFieldWeights  = new QLineEdit(tabInputWidgetWeights);
 	tabInputFieldWeights->setObjectName("import.weightsFile");
+	connect(tabInputFieldWeights, SIGNAL(textChanged(const QString &)), this, SLOT(updateFields()));
 	connect(tabInputFieldWeights, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
 	tabInputButtonWeights = new QPushButton(tr("Select..."), tabInputWidgetWeights);
 	connect(tabInputButtonWeights, SIGNAL(clicked()), this, SLOT(selectInputWeightsFile()));
@@ -1871,6 +1872,7 @@ void SoFiA::createInterface()
 	
 	tabInputFieldWeightsFunction = new QLineEdit(tabInputGroupBox1);
 	tabInputFieldWeightsFunction->setObjectName("import.weightsFunction");
+	connect(tabInputFieldWeightsFunction, SIGNAL(textChanged(const QString &)), this, SLOT(updateFields()));
 	connect(tabInputFieldWeightsFunction, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
 	
 	tabInputForm1->addRow(tr("Data cube:"), tabInputWidgetData);
@@ -3174,6 +3176,7 @@ void SoFiA::createInterface()
 	
 	outputText = new QTextEdit(widgetOutput);
 	//outputText->setToolTip(tr("Pipeline messages"));
+	outputText->setWhatsThis(tr("<h3>Pipeline Messages</h3><p>Any output messages and progress information produced by the SoFiA pipeline will be displayed here.</p>"));
 	outputText->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 	outputText->setReadOnly(true);
 	outputText->setLineWrapMode(QTextEdit::FixedColumnWidth);
@@ -3192,6 +3195,7 @@ void SoFiA::createInterface()
 	
 	outputProgress = new QProgressBar(widgetOutput);
 	//outputProgress->setToolTip(tr("Pipeline progress"));
+	outputProgress->setWhatsThis(tr("<h3>Progress Bar</h3><p>Indicator of the progress made by the SoFiA pipeline. Note that the value (displayed in percent) is not necessarily indicative of the elapsed time.</p>"));
 	outputProgress->setMinimum(0);
 	outputProgress->setMaximum(100);
 	outputProgress->setValue(0);
@@ -3467,7 +3471,7 @@ void SoFiA::createWhatsThis()
 	tabInputGroupBox4->setWhatsThis(tr("<h3>steps.doSubcube</h3><p>If set to true, source finding will be carried out on a subcube to be defined by the <b>import.subcube</b> and <b>import.subcubeMode</b> options.</p>"));
 	tabSourceFindingGroupBox2->setWhatsThis(tr("<h3>steps.doThreshold</h3><p>Run the threshold finder on the data cube.</p>"));
 	tabInFilterGroupBox3->setWhatsThis(tr("<h3>steps.doWavelet</h3><p>Decompose the data cube into wavelet components using the 2D&ndash;1D wavelet decomposition algorithm of <a href=\"http://adsabs.harvard.edu/abs/2012PASA...29..244F\">Fl&ouml;er et al. (2012)</a>.</p>"));
-	tabOutputButtonFilteredCube->setWhatsThis(tr("<h3>steps.doWriteFilteredCube</h3><p>Save a copy of the filtered data cube. Note that this will only work if at least one of the input filters was applied.</p>"));
+	tabOutputButtonFilteredCube->setWhatsThis(tr("<h3>steps.doWriteFilteredCube</h3><p>Save a copy of the filtered data cube. Note that this will only make sense if at least one of the input filters was applied.</p>"));
 	tabOutputButtonMask->setWhatsThis(tr("<h3>steps.doWriteMask</h3><p>Save source mask cube.</p>"));
 	tabSourceFindingFieldClipMethod->setWhatsThis(tr("<h3>threshold.clipMethod</h3><p>Define whether the flux threshold is <b>relative</b> to the noise level or in <b>absolute</b> flux units.</p>"));
 	tabSourceFindingFieldRmsMode2->setWhatsThis(tr("<h3>threshold.rmsMode</h3><p>Noise determination method: Gaussian fit to negative flux histogram (<b>negative</b>), median absolute deviation (<b>mad</b>), or standard deviation (<b>std</b>).</p>"));
@@ -3544,7 +3548,7 @@ void SoFiA::closeEvent(QCloseEvent *event)
 			// Unsaved changes found, ask the user what to do:
 			QMessageBox messageBox(this);
 			messageBox.setWindowTitle(tr("SoFiA - Quit"));
-			messageBox.setText(tr("<p>This action will terminate SoFiA. All unsaved changes will be lost.</p><p>Do you wish to exit from SoFiA?</p>"));
+			messageBox.setText(tr("<p>This action will terminate SoFiA. Any unsaved changes may be lost.</p><p>Do you wish to exit from SoFiA?</p>"));
 			messageBox.setStandardButtons(QMessageBox::Cancel | QMessageBox::Ok);
 			messageBox.setDefaultButton(QMessageBox::Ok);
 			messageBox.setIcon(QMessageBox::Warning);
