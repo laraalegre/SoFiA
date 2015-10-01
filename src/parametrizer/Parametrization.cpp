@@ -79,7 +79,7 @@ int Parametrization::parametrize(DataCube<float> *d, DataCube<short> *m, Source 
 		std::cerr << "Warning (Parametrization): Ellipse fit failed.\n";
 	}
 	
-	if(doBusyFunction == true)
+	if(doBusyFunction)
 	{
 		if(fitBusyFunction() != 0)
 		{
@@ -219,7 +219,7 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 		}
 	}
 	
-	if(data.empty() == true)
+	if(data.empty())
 	{
 		std::cerr << "Error (Parametrization): No data found for source " << source->getSourceID() << ".\n";
 		return 1;
@@ -284,7 +284,7 @@ int Parametrization::measureCentroid()
 
 int Parametrization::measureFlux()
 {
-	if(data.empty() == true)
+	if(data.empty())
 	{
 		std::cerr << "Error (Parametrization): No data loaded.\n";
 		return 1;
@@ -316,7 +316,7 @@ int Parametrization::measureFlux()
 
 int Parametrization::fitEllipse()
 {
-	if(data.empty() == true)
+	if(data.empty())
 	{
 		std::cerr << "Error (Parametrization): No data loaded.\n";
 		return 1;        
@@ -372,7 +372,7 @@ int Parametrization::fitEllipse()
 
 int Parametrization::createIntegratedSpectrum()
 {
-	if(data.empty() == true)
+	if(data.empty())
 	{
 		std::cerr << "Error (Parametrization): No data loaded.\n";
 		return 1;
@@ -417,7 +417,7 @@ int Parametrization::createIntegratedSpectrum()
 
 int Parametrization::measureLineWidth()
 {
-	if(data.empty() == true or spectrum.empty() == true)
+	if(data.empty() or spectrum.empty())
 	{
 		std::cerr << "Error (Parametrization): No data loaded.\n";
 		return 1;
@@ -517,13 +517,13 @@ int Parametrization::measureLineWidth()
 		i++;
 	}
 	
-	i--;
-	
 	if(i >= spectrum.size())
 	{
-		std::cerr << "Error (Parametrization): Calculation of Wm50 failed.\n";
+		std::cerr << "Error (Parametrization): Calculation of Wm50 failed (1).\n";
 		return 1;
 	}
+	
+	i--;
 	
 	bound90l = static_cast<double>(i);
 	if(i > 0) bound90l -= (spectrum[i] - 0.05 * totalFlux) / (spectrum[i] - spectrum[i - 1]);      // Interpolate if not at edge.
@@ -537,13 +537,13 @@ int Parametrization::measureLineWidth()
 		i--;
 	}
 	
-	i++;
-	
 	if(i < 0)
 	{
-		std::cerr << "Error (Parametrization): Calculation of Wm50 failed.\n";
+		std::cerr << "Error (Parametrization): Calculation of Wm50 failed (2).\n";
 		return 1;
 	}
+	
+	i++;
 	
 	bound90r = static_cast<double>(i);
 	if(i < spectrum.size() - 1) bound90r += (spectrum[i] - 0.05 * totalFlux) / (spectrum[i] - spectrum[i + 1]);   // Interpolate if not at edge.
@@ -552,7 +552,7 @@ int Parametrization::measureLineWidth()
 	
 	if(meanFluxWm50 <= 0)
 	{
-		std::cerr << "Error (Parametrization): Calculation of Wm50 failed.\n";
+		std::cerr << "Error (Parametrization): Calculation of Wm50 failed (3).\n";
 		meanFluxWm50 = 0.0;
 		return 1;
 	}
@@ -563,7 +563,7 @@ int Parametrization::measureLineWidth()
 	
 	if(i >= spectrum.size())
 	{
-		std::cerr << "Error (Parametrization): Calculation of Wm50 failed.\n";
+		std::cerr << "Error (Parametrization): Calculation of Wm50 failed (4).\n";
 		meanFluxWm50 = 0.0;
 		return 1;
 	}
@@ -577,7 +577,7 @@ int Parametrization::measureLineWidth()
 	
 	if(i < 0)
 	{
-		std::cerr << "Error (Parametrization): Calculation of Wm50 failed.\n";
+		std::cerr << "Error (Parametrization): Calculation of Wm50 failed (5).\n";
 		lineWidthWm50 = 0.0;
 		meanFluxWm50 = 0.0;
 		return 1;
@@ -588,7 +588,7 @@ int Parametrization::measureLineWidth()
 	
 	if(lineWidthWm50 <= 0)
 	{
-		std::cerr << "Error (Parametrization): Calculation of Wm50 failed.\n";
+		std::cerr << "Error (Parametrization): Calculation of Wm50 failed (6).\n";
 		lineWidthWm50 = 0.0;
 		meanFluxWm50 = 0.0;
 		return 1;
@@ -617,7 +617,7 @@ int Parametrization::fitBusyFunction()
 	busyFit.getResult(&busyFitParameters[0], &busyFitUncertainties[0], busyFunctionChi2);
 	busyFit.getParameters(busyFunctionCentroid, busyFunctionW50, busyFunctionW20, busyFunctionFpeak, busyFunctionFint);
 	
-	// Correct spectral parameters for the shift caused by using a sub-cube:
+	// Correct spectral parameters for the shift caused by operating on a sub-cube:
 	busyFitParameters[4] += subRegionZ1;
 	busyFitParameters[5] += subRegionZ1;
 	busyFunctionCentroid += subRegionZ1;
@@ -650,7 +650,7 @@ int Parametrization::writeParameters()
 	
 	source->setParameter("rms",     noiseSubCube);
 	
-	if(doBusyFunction == true)
+	if(doBusyFunction)
 	{
 		source->setParameter("bf_flag",   busyFitSuccess);
 		source->setParameter("bf_chi2",   busyFunctionChi2);
