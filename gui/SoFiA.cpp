@@ -837,8 +837,11 @@ void SoFiA::saveSettings()
 		QString statusText = tr("Parameters saved to %1.").arg(currentFileName.section('/', -1));
 		showMessage(MESSAGE_INFO, messageText, statusText);
 		
-		settingsChanged = false;
-		updateWindowTitle();
+		if(currentFileName != SOFIA_TEMP_FILE)
+		{
+			settingsChanged = false;
+			updateWindowTitle();
+		}
 	}
 	
 	return;
