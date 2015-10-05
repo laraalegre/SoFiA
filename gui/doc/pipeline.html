@@ -28,7 +28,7 @@
     </p>
     
     <p>
-      SoFiA will automatically save the current parameter settings to a temporary session file in the current working directory (named <code>SoFiA.session</code>) before starting the pipeline. Note that this session file will automatically be loaded again when exiting and restarting the SoFiA user interface from within the same working directory, so users can continue to work from where they previously stopped. Nonetheless, it is strongly advisable to explicitly save the final set of parameter settings into a permanent file for later use, as the session file is only temporary and will regularly be updated.
+      SoFiA will automatically save the current parameter settings to a temporary session file in the current working directory (named <code>SoFiA.session</code>) and then pass that file on to the actual pipeline. Note that by default this session file will be kept and automatically loaded again when exiting and restarting the SoFiA user interface from within the same working directory, so users can continue to work from where they previously stopped. Nonetheless, it is strongly advisable to explicitly save the final set of parameter settings to a permanent file for later use, as the session file is only temporary and will regularly get overwritten. In addition, it is possible to disable automatic session file keeping in the user settings, in which case any existing session file will automatically be deleted when exiting from SoFiA.
     </p>
     
     <h2>From the Terminal</h2>
