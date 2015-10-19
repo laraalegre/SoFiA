@@ -95,14 +95,20 @@ wiki for more information on a few commonly encountered problems:
 * https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Troubleshooting
 
 
-Documentation
--------------
+Documentation and information
+-----------------------------
 
 SoFiA comes with its own built-in help browser that can be launched from 
 the help menu in the user interface. Alternatively, you can use your web 
 browser to open the index.html file located in the gui/doc/ sub-folder. 
 Please note that the user manual is still work in progress, and only 
 basic help is available at this stage.
+
+If you would like to stay informed about new stable releases of SoFiA and 
+other important updates, you can sign up to the **SoFiA mailing list**. To do 
+so, simply send an e-mail to `sofia-request [at] atnf.csiro.au` with the 
+word `subscribe` in the e-mail body (note that the e-mail subject will be 
+ignored).
 
 
 Version history
