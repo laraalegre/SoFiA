@@ -50,7 +50,20 @@ def make_ascii(objects, store_pars, outname, compress, flagOverwrite):
 
 def make_ascii_from_array(objects, cathead, catunits, catfmt, store_pars, outname, compress, flagOverwrite):
     print 'Store the results to ascii file: ', outname
-    header = 'SoFia catalogue\n'
+    
+    # Recover SoFiA version number
+    version = "[unknown]"
+    fileVersionPath = os.environ['SOFIA_PIPELINE_PATH'];
+    fileVersionPath = fileVersionPath.replace("sofia_pipeline.py", "VERSION");
+    
+    try:
+        with open(fileVersionPath) as fileVersion:
+            for line in fileVersion:
+               if line: version = line.strip()
+    except:
+        sys.stderr.write("WARNING: Failed to read SoFiA version number.\n");
+    
+    header = 'SoFia catalogue (version %s)\n'%version
 
     objects = np.array(objects)
 

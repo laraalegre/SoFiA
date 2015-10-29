@@ -64,10 +64,24 @@ def make_xml(objects, outname, flagOverwrite):
 
 def make_xml_from_array(objects, cathead, catunits, catfmt, store_pars, outname, compress, flagOverwrite):
     print 'Store the results to xml file: ', outname
+    
+    # Recover SoFiA version number
+    version = "[unknown]"
+    fileVersionPath = os.environ['SOFIA_PIPELINE_PATH'];
+    fileVersionPath = fileVersionPath.replace("sofia_pipeline.py", "VERSION");
+    
+    try:
+        with open(fileVersionPath) as fileVersion:
+            for line in fileVersion:
+               if line: version = line.strip()
+    except:
+        sys.stderr.write("WARNING: Failed to read SoFiA version number.\n");
+    
+    # Define basic XML header information
     top = Element('VOTABLE')
-    resource = SubElement(top, 'RESOURCE', name='SoFiA catalogue')
+    resource = SubElement(top, 'RESOURCE', name='SoFiA catalogue (version %s)'%version)
     description = SubElement(resource, 'DESCRIPTION')
-    description.text = 'Output catalogue from SoFiA'
+    description.text = 'Output catalogue from SoFiA %s'%version
     coocys = SubElement(resource, 'COOSYS', ID='J2000')
     table = SubElement(resource, 'TABLE', ID='sofia_cat', name='sofia_cat')
     
