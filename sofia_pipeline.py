@@ -114,17 +114,18 @@ else:
 	outroot = outputDir + outroot
 
 # Check if any output file already exists:
-outputFilteredCube = '%s_filtered.fits'%outroot
-outputSkellamPDF   = '%s_skel.pdf'%outroot
-outputScatterPDF   = '%s_scat.pdf'%outroot
-outputContoursPDF  = '%s_cont.pdf'%outroot
-outputMaskCube     = '%s_mask.fits'%outroot
-outputMom0Image    = '%s_mom0.fits'%outroot
-outputNrchImage    = '%s_nrch.fits'%outroot
-outputMom1Image    = '%s_mom1.fits'%outroot
-outputCubeletsDir  = '%s/objects/'%outroot
-outputCatXml       = '%s_cat.xml'%outroot
-outputCatAscii     = '%s_cat.ascii'%outroot
+outputFilteredCube  = '%s_filtered.fits'%outroot
+outputSkellamPDF    = '%s_skel.pdf'%outroot
+outputScatterPDF    = '%s_scat.pdf'%outroot
+outputContoursPDF   = '%s_cont.pdf'%outroot
+outputMaskCube      = '%s_mask.fits'%outroot
+outputMom0Image     = '%s_mom0.fits'%outroot
+outputNrchImage     = '%s_nrch.fits'%outroot
+outputMom1Image     = '%s_mom1.fits'%outroot
+outputCubeletsDir   = '%s/objects/'%outroot
+outputCatXml        = '%s_cat.xml'%outroot
+outputCatAscii      = '%s_cat.ascii'%outroot
+outputCatAsciiDebug = '%s_cat.debug.ascii'%outroot
 
 if not Parameters['writeCat']['overwrite']:
 	# Output filtered cube
@@ -214,14 +215,6 @@ if Parameters['steps']['doFlag'] or Parameters['steps']['doSmooth'] or Parameter
 	print 
 	sys.stdout.flush()
 
-# ---- MEASURE GLOBAL SIGMA ----
-print "\n--- %.3f seconds since start"%(time()-t0)
-print "\n--- SoFiA: Measuring cube noise ---"
-sys.stdout.flush()
-maxNrVox=1e+6 # maximum nr of voxels over which to calculate the global RMS. Sampling below is set accordingly.
-sampleRms=max(1,int((float(np.array(np_Cube.shape).prod())/maxNrVox)**(1./min(3,len(np_Cube.shape)))))
-globalrms=functions.GetRMS(np_Cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=1,verbose=True,sample=sampleRms)
-print "\n--- %.3f seconds since start"%(time()-t0)
 
 
 # -----------------
@@ -259,7 +252,7 @@ print
 # Check whether any voxel is detected
 NRdet = (mask > 0).sum()
 if not NRdet:
-	sys.stderr.write("WARNING: No voxels detected! EXITING pipeline.\n")
+	sys.stderr.write("WARNING: No voxels detected and included in the mask yet! EXITING pipeline.\n")
 	print 
 	sys.exit()
 
@@ -286,13 +279,7 @@ if Parameters['steps']['doMerge'] and NRdet:
 	catParNames = ('id','x_geo','y_geo','z_geo','x','y','z','x_min','x_max','y_min','y_max','z_min','z_max','n_pix','snr_min','snr_max','snr_sum')
 	catParUnits = ('-','pix','pix','chan','pix','pix','chan','pix','pix','pix','pix','chan','chan','-','-','-','-')
 	catParFormt = ('%10i', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%7i', '%7i', '%7i', '%7i', '%7i', '%7i', '%8i', '%12.3e', '%12.3e', '%12.3e')
-	# normalise flux parameters to global rms (this is done also if weights were applied, in case they are prop. to 1/sigma but not exactly = 1/sigma)
-	print 'Dividing flux parameters by global cube rms'
-	objects=np.array(objects)
-	objects[:,catParNames.index('snr_min')]/=globalrms
-	objects[:,catParNames.index('snr_max')]/=globalrms
-	objects[:,catParNames.index('snr_sum')]/=globalrms
-	objects=[list(jj) for jj in list(objects)]
+
 
 
 # -------------------------------------
@@ -303,7 +290,7 @@ if Parameters['steps']['doDebug'] and NRdet:
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Writing all-source mask cube for debugging ---"
 	sys.stdout.flush()
-	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_all.fits'%outroot,Parameters['writeCat']['compress'])
+	#writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_all.fits'%outroot,Parameters['writeCat']['compress'])
 
 
 
@@ -312,6 +299,26 @@ if Parameters['steps']['doDebug'] and NRdet:
 # ----------------------------------------------------
 
 if Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and NRdet:
+
+	# ---- MEASURE GLOBAL SIGMA AND NORMALISE PARAMETERS----
+	print "\n--- %.3f seconds since start"%(time()-t0)
+	print "\n--- SoFiA: Measuring cube noise ---"
+	sys.stdout.flush()
+	maxNrVox=1e+6 # maximum nr of voxels over which to calculate the global RMS. Sampling below is set accordingly.
+	sampleRms=max(1,int((float(np.array(np_Cube.shape).prod())/maxNrVox)**(1./min(3,len(np_Cube.shape)))))
+	globalrms=functions.GetRMS(np_Cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=1,verbose=True,sample=sampleRms)
+	print "\n--- %.3f seconds since start"%(time()-t0)
+
+	# normalise flux parameters to global rms
+	# (this is done also if weights were applied, in case they are prop. to 1/sigma but not exactly = 1/sigma)
+	print 'Dividing flux parameters by global cube rms'
+	objects=np.array(objects)
+	objects[:,catParNames.index('snr_min')]/=globalrms
+	objects[:,catParNames.index('snr_max')]/=globalrms
+	objects[:,catParNames.index('snr_sum')]/=globalrms
+	objects=[list(jj) for jj in list(objects)]
+
+	# ---- CALCULATE RELIABILITY ----
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Determining reliability ---"
 	sys.stdout.flush()
@@ -321,9 +328,11 @@ if Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and N
 	catParNames = tuple(list(catParNames) + ['n_pos',  'n_neg',  'rel'])
 	catParUnits = tuple(list(catParUnits) + ['-','-','-'])
 	catParFormt = tuple(list(catParFormt) + ['%12.3e', '%12.3e', '%12.6f'])
+
 elif Parameters['steps']['doMerge'] and NRdet:
 	reliable = list(np.array(objects)[np.array(objects)[:,16] > 0,0].astype(int)) # select all positive sources
 	print 'The following sources have been detected:', reliable
+
 else: reliable=[1,] # if not merging, all detected voxels have ID = 1 and here they are set to be reliable
 
 
@@ -334,9 +343,27 @@ else: reliable=[1,] # if not merging, all detected voxels have ID = 1 and here t
 
 if Parameters['steps']['doDebug']:
 	print "\n--- %.3f seconds since start"%(time()-t0)
-	print "\n--- SoFiA: Writing all-source catalogue for debugging ---"
+	print "\n--- SoFiA: Writing all-source debugging catalogue including all parameters relevant for the reliability calculation ---"
 	#sys.stdout.flush()
-	store_ascii.make_ascii_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outroot+'_cat.debug.ascii',Parameters['writeCat']['compress'])
+	store_ascii.make_ascii_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatAsciiDebug,Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
+
+
+
+# ------------------------------------------------------
+# ---- REMOVE UNNECESSARY PARAMETERS FROM CATALOGUE ----
+# ------------------------------------------------------
+
+objects,catParNames,catParUnits,catParFormt=np.array(objects),list(catParNames),list(catParUnits),list(catParFormt)
+removecols=['snr_min','snr_max','snr_sum','n_pos','n_neg']
+for remcol in removecols:
+	if remcol in catParNames:
+		remind=catParNames.index(remcol)
+		print remind
+		del(catParNames[remind])
+		del(catParUnits[remind])
+		del(catParFormt[remind])
+		objects=np.delete(objects,[remind],axis=1)
+objects,catParNames,catParUnits,catParFormt=[list(jj) for jj in list(objects)],tuple(catParNames),tuple(catParUnits),tuple(catParFormt)
 
 
 
@@ -424,9 +451,9 @@ if Parameters['steps']['doDebug'] and NRdet:
 	print "\n--- SoFiA: Writing pre-optimisation mask and moment maps for debugging ---"
 	sys.stdout.flush()
 	debug=1
-	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_rel.fits'%outroot,Parameters['writeCat']['compress'])
-	mom0_Image = writemoment2.writeMoment0(np_Cube, mask, outroot, debug, dict_Header,Parameters['writeCat']['compress'])
-	writemoment2.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image,Parameters['writeCat']['compress'])
+	#writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_rel.fits'%outroot,Parameters['writeCat']['compress'])
+	#mom0_Image = writemoment2.writeMoment0(np_Cube, mask, outroot, debug, dict_Header,Parameters['writeCat']['compress'])
+	#writemoment2.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image,Parameters['writeCat']['compress'])
 
 
 
