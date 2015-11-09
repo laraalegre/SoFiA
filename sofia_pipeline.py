@@ -358,7 +358,6 @@ removecols=['snr_min','snr_max','snr_sum','n_pos','n_neg']
 for remcol in removecols:
 	if remcol in catParNames:
 		remind=catParNames.index(remcol)
-		print remind
 		del(catParNames[remind])
 		del(catParUnits[remind])
 		del(catParFormt[remind])
