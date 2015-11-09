@@ -791,6 +791,31 @@ int SoFiA::loadFile(QString &fileName)
 	settingsChanged = false;
 	updateWindowTitle();
 	
+	// Make appropriate activated sub-tabs visible after loading file:
+	// Input:
+	if     (tabInputGroupBox4->isChecked()) toolBoxIP->setCurrentIndex(toolBoxIP->indexOf(tabInputGroupBox4));
+	else if(tabInputGroupBox3->isChecked()) toolBoxIP->setCurrentIndex(toolBoxIP->indexOf(tabInputGroupBox3));
+	else if(tabInputGroupBox2->isChecked()) toolBoxIP->setCurrentIndex(toolBoxIP->indexOf(tabInputGroupBox2));
+	else                                    toolBoxIP->setCurrentIndex(toolBoxIP->indexOf(tabInputGroupBox1));
+	// Input filters:
+	if     (tabInFilterGroupBox1->isChecked()) toolBoxIF->setCurrentIndex(toolBoxIF->indexOf(tabInFilterGroupBox1));
+	else if(tabInFilterGroupBox2->isChecked()) toolBoxIF->setCurrentIndex(toolBoxIF->indexOf(tabInFilterGroupBox2));
+	else if(tabInFilterGroupBox3->isChecked()) toolBoxIF->setCurrentIndex(toolBoxIF->indexOf(tabInFilterGroupBox3));
+	else                                       toolBoxIF->setCurrentIndex(toolBoxIF->indexOf(tabInFilterGroupBox1));
+	// Source finders:
+	if     (tabSourceFindingGroupBox1->isChecked()) toolBoxSF->setCurrentIndex(toolBoxSF->indexOf(tabSourceFindingGroupBox1));
+	else if(tabSourceFindingGroupBox2->isChecked()) toolBoxSF->setCurrentIndex(toolBoxSF->indexOf(tabSourceFindingGroupBox2));
+	else if(tabSourceFindingGroupBox3->isChecked()) toolBoxSF->setCurrentIndex(toolBoxSF->indexOf(tabSourceFindingGroupBox3));
+	else                                            toolBoxSF->setCurrentIndex(toolBoxSF->indexOf(tabSourceFindingGroupBox1));
+	// Parameterisation:
+	if     (tabParametrisationGroupBox1->isChecked()) toolBoxPA->setCurrentIndex(toolBoxPA->indexOf(tabParametrisationGroupBox1));
+	else if(tabParametrisationGroupBox2->isChecked()) toolBoxPA->setCurrentIndex(toolBoxPA->indexOf(tabParametrisationGroupBox2));
+	else                                              toolBoxPA->setCurrentIndex(toolBoxPA->indexOf(tabParametrisationGroupBox1));
+	// Output:
+	if     (tabOutputGroupBox1->isChecked()) toolBoxOP->setCurrentIndex(toolBoxOP->indexOf(tabOutputGroupBox1));
+	else if(tabOutputGroupBox2->isChecked()) toolBoxOP->setCurrentIndex(toolBoxOP->indexOf(tabOutputGroupBox2));
+	else                                     toolBoxOP->setCurrentIndex(toolBoxOP->indexOf(tabOutputGroupBox1));
+	
 	return 0;
 }
 
