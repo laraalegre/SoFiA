@@ -353,16 +353,17 @@ if Parameters['steps']['doDebug']:
 # ---- REMOVE UNNECESSARY PARAMETERS FROM CATALOGUE ----
 # ------------------------------------------------------
 
-objects,catParNames,catParUnits,catParFormt=np.array(objects),list(catParNames),list(catParUnits),list(catParFormt)
-removecols=['snr_min','snr_max','snr_sum','n_pos','n_neg']
-for remcol in removecols:
-	if remcol in catParNames:
-		remind=catParNames.index(remcol)
-		del(catParNames[remind])
-		del(catParUnits[remind])
-		del(catParFormt[remind])
-		objects=np.delete(objects,[remind],axis=1)
-objects,catParNames,catParUnits,catParFormt=[list(jj) for jj in list(objects)],tuple(catParNames),tuple(catParUnits),tuple(catParFormt)
+if Parameters['steps']['doMerge'] and NRdet:
+	objects,catParNames,catParUnits,catParFormt=np.array(objects),list(catParNames),list(catParUnits),list(catParFormt)
+	removecols=['snr_min','snr_max','snr_sum','n_pos','n_neg']
+	for remcol in removecols:
+		if remcol in catParNames:
+			remind=catParNames.index(remcol)
+			del(catParNames[remind])
+			del(catParUnits[remind])
+			del(catParFormt[remind])
+			objects=np.delete(objects,[remind],axis=1)
+	objects,catParNames,catParUnits,catParFormt=[list(jj) for jj in list(objects)],tuple(catParNames),tuple(catParUnits),tuple(catParFormt)
 
 
 
