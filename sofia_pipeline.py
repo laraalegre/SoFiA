@@ -521,7 +521,7 @@ if Parameters['steps']['doWriteMask'] and NRdet:
 # ---- MAKE MOM0 and MOM1 ----
 # ----------------------------
 
-if Parameters['steps']['doMom0'] or Parameters['steps']['doMom1']:
+if (Parameters['steps']['doMom0'] or Parameters['steps']['doMom1']) and NRdet:
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Writing moment maps ---"
 	sys.stdout.flush()
