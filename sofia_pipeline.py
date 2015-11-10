@@ -204,6 +204,9 @@ if Parameters['steps']['doWavelet']:
         np_Cube = np.transpose(np_Cube, axes=[2, 1, 0])
         np_Cube = wavelet_finder.denoise_2d1d(np_Cube, **Parameters['wavelet'])
         np_Cube = np.transpose(np_Cube, axes=[2, 1, 0])
+        tmpCube = np_Cube.copy()
+        del np_Cube
+        np_Cube = tmpCube.copy()
 
 # --- WRITE FILTERED CUBE ---
 if Parameters['steps']['doWriteFilteredCube'] and (Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']):
