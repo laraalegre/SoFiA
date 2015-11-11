@@ -107,6 +107,9 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 	import imp
 	import sys
 	import numpy as np
+	
+	c = 299792458.0  # speed of light in m/s
+	
 	try:
 		imp.find_module('astropy')
 		found = True
