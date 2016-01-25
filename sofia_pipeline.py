@@ -563,7 +563,7 @@ if Parameters['steps']['doCubelets'] and Parameters['steps']['doMerge'] and NRde
 # ---- APPEND PARAMETER VALUES IN PHYSICAL UNITS ----
 # ---------------------------------------------------
 
-if Parameters['steps']['doMerge'] and NRdet:
+if Parameters['steps']['doMerge'] and NRdet and Parameters['steps']['doWriteCat']:
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Adding WCS position to catalogue ---"
 	sys.stdout.flush()
