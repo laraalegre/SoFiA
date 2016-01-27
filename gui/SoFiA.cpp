@@ -439,9 +439,9 @@ int SoFiA::updateVariables()
 		if(tabOutputButtonParameter_z_min->isChecked())     listOutputPar.append(QString("\'z_min\',"));
 		if(tabOutputButtonParameter_z_max->isChecked())     listOutputPar.append(QString("\'z_max\',"));
 		if(tabOutputButtonParameter_n_pix->isChecked())     listOutputPar.append(QString("\'n_pix\',"));
-		if(tabOutputButtonParameter_snr_min->isChecked())   listOutputPar.append(QString("\'snr_min\',"));
-		if(tabOutputButtonParameter_snr_max->isChecked())   listOutputPar.append(QString("\'snr_max\',"));
-		if(tabOutputButtonParameter_snr_sum->isChecked())   listOutputPar.append(QString("\'snr_sum\',"));
+		//if(tabOutputButtonParameter_snr_min->isChecked())   listOutputPar.append(QString("\'snr_min\',"));
+		//if(tabOutputButtonParameter_snr_max->isChecked())   listOutputPar.append(QString("\'snr_max\',"));
+		//if(tabOutputButtonParameter_snr_sum->isChecked())   listOutputPar.append(QString("\'snr_sum\',"));
 		if(tabOutputButtonParameter_n_pos->isChecked())     listOutputPar.append(QString("\'n_pos\',"));
 		if(tabOutputButtonParameter_n_neg->isChecked())     listOutputPar.append(QString("\'n_neg\',"));
 		if(tabOutputButtonParameter_rel->isChecked())       listOutputPar.append(QString("\'rel\',"));
@@ -601,9 +601,9 @@ int SoFiA::setFields()
 		tabOutputButtonParameter_z_min->setChecked(false);
 		tabOutputButtonParameter_z_max->setChecked(false);
 		tabOutputButtonParameter_n_pix->setChecked(false);
-		tabOutputButtonParameter_snr_min->setChecked(false);
-		tabOutputButtonParameter_snr_max->setChecked(false);
-		tabOutputButtonParameter_snr_sum->setChecked(false);
+		//tabOutputButtonParameter_snr_min->setChecked(false);
+		//tabOutputButtonParameter_snr_max->setChecked(false);
+		//tabOutputButtonParameter_snr_sum->setChecked(false);
 		tabOutputButtonParameter_n_pos->setChecked(false);
 		tabOutputButtonParameter_n_neg->setChecked(false);
 		tabOutputButtonParameter_rel->setChecked(false);
@@ -653,9 +653,9 @@ int SoFiA::setFields()
 		if(listOutputPar.contains(QString("\'z_min\'")))     tabOutputButtonParameter_z_min->setChecked(true);
 		if(listOutputPar.contains(QString("\'z_max\'")))     tabOutputButtonParameter_z_max->setChecked(true);
 		if(listOutputPar.contains(QString("\'n_pix\'")))     tabOutputButtonParameter_n_pix->setChecked(true);
-		if(listOutputPar.contains(QString("\'snr_min\'")))   tabOutputButtonParameter_snr_min->setChecked(true);
-		if(listOutputPar.contains(QString("\'snr_max\'")))   tabOutputButtonParameter_snr_max->setChecked(true);
-		if(listOutputPar.contains(QString("\'snr_sum\'")))   tabOutputButtonParameter_snr_sum->setChecked(true);
+		//if(listOutputPar.contains(QString("\'snr_min\'")))   tabOutputButtonParameter_snr_min->setChecked(true);
+		//if(listOutputPar.contains(QString("\'snr_max\'")))   tabOutputButtonParameter_snr_max->setChecked(true);
+		//if(listOutputPar.contains(QString("\'snr_sum\'")))   tabOutputButtonParameter_snr_sum->setChecked(true);
 		if(listOutputPar.contains(QString("\'n_pos\'")))     tabOutputButtonParameter_n_pos->setChecked(true);
 		if(listOutputPar.contains(QString("\'n_neg\'")))     tabOutputButtonParameter_n_neg->setChecked(true);
 		if(listOutputPar.contains(QString("\'rel\'")))       tabOutputButtonParameter_rel->setChecked(true);
@@ -1040,9 +1040,9 @@ void SoFiA::updateFields()
 	tabOutputButtonParameter_z_min->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_z_max->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_n_pix->setEnabled(tabOutputGroupBox2->isChecked());
-	tabOutputButtonParameter_snr_min->setEnabled(tabOutputGroupBox2->isChecked());
-	tabOutputButtonParameter_snr_max->setEnabled(tabOutputGroupBox2->isChecked());
-	tabOutputButtonParameter_snr_sum->setEnabled(tabOutputGroupBox2->isChecked());
+	//tabOutputButtonParameter_snr_min->setEnabled(tabOutputGroupBox2->isChecked());
+	//tabOutputButtonParameter_snr_max->setEnabled(tabOutputGroupBox2->isChecked());
+	//tabOutputButtonParameter_snr_sum->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_n_pos->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_n_neg->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_rel->setEnabled(tabOutputGroupBox2->isChecked());
@@ -2891,7 +2891,14 @@ void SoFiA::createInterface()
 	connect(tabOutputGroupBox2, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutputGroupBox2, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
+	
 	tabOutputForm2 = new QFormLayout;
+	
+	tabOutputLabelParameters = new QLabel("<strong>Note:</strong> Depending on the actual pipeline settings, some selected parameters may not get produced.<br />Please see the <a href=\"https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Source-Parameters\">SoFiA wiki</a> for a complete list of source parameters.");
+	tabOutputLabelParameters->setTextFormat(Qt::RichText);
+	tabOutputLabelParameters->setOpenExternalLinks(true);
+	tabOutputLabelParameters->setWordWrap(false);
+	//tabOutputLabelParameters->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	
 	tabOutputButtonParameter_id        = new QCheckBox(tr("id"), tabOutputGroupBox2);
 	tabOutputButtonParameter_name      = new QCheckBox(tr("name"), tabOutputGroupBox2);
@@ -2908,9 +2915,9 @@ void SoFiA::createInterface()
 	tabOutputButtonParameter_z_min     = new QCheckBox(tr("z_min"), tabOutputGroupBox2);
 	tabOutputButtonParameter_z_max     = new QCheckBox(tr("z_max"), tabOutputGroupBox2);
 	tabOutputButtonParameter_n_pix     = new QCheckBox(tr("n_pix"), tabOutputGroupBox2);
-	tabOutputButtonParameter_snr_min   = new QCheckBox(tr("snr_min"), tabOutputGroupBox2);
-	tabOutputButtonParameter_snr_max   = new QCheckBox(tr("snr_max"), tabOutputGroupBox2);
-	tabOutputButtonParameter_snr_sum   = new QCheckBox(tr("snr_sum"), tabOutputGroupBox2);
+	//tabOutputButtonParameter_snr_min   = new QCheckBox(tr("snr_min"), tabOutputGroupBox2);
+	//tabOutputButtonParameter_snr_max   = new QCheckBox(tr("snr_max"), tabOutputGroupBox2);
+	//tabOutputButtonParameter_snr_sum   = new QCheckBox(tr("snr_sum"), tabOutputGroupBox2);
 	tabOutputButtonParameter_n_pos     = new QCheckBox(tr("n_pos"), tabOutputGroupBox2);
 	tabOutputButtonParameter_n_neg     = new QCheckBox(tr("n_neg"), tabOutputGroupBox2);
 	tabOutputButtonParameter_rel       = new QCheckBox(tr("rel"), tabOutputGroupBox2);
@@ -2960,9 +2967,9 @@ void SoFiA::createInterface()
 	tabOutputButtonParameter_z_min     -> setObjectName("parameter_z_min");
 	tabOutputButtonParameter_z_max     -> setObjectName("parameter_z_max");
 	tabOutputButtonParameter_n_pix     -> setObjectName("parameter_n_pix");
-	tabOutputButtonParameter_snr_min   -> setObjectName("parameter_snr_min");
-	tabOutputButtonParameter_snr_max   -> setObjectName("parameter_snr_max");
-	tabOutputButtonParameter_snr_sum   -> setObjectName("parameter_snr_sum");
+	//tabOutputButtonParameter_snr_min   -> setObjectName("parameter_snr_min");
+	//tabOutputButtonParameter_snr_max   -> setObjectName("parameter_snr_max");
+	//tabOutputButtonParameter_snr_sum   -> setObjectName("parameter_snr_sum");
 	tabOutputButtonParameter_n_pos     -> setObjectName("parameter_n_pos");
 	tabOutputButtonParameter_n_neg     -> setObjectName("parameter_n_neg");
 	tabOutputButtonParameter_rel       -> setObjectName("parameter_rel");
@@ -3012,9 +3019,9 @@ void SoFiA::createInterface()
 	tabOutputButtonParameter_z_min     -> setToolTip(tr("Z-coordinate of lower boundary"));
 	tabOutputButtonParameter_z_max     -> setToolTip(tr("Z-coordinate of upper boundary"));
 	tabOutputButtonParameter_n_pix     -> setToolTip(tr("Total number of spatial and spectral pixels"));
-	tabOutputButtonParameter_snr_min   -> setToolTip(tr("Signal-to-noise ratio of negative peak"));
-	tabOutputButtonParameter_snr_max   -> setToolTip(tr("Signal-to-noise ratio of positive peak"));
-	tabOutputButtonParameter_snr_sum   -> setToolTip(tr("Integrated signal-to-noise ratio"));
+	//tabOutputButtonParameter_snr_min   -> setToolTip(tr("Signal-to-noise ratio of negative peak"));
+	//tabOutputButtonParameter_snr_max   -> setToolTip(tr("Signal-to-noise ratio of positive peak"));
+	//tabOutputButtonParameter_snr_sum   -> setToolTip(tr("Integrated signal-to-noise ratio"));
 	tabOutputButtonParameter_n_pos     -> setToolTip(tr("Number of spatial and spectral pixels with positive flux"));
 	tabOutputButtonParameter_n_neg     -> setToolTip(tr("Number of spatial and spectral pixels with negative flux"));
 	tabOutputButtonParameter_rel       -> setToolTip(tr("Reliability"));
@@ -3064,9 +3071,9 @@ void SoFiA::createInterface()
 	connect(tabOutputButtonParameter_z_min,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_z_max,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_n_pix,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	connect(tabOutputButtonParameter_snr_min,   SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	connect(tabOutputButtonParameter_snr_max,   SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	connect(tabOutputButtonParameter_snr_sum,   SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	//connect(tabOutputButtonParameter_snr_min,   SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	//connect(tabOutputButtonParameter_snr_max,   SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	//connect(tabOutputButtonParameter_snr_sum,   SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_n_pos,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_n_neg,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_rel,       SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
@@ -3125,11 +3132,11 @@ void SoFiA::createInterface()
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_pix,     0, 2);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_pos,     1, 2);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_neg,     2, 2);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_snr_min,   3, 2);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_snr_max,   4, 2);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_snr_sum,   5, 2);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_rms,       6, 2);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_rel,       7, 2);
+	//tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_snr_min,   3, 2);
+	//tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_snr_max,   4, 2);
+	//tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_snr_sum,   5, 2);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_rms,       3, 2);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_rel,       4, 2);
 	
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ra,        0, 3);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_dec,       1, 3);
@@ -3167,6 +3174,7 @@ void SoFiA::createInterface()
 	tabOutputWidgetParameters->setLayout(tabOutputLayoutParameters);
 	
 	tabOutputForm2->addRow(tr(""), tabOutputWidgetParameters);
+	tabOutputForm2->addRow(tr(""), tabOutputLabelParameters);
 	tabOutputGroupBox2->setLayout(tabOutputForm2);
 	
 	tabOutputButtonPrev = new QPushButton(tr("Previous"), tabOutput);
@@ -3513,7 +3521,7 @@ void SoFiA::createWhatsThis()
 	tabOutputButtonOverwrite->setWhatsThis(tr("<h3>writeCat.overwrite</h3><p>If <b>true</b>, overwrite any existing output files. If <b>false</b>, print an error message for any output file that already exists and skip writing that file.</p>"));
 	tabOutputButtonCompress->setWhatsThis(tr("<h3>writeCat.compress</h3><p>If set to <b>true</b>, use <a href=\"http://www.gzip.org/\">gzip</a> to compress all output files.</p>"));
 	tabOutputFieldDirectory->setWhatsThis(tr("<h3>writeCat.outputDir</h3><p>Optional directory path to which all output files are written. If not specified, the directory of the input cube will be used by default.</p>"));
-	tabOutputGroupBox2->setWhatsThis(tr("<h3>writeCat.parameters</h3><p>List of parameters to appear in source catalogue. Format:</p><p>['par1', 'par2', ...]</p><p>An asterisk, <span style=\"font-family:monospace;\">['*']</span>, means that all parameters are written to the catalogue (default behaviour).</p>"));
+	tabOutputGroupBox2->setWhatsThis(tr("<h3>writeCat.parameters</h3><p>List of parameters to appear in source catalogue. Format:</p><p>['par1', 'par2', ...]</p><p>An asterisk, <span style=\"font-family:monospace;\">['*']</span>, means that all available parameters are written to the catalogue (default behaviour).</p><p> Note that, depending on the actual pipeline settings, some selected parameters may not appear in the source catalogue.</p>"));
 	tabOutputButtonASCII->setWhatsThis(tr("<h3>writeCat.writeASCII</h3><p>Write catalogue in ASCII format.</p>"));
 	tabOutputButtonSQL->setWhatsThis(tr("<h3>writeCat.writeSQL</h3><p>Write catalogue in SQL format (not yet implemented).</p>"));
 	tabOutputButtonXML->setWhatsThis(tr("<h3>writeCat.writeXML</h3><p>Write catalogue in VO table (XML) format.</p>"));
