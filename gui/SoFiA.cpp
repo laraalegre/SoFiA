@@ -2894,11 +2894,26 @@ void SoFiA::createInterface()
 	
 	tabOutputForm2 = new QFormLayout;
 	
-	tabOutputLabelParameters = new QLabel("<strong>Note:</strong> Depending on the actual pipeline settings, some selected parameters may not get produced.<br />Please see the <a href=\"https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Source-Parameters\">SoFiA wiki</a> for a complete list of source parameters.");
+	tabOutputLabelParameters = new QLabel(tr("<b>Note:</b> Depending on the actual pipeline settings, some selected parameters may not be created.<br />Please see the <a href=\"https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Source-Parameters\">SoFiA wiki</a> for a complete list of source parameters."));
 	tabOutputLabelParameters->setTextFormat(Qt::RichText);
 	tabOutputLabelParameters->setOpenExternalLinks(true);
 	tabOutputLabelParameters->setWordWrap(false);
 	//tabOutputLabelParameters->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	
+	tabOutputLabelParametersBasic    = new QLabel(tr("<i>Basic</i>"));
+	tabOutputLabelParametersBounds   = new QLabel(tr("<i>Boundary</i>"));
+	tabOutputLabelParametersStat     = new QLabel(tr("<i>Statistics</i>"));
+	tabOutputLabelParametersWCS      = new QLabel(tr("<i>WCS</i>"));
+	tabOutputLabelParametersPhysical = new QLabel(tr("<i>Physical</i>"));
+	tabOutputLabelParametersBFFree   = new QLabel(tr("<i>BF fit</i>"));
+	tabOutputLabelParametersBFPhys   = new QLabel(tr("<i>BF physical</i>"));
+	tabOutputLabelParametersBasic->setTextFormat(Qt::RichText);
+	tabOutputLabelParametersBounds->setTextFormat(Qt::RichText);
+	tabOutputLabelParametersStat->setTextFormat(Qt::RichText);
+	tabOutputLabelParametersWCS->setTextFormat(Qt::RichText);
+	tabOutputLabelParametersPhysical->setTextFormat(Qt::RichText);
+	tabOutputLabelParametersBFFree->setTextFormat(Qt::RichText);
+	tabOutputLabelParametersBFPhys->setTextFormat(Qt::RichText);
 	
 	tabOutputButtonParameter_id        = new QCheckBox(tr("id"), tabOutputGroupBox2);
 	tabOutputButtonParameter_name      = new QCheckBox(tr("name"), tabOutputGroupBox2);
@@ -3113,63 +3128,80 @@ void SoFiA::createInterface()
 	tabOutputLayoutParameters->setContentsMargins(0, 0, 0, 0);
 	tabOutputLayoutParameters->setHorizontalSpacing(20);
 	tabOutputLayoutParameters->setVerticalSpacing(5);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_id,        0, 0);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_name,      1, 0);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_x,         2, 0);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_y,         3, 0);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_z,         4, 0);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_x_geo,     5, 0);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_y_geo,     6, 0);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_z_geo,     7, 0);
+	// NOTE: The following lines will ensure that all columns have the same width
+	//       and expand equally whenever the width of the main window is increased.
+	tabOutputLayoutParameters-> setColumnStretch(0, 1);
+	tabOutputLayoutParameters-> setColumnStretch(1, 1);
+	tabOutputLayoutParameters-> setColumnStretch(2, 1);
+	tabOutputLayoutParameters-> setColumnStretch(3, 1);
+	tabOutputLayoutParameters-> setColumnStretch(4, 1);
+	tabOutputLayoutParameters-> setColumnStretch(5, 1);
+	tabOutputLayoutParameters-> setColumnStretch(6, 1);
 	
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_x_min,     0, 1);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_x_max,     1, 1);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_y_min,     2, 1);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_y_max,     3, 1);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_z_min,     4, 1);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_z_max,     5, 1);
+	tabOutputLayoutParameters->addWidget(tabOutputLabelParametersBasic,      0, 0);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_id,        1, 0);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_name,      2, 0);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_x,         3, 0);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_y,         4, 0);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_z,         5, 0);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_x_geo,     6, 0);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_y_geo,     7, 0);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_z_geo,     8, 0);
 	
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_pix,     0, 2);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_pos,     1, 2);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_neg,     2, 2);
+	tabOutputLayoutParameters->addWidget(tabOutputLabelParametersBounds,     0, 1);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_x_min,     1, 1);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_x_max,     2, 1);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_y_min,     3, 1);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_y_max,     4, 1);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_z_min,     5, 1);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_z_max,     6, 1);
+	
+	tabOutputLayoutParameters->addWidget(tabOutputLabelParametersStat,       0, 2);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_pix,     1, 2);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_pos,     2, 2);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_neg,     3, 2);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_rms,       4, 2);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_rel,       5, 2);
 	//tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_snr_min,   3, 2);
 	//tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_snr_max,   4, 2);
 	//tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_snr_sum,   5, 2);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_rms,       3, 2);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_rel,       4, 2);
 	
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ra,        0, 3);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_dec,       1, 3);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_lon,       2, 3);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_lat,       3, 3);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_freq,      4, 3);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_velo,      5, 3);
+	tabOutputLayoutParameters->addWidget(tabOutputLabelParametersWCS,        0, 3);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ra,        1, 3);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_dec,       2, 3);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_lon,       3, 3);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_lat,       4, 3);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_freq,      5, 3);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_velo,      6, 3);
 	
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_w20,       0, 4);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_w50,       1, 4);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_wm50,      2, 4);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_f_peak,    3, 4);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_f_int,     4, 4);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_f_wm50,    5, 4);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ell_maj,   6, 4);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ell_min,   7, 4);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ell_pa,    8, 4);
+	tabOutputLayoutParameters->addWidget(tabOutputLabelParametersPhysical,   0, 4);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_w20,       1, 4);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_w50,       2, 4);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_wm50,      3, 4);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_f_peak,    4, 4);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_f_int,     5, 4);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_f_wm50,    6, 4);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ell_maj,   7, 4);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ell_min,   8, 4);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ell_pa,    9, 4);
 	
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_a,      0, 5);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_b1,     1, 5);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_b2,     2, 5);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_c,      3, 5);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_xe,     4, 5);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_xp,     5, 5);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_w,      6, 5);
+	tabOutputLayoutParameters->addWidget(tabOutputLabelParametersBFFree,     0, 5);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_a,      1, 5);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_b1,     2, 5);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_b2,     3, 5);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_c,      4, 5);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_xe,     5, 5);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_xp,     6, 5);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_w,      7, 5);
 	
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_z,      0, 6);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_w20,    1, 6);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_w50,    2, 6);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_f_peak, 3, 6);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_f_int,  4, 6);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_chi2,   5, 6);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_flag,   6, 6);
+	tabOutputLayoutParameters->addWidget(tabOutputLabelParametersBFPhys,     0, 6);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_z,      1, 6);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_w20,    2, 6);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_w50,    3, 6);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_f_peak, 4, 6);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_f_int,  5, 6);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_chi2,   6, 6);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_flag,   7, 6);
 	
 	tabOutputWidgetParameters->setLayout(tabOutputLayoutParameters);
 	

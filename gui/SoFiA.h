@@ -500,6 +500,13 @@ private:
 	QGridLayout  *tabOutputLayoutParameters;
 	QWidget      *tabOutputWidgetParameters;
 	QLabel       *tabOutputLabelParameters;
+	QLabel       *tabOutputLabelParametersBasic;
+	QLabel       *tabOutputLabelParametersBounds;
+	QLabel       *tabOutputLabelParametersStat;
+	QLabel       *tabOutputLabelParametersWCS;
+	QLabel       *tabOutputLabelParametersPhysical;
+	QLabel       *tabOutputLabelParametersBFFree;
+	QLabel       *tabOutputLabelParametersBFPhys;
 	
 	QCheckBox    *tabOutputButtonParameter_id;
 	QCheckBox    *tabOutputButtonParameter_name;
