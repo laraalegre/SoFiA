@@ -79,9 +79,9 @@ int MaskOptimization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s
 		return 1;
 	}
 	
-	double x = s->getParameter("X");
-	double y = s->getParameter("Y");
-	double z = s->getParameter("Z");
+	double x = s->getParameter("x");
+	double y = s->getParameter("y");
+	double z = s->getParameter("z");
 	
 	if(x < 0.0 or y < 0.0 or z < 0.0 or x >= static_cast<double>(d->getSize(0)) or y >= static_cast<double>(d->getSize(1)) or z >= static_cast<double>(d->getSize(2)))
 	{
@@ -306,8 +306,8 @@ int MaskOptimization::growEllipse()
 	float sum        = 0.0F;
 	float sumMax     = 0.0F;           // WARNING: This initialisation will discard sources with negative flux!
 	
-	double posX = source->getParameter("X");
-	double posY = source->getParameter("Y");
+	double posX = source->getParameter("x");
+	double posY = source->getParameter("y");
 	
 	while(sum >= sumMax and iteration <= MASKOPTIMIZATION_ITERATIONS)
 	{
@@ -399,7 +399,7 @@ int MaskOptimization::growEllipse()
 							if(y < source->getParameter("y_min")) source->setParameter("y_min", y);
 							if(y > source->getParameter("y_max")) source->setParameter("y_max", y);
 							if(z < source->getParameter("z_min")) source->setParameter("z_min", z);
-							if(z > source->getParameter("z_max")) source->setParameter("z_maxz", z);
+							if(z > source->getParameter("z_max")) source->setParameter("z_max", z);
 						}
 					}
 				}
