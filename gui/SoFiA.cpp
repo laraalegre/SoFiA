@@ -2902,7 +2902,7 @@ void SoFiA::createInterface()
 	
 	tabOutputLabelParametersBasic    = new QLabel(tr("<i>Basic</i>"));
 	tabOutputLabelParametersBounds   = new QLabel(tr("<i>Boundary</i>"));
-	tabOutputLabelParametersStat     = new QLabel(tr("<i>Statistics</i>"));
+	tabOutputLabelParametersStat     = new QLabel(tr("<i>Statistical</i>"));
 	tabOutputLabelParametersWCS      = new QLabel(tr("<i>WCS</i>"));
 	tabOutputLabelParametersPhysical = new QLabel(tr("<i>Physical</i>"));
 	tabOutputLabelParametersBFFree   = new QLabel(tr("<i>BF fit</i>"));
