@@ -2534,8 +2534,8 @@ void SoFiA::createInterface()
 	tabParametrisationButtonBusyFunction->setChecked(false);
 	connect(tabParametrisationButtonBusyFunction, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
-	tabParametrisationForm1->addRow(tr(""), tabParametrisationButtonMaskOpt);
 	tabParametrisationForm1->addRow(tr(""), tabParametrisationButtonDilateMask);
+	tabParametrisationForm1->addRow(tr(""), tabParametrisationButtonMaskOpt);
 	tabParametrisationForm1->addRow(tr(""), tabParametrisationButtonBusyFunction);
 	tabParametrisationGroupBox1->setLayout(tabParametrisationForm1);
 	
