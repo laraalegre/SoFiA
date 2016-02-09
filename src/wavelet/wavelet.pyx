@@ -5,12 +5,10 @@
 # Compile time constants
 DEF ZERO_BOUNDS = False
 DEF WRAP_BOUNDS = True
-# Unless your datacube is CRAZY BIG, 2 threads is enough
-#DEF NTHREADS = 2
 
 cimport numpy as np
 import numpy as np
-#from cython.parallel import prange
+from cython.parallel import prange
 
 # Using Python bool!
 from cpython cimport bool
@@ -60,8 +58,8 @@ cdef void convolve_x_with_stepsize(float[:,:,:] source, float[:,:,:] target, flo
         int kernelsize = kernel.shape[0]
         int index, z, y, x, j
     
-    #for z in prange(zsize, num_threads=NTHREADS):
-    for z in range(zsize):
+    for z in prange(zsize, nogil=True):
+    #for z in range(zsize):
         for y in range(ysize):
             for x in range(xsize):
                 index = x - kernelsize/2 * stepsize
@@ -86,8 +84,8 @@ cdef void convolve_y_with_stepsize(float[:,:,:] source, float[:,:,:] target, flo
         int kernelsize = kernel.shape[0]
         int index, z, y, x, j
     
-    #for z in prange(zsize, num_threads=NTHREADS):
-    for z in range(zsize):
+    for z in prange(zsize, nogil=True):
+    #for z in range(zsize):
         for y in range(ysize):
             for x in range(xsize):
                 index = y - kernelsize/2 * stepsize
@@ -112,8 +110,8 @@ cdef void convolve_z_with_stepsize(float[:,:,:] source, float[:,:,:] target, flo
         int kernelsize = kernel.shape[0]
         int index, z, y, x, j
     
-    #for z in prange(zsize, num_threads=NTHREADS):
-    for z in range(zsize):
+    for z in prange(zsize, nogil=True):
+    #for z in range(zsize):
         for y in range(ysize):
             for x in range(xsize):
                 index = z - kernelsize/2 * stepsize
