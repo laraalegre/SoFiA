@@ -2,11 +2,18 @@
 #include <cmath>
 #include <limits>
 
+#include <omp.h>
+
 #include "helperFunctions.h"
 #include "DataCube.h"
 #include "Parametrization.h"
 #include "BusyFit.h"
 #include "Measurement.h"
+
+// Set this to true if OpenMP should be used or to false otherwise:
+#define USE_OPENMP true
+
+
 
 Parametrization::Parametrization()
 {
@@ -39,6 +46,11 @@ Parametrization::Parametrization()
 		busyFitParameters[i]    = 0.0;
 		busyFitUncertainties[i] = 0.0;
 	}
+	
+	// Set up OpenMP:
+	int nCores = omp_get_num_procs();
+	omp_set_dynamic(0);
+	omp_set_num_threads(nCores);
 	
 	return;
 }
@@ -256,24 +268,25 @@ int Parametrization::measureCentroid()
 	}
 	
 	double sum = 0.0;
-	centroidX  = 0.0;
-	centroidY  = 0.0;
-	centroidZ  = 0.0;
+	double centroidX2 = 0.0;
+	double centroidY2 = 0.0;
+	double centroidZ2 = 0.0;
 	
+	#pragma omp parallel for if(USE_OPENMP) reduction(+:centroidX2,centroidY2,centroidZ2,sum)
 	for(size_t i = 0; i < data.size(); i++)
 	{
 		if(data[i].value > 0.0)        // NOTE: Only positive pixels considered here!
 		{
-			centroidX += data[i].value * data[i].x;
-			centroidY += data[i].value * data[i].y;
-			centroidZ += data[i].value * data[i].z;
-			sum       += data[i].value;
+			centroidX2 += data[i].value * data[i].x;
+			centroidY2 += data[i].value * data[i].y;
+			centroidZ2 += data[i].value * data[i].z;
+			sum        += data[i].value;
 		}
 	}
 	
-	centroidX /= sum;
-	centroidY /= sum;
-	centroidZ /= sum;
+	centroidX = centroidX2 / sum;
+	centroidY = centroidY2 / sum;
+	centroidZ = centroidZ2 / sum;
 	
 	return 0;
 }
@@ -290,15 +303,19 @@ int Parametrization::measureFlux()
 		return 1;
 	}
 	
-	totalFlux = 0.0;
+	double totalFlux2 = 0.0;
 	peakFlux  = -std::numeric_limits<double>::max();
 	
 	// Sum over all pixels (including negative ones):
+	#pragma omp parallel for if(USE_OPENMP) reduction(+:totalFlux2)
 	for(unsigned long i = 0L; i < data.size(); i++)
 	{
-		totalFlux  += static_cast<double>(data[i].value);
+		totalFlux2 += static_cast<double>(data[i].value);
 		if(peakFlux < static_cast<double>(data[i].value)) peakFlux = static_cast<double>(data[i].value);
 	}
+	
+	// This is required because OpenMP cannot reduce class members, but only variables:
+	totalFlux = totalFlux2;
 	
 	// Calculate integrated SNR:
 	intSNR = totalFlux / (noiseSubCube * sqrt(static_cast<double>(data.size())));
@@ -333,6 +350,7 @@ int Parametrization::fitEllipse()
 	double momXY = 0.0;
 	double sum   = 0.0;
 	
+	#pragma omp parallel for if(USE_OPENMP) reduction(+:momX,momY,momXY,sum)
 	for(unsigned long i = 0L; i < data.size(); i++)
 	{
 		double fluxValue = static_cast<double>(data[i].value);

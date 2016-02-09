@@ -141,7 +141,8 @@ setup(
         Extension(
             'cparametrizer',
             parametrizer_src,
-            extra_compile_args=['-O3'],
+            extra_compile_args=['-O3','-fopenmp'],
+            extra_link_args=['-fopenmp'],
             include_dirs=include_dirs + ext_include_dirs,
             library_dirs=ext_library_dirs + ext_include_dirs,
             libraries=['gsl', 'gslcblas']
