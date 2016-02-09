@@ -6,6 +6,7 @@ import string
 import scipy.stats as stats
 from os import path
 import numpy as np
+from itertools import combinations
 
 # define class of gaussian_kde with user-defined covariance matrix
 class gaussian_kde_set_covariance(stats.gaussian_kde):
@@ -16,7 +17,7 @@ class gaussian_kde_set_covariance(stats.gaussian_kde):
 		self.inv_cov = np.linalg.inv(self.covariance)
 		self._norm_factor = np.sqrt(np.linalg.det(2*np.pi*self.covariance)) * self.n
 
-def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],projections=[[2,0],[2,1],[0,1]],autoKernel=True,negPerBin=5,skellamTol=-0.2,kernel=[0.15,0.05,0.1],doscatter=1,docontour=1,doskellam=1,dostats=0,saverel=1,threshold=0.99,Nmin=0,dV=0.2,fMin=0,verb=0,makePlot=False):
+def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],logPars=[1,1,1],autoKernel=True,negPerBin=5,skellamTol=-0.2,kernel=[0.15,0.05,0.1],doscatter=1,docontour=1,doskellam=1,dostats=0,saverel=1,threshold=0.99,Nmin=0,dV=0.2,fMin=0,verb=0,makePlot=False):
 
 	# matplotlib stuff
 	if makePlot:
@@ -30,11 +31,17 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 	########################################
 
 	# get position of positive and negative sources
+	parCol = []
 	idCOL=parNames.index('id')
-	ftotCOL=parNames.index('snr_sum')
-	nrvoxCOL=parNames.index('n_pix')
-	fmaxCOL=parNames.index('snr_max')
-	fminCOL=parNames.index('snr_min')
+	for ii in range(0,len(parSpace)):
+		parCol.append(parNames.index(parSpace[ii]))
+	if 'snr_max' in parSpace:
+		if 'snr_min' not in parSpace: fminCOL=parNames.index('snr_min')
+		else: fminCOL = parCol[parSpace.index('snr_min')]
+		fmaxCOL = parCol[parSpace.index('snr_max')]
+	if 'snr_sum' not in parSpace: ftotCOL=parNames.index('snr_sum')
+	else: ftotCOL = parCol[parSpace.index('snr_sum')]
+	
 	pos=data[:,ftotCOL]>0
 	neg=data[:,ftotCOL]<=0
 	Npos=pos.sum()
@@ -49,44 +56,51 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 
 	# get array of relevant source parameters and set what to plot
 	ids=data[:,idCOL]
-	nrvox=data[:,nrvoxCOL].reshape(-1,1)
-	ftot =abs(data[:,ftotCOL]).reshape(-1,1)
-	fmax =data[:,fmaxCOL]*pos-data[:,fminCOL]*neg
-	fmax=fmax.reshape(-1,1)
+	
+	pars = np.empty((data.shape[0],0))
+	for ii in range(0,len(parSpace)):
+		print ii, parSpace[ii]
+		if parSpace[ii] != 'snr_max' and parSpace[ii] != 'snr_sum':
+			parsTmp = data[:,parCol[ii]].reshape(-1,1)
+			if logPars[ii]: parsTmp = np.log10(parsTmp)
+			pars = np.concatenate((pars,parsTmp),axis=1)
+		else:
+			if parSpace[ii] == 'snr_max':
+				parsTmp = data[:,fmaxCOL]*pos-data[:,fminCOL]*neg
+				if logPars[ii]: parsTmp = np.log10(parsTmp)
+				pars = np.concatenate((pars,parsTmp.reshape(-1,1)),axis=1)
+			if parSpace[ii] == 'snr_sum':
+				parsTmp = abs(data[:,parCol[ii]].reshape(-1,1))
+				if logPars[ii]: parsTmp = np.log10(parsTmp)
+				pars = np.concatenate((pars,parsTmp),axis=1)
+
 
 	#################################################################
 	### SET PARAMETERS TO WORK WITH AND GRIDDING/PLOTTNG FOR EACH ###
 	#################################################################
 
-	pars=np.concatenate((np.log10(ftot),
-					  np.log10(fmax),
-					  np.log10(nrvox)),
-					 axis=1)
+
 
 	pars=np.transpose(pars)
 
 	# axis labels when plotting
-	labs=['log SNRsum',
-		  'log SNRmax',
-		  'log NRvox',
-		  'log NRchan',
-		  ]
+	labs = []
+	for ii in range(0,len(parSpace)):
+		labs.append('')
+		if logPars[ii]: labs[ii] += 'log '
+		labs[ii] += parSpace[ii]
+
 
 	# axes limits when plotting
 	pmin,pmax=pars.min(axis=1),pars.max(axis=1)
 	pmin,pmax=pmin-0.1*(pmax-pmin),pmax+0.1*(pmax-pmin)
-	lims=[[pmin[0],pmax[0]],
-		  [pmin[1],pmax[1]],
-		  [pmin[2],pmax[2]],
-		  ]
+	lims = [[pmin[i],pmax[i]] for i in range(0,len(parSpace))]
 
 	# grid on which to evaluate Np and Nn in order to plot contours
-	grid=[[pmin[0],pmax[0],0.02*(pmax[0]-pmin[0])],
-		  [pmin[1],pmax[1],0.02*(pmax[1]-pmin[1])],
-		  [pmin[2],pmax[2],0.02*(pmax[2]-pmin[2])],
-		  ]
+	grid = [[pmin[i],pmax[i],0.02*(pmax[i]-pmin[i])] for i in range(0,len(parSpace))]
 
 	# calculate the number of rows and columns in figure
+	projections = [subset for subset in combinations(range(0,len(parSpace)),2)]
 	nr=int(np.floor(np.sqrt(len(projections))))
 	nc=len(projections)/nr
 
@@ -112,11 +126,20 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 		################################
 
 		if verb: print '  estimate normalised positive and negative density fields ...'
-
+		
 		# Calculate density fields Np and Nn using 'kernel' covariance
-		setcov=np.array(((kernel[0]**2,0,0),
-					  (0,kernel[1]**2,0),
-					  (0,0,kernel[2]**2)))
+		tmpCov = []
+		for ii in range(0,len(parSpace)):
+			tmp = []
+			for jj in range(0,ii):
+				tmp.append(0)
+			tmp.append(kernel[ii]**2)
+			for jj in range(ii+1,len(parSpace)):
+				tmp.append(0)
+			tmpCov.append(tmp)
+		
+		setcov = np.array(tuple(tmpCov))
+		
 		if verb:
 			print '  using diagonal kernel with sigma:',
 			for kk in kernel: print '%.4f'%kk,
@@ -161,11 +184,11 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 				print '             negative: %3.1f - %3.1f'%(0.85*dV*Nns.min(),0.85*dV*Nns.max())
 				print '  positive + negative: %3.1f - %3.1f'%(0.85*dV*(Nps+Nns).min(),0.85*dV*(Nps+Nns).max())
 
-				print '  median error on R at location of negative sources: %.2f'%median(dnRs)
+				print '  median error on R at location of negative sources: %.2f'%np.median(dnRs)
 				print '  R<0 at the location of %3i/%3i negative sources'%((nRs<0).sum(),nRs.shape[0])
 				print '  R<0 at the location of %3i/%3i negative sources within 1-sigma error bar'%(((nRs+1*dnRs)<0).sum(),nRs.shape[0])
 
-				print '  median error on R at location of positive sources: %.2f'%median(dRs)
+				print '  median error on R at location of positive sources: %.2f'%np.median(dRs)
 				print '  R<0 at the location of %3i/%3i positive sources'%((Rs<0).sum(),Rs.shape[0])
 				print '  R<0 at the location of %3i/%3i positive sources within 1-sigma error bar'%(((Rs+1*dRs)<0).sum(),Rs.shape[0])
 
@@ -178,6 +201,10 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 			# find reliable sources
 			# (taking maximum(Rs,0) in order to include objects with Rs<0 if threshold==0)
 			# Nmin is by default zero so the line below normally selects (np.maximum(Rs,0)>=threshold)*(ftot[pos].reshape(-1,)>fMin)
+			if 'snr_sum' in parSpace:
+				ftot = pars[parSpace.index('snr_sum')]
+			else:
+				ftot = np.log10(abs(data[:,ftotCOL]).reshape(-1,1))
 			reliable=(np.maximum(Rs,0)>=threshold)*((Nps+Nns)*0.85*dV>Nmin)*(ftot[pos].reshape(-1,)>fMin)
 		
 			# calculate quantities needed for comparison to Skellam distribution
