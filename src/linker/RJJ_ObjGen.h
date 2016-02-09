@@ -99,6 +99,7 @@ class object_props {
   float GetFREQi();
   float GetTI();
   float GetSigmaI();
+  float GetRMSI();
   float GetAvgI();
   float GetMinI();
   float GetMaxI();
@@ -290,6 +291,7 @@ public:
   double GetFREQi();
   double GetTI();
   double GetSigmaI();
+  double GetRMSI();
   double GetAvgI();
   double GetMinI();
   double GetMaxI();

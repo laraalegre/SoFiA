@@ -841,6 +841,8 @@ float object_props::GetTI_n(){ return n_tot_intens; }
 
 float object_props::GetSigmaI(){ return sigma_intens; }
 
+float object_props::GetRMSI(){ return rms; }
+
 float object_props::GetAvgI(){ return avg_intens; }
 
 float object_props::GetMinI(){ return min_intens; }
@@ -2644,6 +2646,8 @@ float object_props_dbl::GetFREQi_n(){ return n_freq_i; }
 float object_props_dbl::GetTI_n(){ return n_tot_intens; }
 
 double object_props_dbl::GetSigmaI(){ return sigma_intens; }
+
+double object_props_dbl::GetRMSI(){ return rms; }
 
 double object_props_dbl::GetAvgI(){ return avg_intens; }
 

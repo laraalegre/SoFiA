@@ -45,6 +45,14 @@ cdef extern from "RJJ_ObjGen.h":
 		float GetDECi()
 		float GetFREQi()
 		
+		float GetRAi_p()
+		float GetDECi_p()
+		float GetFREQi_p()
+
+		float GetRAi_n()
+		float GetDECi_n()
+		float GetFREQi_n()
+
 		# Geometric center
 		float GetRA()
 		float GetDEC()
@@ -56,7 +64,24 @@ cdef extern from "RJJ_ObjGen.h":
 		
 		# Total intensity
 		float GetTI()
-		
+		float GetTI_p()
+		float GetTI_n()
+
+		# Intensity stats
+		float GetAvgI()
+		float GetSigmaI()
+		float GetRMSI()
+
+		# widths
+		float Get_w20_min()
+		float Get_w20_max()
+		float Get_cw20_min()
+		float Get_cw20_max()
+		float Get_w50_min()
+		float Get_w50_max()
+		float Get_cw50_min()
+		float Get_cw50_max()
+
 		# Number of voxels
 		int ShowVoxels()
 		
@@ -228,6 +253,34 @@ cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, np.ndarray[dtype = 
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetMinI())
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetMaxI())
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetTI())
+
+			### new properties added for reliability analyses improvements
+
+			# Positive and negative centers of mass
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetRAi_p())
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetDECi_p())
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetFREQi_p())
+
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetRAi_n())
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetDECi_n())
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetFREQi_n())
+
+			# Positive and negative total flux
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetTI_p())
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetTI_n())
+			
+			# Mean, std.dev. and RMS flux
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetAvgI())
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetSigmaI())
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetRMSI())
+
+			# W20 and W50
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].Get_w20_max() - detections[obj_batch][i - (obj_batch * obj_limit)].Get_w20_min())
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].Get_w50_max() - detections[obj_batch][i - (obj_batch * obj_limit)].Get_w50_min())
+
+			# C.F.D. W20 and C.F.D. W50
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].Get_cw20_max() - detections[obj_batch][i - (obj_batch * obj_limit)].Get_cw20_min())
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].Get_cw50_max() - detections[obj_batch][i - (obj_batch * obj_limit)].Get_cw50_min())
 		
 			objects.append(obj)
 			
