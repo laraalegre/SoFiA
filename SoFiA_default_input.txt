@@ -126,7 +126,7 @@ parameters.dilateChan           =       1
 
 # Reliability module
 
-reliability.parSpace            =       ['snr_sum','snr_max','n_pix']
+reliability.parSpace            =       ['n_pix','snr_sum','snr_max']
 reliability.logPars             =       [1,1,1]
 reliability.autoKernel          =       true
 reliability.negPerBin           =       50.0
