@@ -127,6 +127,7 @@ parameters.dilateChan           =       1
 # Reliability module
 
 reliability.parSpace            =       ['SNRsum','SNRmax','NRvox']
+reliability.logPars             =       [1,1,1]
 reliability.autoKernel          =       true
 reliability.negPerBin           =       5.0
 reliability.skellamTol          =       -0.2
