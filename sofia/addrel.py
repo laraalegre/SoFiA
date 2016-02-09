@@ -17,7 +17,7 @@ class gaussian_kde_set_covariance(stats.gaussian_kde):
 		self.inv_cov = np.linalg.inv(self.covariance)
 		self._norm_factor = np.sqrt(np.linalg.det(2*np.pi*self.covariance)) * self.n
 
-def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],logPars=[1,1,1],autoKernel=True,negPerBin=5,skellamTol=-0.2,kernel=[0.15,0.05,0.1],doscatter=1,docontour=1,doskellam=1,dostats=0,saverel=1,threshold=0.99,Nmin=0,dV=0.2,fMin=0,verb=0,makePlot=False):
+def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],logPars=[1,1,1],autoKernel=True,negPerBin=50,skellamTol=-0.2,kernel=[0.15,0.05,0.1],doscatter=1,docontour=1,doskellam=1,dostats=0,saverel=1,threshold=0.99,Nmin=0,dV=0.2,fMin=0,verb=0,makePlot=False):
 
 	# matplotlib stuff
 	if makePlot:
@@ -116,7 +116,10 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 		# The kernel size along each axis is such that the number of sources per kernel width
 		# (sigma) is equal to 'negPerBin'.
 		# If autoKernel is False, use the kernel given by 'kernel' parameter (argument of EstimateRel).
-		if autoKernel: kernel=(pars[:,neg].max(axis=1)-pars[:,neg].min(axis=1))/(float(neg.sum())/negPerBin)
+		if autoKernel:
+			#kernel=(pars[:,neg].max(axis=1)-pars[:,neg].min(axis=1))/(float(neg.sum())/negPerBin) # kernel from pars range
+                        kernel=np.sqrt(np.cov(pars).diagonal())/(float(neg.sum())/negPerBin) # kernel from sqrt of digonal of covariance matrix
+
 		else: kernel,grow_kernel=np.array(kernel),0
 		
 		print '# Trying kernel',kernel
