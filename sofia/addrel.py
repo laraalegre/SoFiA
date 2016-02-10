@@ -57,9 +57,10 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 	# get array of relevant source parameters and set what to plot
 	ids=data[:,idCOL]
 	
+        print '# Working in parameter space [',
 	pars = np.empty((data.shape[0],0))
 	for ii in range(0,len(parSpace)):
-		print ii, parSpace[ii]
+		print parSpace[ii],
 		if parSpace[ii] != 'snr_max' and parSpace[ii] != 'snr_sum':
 			parsTmp = data[:,parCol[ii]].reshape(-1,1)
 			if logPars[ii]: parsTmp = np.log10(parsTmp)
@@ -73,6 +74,7 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 				parsTmp = abs(data[:,parCol[ii]].reshape(-1,1))
 				if logPars[ii]: parsTmp = np.log10(parsTmp)
 				pars = np.concatenate((pars,parsTmp),axis=1)
+        print ']'
 
 
 	#################################################################
