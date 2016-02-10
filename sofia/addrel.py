@@ -104,7 +104,7 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 	# calculate the number of rows and columns in figure
 	projections = [subset for subset in combinations(range(0,len(parSpace)),2)]
 	nr=int(np.floor(np.sqrt(len(projections))))
-	nc=len(projections)/nr
+	nc=int(np.ceil(float(len(projections))/nr))
 
 	grow_kernel=1 # set to 1 to start the following loop; if autoKernel=0 will do just one pass
 	deltOLD=-1e+9 # used to stop kernel growth if P-N stops moving closer to zero
