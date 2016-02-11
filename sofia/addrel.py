@@ -17,7 +17,7 @@ class gaussian_kde_set_covariance(stats.gaussian_kde):
 		self.inv_cov = np.linalg.inv(self.covariance)
 		self._norm_factor = np.sqrt(np.linalg.det(2*np.pi*self.covariance)) * self.n
 
-def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],logPars=[1,1,1],autoKernel=True,negPerBin=50,skellamTol=-0.2,kernel=[0.15,0.05,0.1],doscatter=1,docontour=1,doskellam=1,dostats=0,saverel=1,threshold=0.99,Nmin=0,dV=0.2,fMin=0,verb=0,makePlot=False):
+def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],logPars=[1,1,1],autoKernel=True,negPerBin=50,skellamTol=-0.2,kernel=[0.15,0.05,0.1],usecov=0,doscatter=1,docontour=1,doskellam=1,dostats=0,saverel=1,threshold=0.99,Nmin=0,dV=0.2,fMin=0,verb=0,makePlot=False):
 
 	# matplotlib stuff
 	if makePlot:
@@ -30,23 +30,20 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 	### BUILD ARRAY OF SOURCE PARAMETERS ###
 	########################################
 
-	# get position of positive and negative sources
-	parCol = []
 	idCOL=parNames.index('id')
-	for ii in range(0,len(parSpace)):
-		parCol.append(parNames.index(parSpace[ii]))
-	if 'snr_max' in parSpace:
-		if 'snr_min' not in parSpace: fminCOL=parNames.index('snr_min')
-		else: fminCOL = parCol[parSpace.index('snr_min')]
-		fmaxCOL = parCol[parSpace.index('snr_max')]
-	if 'snr_sum' not in parSpace: ftotCOL=parNames.index('snr_sum')
-	else: ftotCOL = parCol[parSpace.index('snr_sum')]
+        ftotCOL=parNames.index('snr_sum')
+        fmaxCOL=parNames.index('snr_max')
+        fminCOL=parNames.index('snr_min')
+
+        # get columns of requested parameters
+	parCol = []
+	for ii in range(0,len(parSpace)): parCol.append(parNames.index(parSpace[ii]))
 	
+	# get position and number of positive and negative sources
 	pos=data[:,ftotCOL]>0
 	neg=data[:,ftotCOL]<=0
 	Npos=pos.sum()
 	Nneg=neg.sum()
-
 	if not Npos:
 		sys.stderr.write("ERROR: no positive sources found; cannot proceed.\n")
 		sys.exit(1)
@@ -54,36 +51,33 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 		sys.stderr.write("ERROR: no negative sources found; cannot proceed.\n")
 		sys.exit(1)
 
-	# get array of relevant source parameters and set what to plot
+	# get array of relevant source parameters (and take log of them is requested)
 	ids=data[:,idCOL]
-	
         print '# Working in parameter space [',
 	pars = np.empty((data.shape[0],0))
 	for ii in range(0,len(parSpace)):
 		print parSpace[ii],
-		if parSpace[ii] != 'snr_max' and parSpace[ii] != 'snr_sum':
-			parsTmp = data[:,parCol[ii]].reshape(-1,1)
+		if parSpace[ii] == 'snr_max':
+			parsTmp = data[:,fmaxCOL]*pos-data[:,fminCOL]*neg
+			if logPars[ii]: parsTmp = np.log10(parsTmp)
+			pars = np.concatenate((pars,parsTmp.reshape(-1,1)),axis=1)
+		elif parSpace[ii] == 'snr_sum':
+			parsTmp = abs(data[:,parCol[ii]].reshape(-1,1))
 			if logPars[ii]: parsTmp = np.log10(parsTmp)
 			pars = np.concatenate((pars,parsTmp),axis=1)
 		else:
-			if parSpace[ii] == 'snr_max':
-				parsTmp = data[:,fmaxCOL]*pos-data[:,fminCOL]*neg
-				if logPars[ii]: parsTmp = np.log10(parsTmp)
-				pars = np.concatenate((pars,parsTmp.reshape(-1,1)),axis=1)
-			if parSpace[ii] == 'snr_sum':
-				parsTmp = abs(data[:,parCol[ii]].reshape(-1,1))
-				if logPars[ii]: parsTmp = np.log10(parsTmp)
-				pars = np.concatenate((pars,parsTmp),axis=1)
+			parsTmp = data[:,parCol[ii]].reshape(-1,1)
+			if logPars[ii]: parsTmp = np.log10(parsTmp)
+			pars = np.concatenate((pars,parsTmp),axis=1)
+
         print ']'
+	pars=np.transpose(pars)
 
 
 	#################################################################
 	### SET PARAMETERS TO WORK WITH AND GRIDDING/PLOTTNG FOR EACH ###
 	#################################################################
 
-
-
-	pars=np.transpose(pars)
 
 	# axis labels when plotting
 	labs = []
@@ -106,25 +100,40 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 	nr=int(np.floor(np.sqrt(len(projections))))
 	nc=int(np.ceil(float(len(projections))/nr))
 
-	grow_kernel=1 # set to 1 to start the following loop; if autoKernel=0 will do just one pass
-	deltOLD=-1e+9 # used to stop kernel growth if P-N stops moving closer to zero
-	
+
+	###############################################
+	### SET SMOOTHING KERNEL IN PARAMETER SPACE ###
+	###############################################
+
+	# If autoKernel is True the initial kernel is taken as a scaled version of the covariance matrix of the negative sources.
+	# The kernel size along each axis is such that the number of sources per kernel width (sigma**2) is equal to 'negPerBin'.
+        # Optionally, the user can decide to use only the diagonal terms of the covariance matrix.
+        # The kernel is then grown until convergence is reached on the Skellam plot.
+	# If autoKernel is False, use the kernel given by 'kernel' parameter (argument of EstimateRel); this is sigma, and is squared
+        #    to be consistent with the auto kernel above.
+	if autoKernel:
+		#kernel=(pars[:,neg].max(axis=1)-pars[:,neg].min(axis=1))/(float(neg.sum())/negPerBin) # kernel from pars range
+                parcov=np.sqrt(np.cov(pars[:,neg]))
+                kernel=parcov/(float(Nneg)/negPerBin)     # kernel from covariance matrix
+                if not usecov: kernel=np.diag(np.diag(kernel)) # kernel from diagonal of covariance matrix
+	        grow_kernel=1 # set to 1 to start the kernel growing loop below; if autoKernel=0 will do just one pass
+	        deltOLD=-1e+9 # used to stop kernel growth if P-N stops moving closer to zero [NOT USED CURRENTLY]
+                deltplot=[]
+                kernelIter=0.
+	else: kernel,grow_kernel=np.identity(len(kernel))*np.array(kernel)**2,0
+
+        if grow_kernel:
+	        print '# Starting with (co-)variance kernel:'
+                print kernel
+                print '# Growing kernel...'
+                sys.stdout.flush()
+        else:
+	        print '# Using user-defined variance kernel:'
+                print kernel
+                sys.stdout.flush()
+
 	while grow_kernel:
-		# Set the variance (sigma**2) of Gaussian kernels for smoothing along each axis.
-		# The covariance matrix will be taken to be diagonal (i.e., all sigma_ij terms are 0).
-
-		# If autoKernel is True determine the kernel along each axis from the range covered
-		# by the negative sources along that axis.
-		# The kernel size along each axis is such that the number of sources per kernel width
-		# (sigma) is equal to 'negPerBin'.
-		# If autoKernel is False, use the kernel given by 'kernel' parameter (argument of EstimateRel).
-		if autoKernel:
-			#kernel=(pars[:,neg].max(axis=1)-pars[:,neg].min(axis=1))/(float(neg.sum())/negPerBin) # kernel from pars range
-                        kernel=np.sqrt(np.cov(pars).diagonal())/(float(neg.sum())/negPerBin) # kernel from sqrt of digonal of covariance matrix
-
-		else: kernel,grow_kernel=np.array(kernel),0
-		
-		print '# Trying kernel',kernel
+                kernel*=float(negPerBin+kernelIter)/(negPerBin+kernelIter-1) 
 
 		################################
 		### EVALUATE N-d RELIABILITY ###
@@ -133,24 +142,30 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 		if verb: print '  estimate normalised positive and negative density fields ...'
 		
 		# Calculate density fields Np and Nn using 'kernel' covariance
-		tmpCov = []
-		for ii in range(0,len(parSpace)):
-			tmp = []
-			for jj in range(0,ii):
-				tmp.append(0)
-			tmp.append(kernel[ii]**2)
-			for jj in range(ii+1,len(parSpace)):
-				tmp.append(0)
-			tmpCov.append(tmp)
+		#tmpCov = []
+		#for ii in range(0,len(parSpace)):
+		#	tmp = []
+		#	for jj in range(0,ii):
+		#		tmp.append(0)
+		#	tmp.append(kernel[ii]**2)
+		#	for jj in range(ii+1,len(parSpace)):
+		#		tmp.append(0)
+		#	tmpCov.append(tmp)
 		
-		setcov = np.array(tuple(tmpCov))
+		#setcov = np.array(tuple(tmpCov))
+
+                #print setcov
+                #setcov=(np.sqrt(np.cov(pars))/(float(neg.sum())/negPerBin))**2
+                #print setcov
+                #exit()
 		
-		if verb:
-			print '  using diagonal kernel with sigma:',
-			for kk in kernel: print '%.4f'%kk,
-			print
-		Np=gaussian_kde_set_covariance(pars[:,pos],setcov)
-		Nn=gaussian_kde_set_covariance(pars[:,neg],setcov)
+		#if verb:
+		#	print '  using diagonal kernel with sigma:',
+		#	for kk in kernel: print '%.4f'%kk,
+		#	print
+
+		Np=gaussian_kde_set_covariance(pars[:,pos],kernel)
+		Nn=gaussian_kde_set_covariance(pars[:,neg],kernel)
 
 		#############################
 		### PRINT STATS TO SCREEN ###
@@ -158,7 +173,7 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 
 		if docontour or dostats or doskellam:
 			# volume within which to calculate the 
-			dV=(2*kernel).prod()
+                        dV=(2*np.sqrt(np.linalg.eig(kernel)[0])).prod()
 
 			# calculate the reliability at the location of positive sources
 			if verb: print '  from the density fields, calculating the reliability at the location of positive sources ...'
@@ -229,13 +244,20 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 
 		else: grow_kernel=0
 
-		if delt[delt.shape[0]/2]>skellamTol or delt[delt.shape[0]/2]<deltOLD: grow_kernel=0
+                deltplot.append([negPerBin+kernelIter,delt[delt.shape[0]/2]])
+
+		if delt[delt.shape[0]/2]>skellamTol or negPerBin+kernelIter==Nneg:
+                        grow_kernel=0
+	                print '# Found good kernel:'
+                        print kernel
+                        sys.stdout.flush()
+                #elif: delt[delt.shape[0]/2]<deltOLD: grow_kernel=0
 		else:
 			deltOLD=delt[delt.shape[0]/2]
 			#print deltOLD,'<',skellamTol; sys.stdout.flush()
-			negPerBin+=1
+			kernelIter+=1
+        deltplot=np.array(deltplot)
 
-	print '# Found good kernel'
 	
 	####################
 	### SKELLAM PLOT ###
@@ -252,8 +274,15 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 		plt.ylabel('cumulative distribution')
 		plt.legend(('Gaussian (sigma=1)','Gaussian (sigma=0.4)','negative sources'),loc='upper left',prop={'size':15})
 		plt.plot([0,0],[0,1],'k--')
-		plt.title('sigma(kde) = %.3f, %.3f, %.3f'%(kernel[0],kernel[1],kernel[2]),fontsize=20)
+		#plt.title('sigma(kde) = %.3f, %.3f, %.3f'%(kernel[0],kernel[1],kernel[2]),fontsize=20)
 		fig0.savefig('%s_skel.pdf'%pdfoutname,rasterized=True)
+
+                fig3=plt.figure()
+                plt.plot(deltplot[:,0],deltplot[:,1],'ko-')
+		plt.xlabel('negPerBin')
+		plt.ylabel('delta')
+                plt.axhline(y=skellamTol,linestyle='--',color='r')
+		fig3.savefig('%s_delt.pdf'%pdfoutname,rasterized=True)
 
 
 	############################
@@ -301,11 +330,13 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 			parsp=np.concatenate((pars[p1:p1+1],pars[p2:p2+1]),axis=0)
 
 			# derive Np and Nn density fields on the current projection
+
 			# Np and Nn calculated with *authomatic* covariance
 			#Np=stats.kde.gaussian_kde(parsp[:,pos])
 			#Nn=stats.kde.gaussian_kde(parsp[:,neg])
+
 			# Np and Nn calculated with *input* covariance
-			setcov=np.array(((kernel[p1]**2,0.0),(0.0,kernel[p2]**2)))
+                        setcov=kernel[p1:p2+1:p2-p1,p1:p2+1:p2-p1]
 			Np=gaussian_kde_set_covariance(parsp[:,pos],setcov)
 			Nn=gaussian_kde_set_covariance(parsp[:,neg],setcov)
 
