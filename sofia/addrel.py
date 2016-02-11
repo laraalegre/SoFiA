@@ -133,7 +133,6 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
                 sys.stdout.flush()
 
 	while grow_kernel:
-                kernel*=float(negPerBin+kernelIter)/(negPerBin+kernelIter-1) 
 
 		################################
 		### EVALUATE N-d RELIABILITY ###
@@ -248,7 +247,7 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 
 		if delt[delt.shape[0]/2]>skellamTol or negPerBin+kernelIter==Nneg:
                         grow_kernel=0
-	                print '# Found good kernel:'
+	                print '# Found good kernel after %i kernel growth iterations:'%kernelIter
                         print kernel
                         sys.stdout.flush()
                 #elif: delt[delt.shape[0]/2]<deltOLD: grow_kernel=0
@@ -256,6 +255,8 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 			deltOLD=delt[delt.shape[0]/2]
 			#print deltOLD,'<',skellamTol; sys.stdout.flush()
 			kernelIter+=1
+                	kernel*=float(negPerBin+kernelIter)/(negPerBin+kernelIter-1) 
+
         deltplot=np.array(deltplot)
 
 	
