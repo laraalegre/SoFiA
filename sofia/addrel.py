@@ -114,12 +114,12 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 	if autoKernel:
 		#kernel=(pars[:,neg].max(axis=1)-pars[:,neg].min(axis=1))/(float(neg.sum())/negPerBin) # kernel from pars range
                 parcov=np.sqrt(np.cov(pars[:,neg]))
-                kernel=parcov/(float(Nneg)/negPerBin)     # kernel from covariance matrix
+                kernelIter=0.
+                kernel=parcov*(negPerBin+kernelIter)/Nneg     # kernel from covariance matrix
                 if not usecov: kernel=np.diag(np.diag(kernel)) # kernel from diagonal of covariance matrix
 	        grow_kernel=1 # set to 1 to start the kernel growing loop below; if autoKernel=0 will do just one pass
 	        deltOLD=-1e+9 # used to stop kernel growth if P-N stops moving closer to zero [NOT USED CURRENTLY]
                 deltplot=[]
-                kernelIter=0.
 	else: kernel,grow_kernel=np.identity(len(kernel))*np.array(kernel)**2,0
 
         if grow_kernel:
@@ -254,8 +254,8 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 		else:
 			deltOLD=delt[delt.shape[0]/2]
 			#print deltOLD,'<',skellamTol; sys.stdout.flush()
+                	kernel*=float(negPerBin+kernelIter+1)/(negPerBin+kernelIter) 
 			kernelIter+=1
-                	kernel*=float(negPerBin+kernelIter)/(negPerBin+kernelIter-1) 
 
         deltplot=np.array(deltplot)
 
