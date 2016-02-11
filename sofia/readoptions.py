@@ -117,6 +117,7 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "reliability.parSpace": "array", \
                  "reliability.logPars": "array", \
                  "reliability.autoKernel": "bool", \
+                 "reliability.usecov": "bool", \
                  "reliability.negPerBin": "float", \
                  "reliability.skellamTol": "float", \
                  "reliability.kernel": "array", \
