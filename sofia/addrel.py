@@ -44,6 +44,9 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 	neg=data[:,ftotCOL]<=0
 	Npos=pos.sum()
 	Nneg=neg.sum()
+
+        print Npos,Nneg
+        
 	if not Npos:
 		sys.stderr.write("ERROR: no positive sources found; cannot proceed.\n")
 		sys.exit(1)
@@ -113,13 +116,14 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
         #    to be consistent with the auto kernel above.
 	if autoKernel:
 		#kernel=(pars[:,neg].max(axis=1)-pars[:,neg].min(axis=1))/(float(neg.sum())/negPerBin) # kernel from pars range
-                parcov=np.sqrt(np.cov(pars[:,neg]))
+                parcov=np.cov(pars[:,neg])
                 kernelIter=0.
-                kernel=parcov*(negPerBin+kernelIter)/Nneg     # kernel from covariance matrix
-                if not usecov: kernel=np.diag(np.diag(kernel)) # kernel from diagonal of covariance matrix
+                kernel=parcov*(negPerBin+kernelIter)**2/Nneg**2     # kernel from covariance matrix
+                if not usecov: kernel=np.diag(np.diag(kernel))      # kernel from diagonal of covariance matrix
 	        grow_kernel=1 # set to 1 to start the kernel growing loop below; if autoKernel=0 will do just one pass
 	        deltOLD=-1e+9 # used to stop kernel growth if P-N stops moving closer to zero [NOT USED CURRENTLY]
                 deltplot=[]
+        	#fig0=plt.figure()
 	else: kernel,grow_kernel=np.identity(len(kernel))*np.array(kernel)**2,0
 
         if grow_kernel:
@@ -171,14 +175,17 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 		#############################
 
 		if docontour or dostats or doskellam:
-			# volume within which to calculate the 
-                        dV=(2*np.sqrt(np.linalg.eig(kernel)[0])).prod()
+			# volume within which to calculate the Nr of positive and negative sources from the density fields
+                        #dV=(2*np.sqrt(np.linalg.eig(kernel)[0])).prod()
 
 			# calculate the reliability at the location of positive sources
 			if verb: print '  from the density fields, calculating the reliability at the location of positive sources ...'
-			Nps=Np(pars[:,pos])*Npos
-			Nns=Nn(pars[:,pos])*Nneg
-			Rs=(Nps-Nns)/Nps
+
+			#Nps=Np(pars[:,pos])*Npos
+			#Nns=Nn(pars[:,pos])*Nneg
+                        Nps=np.array([Np.integrate_gaussian(pars[:,pos][:,jj],kernel)*Npos for jj in range(Npos)])
+                        Nns=np.array([Nn.integrate_gaussian(pars[:,pos][:,jj],kernel)*Nneg for jj in range(Npos)])
+                        Rs=(Nps-Nns)/Nps
 
 			# The reliability must be <=1. If not, something is wrong.
 			if Rs.max()>1:
@@ -186,30 +193,53 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 				sys.exit(1)
 
 			# calculate the number of positive and negative sources at the location of negative sources
-			nNps=Np(pars[:,neg])*Npos
-			nNns=Nn(pars[:,neg])*Nneg
+			#nNps=Np(pars[:,neg])*Npos
+			#nNns=Nn(pars[:,neg])*Nneg
+                        nNps=np.array([Np.integrate_gaussian(pars[:,neg][:,jj],kernel)*Npos for jj in range(Nneg)])
+                        nNns=np.array([Nn.integrate_gaussian(pars[:,neg][:,jj],kernel)*Nneg for jj in range(Nneg)])
+                        
+                        
+                        #print ' iteration',kernelIter
+                        #sys.stdout.flush()
 
+                        #print Nn.integrate_box(pars[:,0]-1e+9*np.sqrt(kernel.diagonal()),pars[:,0]+1e+9*np.sqrt(kernel.diagonal()))
+
+                        #nNnI_box=np.array([Nn.integrate_box(pars[:,neg][:,jj]-np.sqrt(kernel.diagonal()),pars[:,neg][:,jj]+np.sqrt(kernel.diagonal()))*Nneg for jj in range(Nneg)])
+                        #NpI_gau=np.array([Np.integrate_gaussian(pars[:,pos][:,jj],kernel)*Npos for jj in range(Npos)])
+                        #NnI_gau=np.array([Nn.integrate_gaussian(pars[:,pos][:,jj],kernel)*Nneg for jj in range(Npos)])
+
+		        #fig5=plt.figure()
+                        #plt.plot(Nps,np.array([Np.integrate_gaussian(pars[:,pos][:,jj],kernel)*Npos for jj in range(Npos)]),'b.')
+                        #plt.plot(Nns,np.array([Nn.integrate_gaussian(pars[:,pos][:,jj],kernel)*Nneg for jj in range(Npos)]),'r.')
+                        #plt.plot(nNps,np.array([Np.integrate_gaussian(pars[:,neg][:,jj],kernel)*Npos for jj in range(Nneg)]),'g.')
+                        #plt.plot(nNns,np.array([Nn.integrate_gaussian(pars[:,neg][:,jj],kernel)*Nneg for jj in range(Nneg)]),'y.')
+                        #plt.plot([-2,2],[-2,2],'k:')
+                        #plt.xlim(0.9,1)
+                        #plt.ylim(0.9,1)
+		        #fig5.savefig('volumes.pdf',rasterized=True)
+                        #exit()
+                        
 			# I have verified that the integral NpI is equal to 0.85*Nps for a variety of
 			# reasonable kernels, so I use 0.85*Nps as a proxy for NpI (same for Nns)
-			if verb:
-				# calculate the reliability at the location of negative sources
-				nRs=(nNps-nNns)/nNps
-				# calculate formal uncertainty of R at the location of positive and negative sources
-				dRs=np.sqrt(Nps*Nns*(Nps+Nns))/Nps**2/np.sqrt(dV*0.85)
-				dnRs=np.sqrt(nNps*nNns*(nNps+nNns))/nNps**2/np.sqrt(dV*0.85)
-				print '  multiplying by 0.85*dV to get a proxy of integral of density fields within a +/-1 sigma(kernel) box ...'
-				print '  source density at the location of positive sources (per +/-1 sigma(kernel) volume element):'
-				print '             positive: %3.1f - %3.1f'%(0.85*dV*Nps.min(),0.85*dV*Nps.max())
-				print '             negative: %3.1f - %3.1f'%(0.85*dV*Nns.min(),0.85*dV*Nns.max())
-				print '  positive + negative: %3.1f - %3.1f'%(0.85*dV*(Nps+Nns).min(),0.85*dV*(Nps+Nns).max())
+			#if verb:
+			#	# calculate the reliability at the location of negative sources
+			#	nRs=(nNps-nNns)/nNps
+			#	# calculate formal uncertainty of R at the location of positive and negative sources
+			#	dRs=np.sqrt(Nps*Nns*(Nps+Nns))/Nps**2/np.sqrt(dV*0.85)
+			#	dnRs=np.sqrt(nNps*nNns*(nNps+nNns))/nNps**2/np.sqrt(dV*0.85)
+			#	print '  multiplying by 0.85*dV to get a proxy of integral of density fields within a +/-1 sigma(kernel) box ...'
+			#	print '  source density at the location of positive sources (per +/-1 sigma(kernel) volume element):'
+			#	print '             positive: %3.1f - %3.1f'%(0.85*dV*Nps.min(),0.85*dV*Nps.max())
+			#	print '             negative: %3.1f - %3.1f'%(0.85*dV*Nns.min(),0.85*dV*Nns.max())
+			#	print '  positive + negative: %3.1f - %3.1f'%(0.85*dV*(Nps+Nns).min(),0.85*dV*(Nps+Nns).max())
 
-				print '  median error on R at location of negative sources: %.2f'%np.median(dnRs)
-				print '  R<0 at the location of %3i/%3i negative sources'%((nRs<0).sum(),nRs.shape[0])
-				print '  R<0 at the location of %3i/%3i negative sources within 1-sigma error bar'%(((nRs+1*dnRs)<0).sum(),nRs.shape[0])
+			#	print '  median error on R at location of negative sources: %.2f'%np.median(dnRs)
+			#	print '  R<0 at the location of %3i/%3i negative sources'%((nRs<0).sum(),nRs.shape[0])
+			#	print '  R<0 at the location of %3i/%3i negative sources within 1-sigma error bar'%(((nRs+1*dnRs)<0).sum(),nRs.shape[0])
 
-				print '  median error on R at location of positive sources: %.2f'%np.median(dRs)
-				print '  R<0 at the location of %3i/%3i positive sources'%((Rs<0).sum(),Rs.shape[0])
-				print '  R<0 at the location of %3i/%3i positive sources within 1-sigma error bar'%(((Rs+1*dRs)<0).sum(),Rs.shape[0])
+			#	print '  median error on R at location of positive sources: %.2f'%np.median(dRs)
+			#	print '  R<0 at the location of %3i/%3i positive sources'%((Rs<0).sum(),Rs.shape[0])
+			#	print '  R<0 at the location of %3i/%3i positive sources within 1-sigma error bar'%(((Rs+1*dRs)<0).sum(),Rs.shape[0])
 
 
 			# find pseudoreliable sources
@@ -220,32 +250,34 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 			# find reliable sources
 			# (taking maximum(Rs,0) in order to include objects with Rs<0 if threshold==0)
 			# Nmin is by default zero so the line below normally selects (np.maximum(Rs,0)>=threshold)*(ftot[pos].reshape(-1,)>fMin)
-			if 'snr_sum' in parSpace:
-				ftot = pars[parSpace.index('snr_sum')]
-			else:
-				ftot = np.log10(abs(data[:,ftotCOL]).reshape(-1,1))
-			reliable=(np.maximum(Rs,0)>=threshold)*((Nps+Nns)*0.85*dV>Nmin)*(ftot[pos].reshape(-1,)>fMin)
+
+			#reliable=(np.maximum(Rs,0)>=threshold)*((Nps+Nns)*0.85*dV>Nmin)*(ftot[pos].reshape(-1,)>fMin)
+			reliable=(np.maximum(Rs,0)>=threshold)*(data[pos,ftotCOL].reshape(-1,)>fMin)
 		
 			# calculate quantities needed for comparison to Skellam distribution
 			# multiplying by 0.85*dV to get a proxy of integral of density fields within a +/-1 sigma(kernel) box
-			delt=np.sort((nNps-nNns)/np.sqrt(nNps+nNns)*np.sqrt(0.85*dV))
 
-			if verb:
-				print '  negative sources found:'
-				print '    %20s: %4i'%('total',Nneg)
-				print '  positive sources found:'
-				print '    %20s: %4i'%('total',Npos),
-				print
-				print '                  R>%.2f: %4i'%(threshold,pseudoreliable.sum()),
-				print
-				print '     R>%.2f, N(3sig)>%3i: %4i'%(threshold,Nmin,reliable.sum()),
-				print
+			#delt=np.sort((nNps-nNns)/np.sqrt(nNps+nNns)*np.sqrt(0.85*dV))
+			delt=np.sort((nNps-nNns)/np.sqrt(nNps+nNns))
+
+			#if verb:
+			#	print '  negative sources found:'
+			#	print '    %20s: %4i'%('total',Nneg)
+			#	print '  positive sources found:'
+			#	print '    %20s: %4i'%('total',Npos),
+			#	print
+			#	print '                  R>%.2f: %4i'%(threshold,pseudoreliable.sum()),
+			#	print
+			#	print '     R>%.2f, N(3sig)>%3i: %4i'%(threshold,Nmin,reliable.sum()),
+			#	print
 
 		else: grow_kernel=0
 
+		#plt.plot(delt,np.arange(1,delt.shape[0]+1,1,dtype=float)/delt.shape[0],'r-',drawstyle='steps-post',color=(float(kernelIter)/Nneg,0,0))
+
                 deltplot.append([negPerBin+kernelIter,delt[delt.shape[0]/2]])
 
-		if delt[delt.shape[0]/2]>skellamTol or negPerBin+kernelIter==Nneg:
+		if delt[delt.shape[0]/2]>skellamTol or negPerBin+kernelIter>=Nneg:
                         grow_kernel=0
 	                print '# Found good kernel after %i kernel growth iterations:'%kernelIter
                         print kernel
@@ -254,7 +286,7 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 		else:
 			deltOLD=delt[delt.shape[0]/2]
 			#print deltOLD,'<',skellamTol; sys.stdout.flush()
-                	kernel*=float(negPerBin+kernelIter+1)/(negPerBin+kernelIter) 
+                	kernel*=float(negPerBin+kernelIter+1)**2/(negPerBin+kernelIter)**2 
 			kernelIter+=1
 
         deltplot=np.array(deltplot)
@@ -283,6 +315,8 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 		plt.xlabel('negPerBin')
 		plt.ylabel('delta')
                 plt.axhline(y=skellamTol,linestyle='--',color='r')
+                plt.axhline(y=float(Npos-Nneg)/np.sqrt(float(Npos+Nneg)),linestyle=':',color='k')
+                plt.ylim(-1,1)
 		fig3.savefig('%s_delt.pdf'%pdfoutname,rasterized=True)
 
 
