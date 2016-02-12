@@ -42,7 +42,7 @@ def writeMask(cube, header, dictionary, filename, compress, flagOverwrite):
       headerList.append(tmpString)
   for option in headerList:
     header.add_history(option)
-  if cube.max()<65535: cube=cube.astype('int16')
+  if cube.max()<32767: cube=cube.astype('int16')
   hdu = pyfits.PrimaryHDU(data=cube,header=header)
   hdu.header['bunit']='source_ID'
   hdu.header['datamin']=cube.min()
