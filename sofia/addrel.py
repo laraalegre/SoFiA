@@ -46,8 +46,6 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 	Npos=pos.sum()
 	Nneg=neg.sum()
 
-        print Npos,Nneg
-        
 	if not Npos:
 		sys.stderr.write("ERROR: no positive sources found; cannot proceed.\n")
 		sys.exit(1)
@@ -178,7 +176,7 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
                         deltmin=delt.min()
                         deltmax=delt.max()
 
-                        if deltmin!=deltmax and deltmed!=deltmin and deltmed!=deltmax and doskellam and makePlot:
+                        if deltmed/deltstd>-100 and doskellam and makePlot:
                                 plt.hist(delt/deltstd,bins=np.arange(deltmin/deltstd,max(5.1,deltmax/deltstd),0.01),cumulative=True,histtype='step',color=(min(1,float(negPerBin+kernelIter)/Nneg),0,0),normed=True)
                                 deltplot.append([negPerBin+kernelIter,deltmed/deltstd])
 
