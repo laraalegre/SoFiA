@@ -130,10 +130,10 @@ reliability.parSpace            =       ['n_pix','snr_sum','snr_max']
 reliability.logPars             =       [1,1,1]
 reliability.autoKernel          =       true
 reliability.usecov              =       false
-reliability.negPerBin           =       20.0
-reliability.skellamTol          =       -0.2
+reliability.negPerBin           =       1.0
+reliability.skellamTol          =       -0.5
 reliability.kernel              =       [0.15,0.05,0.1]
-reliability.fMin                =       0.0
+reliability.fMin                =       10.0
 reliability.threshold           =       0.9
 reliability.makePlot            =       false
 
