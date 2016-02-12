@@ -17,7 +17,7 @@ class gaussian_kde_set_covariance(stats.gaussian_kde):
 		self.inv_cov = np.linalg.inv(self.covariance)
 		self._norm_factor = np.sqrt(np.linalg.det(2*np.pi*self.covariance)) * self.n
 
-def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],logPars=[1,1,1],autoKernel=True,negPerBin=50,skellamTol=-0.2,kernel=[0.15,0.05,0.1],usecov=False,doscatter=1,docontour=1,doskellam=1,dostats=0,saverel=1,threshold=0.99,Nmin=0,dV=0.2,fMin=0,verb=0,makePlot=False,integral_mode='value'):
+def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],logPars=[1,1,1],autoKernel=True,negPerBin=1,skellamTol=-0.5,kernel=[0.15,0.05,0.1],usecov=False,doscatter=1,docontour=1,doskellam=1,dostats=0,saverel=1,threshold=0.99,fMin=0,verb=0,makePlot=False):
 
 	# matplotlib stuff
 	if makePlot:
@@ -25,6 +25,7 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 		# the following line is necessary to run SoFiA remotely
 		matplotlib.use('Agg')
 		import matplotlib.pyplot as plt
+
 
 	########################################
 	### BUILD ARRAY OF SOURCE PARAMETERS ###
@@ -81,7 +82,6 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 	### SET PARAMETERS TO WORK WITH AND GRIDDING/PLOTTNG FOR EACH ###
 	#################################################################
 
-
 	# axis labels when plotting
 	labs = []
 	for ii in range(0,len(parSpace)):
@@ -120,22 +120,20 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
                 kernelIter=0.
                 kernel=parcov*(negPerBin+kernelIter)**2/Nneg**2     # kernel from covariance matrix
                 if not usecov: kernel=np.diag(np.diag(kernel))      # kernel from diagonal of covariance matrix
-	        grow_kernel=1 # set to 1 to start the kernel growing loop below; if autoKernel=0 will do just one pass
 	        deltOLD=-1e+9 # used to stop kernel growth if P-N stops moving closer to zero [NOT USED CURRENTLY]
                 deltplot=[]
-        	fig0=plt.figure()
-	else: kernel,grow_kernel=np.identity(len(kernel))*np.array(kernel)**2,0
-
-        if grow_kernel:
 	        print '# Starting with (co-)variance kernel:'
                 print kernel
                 print '# Growing kernel...'
                 sys.stdout.flush()
-        else:
-	        print '# Using user-defined variance kernel:'
-                print kernel
+        	if doskellam and makePlot: fig0=plt.figure()
+	else:
+	        print '# Using user-defined variance kernel:' # NOTE THAT THE USER MUST GIVE THE VARIANCE, NOT SIGMA!
+                print np.array(kernel)
                 sys.stdout.flush()
+                kernel=np.identity(len(kernel))*np.array(kernel)
 
+	grow_kernel=1 # set to 1 to start the kernel growing loop below; if autoKernel=0 will do just one pass (i.e., will not grow the kernel)
 	while grow_kernel:
 
 		################################
@@ -147,96 +145,89 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 		Np=gaussian_kde_set_covariance(pars[:,pos],kernel)
 		Nn=gaussian_kde_set_covariance(pars[:,neg],kernel)
 
-		#############################
-		### PRINT STATS TO SCREEN ###
-		#############################
+		# calculate the number of positive and negative sources at the location of positive sources
+		Nps=Np(pars[:,pos])*Npos
+		Nns=Nn(pars[:,pos])*Nneg
 
-		if docontour or dostats or doskellam:
-
-			# calculate the number of positive and negative sources at the location of positive sources
-			Nps=Np(pars[:,pos])*Npos
-			Nns=Nn(pars[:,pos])*Nneg
-
-			# calculate the number of positive and negative sources at the location of negative sources
-			nNps=Np(pars[:,neg])*Npos
-			nNns=Nn(pars[:,neg])*Nneg
+		# calculate the number of positive and negative sources at the location of negative sources
+		nNps=Np(pars[:,neg])*Npos
+		nNns=Nn(pars[:,neg])*Nneg
                         
-			# calculate the reliability at the location of positive sources
-                        Rs=(Nps-Nns)/Nps
+		# calculate the reliability at the location of positive sources
+                Rs=(Nps-Nns)/Nps
 
-			# The reliability must be <=1. If not, something is wrong.
-			if Rs.max()>1:
-				sys.stderr.write("ERROR: maximum reliability larger than 1 -- something is wrong.\n")
-				sys.exit(1)
+		# The reliability must be <=1. If not, something is wrong.
+		if Rs.max()>1:
+			sys.stderr.write("ERROR: maximum reliability larger than 1 -- something is wrong.\n")
+			sys.exit(1)
 
-			# find pseudoreliable sources
-			# (taking maximum(Rs,0) in order to include objects with Rs<0 if threshold==0)
-			pseudoreliable=np.maximum(Rs,0)>=threshold
-			# these are called pseudoreliable because some objets may be discarded later based on additional criteria below
+		# find pseudoreliable sources
+		# (taking maximum(Rs,0) in order to include objects with Rs<0 if threshold==0)
+		pseudoreliable=np.maximum(Rs,0)>=threshold
+		# these are called pseudoreliable because some objets may be discarded later based on additional criteria below
 
-			# find reliable sources
-			# (taking maximum(Rs,0) in order to include objects with Rs<0 if threshold==0)
-			reliable=(np.maximum(Rs,0)>=threshold)*(data[pos,ftotCOL].reshape(-1,)>fMin)
+		# find reliable sources
+		# (taking maximum(Rs,0) in order to include objects with Rs<0 if threshold==0)
+		reliable=(np.maximum(Rs,0)>=threshold)*(data[pos,ftotCOL].reshape(-1,)>fMin)
 		
-			# calculate quantities needed for comparison to Skellam distribution
+                if autoKernel:
+		        # calculate quantities needed for comparison to Skellam distribution
 			delt=(nNps-nNns)/np.sqrt(nNps+nNns)
-                        deltstd=np.std(delt)
+                        deltstd=delt.std()
                         deltmed=np.median(delt)
+                        deltmin=delt.min()
+                        deltmax=delt.max()
+
+                        if deltmin!=deltmax and deltmed!=deltmin and deltmed!=deltmax and doskellam and makePlot:
+                                plt.hist(delt/deltstd,bins=np.arange(deltmin/deltstd,max(5.1,deltmax/deltstd),0.01),cumulative=True,histtype='step',color=(min(1,float(negPerBin+kernelIter)/Nneg),0,0),normed=True)
+                                deltplot.append([negPerBin+kernelIter,deltmed/deltstd])
+
+                        print ' iteration, median, width, median/width = %3i, %9.2e, %9.2e, %9.2e'%(kernelIter,deltmed,deltstd,deltmed/deltstd)
+                        sys.stdout.flush()
+
+		        if deltmed/deltstd>skellamTol or negPerBin+kernelIter>=Nneg:
+                                grow_kernel=0
+	                        print '# Found good kernel after %i kernel growth iterations:'%kernelIter
+                                print kernel
+                                sys.stdout.flush()
+                        elif deltmed/deltstd<5*skellamTol:
+                	        kernel*=float(negPerBin+kernelIter+20)**2/(negPerBin+kernelIter)**2 
+			        kernelIter+=20
+                        elif deltmed/deltstd<2*skellamTol:
+                	        kernel*=float(negPerBin+kernelIter+10)**2/(negPerBin+kernelIter)**2 
+			        kernelIter+=10
+                        elif deltmed/deltstd<1.5*skellamTol:
+                	        kernel*=float(negPerBin+kernelIter+3)**2/(negPerBin+kernelIter)**2 
+			        kernelIter+=3
+		        else:
+                	        kernel*=float(negPerBin+kernelIter+1)**2/(negPerBin+kernelIter)**2 
+			        kernelIter+=1
 
 		else: grow_kernel=0
-
-                if not kernelIter:
-                        plt.hist(delt/deltstd,bins=np.arange(-1,1,0.001),cumulative=True,histtype='step',color='0.5',normed=True)
-                print ' iteration, median, width, median/width = %3i, %8.3f, %8.3f, %8.3f'%(kernelIter,deltmed,deltstd,deltmed/deltstd)
-                sys.stdout.flush()
-                deltplot.append([negPerBin+kernelIter,deltmed/deltstd])
-
-		if deltmed/deltstd>skellamTol or negPerBin+kernelIter>=Nneg:
-                        grow_kernel=0
-	                print '# Found good kernel after %i kernel growth iterations:'%kernelIter
-                        print kernel
-                        sys.stdout.flush()
-                elif deltmed/deltstd<5*skellamTol:
-                	kernel*=float(negPerBin+kernelIter+20)**2/(negPerBin+kernelIter)**2 
-			kernelIter+=20
-                elif deltmed/deltstd<2*skellamTol:
-                	kernel*=float(negPerBin+kernelIter+10)**2/(negPerBin+kernelIter)**2 
-			kernelIter+=10
-                elif deltmed/deltstd<1.5*skellamTol:
-                	kernel*=float(negPerBin+kernelIter+3)**2/(negPerBin+kernelIter)**2 
-			kernelIter+=3
-		else:
-                	kernel*=float(negPerBin+kernelIter+1)**2/(negPerBin+kernelIter)**2 
-			kernelIter+=1
-
-        deltplot=np.array(deltplot)
 
 	
 	####################
 	### SKELLAM PLOT ###
 	####################
 
-	if doskellam and makePlot:
-		#fig0=plt.figure()
+	if autoKernel and doskellam and makePlot:
 		plt.plot(np.arange(-10,10,0.01),stats.norm().cdf(np.arange(-10,10,0.01)),'k-')
 		plt.plot(np.arange(-10,10,0.01),stats.norm(scale=0.4).cdf(np.arange(-10,10,0.01)),'k:')
-		plt.legend(('Gaussian (sigma=1)','Gaussian (sigma=0.4)'),loc='upper left',prop={'size':13})
-                plt.hist(delt/deltstd,bins=np.arange(-1,1,0.001),cumulative=True,histtype='step',color='r',normed=True)
-		plt.xlim(-1,1)
+		plt.legend(('Gaussian (sigma=1)','Gaussian (sigma=0.4)'),loc='lower right',prop={'size':13})
+                plt.hist(delt/deltstd,bins=np.arange(deltmin/deltstd,max(5.1,deltmax/deltstd),0.01),cumulative=True,histtype='step',color='r',normed=True)
+		plt.xlim(-5,5)
 		plt.ylim(0,1)
 		plt.xlabel('(P-N)/sqrt(N+P)')
 		plt.ylabel('cumulative distribution')
 		plt.plot([0,0],[0,1],'k--')
-		#plt.title('sigma(kde) = %.3f, %.3f, %.3f'%(kernel[0],kernel[1],kernel[2]),fontsize=20)
 		fig0.savefig('%s_skel.pdf'%pdfoutname,rasterized=True)
 
                 fig3=plt.figure()
+                deltplot=np.array(deltplot)
                 plt.plot(deltplot[:,0],deltplot[:,1],'ko-')
-		plt.xlabel('negPerBin')
-		plt.ylabel('delta')
+		plt.xlabel('kernel size (1D-sigma, aribtrary units)')
+		plt.ylabel('median/std of (P-N)/sqrt(P+N)')
                 plt.axhline(y=skellamTol,linestyle='--',color='r')
-                #plt.axhline(y=float(Npos-Nneg)/np.sqrt(float(Npos+Nneg)),linestyle=':',color='k')
-                #plt.ylim(-1,1)
 		fig3.savefig('%s_delt.pdf'%pdfoutname,rasterized=True)
 
 
@@ -261,6 +252,7 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 			plt.xlabel(labs[p1])
 			plt.ylabel(labs[p2])
 		fig1.savefig('%s_scat.pdf'%pdfoutname,rasterized=True)
+
 
 	#####################
 	### PLOT CONTOURS ###
@@ -310,9 +302,10 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 			plt.ylabel(labs[p2])
 		fig2.savefig('%s_cont.pdf'%pdfoutname,rasterized=True)
 
-	###############################
-	### ADD Np and Nn TO TABLES ###
-	###############################
+
+	#################################
+	### ADD Np, Nn AND R TO TABLE ###
+	#################################
 
 	# this allows me not to calculate R everytime I want to do
 	# some plot analysis, but just read it from the file
