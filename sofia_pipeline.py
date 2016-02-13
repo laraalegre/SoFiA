@@ -292,8 +292,7 @@ if Parameters['steps']['doDebug'] and NRdet:
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Writing all-source mask cube for debugging ---"
 	sys.stdout.flush()
-	#writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_all.fits'%outroot,Parameters['writeCat']['compress'])
-
+	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_all.fits'%outroot,Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
 
 
 # ----------------------------------------------------
