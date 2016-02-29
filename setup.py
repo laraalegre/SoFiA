@@ -10,6 +10,9 @@ import warnings
 
 from sofia import __version__ as version
 
+# compile the gui?
+compile_gui = True
+
 # Dependency checking
 dependencies = [['numpy', '1.8'], ['scipy', None]]
 
@@ -165,21 +168,22 @@ print cwd + '/sofia_pipeline.py'
 print os.environ['SOFIA_PIPELINE_PATH']
 
 # compile the SoFiA gui
-os.chdir('gui')
-os.system('qmake; make')
-if sys.platform == 'darwin':
-    os.chmod(
-        'SoFiA.app/Contents/MacOS/SoFiA',
-        os.stat('SoFiA.app/Contents/MacOS/SoFiA').st_mode | stat.S_IXUSR
-        )
-    sofiaApplicationPath = cwd + '/gui/SoFiA.app/Contents/MacOS'
-else:
-    os.chmod(
-        'SoFiA',
-        os.stat('SoFiA').st_mode | stat.S_IXUSR
-        )
-    sofiaApplicationPath = cwd + '/gui'
-os.chdir('../')
+if compile_gui:
+    os.chdir('gui')
+    os.system('qmake; make')
+    if sys.platform == 'darwin':
+        os.chmod(
+            'SoFiA.app/Contents/MacOS/SoFiA',
+            os.stat('SoFiA.app/Contents/MacOS/SoFiA').st_mode | stat.S_IXUSR
+            )
+        sofiaApplicationPath = cwd + '/gui/SoFiA.app/Contents/MacOS'
+    else:
+        os.chmod(
+            'SoFiA',
+            os.stat('SoFiA').st_mode | stat.S_IXUSR
+            )
+        sofiaApplicationPath = cwd + '/gui'
+    os.chdir('../')
 
 print '\n'
 print '-------------------------------------------------------------------------'
@@ -190,11 +194,11 @@ print 'Please add the following lines to your shell configuration file:'
 print '  for bash (~/.bashrc)'
 print '      export SOFIA_MODULE_PATH=' + sofiaModulesPath
 print '      export SOFIA_PIPELINE_PATH="' + cwd + '/sofia_pipeline.py"'
-print '      export PATH=$PATH:' + sofiaApplicationPath + ':' + cwd
+if compile_gui: print '      export PATH=$PATH:' + sofiaApplicationPath + ':' + cwd
 print '  for (t)csh (~/.cshrc)'
 print '      setenv SOFIA_MODULE_PATH ' + sofiaModulesPath
 print '      setenv SOFIA_PIPELINE_PATH "' + cwd + '/sofia_pipeline.py"'
-print '      setenv PATH {$PATH}:' + sofiaApplicationPath + ':' + cwd
+if compile_gui: print '      setenv PATH {$PATH}:' + sofiaApplicationPath + ':' + cwd
 print '\n'
 
 ## test sofia installation
