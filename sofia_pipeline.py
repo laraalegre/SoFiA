@@ -272,15 +272,17 @@ if Parameters['steps']['doMerge'] and NRdet:
 	if not objects:
 		sys.stderr.write("WARNING: No objects remain after merging. Exiting pipeline.\n")
 		sys.exit()
+        objects=np.array(objects)
+        objects=list(np.concatenate((objects,abs(objects[:,12:13]-objects[:,11:12])+1),axis=1))
 	print 'Merging complete'
 	print
 	NRdet = len(objects)
 	# set catalog header	
 	if 'bunit' in dict_Header: dunits=dict_Header['bunit']
 	else: dunits='-'
-	catParNames = ('id','x_geo','y_geo','z_geo','x','y','z','x_min','x_max','y_min','y_max','z_min','z_max','n_pix','snr_min','snr_max','snr_sum','x_p','y_p','z_p','x_n','y_n','z_n','snr_sum_p','snr_sum_n','snr_mean','snr_std','snr_rms','w20','w50','w20_cfd','w50_cfd')
-	catParUnits = ('-','pix','pix','chan','pix','pix','chan','pix','pix','pix','pix','chan','chan','-','-','-','-','pix','pix','chan','pix','pix','chan','-','-','-','-','-','chan','chan','chan','chan')
-	catParFormt = ('%10i', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%7i', '%7i', '%7i', '%7i', '%7i', '%7i', '%8i', '%12.3e', '%12.3e', '%12.3e','%10.3f','%10.3f','%10.3f','%10.3f','%10.3f','%10.3f','%12.3e','%12.3e','%12.3e','%12.3e','%12.3e','%10.3f','%10.3f','%10.3f','%10.3f')
+	catParNames = ('id','x_geo','y_geo','z_geo','x','y','z','x_min','x_max','y_min','y_max','z_min','z_max','n_pix','snr_min','snr_max','snr_sum','x_p','y_p','z_p','x_n','y_n','z_n','snr_sum_p','snr_sum_n','snr_mean','snr_std','snr_rms','w20','w50','w20_cfd','w50_cfd','n_chan')
+	catParUnits = ('-','pix','pix','chan','pix','pix','chan','pix','pix','pix','pix','chan','chan','-','-','-','-','pix','pix','chan','pix','pix','chan','-','-','-','-','-','chan','chan','chan','chan','chan')
+	catParFormt = ('%10i', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%7i', '%7i', '%7i', '%7i', '%7i', '%7i', '%8i', '%12.3e', '%12.3e', '%12.3e','%10.3f','%10.3f','%10.3f','%10.3f','%10.3f','%10.3f','%12.3e','%12.3e','%12.3e','%12.3e','%12.3e','%10.3f','%10.3f','%10.3f','%10.3f','%7i')
 
 
 
