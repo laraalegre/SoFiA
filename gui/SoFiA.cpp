@@ -997,7 +997,7 @@ void SoFiA::updateFields()
 	tabOutFilterFieldFintMax->setEnabled(tabOutFilterButtonFint->isChecked());
 	
 	// Disable kernel size field if autoKernel is selected:
-	tabParametrisationFieldRelKernel->setEnabled(not tabParametrisationButtonAutoKernel->isChecked());
+	//tabParametrisationFieldRelKernel->setEnabled(not tabParametrisationButtonAutoKernel->isChecked());
 	
 	// Ensure that reliability range is within 0 and 1:
 	n = tabParametrisationFieldRelMin->text().toDouble();
@@ -2553,34 +2553,17 @@ void SoFiA::createInterface()
 	tabParametrisationFieldRelMin->setMaxLength(10);
 	connect(tabParametrisationFieldRelMin, SIGNAL(editingFinished()), this, SLOT(updateFields()));
 	connect(tabParametrisationFieldRelMin, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
-	//tabParametrisationFieldRelMax = new QLineEdit(tabParametrisationGroupBox2);
-	//tabParametrisationFieldRelMax->setObjectName("reliability.thresholdMax");
-	//tabParametrisationFieldRelMax->setMaximumWidth(100);
-	//tabParametrisationFieldRelMax->setMaxLength(10);
-	//tabParametrisationFieldRelMax->setEnabled(false);
-	//tabParametrisationFieldRelMax->setText("1.0");
-	//QLabel *labelRel   = new QLabel(QString::fromUtf8("–"), tabParametrisationGroupBox2);
 	
-	//tabParametrisationWidgetRel = new QWidget(tabParametrisationGroupBox2);
-	//tabParametrisationWidgetRel->setToolTip("Reliability cutoff for output catalogue");
-	//tabParametrisationLayoutRel = new QHBoxLayout;
-	//tabParametrisationLayoutRel->addWidget(tabParametrisationFieldRelMin);
-	//tabParametrisationLayoutRel->addWidget(labelRel);
-	//tabParametrisationLayoutRel->addWidget(tabParametrisationFieldRelMax);
-	//tabParametrisationLayoutRel->addStretch();
-	//tabParametrisationLayoutRel->setContentsMargins(0, 0, 0, 0);
-	//tabParametrisationWidgetRel->setLayout(tabParametrisationLayoutRel);
+	//tabParametrisationFieldRelKernel = new QLineEdit(tabParametrisationGroupBox2);
+	//tabParametrisationFieldRelKernel->setObjectName("reliability.kernel");
+	//connect(tabParametrisationFieldRelKernel, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
 	
-	tabParametrisationFieldRelKernel = new QLineEdit(tabParametrisationGroupBox2);
-	tabParametrisationFieldRelKernel->setObjectName("reliability.kernel");
-	connect(tabParametrisationFieldRelKernel, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
-	
-	tabParametrisationButtonAutoKernel = new QCheckBox(tr("Automatically determine optimal kernel size "), tabParametrisationGroupBox1);
-	tabParametrisationButtonAutoKernel->setObjectName("reliability.autoKernel");
-	tabParametrisationButtonAutoKernel->setEnabled(true);
-	tabParametrisationButtonAutoKernel->setChecked(false);
-	connect(tabParametrisationButtonAutoKernel, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	connect(tabParametrisationButtonAutoKernel, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
+	//tabParametrisationButtonAutoKernel = new QCheckBox(tr("Automatically determine optimal kernel size "), tabParametrisationGroupBox1);
+	//tabParametrisationButtonAutoKernel->setObjectName("reliability.autoKernel");
+	//tabParametrisationButtonAutoKernel->setEnabled(true);
+	//tabParametrisationButtonAutoKernel->setChecked(false);
+	//connect(tabParametrisationButtonAutoKernel, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	//connect(tabParametrisationButtonAutoKernel, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	
 	tabParametrisationButtonRelPlot = new QCheckBox(tr("Enable "), tabParametrisationGroupBox1);
 	tabParametrisationButtonRelPlot->setObjectName("reliability.makePlot");
@@ -2589,8 +2572,8 @@ void SoFiA::createInterface()
 	connect(tabParametrisationButtonRelPlot, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
 	tabParametrisationForm2->addRow(tr("Threshold:"), tabParametrisationFieldRelMin);
-	tabParametrisationForm2->addRow(tr("Kernel:"), tabParametrisationFieldRelKernel);
-	tabParametrisationForm2->addRow(tr(""), tabParametrisationButtonAutoKernel);
+	//tabParametrisationForm2->addRow(tr("Kernel:"), tabParametrisationFieldRelKernel);
+	//tabParametrisationForm2->addRow(tr(""), tabParametrisationButtonAutoKernel);
 	tabParametrisationForm2->addRow(tr("Diagnostic plot:"), tabParametrisationButtonRelPlot);
 	tabParametrisationForm2->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 	tabParametrisationGroupBox2->setLayout(tabParametrisationForm2);
@@ -3503,9 +3486,9 @@ void SoFiA::createWhatsThis()
 	tabParametrisationButtonDilateMask->setWhatsThis(tr("<h3>parameters.dilateMask</h3><p>Run the mask optimisation algorithm based on spatially <b>dilating</b> the initial mask to achieve more accurate flux measurements.</p>"));
 	tabParametrisationButtonBusyFunction->setWhatsThis(tr("<h3>parameters.fitBusyFunction</h3><p>Fit the Busy Function (<a href=\"http://adsabs.harvard.edu/abs/2014MNRAS.438.1176W\">Westmeier et al. 2014</a>) to the integrated spectrum for more accurate parameterisation.</p>"));
 	tabParametrisationButtonMaskOpt->setWhatsThis(tr("<h3>parameters.optimiseMask</h3><p>Run the mask optimisation algorithm based on fitting and <b>growing</b> ellipses to achieve more accurate flux measurements.</p>"));
-	tabParametrisationButtonAutoKernel->setWhatsThis(tr("<h3>reliability.autoKernel</h3><p>This parameter controls whether the kernel size to be used for reliability calculation should be determined automatically (<strong>true</strong>) or manually (<strong>false</strong>). Default is true.</p>"));
-	tabParametrisationFieldRelKernel->setWhatsThis(tr("<h3>reliability.kernel</h3><p>Size of 3D smoothing kernel in log(parameter) space (see <b>reliability.parSpace</b>).</p>"));
-	tabParametrisationButtonRelPlot->setWhatsThis(tr("<h3>reliability.makePlot</h3><p>If set to <b>true</b>, a PDF file showing the distribution of positive and negative detections in parameter space will be created for diagnostic purposes.</p>"));
+	//tabParametrisationButtonAutoKernel->setWhatsThis(tr("<h3>reliability.autoKernel</h3><p>This parameter controls whether the kernel size to be used for reliability calculation should be determined automatically (<strong>true</strong>) or manually (<strong>false</strong>). Default is true.</p>"));
+	//tabParametrisationFieldRelKernel->setWhatsThis(tr("<h3>reliability.kernel</h3><p>Size of 3D smoothing kernel in log(parameter) space (see <b>reliability.parSpace</b>).</p>"));
+	tabParametrisationButtonRelPlot->setWhatsThis(tr("<h3>reliability.makePlot</h3><p>If set to <b>true</b>, PDF files showing the distribution of positive and negative detections in parameter space will be created for diagnostic purposes.</p>"));
 	tabParametrisationFieldRelMin->setWhatsThis(tr("<h3>reliability.threshold</h3><p>Discard sources whose reliability is below this threshold.</p>"));
 	tabInFilterFieldEdgeX->setWhatsThis(tr("<h3>scaleNoise.edgeX</h3><p>Size of edge (in pixels) to be excluded in first coordinate.</p>"));
 	tabInFilterFieldEdgeY->setWhatsThis(tr("<h3>scaleNoise.edgeY</h3><p>Size of edge (in pixels) to be excluded in second coordinate.</p>"));

@@ -416,11 +416,9 @@ private:
 	QFormLayout  *tabParametrisationForm2;
 	QLineEdit    *tabParametrisationFieldRelMin;
 	//QLineEdit    *tabParametrisationFieldRelMax;
-	QLineEdit    *tabParametrisationFieldRelKernel;
-	QCheckBox    *tabParametrisationButtonAutoKernel;
+	//QLineEdit    *tabParametrisationFieldRelKernel;
+	//QCheckBox    *tabParametrisationButtonAutoKernel;
 	QCheckBox    *tabParametrisationButtonRelPlot;
-	//QHBoxLayout  *tabParametrisationLayoutRel;
-	//QWidget      *tabParametrisationWidgetRel;
 	
 	QHBoxLayout  *tabParametrisationLayoutControls;
 	QWidget      *tabParametrisationWidgetControls;
