@@ -1,7 +1,7 @@
 /// ____________________________________________________________________ ///
 ///                                                                      ///
 /// SoFiA 0.5.0 (SoFiA.h) - Source Finding Application                   ///
-/// Copyright (C) 2013-2015 Tobias Westmeier                             ///
+/// Copyright (C) 2013-2016 Tobias Westmeier                             ///
 /// ____________________________________________________________________ ///
 ///                                                                      ///
 /// Address:  Tobias Westmeier                                           ///
