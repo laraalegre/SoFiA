@@ -196,6 +196,8 @@ class object_props {
   void ReInit_mini();
   void ReInit_size();
 
+  int Get_LoScount();
+
   // define operators that make sense for this type of object
   object_props & operator = (const object_props & copied);
 
@@ -387,6 +389,8 @@ public:
   void ReInit_srep();
   void ReInit_mini();
   void ReInit_size();
+
+  int Get_LoScount();
 
   // define operators that make sense for this type of object
   object_props_dbl & operator = (const object_props_dbl & copied);

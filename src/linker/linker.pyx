@@ -90,7 +90,10 @@ cdef extern from "RJJ_ObjGen.h":
 		int Get_srep_grid(int index)
 		int Get_srep_strings(int index)
 
-def link_objects(data, mask, radiusX = 0, radiusY = 0, radiusZ = 0, minSizeX = 1, minSizeY = 1, minSizeZ = 1, min_LOS = 1):
+		# number of lines of sight that this object extends over
+		int Get_LoScount()
+
+def link_objects(data, objects, mask, radiusX = 0, radiusY = 0, radiusZ = 0, minSizeX = 1, minSizeY = 1, minSizeZ = 1, min_LOS = 1):
 	"""
 	Given a data cube and a binary mask, create a labeled version of the mask.
 	In addition, close groups of objects can be linked together, so they have the same label.
@@ -102,6 +105,9 @@ def link_objects(data, mask, radiusX = 0, radiusY = 0, radiusZ = 0, minSizeX = 1
 	data : array
 		The data
 	
+	objects: array
+		The existing list of objects which will have new detections appended to it
+
 	mask : array
 		The binary mask
 		
@@ -135,15 +141,19 @@ def link_objects(data, mask, radiusX = 0, radiusY = 0, radiusZ = 0, minSizeX = 1
 	mask : array
 		The labeled and linked integer mask
 	"""
-	return _link_objects(data.astype(np.single, copy = False), mask.astype(np.int_, copy = False), radiusX, radiusY, radiusZ, minSizeX, minSizeY, minSizeZ, min_LOS)
+	try:
+		objects
+	except:
+		objects = []
+	return _link_objects(data.astype(np.single, copy = False), objects, mask.astype(np.int_, copy = False), radiusX, radiusY, radiusZ, minSizeX, minSizeY, minSizeZ, min_LOS)
 
-cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, np.ndarray[dtype = long int, ndim = 3] mask,
+cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, objects, np.ndarray[dtype = long int, ndim = 3] mask,
 				   int radiusX = 3, int radiusY = 3, int radiusZ = 5,
 				   int minSizeX = 1, int minSizeY = 1, int minSizeZ = 1,
 				   int min_LOS = 1):
 		
 	cdef int i, x, y, z, g, g_start, g_end
-	cdef int obj_id = 0
+	cdef long int obj_id = objects.shape[0]
 	cdef int obj_batch
 	
 	cdef int size_x = data.shape[2]
@@ -202,7 +212,7 @@ cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, np.ndarray[dtype = 
 	CreateMetric(data_metric, xyz_order, size_x, size_y, size_z)
 		
 	# Create and threshold objects
-	NOobj = CreateObjects(<float *> data.data, <long int *> mask.data, size_x, size_y, size_z, chunk_x_start, chunk_y_start, chunk_z_start, radiusX, radiusY, radiusZ, minSizeX, minSizeY, minSizeZ, min_v_size, intens_thresh_min, intens_thresh_max, flag_val, 0, detections, obj_ids, check_obj_ids, obj_limit, size_x, size_y, size_z, ss_mode, data_metric, xyz_order)
+	NOobj = CreateObjects(<float *> data.data, <long int *> mask.data, size_x, size_y, size_z, chunk_x_start, chunk_y_start, chunk_z_start, radiusX, radiusY, radiusZ, minSizeX, minSizeY, minSizeZ, min_v_size, intens_thresh_min, intens_thresh_max, flag_val, obj_id, detections, obj_ids, check_obj_ids, obj_limit, size_x, size_y, size_z, ss_mode, data_metric, xyz_order)
 	ThresholdObjs(detections, NOobj, obj_limit, minSizeX, minSizeY, minSizeZ, min_v_size, intens_thresh_min, intens_thresh_max, min_LOS)
 
 	# Reset output mask
@@ -211,9 +221,7 @@ cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, np.ndarray[dtype = 
 			for x in range(size_x):
 				mask[z,y,x] = 0
 	
-	# Create Python list `objects' from C++ vector `detections' and re-label mask with final, sequential IDs
-	objects = []
-		
+	# Create Python list `objects' from C++ vector `detections' and re-label mask with final, sequential IDs		
 	for i in range(NOobj):		
 		
 		# calculate batch number for this object --- which group of objects does it belong to
@@ -281,7 +289,15 @@ cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, np.ndarray[dtype = 
 			# C.F.D. W20 and C.F.D. W50
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].Get_cw20_max() - detections[obj_batch][i - (obj_batch * obj_limit)].Get_cw20_min())
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].Get_cw50_max() - detections[obj_batch][i - (obj_batch * obj_limit)].Get_cw50_min())
+
+			# the sizes of the bounding box
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetRAmax() - detections[obj_batch][i - (obj_batch * obj_limit)].GetRAmin() + 1);
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetDECmax() - detections[obj_batch][i - (obj_batch * obj_limit)].GetDECmin() + 1);
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetFREQmax() - detections[obj_batch][i - (obj_batch * obj_limit)].GetFREQmin() + 1);
 		
+			# the number of lines of sight that the object covers
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].Get_LoScount());
+
 			objects.append(obj)
 			
 			for y in range(detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_size(2), detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_size(3) + 1):

@@ -1809,6 +1809,20 @@ void object_props::AddObject(object_props & merged,vector<int> & temp_sparse_rep
 
 }
 
+int object_props::Get_LoScount(){
+
+  int i,j = 0;
+  
+  for(i = 0; i < ((this->Get_srep_size(1) - this->Get_srep_size(0) + 1) * (this->Get_srep_size(3) - this->Get_srep_size(2) + 1)); ++i){
+    
+    if(this->Get_srep_grid((i + 1)) > this->Get_srep_grid(i)){ ++j; }
+    
+  }
+  
+  return j;
+
+}
+
 // member definitions for double precision class definition
 
 object_props_dbl::object_props_dbl(){ 
@@ -3612,6 +3626,20 @@ void object_props_dbl::AddObject(object_props_dbl & merged,vector<int> & temp_sp
   
     // if(this != &merged)
   }
+
+}
+
+int object_props_dbl::Get_LoScount(){
+
+  int i,j = 0;
+  
+  for(i = 0; i < ((this->Get_srep_size(1) - this->Get_srep_size(0) + 1) * (this->Get_srep_size(3) - this->Get_srep_size(2) + 1)); ++i){
+    
+    if(this->Get_srep_grid((i + 1)) > this->Get_srep_grid(i)){ ++j; }
+    
+  }
+  
+  return j;
 
 }
 
