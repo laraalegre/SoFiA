@@ -71,6 +71,8 @@ folder where the downloaded file was saved. Then follow the steps below.
 3. Compile and install the SoFiA pipeline and user interface
 
    > python setup.py build --force
+   
+   (add --no-gui=True if you do not want to compile the GUI)
 
 4. Set up environment variables
 
