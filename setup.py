@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from distutils.core import setup, Extension
 from distutils.version import StrictVersion, LooseVersion
+import distutils.command.build
 
 import sys
 import os
@@ -34,6 +35,24 @@ for (pkg, minversion) in dependencies:
         print 'Package', pkg, 'has version', m.__version__
         print 'Version', minversion, 'required.'
         sys.exit(1)
+
+class build(distutils.command.build.build):
+
+    user_options = distutils.command.build.build.user_options + [
+        ('no-gui=', None,
+        'specify if you want the gui to be built'),
+        ]
+
+    def initialize_options(self, *args, **kwargs):
+        self.no_gui = False
+        distutils.command.build.build.initialize_options(self, *args, **kwargs)
+
+    def run(self, *args, **kwargs):
+        global nogui
+        nogui = self.no_gui
+        distutils.command.build.build.run(self, *args, **kwargs)
+
+
 
 import numpy
 
@@ -150,7 +169,10 @@ setup(
             )
         ],
     package_dir={'sofia': 'sofia'},
-    packages=['sofia']  #,"cfitsio", "wcs"
+    packages=['sofia'],  #,"cfitsio", "wcs"
+    cmdclass={
+        'build': build,
+    },
     )
 
 # make sofia_pipeline.py executable
@@ -168,6 +190,9 @@ print cwd + '/sofia_pipeline.py'
 print os.environ['SOFIA_PIPELINE_PATH']
 
 # compile the SoFiA gui
+if nogui=='True': compile_gui = False
+else: compile_gui = True
+
 if compile_gui:
     os.chdir('gui')
     os.system('qmake; make')
