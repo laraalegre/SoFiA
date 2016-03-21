@@ -641,8 +641,7 @@ int Parametrization::writeParameters()
 	source->setParameter("f_wm50",  meanFluxWm50);
 	source->setParameter("f_peak",  peakFlux);
 	source->setParameter("f_int",   totalFlux);
-	// WARNING: snr_int temporarily disabled until correction for correlated pixels is implemented!
-	//source->setParameter("snr_int", intSNR);
+	source->setParameter("snr_int", intSNR);
 	
 	source->setParameter("ell_maj", ellMaj);
 	source->setParameter("ell_min", ellMin);
