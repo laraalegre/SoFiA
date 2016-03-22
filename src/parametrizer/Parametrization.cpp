@@ -360,9 +360,9 @@ int Parametrization::fitEllipse()
 	ellMin = sqrt(2.0 * (momX + momY - sqrt((momX - momY) * (momX - momY) + 4.0 * momXY * momXY)));
 	
 	// WARNING: Converting PA from rad to deg:
-	ellPA *= 180.0 / MATH_CONST_PI;
+	ellPA *= 180.0 / M_PI;
 	
-	// WARNING: Adding 90° to PA here, because astronomers like to have 0° corresponding to north.
+	// WARNING: Adding 90° to PA here, because astronomers like to have 0° pointing up.
 	//          This means that PA will no longer have the mathematically correct orientation!
 	ellPA += 90.0;
 	
