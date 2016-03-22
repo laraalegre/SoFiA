@@ -14,6 +14,8 @@ Parametrization::Parametrization()
 	maskCube = 0;
 	source   = 0;
 	
+	noiseSubCube         = 0.0;
+	
 	centroidX            = 0.0;
 	centroidY            = 0.0;
 	centroidZ            = 0.0;
@@ -24,6 +26,11 @@ Parametrization::Parametrization()
 	peakFlux             = 0.0;
 	totalFlux            = 0.0;
 	intSNR               = 0.0;
+	ellMaj               = 0.0;
+	ellMin               = 0.0;
+	ellPA                = 0.0;
+	kinematicPA          = 0.0;
+	
 	busyFitSuccess       = 0;
 	busyFunctionChi2     = 0.0;
 	busyFunctionCentroid = 0.0;
@@ -31,8 +38,6 @@ Parametrization::Parametrization()
 	busyFunctionW50      = 0.0;
 	busyFunctionFpeak    = 0.0;
 	busyFunctionFint     = 0.0;
-	
-	noiseSubCube         = 0.0;
 	
 	for(size_t i = 0; i < BUSYFIT_FREE_PARAM; i++)
 	{
@@ -264,10 +269,10 @@ int Parametrization::measureCentroid()
 	{
 		if(data[i].value > 0.0)        // NOTE: Only positive pixels considered here!
 		{
-			centroidX += data[i].value * data[i].x;
-			centroidY += data[i].value * data[i].y;
-			centroidZ += data[i].value * data[i].z;
-			sum       += data[i].value;
+			centroidX += static_cast<double>(data[i].value) * static_cast<double>(data[i].x);
+			centroidY += static_cast<double>(data[i].value) * static_cast<double>(data[i].y);
+			centroidZ += static_cast<double>(data[i].value) * static_cast<double>(data[i].z);
+			sum       += static_cast<double>(data[i].value);
 		}
 	}
 	
@@ -294,7 +299,7 @@ int Parametrization::measureFlux()
 	peakFlux  = -std::numeric_limits<double>::max();
 	
 	// Sum over all pixels (including negative ones):
-	for(unsigned long i = 0L; i < data.size(); i++)
+	for(size_t i = 0; i < data.size(); i++)
 	{
 		totalFlux  += static_cast<double>(data[i].value);
 		if(peakFlux < static_cast<double>(data[i].value)) peakFlux = static_cast<double>(data[i].value);
@@ -333,7 +338,7 @@ int Parametrization::fitEllipse()
 	double momXY = 0.0;
 	double sum   = 0.0;
 	
-	for(unsigned long i = 0L; i < data.size(); i++)
+	for(size_t i = 0; i < data.size(); i++)
 	{
 		double fluxValue = static_cast<double>(data[i].value);
 		
@@ -362,8 +367,90 @@ int Parametrization::fitEllipse()
 	ellPA += 90.0;
 	
 	// NOTE:    PA should now be between 0° and 180°.
+	//          Note that the PA is relative to the pixel grid, not the coordinate system!
 	
 	return 0;
+}
+
+
+
+// Measure kinematic major axis:
+int Parametrization::kinematicMajorAxis()
+{
+	if(data.empty())
+	{
+		std::cerr << "Error (Parametrization): No data loaded.\n";
+		return 1;
+	}
+	
+	// Determine the flux-weighted centroid in each channel:
+	size_t size = subRegionZ2 - subRegionZ1 + 1;
+	std::vector <double> cenX(size, 0.0);
+	std::vector <double> cenY(size, 0.0);
+	std::vector <double> sum(size, 0.0);
+	
+	for(size_t i = 0; i < data.size(); i++)
+	{
+		// Only values > 3 sigma considered here:
+		if(data[i].value > 3.0 * noiseSubCube)
+		{
+			cenX[data[i].z - subRegionZ1] += static_cast<double>(data[i].value) * static_cast<double>(data[i].x);
+			cenY[data[i].z - subRegionZ1] += static_cast<double>(data[i].value) * static_cast<double>(data[i].y);
+			sum[data[i].z - subRegionZ1]  += static_cast<double>(data[i].value);
+		}
+	}
+	
+	unsigned int counter = 0;
+	
+	for(size_t i = 0; i < size; i++)
+	{
+		if(sum[i] > 0.0)
+		{
+			cenX[i] /= sum[i];
+			cenY[i] /= sum[i];
+			counter++;
+		}
+	}
+	
+	if(counter < 2)
+	{
+		std::cerr << "Error (Parametrization): Cannot determine kinematic major axis. Source too faint.\n";
+		return 1;
+	}
+	
+	// Fit a straight line to set of centroids:
+	double meanX = 0.0;
+	double meanY = 0.0;
+	double slope = 0.0;
+	double sum2  = 0.0;
+	
+	for(size_t i = 0; i < size; i++)
+	{
+		if(sum[i] > 0.0)
+		{
+			meanX += cenX[i];
+			meanY += cenY[i];
+		}
+	}
+	
+	meanX /= static_cast<double>(counter);
+	meanY /= static_cast<double>(counter);
+	
+	for(size_t i = 0; i < size; i++)
+	{
+		if(sum[i] > 0.0)
+		{
+			slope += (cenX[i] - meanX) * (cenY[i] - meanY);
+			sum2  += (cenX[i] - meanX) * (cenX[i] - meanX);
+		}
+	}
+	
+	slope /= sum2;      // This is safe because we already ensured that there are at least two valid data points.
+	
+	// Calculate position angle of kinematic major axis:
+	kinematicPA = (180.0 * atan(slope) / M_PI) + 90.0;
+	// WARNING: Here we again add 90° to ensure that a PA of 0° is pointing up.
+	//          Also note that the PA is relative to the pixel grid, not the coordinate system!
 }
 
 
@@ -646,6 +733,7 @@ int Parametrization::writeParameters()
 	source->setParameter("ell_maj", ellMaj);
 	source->setParameter("ell_min", ellMin);
 	source->setParameter("ell_pa",  ellPA);
+	source->setParameter("kin_pa",  kinematicPA);
 	
 	source->setParameter("rms",     noiseSubCube);
 	

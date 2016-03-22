@@ -71,6 +71,7 @@ private:
 	double ellMaj;
 	double ellMin;
 	double ellPA;
+	double kinematicPA;
 	
 	int    busyFitSuccess;
 	double busyFunctionChi2;
