@@ -153,13 +153,19 @@ cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, objects, np.ndarray
 				   int min_LOS = 1):
 		
 	cdef int i, x, y, z, g, g_start, g_end
-	cdef long int obj_id = objects.shape[0]
+	cdef long int obj_id
 	cdef int obj_batch
-	
+
 	cdef int size_x = data.shape[2]
 	cdef int size_y = data.shape[1]
 	cdef int size_z = data.shape[0]
 			
+	# set the number of existing objects to be the starting id
+	try:
+		obj_id = objects.shape[0]
+	except:
+		obj_id = 0
+	
 	# Convert binary mask to conform with the object code
 	for z in range(size_z):
 		for y in range(size_y):
