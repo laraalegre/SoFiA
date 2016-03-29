@@ -268,7 +268,8 @@ if Parameters['steps']['doMerge'] and NRdet:
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Merging detections ---"
 	sys.stdout.flush()
-	objects, mask = linker.link_objects(np_Cube, mask, **Parameters['merge'])
+        objects = []
+	objects, mask = linker.link_objects(np_Cube, objects, mask, **Parameters['merge'])
 	if not objects:
 		sys.stderr.write("WARNING: No objects remain after merging. Exiting pipeline.\n")
 		sys.exit()
