@@ -84,6 +84,11 @@ int Parametrization::parametrize(DataCube<float> *d, DataCube<short> *m, Source 
 		std::cerr << "Warning (Parametrization): Ellipse fit failed.\n";
 	}
 	
+	if(kinematicMajorAxis() != 0)
+	{
+		std::cerr << "Warning (Parametrization): Measurement of kinematic PA failed.\n";
+	}
+	
 	if(doBusyFunction)
 	{
 		if(fitBusyFunction() != 0)
@@ -448,8 +453,9 @@ int Parametrization::kinematicMajorAxis()
 	slope /= sum2;      // This is safe because we already ensured that there are at least two valid data points.
 	
 	// Calculate position angle of kinematic major axis:
-	kinematicPA = (180.0 * atan(slope) / M_PI) + 90.0;
-	// WARNING: Here we again add 90° to ensure that a PA of 0° is pointing up.
+	kinematicPA = (180.0 * atan(slope) / M_PI) - 90.0;
+	if(kinematicPA < -90.0) kinematicPA += 180;  // PAs should now be between -90° and +90°.
+	// WARNING: Here we again subtract 90° to ensure that a PA of 0° is pointing up.
 	//          Also note that the PA is relative to the pixel grid, not the coordinate system!
 	
 	return 0;
