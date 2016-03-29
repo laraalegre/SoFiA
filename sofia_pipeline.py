@@ -198,19 +198,19 @@ if Parameters['steps']['doScaleNoise']:
 
 # --- WAVELET ---
 if Parameters['steps']['doWavelet']:
-        print 'Running wavelet filter'
-        # WARNING: There is a lot of time and memory overhead from transposing the cube forth and back!
-        # WARNING: This will need to be addressed in the future.
-        np_Cube = np.transpose(np_Cube, axes=[2, 1, 0])
-        np_Cube = wavelet_finder.denoise_2d1d(np_Cube, **Parameters['wavelet'])
-        np_Cube = np.transpose(np_Cube, axes=[2, 1, 0])
-        np_Cube = np_Cube.copy()
+	print 'Running wavelet filter'
+	# WARNING: There is a lot of time and memory overhead from transposing the cube forth and back!
+	# WARNING: This will need to be addressed in the future.
+	np_Cube = np.transpose(np_Cube, axes=[2, 1, 0])
+	np_Cube = wavelet_finder.denoise_2d1d(np_Cube, **Parameters['wavelet'])
+	np_Cube = np.transpose(np_Cube, axes=[2, 1, 0])
+	np_Cube = np_Cube.copy()
 
 
 # --- WRITE FILTERED CUBE ---
 if Parameters['steps']['doWriteFilteredCube'] and (Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']):
-        print "SoFiA: Writing filtered cube"
-        write_filtered_cube.writeFilteredCube(np_Cube, dict_Header, Parameters, outputFilteredCube, Parameters['writeCat']['compress'])
+	print "SoFiA: Writing filtered cube"
+	write_filtered_cube.writeFilteredCube(np_Cube, dict_Header, Parameters, outputFilteredCube, Parameters['writeCat']['compress'])
 
 if Parameters['steps']['doFlag'] or Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']:
 	print "Filtering complete"
@@ -268,13 +268,13 @@ if Parameters['steps']['doMerge'] and NRdet:
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Merging detections ---"
 	sys.stdout.flush()
-        objects = []
+	objects = []
 	objects, mask = linker.link_objects(np_Cube, objects, mask, **Parameters['merge'])
 	if not objects:
 		sys.stderr.write("WARNING: No objects remain after merging. Exiting pipeline.\n")
 		sys.exit()
-        objects=np.array(objects)
-        objects=list(np.concatenate((objects,abs(objects[:,12:13]-objects[:,11:12])+1),axis=1))
+	objects=np.array(objects)
+	objects=list(np.concatenate((objects,abs(objects[:,12:13]-objects[:,11:12])+1),axis=1))
 	print 'Merging complete'
 	print
 	NRdet = len(objects)
