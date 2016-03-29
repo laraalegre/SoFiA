@@ -157,6 +157,7 @@ def parametrise(
         'ell_maj': 'pix',
         'ell_min': 'pix',
         'ell_pa': 'deg',
+        'kin_pa': 'deg',
         'f_int': dunits,
         'bf_flag': '-',
         'bf_chi2': '-',
