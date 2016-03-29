@@ -23,6 +23,7 @@ private:
 	int measureLineWidth();
 	int measureFlux();
 	int fitEllipse();
+	int kinematicMajorAxis();
 	int createIntegratedSpectrum();
 	int fitBusyFunction();
 	int writeParameters();

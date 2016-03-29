@@ -451,6 +451,8 @@ int Parametrization::kinematicMajorAxis()
 	kinematicPA = (180.0 * atan(slope) / M_PI) + 90.0;
 	// WARNING: Here we again add 90° to ensure that a PA of 0° is pointing up.
 	//          Also note that the PA is relative to the pixel grid, not the coordinate system!
+	
+	return 0;
 }
 
 
