@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <limits>
+#include <new>
 
 #include "helperFunctions.h"
 #include "DataCube.h"
@@ -10,12 +11,13 @@
 
 Parametrization::Parametrization()
 {
+	// Initialisation of data:
 	dataCube = 0;
 	maskCube = 0;
 	source   = 0;
 	
+	// Initialisation of all parameters:
 	noiseSubCube         = 0.0;
-	
 	centroidX            = 0.0;
 	centroidY            = 0.0;
 	centroidZ            = 0.0;
@@ -29,6 +31,9 @@ Parametrization::Parametrization()
 	ellMaj               = 0.0;
 	ellMin               = 0.0;
 	ellPA                = 0.0;
+	ell3sMaj             = 0.0;
+	ell3sMin             = 0.0;
+	ell3sPA              = 0.0;
 	kinematicPA          = 0.0;
 	
 	busyFitSuccess       = 0;
@@ -326,16 +331,17 @@ int Parametrization::measureFlux()
 
 int Parametrization::fitEllipse()
 {
+	// Fitting ellipse to intensity-weighted image:
 	if(data.empty())
 	{
 		std::cerr << "Error (Parametrization): No data loaded.\n";
-		return 1;        
+		return 1;
 	}
 	
 	if(totalFlux <= 0.0)
 	{
 		std::cerr << "Error (Parametrization): Cannot fit ellipse, source flux <= 0.\n";
-		return 1;        
+		return 1;
 	}
 	
 	double momX  = 0.0;
@@ -349,9 +355,9 @@ int Parametrization::fitEllipse()
 		
 		if(fluxValue > 0.0)           // NOTE: Only positive pixels considered here!
 		{
-			momX  += (static_cast<double>(data[i].x) - source->getParameter("x")) * (static_cast<double>(data[i].x) - source->getParameter("x")) * fluxValue;
-			momY  += (static_cast<double>(data[i].y) - source->getParameter("y")) * (static_cast<double>(data[i].y) - source->getParameter("y")) * fluxValue;
-			momXY += (static_cast<double>(data[i].x) - source->getParameter("x")) * (static_cast<double>(data[i].y) - source->getParameter("y")) * fluxValue;
+			momX  += static_cast<double>((data[i].x - source->getParameter("x")) * (data[i].x - source->getParameter("x"))) * fluxValue;
+			momY  += static_cast<double>((data[i].y - source->getParameter("y")) * (data[i].y - source->getParameter("y"))) * fluxValue;
+			momXY += static_cast<double>((data[i].x - source->getParameter("x")) * (data[i].y - source->getParameter("y"))) * fluxValue;
 			sum += fluxValue;
 		}
 	}
@@ -367,12 +373,87 @@ int Parametrization::fitEllipse()
 	// WARNING: Converting PA from rad to deg:
 	ellPA *= 180.0 / M_PI;
 	
-	// WARNING: Adding 90° to PA here, because astronomers like to have 0° pointing up.
+	// WARNING: Subtracting 90° from PA here, because astronomers like to have 0° pointing up.
 	//          This means that PA will no longer have the mathematically correct orientation!
-	ellPA += 90.0;
-	
-	// NOTE:    PA should now be between 0° and 180°.
+	ellPA -= 90.0;
+	if(ellPA < -90.0) ellPA += 180;
+	// NOTE:    PA should now be between -90° and +90°.
 	//          Note that the PA is relative to the pixel grid, not the coordinate system!
+	
+	
+	// Fitting ellipse to moment map of uniformly weighted pixels above 3 sigma:
+	/*size_t sizeX = subRegionX2 - subRegionX1 + 1;
+	size_t sizeY = subRegionY2 - subRegionY1 + 1;
+	
+	double *momentMap;
+	int    *maskMap;
+	
+	try
+	{
+		momentMap = new double[sizeX * sizeY];
+		maskMap   = new int[sizeX * sizeY];
+	}
+	catch(std::bad_alloc &badAlloc)
+	{
+		std::cerr << "Error (Parametrization): Memory allocation failed: " << badAlloc.what() << '\n';
+		return 1;
+	}
+	
+	for(size_t i = 0; i < sizeX * sizeY; i++)
+	{
+		momentMap[i] = 0.0;
+		maskMap[i] = 0;
+	}
+	
+	for(size_t i = 0; i < data.size(); i++)
+	{
+		momentMap[data[i].x - subRegionX1 + sizeX * (data[i].y - subRegionY1)] += static_cast<double>(data[i].value);
+		maskMap[data[i].x - subRegionX1 + sizeX * (data[i].y - subRegionY1)]   += 1;
+	}
+	
+	for(size_t x = 0; x < sizeX; x++)
+	{
+		for(size_t y = 0; y < sizeY; y++)
+		{
+			// Mask all pixels above 3 × RMS:
+			if(momentMap[x - subRegionX1 + sizeX * (y - subRegionY1)] / (sqrt(static_cast<double>(maskMap[x - subRegionX1 + sizeX * (y - subRegionY1)])) * noiseSubCube) > 3.0)
+			{
+				maskMap[x - subRegionX1 + sizeX * (y - subRegionY1)] = 1;
+			}
+			else
+			{
+				maskMap[x - subRegionX1 + sizeX * (y - subRegionY1)] = 0;
+			}
+		}
+	}
+	
+	delete[] momentMap;      // No longer needed, so let's release the memory again.
+	
+	momX  = 0.0;
+	momY  = 0.0;
+	momXY = 0.0;
+	sum   = 0.0;
+	
+	for(size_t x = 0; x < sizeX; x++)
+	{
+		for(size_t y = 0; y < sizeY; y++)
+		{
+			momX  += static_cast<double>((x - source->getParameter("x") + subRegionX1) * (x - source->getParameter("x") + subRegionX1) * maskMap[x - subRegionX1 + sizeX * (y - subRegionY1)]);
+			momY  += static_cast<double>((y - source->getParameter("y") + subRegionY1) * (y - source->getParameter("y") + subRegionY1) * maskMap[x - subRegionX1 + sizeX * (y - subRegionY1)]);
+			momXY += static_cast<double>((x - source->getParameter("x") + subRegionX1) * (y - source->getParameter("y") + subRegionY1) * maskMap[x - subRegionX1 + sizeX * (y - subRegionY1)]);
+			sum += static_cast<double>(maskMap[x - subRegionX1 + sizeX * (y - subRegionY1)]);
+		}
+	}
+	
+	delete[] maskMap;        // No longer needed, so let's release the memory again.
+	
+	momX  /= sum;
+	momY  /= sum;
+	momXY /= sum;
+	
+	ell3sPA  = 0.5 * atan2(2.0 * momXY, momX - momY);
+	ell3sMaj = sqrt(2.0 * (momX + momY + sqrt((momX - momY) * (momX - momY) + 4.0 * momXY * momXY)));
+	ell3sMin = sqrt(2.0 * (momX + momY - sqrt((momX - momY) * (momX - momY) + 4.0 * momXY * momXY)));*/
 	
 	return 0;
 }
@@ -396,7 +477,7 @@ int Parametrization::kinematicMajorAxis()
 	
 	for(size_t i = 0; i < data.size(); i++)
 	{
-		// Only values > 3 sigma considered here:
+		// NOTE: Only values > 3 sigma considered here!
 		if(data[i].value > 3.0 * noiseSubCube)
 		{
 			cenX[data[i].z - subRegionZ1] += static_cast<double>(data[i].value) * static_cast<double>(data[i].x);
@@ -419,7 +500,7 @@ int Parametrization::kinematicMajorAxis()
 	
 	if(counter < 2)
 	{
-		std::cerr << "Error (Parametrization): Cannot determine kinematic major axis. Source too faint.\n";
+		std::cerr << "Warning (Parametrization): Cannot determine kinematic major axis. Source too faint.\n";
 		return 1;
 	}
 	
@@ -454,7 +535,7 @@ int Parametrization::kinematicMajorAxis()
 	
 	// Calculate position angle of kinematic major axis:
 	kinematicPA = (180.0 * atan(slope) / M_PI) - 90.0;
-	if(kinematicPA < -90.0) kinematicPA += 180;  // PAs should now be between -90° and +90°.
+	if(kinematicPA < -90.0) kinematicPA += 180;  // PA should now be between -90° and +90°.
 	// WARNING: Here we again subtract 90° to ensure that a PA of 0° is pointing up.
 	//          Also note that the PA is relative to the pixel grid, not the coordinate system!
 	
@@ -726,24 +807,27 @@ int Parametrization::fitBusyFunction()
 
 int Parametrization::writeParameters()
 {
-	source->setParameter("id",      source->getSourceID());
-	source->setParameter("x",       centroidX);
-	source->setParameter("y",       centroidY);
-	source->setParameter("z",       centroidZ);
-	source->setParameter("w50",     lineWidthW50);
-	source->setParameter("w20",     lineWidthW20);
-	source->setParameter("wm50",    lineWidthWm50);
-	source->setParameter("f_wm50",  meanFluxWm50);
-	source->setParameter("f_peak",  peakFlux);
-	source->setParameter("f_int",   totalFlux);
-	source->setParameter("snr_int", intSNR);
+	source->setParameter("id",        source->getSourceID());
+	source->setParameter("x",         centroidX);
+	source->setParameter("y",         centroidY);
+	source->setParameter("z",         centroidZ);
+	source->setParameter("w50",       lineWidthW50);
+	source->setParameter("w20",       lineWidthW20);
+	source->setParameter("wm50",      lineWidthWm50);
+	source->setParameter("f_wm50",    meanFluxWm50);
+	source->setParameter("f_peak",    peakFlux);
+	source->setParameter("f_int",     totalFlux);
+	source->setParameter("snr_int",   intSNR);
 	
-	source->setParameter("ell_maj", ellMaj);
-	source->setParameter("ell_min", ellMin);
-	source->setParameter("ell_pa",  ellPA);
-	source->setParameter("kin_pa",  kinematicPA);
+	source->setParameter("ell_maj",   ellMaj);
+	source->setParameter("ell_min",   ellMin);
+	source->setParameter("ell_pa",    ellPA);
+	//source->setParameter("ell3s_maj", ell3sMaj);
+	//source->setParameter("ell3s_min", ell3sMin);
+	//source->setParameter("ell3s_pa",  ell3sPA);
+	source->setParameter("kin_pa",    kinematicPA);
 	
-	source->setParameter("rms",     noiseSubCube);
+	source->setParameter("rms",       noiseSubCube);
 	
 	if(doBusyFunction)
 	{

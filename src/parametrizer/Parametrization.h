@@ -69,6 +69,9 @@ private:
 	double peakFlux;
 	double totalFlux;
 	double intSNR;
+	double ell3sMaj;
+	double ell3sMin;
+	double ell3sPA;
 	double ellMaj;
 	double ellMin;
 	double ellPA;
