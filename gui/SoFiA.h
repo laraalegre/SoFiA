@@ -500,7 +500,7 @@ private:
 	QLabel       *tabOutputLabelParameters;
 	QLabel       *tabOutputLabelParametersBasic;
 	QLabel       *tabOutputLabelParametersBounds;
-	QLabel       *tabOutputLabelParametersStat;
+	QLabel       *tabOutputLabelParametersGeometry;
 	QLabel       *tabOutputLabelParametersWCS;
 	QLabel       *tabOutputLabelParametersPhysical;
 	QLabel       *tabOutputLabelParametersBFFree;
@@ -521,9 +521,6 @@ private:
 	QCheckBox    *tabOutputButtonParameter_z_min;
 	QCheckBox    *tabOutputButtonParameter_z_max;
 	QCheckBox    *tabOutputButtonParameter_n_pix;
-	//QCheckBox    *tabOutputButtonParameter_snr_min;
-	//QCheckBox    *tabOutputButtonParameter_snr_max;
-	//QCheckBox    *tabOutputButtonParameter_snr_sum;
 	QCheckBox    *tabOutputButtonParameter_n_pos;
 	QCheckBox    *tabOutputButtonParameter_n_neg;
 	QCheckBox    *tabOutputButtonParameter_rel;
@@ -544,6 +541,10 @@ private:
 	QCheckBox    *tabOutputButtonParameter_ell_maj;
 	QCheckBox    *tabOutputButtonParameter_ell_min;
 	QCheckBox    *tabOutputButtonParameter_ell_pa;
+	QCheckBox    *tabOutputButtonParameter_ell3s_maj;
+	QCheckBox    *tabOutputButtonParameter_ell3s_min;
+	QCheckBox    *tabOutputButtonParameter_ell3s_pa;
+	QCheckBox    *tabOutputButtonParameter_kin_pa;
 	QCheckBox    *tabOutputButtonParameter_f_peak;
 	QCheckBox    *tabOutputButtonParameter_f_int;
 	QCheckBox    *tabOutputButtonParameter_f_wm50;

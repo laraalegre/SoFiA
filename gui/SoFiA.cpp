@@ -439,9 +439,6 @@ int SoFiA::updateVariables()
 		if(tabOutputButtonParameter_z_min->isChecked())     listOutputPar.append(QString("\'z_min\',"));
 		if(tabOutputButtonParameter_z_max->isChecked())     listOutputPar.append(QString("\'z_max\',"));
 		if(tabOutputButtonParameter_n_pix->isChecked())     listOutputPar.append(QString("\'n_pix\',"));
-		//if(tabOutputButtonParameter_snr_min->isChecked())   listOutputPar.append(QString("\'snr_min\',"));
-		//if(tabOutputButtonParameter_snr_max->isChecked())   listOutputPar.append(QString("\'snr_max\',"));
-		//if(tabOutputButtonParameter_snr_sum->isChecked())   listOutputPar.append(QString("\'snr_sum\',"));
 		if(tabOutputButtonParameter_n_pos->isChecked())     listOutputPar.append(QString("\'n_pos\',"));
 		if(tabOutputButtonParameter_n_neg->isChecked())     listOutputPar.append(QString("\'n_neg\',"));
 		if(tabOutputButtonParameter_rel->isChecked())       listOutputPar.append(QString("\'rel\',"));
@@ -462,6 +459,10 @@ int SoFiA::updateVariables()
 		if(tabOutputButtonParameter_ell_maj->isChecked())   listOutputPar.append(QString("\'ell_maj\',"));
 		if(tabOutputButtonParameter_ell_min->isChecked())   listOutputPar.append(QString("\'ell_min\',"));
 		if(tabOutputButtonParameter_ell_pa->isChecked())    listOutputPar.append(QString("\'ell_pa\',"));
+		if(tabOutputButtonParameter_ell3s_maj->isChecked()) listOutputPar.append(QString("\'ell3s_maj\',"));
+		if(tabOutputButtonParameter_ell3s_min->isChecked()) listOutputPar.append(QString("\'ell3s_min\',"));
+		if(tabOutputButtonParameter_ell3s_pa->isChecked())  listOutputPar.append(QString("\'ell3s_pa\',"));
+		if(tabOutputButtonParameter_kin_pa->isChecked())    listOutputPar.append(QString("\'kin_pa\',"));
 		if(tabOutputButtonParameter_f_peak->isChecked())    listOutputPar.append(QString("\'f_peak\',"));
 		if(tabOutputButtonParameter_f_int->isChecked())     listOutputPar.append(QString("\'f_int\',"));
 		if(tabOutputButtonParameter_f_wm50->isChecked())    listOutputPar.append(QString("\'f_wm50\',"));
@@ -601,9 +602,6 @@ int SoFiA::setFields()
 		tabOutputButtonParameter_z_min->setChecked(false);
 		tabOutputButtonParameter_z_max->setChecked(false);
 		tabOutputButtonParameter_n_pix->setChecked(false);
-		//tabOutputButtonParameter_snr_min->setChecked(false);
-		//tabOutputButtonParameter_snr_max->setChecked(false);
-		//tabOutputButtonParameter_snr_sum->setChecked(false);
 		tabOutputButtonParameter_n_pos->setChecked(false);
 		tabOutputButtonParameter_n_neg->setChecked(false);
 		tabOutputButtonParameter_rel->setChecked(false);
@@ -624,6 +622,10 @@ int SoFiA::setFields()
 		tabOutputButtonParameter_ell_maj->setChecked(false);
 		tabOutputButtonParameter_ell_min->setChecked(false);
 		tabOutputButtonParameter_ell_pa->setChecked(false);
+		tabOutputButtonParameter_ell3s_maj->setChecked(false);
+		tabOutputButtonParameter_ell3s_min->setChecked(false);
+		tabOutputButtonParameter_ell3s_pa->setChecked(false);
+		tabOutputButtonParameter_kin_pa->setChecked(false);
 		tabOutputButtonParameter_f_peak->setChecked(false);
 		tabOutputButtonParameter_f_int->setChecked(false);
 		tabOutputButtonParameter_f_wm50->setChecked(false);
@@ -653,9 +655,6 @@ int SoFiA::setFields()
 		if(listOutputPar.contains(QString("\'z_min\'")))     tabOutputButtonParameter_z_min->setChecked(true);
 		if(listOutputPar.contains(QString("\'z_max\'")))     tabOutputButtonParameter_z_max->setChecked(true);
 		if(listOutputPar.contains(QString("\'n_pix\'")))     tabOutputButtonParameter_n_pix->setChecked(true);
-		//if(listOutputPar.contains(QString("\'snr_min\'")))   tabOutputButtonParameter_snr_min->setChecked(true);
-		//if(listOutputPar.contains(QString("\'snr_max\'")))   tabOutputButtonParameter_snr_max->setChecked(true);
-		//if(listOutputPar.contains(QString("\'snr_sum\'")))   tabOutputButtonParameter_snr_sum->setChecked(true);
 		if(listOutputPar.contains(QString("\'n_pos\'")))     tabOutputButtonParameter_n_pos->setChecked(true);
 		if(listOutputPar.contains(QString("\'n_neg\'")))     tabOutputButtonParameter_n_neg->setChecked(true);
 		if(listOutputPar.contains(QString("\'rel\'")))       tabOutputButtonParameter_rel->setChecked(true);
@@ -676,6 +675,10 @@ int SoFiA::setFields()
 		if(listOutputPar.contains(QString("\'ell_maj\'")))   tabOutputButtonParameter_ell_maj->setChecked(true);
 		if(listOutputPar.contains(QString("\'ell_min\'")))   tabOutputButtonParameter_ell_min->setChecked(true);
 		if(listOutputPar.contains(QString("\'ell_pa\'")))    tabOutputButtonParameter_ell_pa->setChecked(true);
+		if(listOutputPar.contains(QString("\'ell3s_maj\'"))) tabOutputButtonParameter_ell3s_maj->setChecked(true);
+		if(listOutputPar.contains(QString("\'ell3s_min\'"))) tabOutputButtonParameter_ell3s_min->setChecked(true);
+		if(listOutputPar.contains(QString("\'ell3s_pa\'")))  tabOutputButtonParameter_ell3s_pa->setChecked(true);
+		if(listOutputPar.contains(QString("\'kin_pa\'")))    tabOutputButtonParameter_kin_pa->setChecked(true);
 		if(listOutputPar.contains(QString("\'f_peak\'")))    tabOutputButtonParameter_f_peak->setChecked(true);
 		if(listOutputPar.contains(QString("\'f_int\'")))     tabOutputButtonParameter_f_int->setChecked(true);
 		if(listOutputPar.contains(QString("\'f_wm50\'")))    tabOutputButtonParameter_f_wm50->setChecked(true);
@@ -1040,9 +1043,6 @@ void SoFiA::updateFields()
 	tabOutputButtonParameter_z_min->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_z_max->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_n_pix->setEnabled(tabOutputGroupBox2->isChecked());
-	//tabOutputButtonParameter_snr_min->setEnabled(tabOutputGroupBox2->isChecked());
-	//tabOutputButtonParameter_snr_max->setEnabled(tabOutputGroupBox2->isChecked());
-	//tabOutputButtonParameter_snr_sum->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_n_pos->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_n_neg->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_rel->setEnabled(tabOutputGroupBox2->isChecked());
@@ -1063,6 +1063,10 @@ void SoFiA::updateFields()
 	tabOutputButtonParameter_ell_maj->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_ell_min->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_ell_pa->setEnabled(tabOutputGroupBox2->isChecked());
+	tabOutputButtonParameter_ell3s_maj->setEnabled(tabOutputGroupBox2->isChecked());
+	tabOutputButtonParameter_ell3s_min->setEnabled(tabOutputGroupBox2->isChecked());
+	tabOutputButtonParameter_ell3s_pa->setEnabled(tabOutputGroupBox2->isChecked());
+	tabOutputButtonParameter_kin_pa->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_f_peak->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_f_int->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_f_wm50->setEnabled(tabOutputGroupBox2->isChecked());
@@ -2885,14 +2889,14 @@ void SoFiA::createInterface()
 	
 	tabOutputLabelParametersBasic    = new QLabel(tr("<i>Basic</i>"));
 	tabOutputLabelParametersBounds   = new QLabel(tr("<i>Boundary</i>"));
-	tabOutputLabelParametersStat     = new QLabel(tr("<i>Statistical</i>"));
+	tabOutputLabelParametersGeometry = new QLabel(tr("<i>Geometry</i>"));
 	tabOutputLabelParametersWCS      = new QLabel(tr("<i>WCS</i>"));
 	tabOutputLabelParametersPhysical = new QLabel(tr("<i>Physical</i>"));
 	tabOutputLabelParametersBFFree   = new QLabel(tr("<i>BF fit</i>"));
 	tabOutputLabelParametersBFPhys   = new QLabel(tr("<i>BF physical</i>"));
 	tabOutputLabelParametersBasic->setTextFormat(Qt::RichText);
 	tabOutputLabelParametersBounds->setTextFormat(Qt::RichText);
-	tabOutputLabelParametersStat->setTextFormat(Qt::RichText);
+	tabOutputLabelParametersGeometry->setTextFormat(Qt::RichText);
 	tabOutputLabelParametersWCS->setTextFormat(Qt::RichText);
 	tabOutputLabelParametersPhysical->setTextFormat(Qt::RichText);
 	tabOutputLabelParametersBFFree->setTextFormat(Qt::RichText);
@@ -2913,9 +2917,6 @@ void SoFiA::createInterface()
 	tabOutputButtonParameter_z_min     = new QCheckBox(tr("z_min"), tabOutputGroupBox2);
 	tabOutputButtonParameter_z_max     = new QCheckBox(tr("z_max"), tabOutputGroupBox2);
 	tabOutputButtonParameter_n_pix     = new QCheckBox(tr("n_pix"), tabOutputGroupBox2);
-	//tabOutputButtonParameter_snr_min   = new QCheckBox(tr("snr_min"), tabOutputGroupBox2);
-	//tabOutputButtonParameter_snr_max   = new QCheckBox(tr("snr_max"), tabOutputGroupBox2);
-	//tabOutputButtonParameter_snr_sum   = new QCheckBox(tr("snr_sum"), tabOutputGroupBox2);
 	tabOutputButtonParameter_n_pos     = new QCheckBox(tr("n_pos"), tabOutputGroupBox2);
 	tabOutputButtonParameter_n_neg     = new QCheckBox(tr("n_neg"), tabOutputGroupBox2);
 	tabOutputButtonParameter_rms       = new QCheckBox(tr("rms"), tabOutputGroupBox2);
@@ -2935,6 +2936,10 @@ void SoFiA::createInterface()
 	tabOutputButtonParameter_ell_maj   = new QCheckBox(tr("ell_maj"), tabOutputGroupBox2);
 	tabOutputButtonParameter_ell_min   = new QCheckBox(tr("ell_min"), tabOutputGroupBox2);
 	tabOutputButtonParameter_ell_pa    = new QCheckBox(tr("ell_pa"), tabOutputGroupBox2);
+	tabOutputButtonParameter_ell3s_maj = new QCheckBox(tr("ell3s_maj"), tabOutputGroupBox2);
+	tabOutputButtonParameter_ell3s_min = new QCheckBox(tr("ell3s_min"), tabOutputGroupBox2);
+	tabOutputButtonParameter_ell3s_pa  = new QCheckBox(tr("ell3s_pa"), tabOutputGroupBox2);
+	tabOutputButtonParameter_kin_pa    = new QCheckBox(tr("kin_pa"), tabOutputGroupBox2);
 	tabOutputButtonParameter_bf_a      = new QCheckBox(tr("bf_a"), tabOutputGroupBox2);
 	tabOutputButtonParameter_bf_b1     = new QCheckBox(tr("bf_b1"), tabOutputGroupBox2);
 	tabOutputButtonParameter_bf_b2     = new QCheckBox(tr("bf_b2"), tabOutputGroupBox2);
@@ -2965,9 +2970,6 @@ void SoFiA::createInterface()
 	tabOutputButtonParameter_z_min     -> setObjectName("parameter_z_min");
 	tabOutputButtonParameter_z_max     -> setObjectName("parameter_z_max");
 	tabOutputButtonParameter_n_pix     -> setObjectName("parameter_n_pix");
-	//tabOutputButtonParameter_snr_min   -> setObjectName("parameter_snr_min");
-	//tabOutputButtonParameter_snr_max   -> setObjectName("parameter_snr_max");
-	//tabOutputButtonParameter_snr_sum   -> setObjectName("parameter_snr_sum");
 	tabOutputButtonParameter_n_pos     -> setObjectName("parameter_n_pos");
 	tabOutputButtonParameter_n_neg     -> setObjectName("parameter_n_neg");
 	tabOutputButtonParameter_rel       -> setObjectName("parameter_rel");
@@ -2988,6 +2990,10 @@ void SoFiA::createInterface()
 	tabOutputButtonParameter_ell_maj   -> setObjectName("parameter_ell_maj");
 	tabOutputButtonParameter_ell_min   -> setObjectName("parameter_ell_min");
 	tabOutputButtonParameter_ell_pa    -> setObjectName("parameter_ell_pa");
+	tabOutputButtonParameter_ell3s_maj -> setObjectName("parameter_ell3s_maj");
+	tabOutputButtonParameter_ell3s_min -> setObjectName("parameter_ell3s_min");
+	tabOutputButtonParameter_ell3s_pa  -> setObjectName("parameter_ell3s_pa");
+	tabOutputButtonParameter_kin_pa    -> setObjectName("parameter_kin_pa");
 	tabOutputButtonParameter_f_peak    -> setObjectName("parameter_f_peak");
 	tabOutputButtonParameter_f_int     -> setObjectName("parameter_f_int");
 	tabOutputButtonParameter_f_wm50    -> setObjectName("parameter_f_wm50");
@@ -3017,9 +3023,6 @@ void SoFiA::createInterface()
 	tabOutputButtonParameter_z_min     -> setToolTip(tr("Z-coordinate of lower boundary"));
 	tabOutputButtonParameter_z_max     -> setToolTip(tr("Z-coordinate of upper boundary"));
 	tabOutputButtonParameter_n_pix     -> setToolTip(tr("Total number of spatial and spectral pixels"));
-	//tabOutputButtonParameter_snr_min   -> setToolTip(tr("Signal-to-noise ratio of negative peak"));
-	//tabOutputButtonParameter_snr_max   -> setToolTip(tr("Signal-to-noise ratio of positive peak"));
-	//tabOutputButtonParameter_snr_sum   -> setToolTip(tr("Integrated signal-to-noise ratio"));
 	tabOutputButtonParameter_n_pos     -> setToolTip(tr("Number of spatial and spectral pixels with positive flux"));
 	tabOutputButtonParameter_n_neg     -> setToolTip(tr("Number of spatial and spectral pixels with negative flux"));
 	tabOutputButtonParameter_rel       -> setToolTip(tr("Reliability"));
@@ -3040,6 +3043,10 @@ void SoFiA::createInterface()
 	tabOutputButtonParameter_ell_maj   -> setToolTip(tr("Major axis of ellipse fitted to source"));
 	tabOutputButtonParameter_ell_min   -> setToolTip(tr("Minor axis of ellipse fitted to source"));
 	tabOutputButtonParameter_ell_pa    -> setToolTip(tr("Position angle of ellipse fitted to source"));
+	tabOutputButtonParameter_ell3s_maj -> setToolTip(tr("Major axis of ellipse fitted to all pixels > 3 sigma in moment-0 map"));
+	tabOutputButtonParameter_ell3s_min -> setToolTip(tr("Minor axis of ellipse fitted to all pixels > 3 sigma in moment-0 map"));
+	tabOutputButtonParameter_ell3s_pa  -> setToolTip(tr("Position angle of ellipse fitted to all pixels > 3 sigma in moment-0 map"));
+	tabOutputButtonParameter_kin_pa    -> setToolTip(tr("Position angle of kinematic major axis"));
 	tabOutputButtonParameter_f_peak    -> setToolTip(tr("Peak flux density"));
 	tabOutputButtonParameter_f_int     -> setToolTip(tr("Integrated flux"));
 	tabOutputButtonParameter_f_wm50    -> setToolTip(tr("Integrated flux within w<sub>m50</sub> line width"));
@@ -3069,9 +3076,6 @@ void SoFiA::createInterface()
 	connect(tabOutputButtonParameter_z_min,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_z_max,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_n_pix,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	//connect(tabOutputButtonParameter_snr_min,   SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	//connect(tabOutputButtonParameter_snr_max,   SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	//connect(tabOutputButtonParameter_snr_sum,   SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_n_pos,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_n_neg,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_rel,       SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
@@ -3092,6 +3096,10 @@ void SoFiA::createInterface()
 	connect(tabOutputButtonParameter_ell_maj,   SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_ell_min,   SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_ell_pa,    SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	connect(tabOutputButtonParameter_ell3s_maj, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	connect(tabOutputButtonParameter_ell3s_min, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	connect(tabOutputButtonParameter_ell3s_pa,  SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	connect(tabOutputButtonParameter_kin_pa,    SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_f_peak,    SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_f_int,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_f_wm50,    SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
@@ -3130,6 +3138,8 @@ void SoFiA::createInterface()
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_x_geo,     6, 0);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_y_geo,     7, 0);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_z_geo,     8, 0);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_rms,       9, 0);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_rel,      10, 0);
 	
 	tabOutputLayoutParameters->addWidget(tabOutputLabelParametersBounds,     0, 1);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_x_min,     1, 1);
@@ -3138,35 +3148,34 @@ void SoFiA::createInterface()
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_y_max,     4, 1);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_z_min,     5, 1);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_z_max,     6, 1);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_pix,     7, 1);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_pos,     8, 1);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_neg,     9, 1);
 	
-	tabOutputLayoutParameters->addWidget(tabOutputLabelParametersStat,       0, 2);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_pix,     1, 2);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_pos,     2, 2);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_neg,     3, 2);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_rms,       4, 2);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_rel,       5, 2);
-	//tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_snr_min,   3, 2);
-	//tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_snr_max,   4, 2);
-	//tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_snr_sum,   5, 2);
+	tabOutputLayoutParameters->addWidget(tabOutputLabelParametersWCS,        0, 2);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ra,        1, 2);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_dec,       2, 2);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_lon,       3, 2);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_lat,       4, 2);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_freq,      5, 2);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_velo,      6, 2);
 	
-	tabOutputLayoutParameters->addWidget(tabOutputLabelParametersWCS,        0, 3);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ra,        1, 3);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_dec,       2, 3);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_lon,       3, 3);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_lat,       4, 3);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_freq,      5, 3);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_velo,      6, 3);
+	tabOutputLayoutParameters->addWidget(tabOutputLabelParametersPhysical,   0, 3);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_w20,       1, 3);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_w50,       2, 3);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_wm50,      3, 3);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_f_peak,    4, 3);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_f_int,     5, 3);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_f_wm50,    6, 3);
 	
-	tabOutputLayoutParameters->addWidget(tabOutputLabelParametersPhysical,   0, 4);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_w20,       1, 4);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_w50,       2, 4);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_wm50,      3, 4);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_f_peak,    4, 4);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_f_int,     5, 4);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_f_wm50,    6, 4);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ell_maj,   7, 4);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ell_min,   8, 4);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ell_pa,    9, 4);
+	tabOutputLayoutParameters->addWidget(tabOutputLabelParametersGeometry,   0, 4);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ell_maj,   1, 4);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ell_min,   2, 4);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ell_pa,    3, 4);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ell3s_maj, 4, 4);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ell3s_min, 5, 4);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ell3s_pa,  6, 4);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_kin_pa,    7, 4);
 	
 	tabOutputLayoutParameters->addWidget(tabOutputLabelParametersBFFree,     0, 5);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_a,      1, 5);
