@@ -116,7 +116,7 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 		#kernel=(pars[:,neg].max(axis=1)-pars[:,neg].min(axis=1))/(float(neg.sum())/negPerBin) # kernel from pars range
                 parcov=np.cov(pars[:,neg])
                 kernelIter=0.
-                kernel=parcov*(negPerBin+kernelIter)**2/Nneg**2     # kernel from covariance matrix
+                kernel=parcov*((negPerBin+kernelIter)/Nneg)**(2./(len(parCol)-1))     # kernel from covariance matrix
                 if not usecov: kernel=np.diag(np.diag(kernel))      # kernel from diagonal of covariance matrix
 	        deltOLD=-1e+9 # used to stop kernel growth if P-N stops moving closer to zero [NOT USED CURRENTLY]
                 deltplot=[]
@@ -189,16 +189,16 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
                                 print kernel
                                 sys.stdout.flush()
                         elif deltmed/deltstd<5*skellamTol:
-                	        kernel*=float(negPerBin+kernelIter+20)**2/(negPerBin+kernelIter)**2 
+                	        kernel*=(float(negPerBin+kernelIter+20)/(negPerBin+kernelIter))**(2./(len(parCol)-1)) 
 			        kernelIter+=20
                         elif deltmed/deltstd<2*skellamTol:
-                	        kernel*=float(negPerBin+kernelIter+10)**2/(negPerBin+kernelIter)**2 
+                	        kernel*=(float(negPerBin+kernelIter+10)/(negPerBin+kernelIter))**(2./(len(parCol)-1))
 			        kernelIter+=10
                         elif deltmed/deltstd<1.5*skellamTol:
-                	        kernel*=float(negPerBin+kernelIter+3)**2/(negPerBin+kernelIter)**2 
+                	        kernel*=(float(negPerBin+kernelIter+3)/(negPerBin+kernelIter))**(2./(len(parCol)-1))
 			        kernelIter+=3
 		        else:
-                	        kernel*=float(negPerBin+kernelIter+1)**2/(negPerBin+kernelIter)**2 
+                	        kernel*=(float(negPerBin+kernelIter+1)/(negPerBin+kernelIter))**(2./(len(parCol)-1))
 			        kernelIter+=1
 
 		else: grow_kernel=0
