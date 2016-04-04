@@ -382,7 +382,7 @@ int Parametrization::fitEllipse()
 	
 	
 	// Fitting ellipse to moment map of uniformly weighted pixels above 3 sigma:
-	/*size_t sizeX = subRegionX2 - subRegionX1 + 1;
+	size_t sizeX = subRegionX2 - subRegionX1 + 1;
 	size_t sizeY = subRegionY2 - subRegionY1 + 1;
 	
 	double *momentMap;
@@ -415,14 +415,11 @@ int Parametrization::fitEllipse()
 	{
 		for(size_t y = 0; y < sizeY; y++)
 		{
-			// Mask all pixels above 3 × RMS:
-			if(momentMap[x - subRegionX1 + sizeX * (y - subRegionY1)] / (sqrt(static_cast<double>(maskMap[x - subRegionX1 + sizeX * (y - subRegionY1)])) * noiseSubCube) > 3.0)
+			// Mask all valid pixels above 3 × RMS:
+			if(maskMap[x + sizeX * y] > 0)
 			{
-				maskMap[x - subRegionX1 + sizeX * (y - subRegionY1)] = 1;
-			}
-			else
-			{
-				maskMap[x - subRegionX1 + sizeX * (y - subRegionY1)] = 0;
+				if(momentMap[x + sizeX * y] / (sqrt(static_cast<double>(maskMap[x + sizeX * y])) * noiseSubCube) > 3.0) maskMap[x + sizeX * y] = 1;
+				else maskMap[x + sizeX * y] = 0;
 			}
 		}
 	}
@@ -434,14 +431,16 @@ int Parametrization::fitEllipse()
 	momXY = 0.0;
 	sum   = 0.0;
 	
+	// Determine ellipse parameters on mask (where all pixels > 3 sigma have been
+	// set to 1, all other pixels to 0):
 	for(size_t x = 0; x < sizeX; x++)
 	{
 		for(size_t y = 0; y < sizeY; y++)
 		{
-			momX  += static_cast<double>((x - source->getParameter("x") + subRegionX1) * (x - source->getParameter("x") + subRegionX1) * maskMap[x - subRegionX1 + sizeX * (y - subRegionY1)]);
-			momY  += static_cast<double>((y - source->getParameter("y") + subRegionY1) * (y - source->getParameter("y") + subRegionY1) * maskMap[x - subRegionX1 + sizeX * (y - subRegionY1)]);
-			momXY += static_cast<double>((x - source->getParameter("x") + subRegionX1) * (y - source->getParameter("y") + subRegionY1) * maskMap[x - subRegionX1 + sizeX * (y - subRegionY1)]);
-			sum += static_cast<double>(maskMap[x - subRegionX1 + sizeX * (y - subRegionY1)]);
+			momX  += static_cast<double>((x - source->getParameter("x") + subRegionX1) * (x - source->getParameter("x") + subRegionX1) * maskMap[x + sizeX * y]);
+			momY  += static_cast<double>((y - source->getParameter("y") + subRegionY1) * (y - source->getParameter("y") + subRegionY1) * maskMap[x + sizeX * y]);
+			momXY += static_cast<double>((x - source->getParameter("x") + subRegionX1) * (y - source->getParameter("y") + subRegionY1) * maskMap[x + sizeX * y]);
+			sum += static_cast<double>(maskMap[x + sizeX * y]);
 		}
 	}
 	
@@ -453,7 +452,17 @@ int Parametrization::fitEllipse()
 	
 	ell3sPA  = 0.5 * atan2(2.0 * momXY, momX - momY);
 	ell3sMaj = sqrt(2.0 * (momX + momY + sqrt((momX - momY) * (momX - momY) + 4.0 * momXY * momXY)));
-	ell3sMin = sqrt(2.0 * (momX + momY - sqrt((momX - momY) * (momX - momY) + 4.0 * momXY * momXY)));*/
+	ell3sMin = sqrt(2.0 * (momX + momY - sqrt((momX - momY) * (momX - momY) + 4.0 * momXY * momXY)));
+	
+	// WARNING: Converting PA from rad to deg:
+	ell3sPA *= 180.0 / M_PI;
+	
+	// WARNING: Subtracting 90° from PA here, because astronomers like to have 0° pointing up.
+	//          This means that PA will no longer have the mathematically correct orientation!
+	ell3sPA -= 90.0;
+	if(ell3sPA < -90.0) ell3sPA += 180;
+	// NOTE:    PA should now be between -90° and +90°.
+	//          Note that the PA is relative to the pixel grid, not the coordinate system!
 	
 	return 0;
 }
@@ -822,9 +831,9 @@ int Parametrization::writeParameters()
 	source->setParameter("ell_maj",   ellMaj);
 	source->setParameter("ell_min",   ellMin);
 	source->setParameter("ell_pa",    ellPA);
-	//source->setParameter("ell3s_maj", ell3sMaj);
-	//source->setParameter("ell3s_min", ell3sMin);
-	//source->setParameter("ell3s_pa",  ell3sPA);
+	source->setParameter("ell3s_maj", ell3sMaj);
+	source->setParameter("ell3s_min", ell3sMin);
+	source->setParameter("ell3s_pa",  ell3sPA);
 	source->setParameter("kin_pa",    kinematicPA);
 	
 	source->setParameter("rms",       noiseSubCube);
