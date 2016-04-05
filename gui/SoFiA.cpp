@@ -1138,7 +1138,7 @@ void SoFiA::updateActions()
 	actionRun        ->setEnabled(not (tabInputFieldData->text()).isEmpty() and pipelineProcess->state() == QProcess::NotRunning);
 	
 	actionAbort->setEnabled(pipelineProcess->state() == QProcess::Running);
-	//actionExit->setEnabled(pipelineProcess->state() == QProcess::NotRunning);
+	actionExit->setEnabled(pipelineProcess->state() == QProcess::NotRunning);
 	
 	actionSaveLogAs->setEnabled(outputText->toPlainText() != "" and pipelineProcess->state() == QProcess::NotRunning);
 	actionClearLog->setEnabled(outputText->toPlainText() != "" and pipelineProcess->state() == QProcess::NotRunning);
@@ -1510,6 +1510,7 @@ void SoFiA::pipelineProcessFinished(int exitCode, QProcess::ExitStatus exitStatu
 void SoFiA::pipelineProcessCancel()
 {
 	actionAbort->setEnabled(false);
+	actionExit->setEnabled(true);
 	
 	if(pipelineProcess->state() == QProcess::Running)
 	{
@@ -1727,6 +1728,8 @@ void SoFiA::updateWindowTitle()
 		if(settingsChanged) this->setWindowTitle(tr("SoFiA - %1 (modified)").arg(currentFileName.section('/', -1)));
 		else this->setWindowTitle(tr("SoFiA - %1").arg(currentFileName.section('/', -1)));
 	}
+	
+	actionSave->setEnabled(settingsChanged);
 	
 	return;
 }
