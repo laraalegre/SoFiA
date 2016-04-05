@@ -2834,7 +2834,7 @@ void SoFiA::createInterface()
 	tabOutputButtonMom1->setChecked(false);
 	connect(tabOutputButtonMom1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutputButtonMom1, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabOutputButtonCubelets = new QCheckBox(tr("Cubelets "), tabOutputGroupBox1);
+	tabOutputButtonCubelets = new QCheckBox(tr("Source products "), tabOutputGroupBox1);
 	tabOutputButtonCubelets->setObjectName("steps.doCubelets");
 	tabOutputButtonCubelets->setChecked(false);
 	connect(tabOutputButtonCubelets, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
@@ -3121,13 +3121,13 @@ void SoFiA::createInterface()
 	tabOutputLayoutParameters->setVerticalSpacing(5);
 	// NOTE: The following lines will ensure that all columns have the same width
 	//       and expand equally whenever the width of the main window is increased.
-	tabOutputLayoutParameters-> setColumnStretch(0, 1);
-	tabOutputLayoutParameters-> setColumnStretch(1, 1);
-	tabOutputLayoutParameters-> setColumnStretch(2, 1);
-	tabOutputLayoutParameters-> setColumnStretch(3, 1);
-	tabOutputLayoutParameters-> setColumnStretch(4, 1);
-	tabOutputLayoutParameters-> setColumnStretch(5, 1);
-	tabOutputLayoutParameters-> setColumnStretch(6, 1);
+	tabOutputLayoutParameters->setColumnStretch(0, 1);
+	tabOutputLayoutParameters->setColumnStretch(1, 1);
+	tabOutputLayoutParameters->setColumnStretch(2, 1);
+	tabOutputLayoutParameters->setColumnStretch(3, 1);
+	tabOutputLayoutParameters->setColumnStretch(4, 1);
+	tabOutputLayoutParameters->setColumnStretch(5, 1);
+	tabOutputLayoutParameters->setColumnStretch(6, 1);
 	
 	tabOutputLayoutParameters->addWidget(tabOutputLabelParametersBasic,      0, 0);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_id,        1, 0);
