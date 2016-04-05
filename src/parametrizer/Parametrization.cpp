@@ -513,34 +513,30 @@ int Parametrization::kinematicMajorAxis()
 		return 1;
 	}
 	
-	// Fit a straight line to set of centroids:
-	double meanX = 0.0;
-	double meanY = 0.0;
-	double slope = 0.0;
-	double sum2  = 0.0;
+	// Fit a straight line to set of centroids (using user-defined weights):
+	double sumW   = 0.0;
+	double sumWX  = 0.0;
+	double sumWY  = 0.0;
+	double sumWXX = 0.0;
+	double sumWXY = 0.0;
 	
 	for(size_t i = 0; i < size; i++)
 	{
 		if(sum[i] > 0.0)
 		{
-			meanX += cenX[i];
-			meanY += cenY[i];
+			// Choose the desired weights here:
+			//double weight = sum[i];
+			double weight = 1.0;
+			
+			sumW   += weight;
+			sumWX  += weight * cenX[i];
+			sumWY  += weight * cenY[i];
+			sumWXX += weight * cenX[i] * cenX[i];
+			sumWXY += weight * cenX[i] * cenY[i];
 		}
 	}
 	
-	meanX /= static_cast<double>(counter);
-	meanY /= static_cast<double>(counter);
-	
-	for(size_t i = 0; i < size; i++)
-	{
-		if(sum[i] > 0.0)
-		{
-			slope += (cenX[i] - meanX) * (cenY[i] - meanY);
-			sum2  += (cenX[i] - meanX) * (cenX[i] - meanX);
-		}
-	}
-	
-	slope /= sum2;      // This is safe because we already ensured that there are at least two valid data points.
+	double slope = (sumW * sumWXY - sumWX * sumWY) / (sumW * sumWXX - sumWX * sumWX);
 	
 	// Calculate position angle of kinematic major axis:
 	kinematicPA = (180.0 * atan(slope) / M_PI) - 90.0;
