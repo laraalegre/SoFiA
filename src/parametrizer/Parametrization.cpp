@@ -9,6 +9,10 @@
 #include "BusyFit.h"
 #include "Measurement.h"
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 Parametrization::Parametrization()
 {
 	// Initialisation of data:
@@ -483,6 +487,8 @@ int Parametrization::kinematicMajorAxis()
 	std::vector <double> cenX(size, 0.0);
 	std::vector <double> cenY(size, 0.0);
 	std::vector <double> sum(size, 0.0);
+	size_t firstPoint = size;
+	size_t lastPoint  = 0;
 	
 	for(size_t i = 0; i < data.size(); i++)
 	{
@@ -504,6 +510,11 @@ int Parametrization::kinematicMajorAxis()
 			cenX[i] /= sum[i];
 			cenY[i] /= sum[i];
 			counter++;
+			
+			if(i < firstPoint) firstPoint = i;
+			if(i > lastPoint)  lastPoint  = i;
+			
+			//std::cerr << i << '\t' << cenX[i] << '\t' << cenY[i] << '\n';
 		}
 	}
 	
@@ -513,36 +524,83 @@ int Parametrization::kinematicMajorAxis()
 		return 1;
 	}
 	
-	// Fit a straight line to set of centroids (using user-defined weights):
+	// Fit a straight line to the set of centroids (using user-defined weights):
 	double sumW   = 0.0;
-	double sumWX  = 0.0;
-	double sumWY  = 0.0;
-	double sumWXX = 0.0;
-	double sumWXY = 0.0;
+	double sumX   = 0.0;
+	double sumY   = 0.0;
+	double sumXX  = 0.0;
+	double sumYY  = 0.0;
+	double sumXY  = 0.0;
+	double weight = 1.0;
+	
+	// Using linear regression:
+	/*for(size_t i = 0; i < size; i++)
+	{
+		if(sum[i] > 0.0)
+		{
+			// Set the desired weights here (defaults to 1 otherwise):
+			//weight = sum[i];
+			
+			sumW  += weight;
+			sumX  += weight * cenX[i];
+			sumY  += weight * cenY[i];
+			sumXX += weight * cenX[i] * cenX[i];
+			sumXY += weight * cenX[i] * cenY[i];
+		}
+	}
+	
+	double slope = (sumW * sumXY  - sumX * sumY)  / (sumW * sumXX - sumX * sumX);
+	//double inter = (sumXX * sumY - sumX * sumXY) / (sum * sumXX - sumX * sumX);*/
+	
+	// Using Deming (orthogonal) regression:
+	for(size_t i = 0; i < size; i++)
+	{
+		if(sum[i] > 0.0)
+		{
+			// Set the desired weights here (defaults to 1 otherwise):
+			weight = sum[i] * sum[i];
+			
+			sumW += weight;
+			sumX += weight * cenX[i];
+			sumY += weight * cenY[i];
+		}
+	}
+	
+	sumX /= sumW;
+	sumY /= sumW;
 	
 	for(size_t i = 0; i < size; i++)
 	{
 		if(sum[i] > 0.0)
 		{
-			// Choose the desired weights here:
-			//double weight = sum[i];
-			double weight = 1.0;
+			// Set the desired weights here (defaults to 1 otherwise):
+			weight = sum[i] * sum[i];
 			
-			sumW   += weight;
-			sumWX  += weight * cenX[i];
-			sumWY  += weight * cenY[i];
-			sumWXX += weight * cenX[i] * cenX[i];
-			sumWXY += weight * cenX[i] * cenY[i];
+			sumXX += weight * (cenX[i] - sumX) * (cenX[i] - sumX);
+			sumYY += weight * (cenY[i] - sumY) * (cenY[i] - sumY);
+			sumXY += weight * (cenX[i] - sumX) * (cenY[i] - sumY);
 		}
 	}
 	
-	double slope = (sumW * sumWXY - sumWX * sumWY) / (sumW * sumWXX - sumWX * sumWX);
+	double slope = (sumYY - sumXX + sqrt((sumYY - sumXX) * (sumYY - sumXX) + 4.0 * sumXY * sumXY)) / (2.0 * sumXY);
+	double inter = sumY - slope * sumX;
+	//std::cerr << "Slope + intercept:\t" << slope << '\t' << inter << '\n';
 	
 	// Calculate position angle of kinematic major axis:
-	kinematicPA = (180.0 * atan(slope) / M_PI) - 90.0;
-	if(kinematicPA < -90.0) kinematicPA += 180;  // PA should now be between -90° and +90°.
-	// WARNING: Here we again subtract 90° to ensure that a PA of 0° is pointing up.
-	//          Also note that the PA is relative to the pixel grid, not the coordinate system!
+	kinematicPA = atan(slope);
+	
+	// Check orientation of approaching/receding side of disc:
+	double fullAngle = atan2(cenY[lastPoint] - cenY[firstPoint], cenX[lastPoint] - cenX[firstPoint]);
+	
+	// Correct for full angle and astronomer's favourite definition of PA:
+	double difference = fabs(atan2(sin(fullAngle) * cos(kinematicPA) - cos(fullAngle) * sin(kinematicPA), cos(fullAngle) * cos(kinematicPA) + sin(fullAngle) * sin(kinematicPA)));
+	if(difference > M_PI / 2.0) kinematicPA += M_PI;
+	
+	kinematicPA = 180.0 * kinematicPA / M_PI - 90.0;
+	while(kinematicPA <    0.0) kinematicPA += 360.0;
+	while(kinematicPA >= 360.0) kinematicPA -= 360.0;
+	// NOTE: PA should now be between 0° (pointing up) and 360°.
+	//       PAs are relative to the pixel grid, not the WCS!
 	
 	return 0;
 }
