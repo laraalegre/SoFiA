@@ -39,6 +39,8 @@ Parametrization::Parametrization()
 	ell3sMin             = 0.0;
 	ell3sPA              = 0.0;
 	kinematicPA          = 0.0;
+	flagKinematicPA      = false;
+	flagWarp             = false;
 	
 	busyFitSuccess       = 0;
 	busyFunctionChi2     = 0.0;
@@ -513,15 +515,19 @@ int Parametrization::kinematicMajorAxis()
 			
 			if(i < firstPoint) firstPoint = i;
 			if(i > lastPoint)  lastPoint  = i;
-			
-			//std::cerr << i << '\t' << cenX[i] << '\t' << cenY[i] << '\n';
 		}
 	}
 	
 	if(counter < 2)
 	{
 		std::cerr << "Warning (Parametrization): Cannot determine kinematic major axis. Source too faint.\n";
+		flagKinematicPA = true;
 		return 1;
+	}
+	else if(counter == 2)
+	{
+		std::cerr << "Warning (Parametrization): Kinematic major axis derived from just 2 data points.\n";
+		flagKinematicPA = true;
 	}
 	
 	// Fit a straight line to the set of centroids (using user-defined weights):
@@ -583,8 +589,7 @@ int Parametrization::kinematicMajorAxis()
 	}
 	
 	double slope = (sumYY - sumXX + sqrt((sumYY - sumXX) * (sumYY - sumXX) + 4.0 * sumXY * sumXY)) / (2.0 * sumXY);
-	double inter = sumY - slope * sumX;
-	//std::cerr << "Slope + intercept:\t" << slope << '\t' << inter << '\n';
+	//double inter = sumY - slope * sumX;
 	
 	// Calculate position angle of kinematic major axis:
 	kinematicPA = atan(slope);
@@ -594,12 +599,19 @@ int Parametrization::kinematicMajorAxis()
 	
 	// Correct for full angle and astronomer's favourite definition of PA:
 	double difference = fabs(atan2(sin(fullAngle) * cos(kinematicPA) - cos(fullAngle) * sin(kinematicPA), cos(fullAngle) * cos(kinematicPA) + sin(fullAngle) * sin(kinematicPA)));
-	if(difference > M_PI / 2.0) kinematicPA += M_PI;
+	if(difference > M_PI / 2.0)
+	{
+		kinematicPA += M_PI;
+		difference  -= M_PI;
+	}
+	
+	if(fabs(difference) > M_PI / 6.0) flagWarp = true;     // WARNING: Warping angle of 30° hard-coded here!
 	
 	kinematicPA = 180.0 * kinematicPA / M_PI - 90.0;
 	while(kinematicPA <    0.0) kinematicPA += 360.0;
 	while(kinematicPA >= 360.0) kinematicPA -= 360.0;
-	// NOTE: PA should now be between 0° (pointing up) and 360°.
+	// NOTE: PA should now be between 0° (pointing up) and 360° and refer to the side of the disc
+	//       that occupies the upper end of the channel range covered by the source.
 	//       PAs are relative to the pixel grid, not the WCS!
 	
 	return 0;
@@ -889,6 +901,8 @@ int Parametrization::writeParameters()
 	source->setParameter("ell3s_min", ell3sMin);
 	source->setParameter("ell3s_pa",  ell3sPA);
 	source->setParameter("kin_pa",    kinematicPA);
+	//source->setParameter("flag_kin",  flagKinematicPA);
+	//source->setParameter("flag_warp", flagWarp);
 	
 	source->setParameter("rms",       noiseSubCube);
 	

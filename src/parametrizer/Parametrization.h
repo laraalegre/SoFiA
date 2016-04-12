@@ -76,6 +76,8 @@ private:
 	double ellMin;
 	double ellPA;
 	double kinematicPA;
+	bool   flagKinematicPA;
+	bool   flagWarp;
 	
 	int    busyFitSuccess;
 	double busyFunctionChi2;
