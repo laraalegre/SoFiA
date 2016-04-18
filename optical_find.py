@@ -73,24 +73,45 @@ def merge_xml(outroot,cat,storeMultiCat):
     # this is a temporary (working) solution, should be replaced by proper xml functions in python
     outfile = outroot + '_cat.xml'
     f=open(outfile,'w')
-    h = 0    
+
+
+    hlines = 0
+    cat_nr = 0
+    #h = 0    
     for i in range(len(cat)):
         temp_xml = outroot + '_' + cat[i]['id'] + '_cat.xml'
         # check whether the file exists:
-        n = 0
+        #n = 0
         if os.path.isfile(temp_xml) == True:
+            cat_nr += 1
             f1=open(temp_xml,'r')
-            for line in f1:
-                line_string = line
-                h += 1
-                if h < 41:
-                    f.write(line_string)  
-
-                n += 1
-                if  n > 40:
-                    if line_string[0:2] != '</' or line_string[0:5] == '</TR>':
-                        f.write(line_string)                        
-            #f.write('</TR>\n')            
+            if cat_nr == 1:
+                # this is the first catalogue which is used for the meta information
+                stop_header = 0
+                # count the number of header lines and write the header
+                for line in f1:
+                    line_string = line
+                                        
+                    if stop_header == 0 and line_string[0:4] != '<TR>':
+                        hlines += 1
+                        f.write(line_string)
+                    else:
+                        stop_header = 1
+                        if line_string[0:2] != '</' or line_string[0:5] == '</TR>':
+                            f.write(line_string)
+        
+        
+            else:
+                # from the other catalogues only data is used
+                l = 0
+                for line in f1:
+                    line_string = line                    
+                    l+=1
+                    if l > hlines and line_string[0:2] != '</' or line_string[0:5] == '</TR>':
+                        f.write(line_string)
+            
+                                 
+            
             f1.close
             # throw away the intermediate catalogues if not needed
             if storeMultiCat == False:
@@ -103,7 +124,7 @@ def merge_xml(outroot,cat,storeMultiCat):
                     raise SystemExit(1)
 
                               
-            
+    # write the meta information at the end        
     f.write('</TABLEDATA>\n')
     f.write('</DATA>\n')
     f.write('</TABLE>\n')
@@ -111,6 +132,7 @@ def merge_xml(outroot,cat,storeMultiCat):
     f.write('</VOTABLE>\n')
     f.close    
     return
+
 
 ######################################
 ######################################
