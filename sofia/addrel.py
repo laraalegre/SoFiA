@@ -166,6 +166,7 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 
 		# find reliable sources
 		# (taking maximum(Rs,0) in order to include objects with Rs<0 if threshold==0)
+                #reliable=(np.maximum(Rs,0)>=threshold)*(data[pos,ftotCOL].reshape(-1,)>fMin)*(data[pos,fmaxCOL].reshape(-1,)>4)
 		reliable=(np.maximum(Rs,0)>=threshold)*(data[pos,ftotCOL].reshape(-1,)>fMin)
 		
                 if autoKernel:
@@ -296,9 +297,7 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 
 			if reliable.sum(): plt.scatter(pars[p1,pos][reliable],pars[p2,pos][reliable],marker='o',s=10,edgecolor='k',facecolor='k',zorder=4)
 			if (pseudoreliable*(reliable==False)).sum(): plt.scatter(pars[p1,pos][pseudoreliable*(reliable==False)],pars[p2,pos][pseudoreliable*(reliable==False)],marker='x',s=40,edgecolor='0.5',zorder=3)
-
                         for si in specialids: plt.plot(pars[p1,ids==si],pars[p2,ids==si],'kd',zorder=10000,ms=7,mfc='none',mew=2)
-
 			plt.xlim(lims[p1][0],lims[p1][1])
 			plt.ylim(lims[p2][0],lims[p2][1])
 			plt.xlabel(labs[p1])
