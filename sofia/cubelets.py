@@ -155,6 +155,9 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 	
 	# write mask
 	hdu = pyfits.PrimaryHDU(data=submask.astype('int16'),header=header)
+	hdu.header['bunit']='source_ID'
+	hdu.header['datamin']=submask.min()
+	hdu.header['datamax']=submask.max()
 	hdulist = pyfits.HDUList([hdu])
 	name = outputDir+cubename+'_'+str(int(obj[0]))+'_mask.fits'
 	if compress:
