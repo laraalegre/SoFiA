@@ -239,7 +239,7 @@ if 'id' not in cat[0] or 'ra' not in cat[0] or 'dec' not in cat[0] or 'z' not in
 # open a file for the output catalogue
 f_out = open(match_catalogue,'w')
 f_out.write('# id, ra, dec, z, match \n')
-
+ 
 
 for i in range(len(cat)):
     # define the subregion:
