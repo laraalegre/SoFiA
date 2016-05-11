@@ -215,6 +215,7 @@ if catalogue[-4:] != '.csv':
     sys.stderr.write("ERROR: The specified source catalogue is not a .csv file.\n")
     sys.stderr.write("       Cannot work on: " + catalogue + "\n")
     raise SystemExit(1)
+sys.stdout.flush()
 
 
 
@@ -242,6 +243,8 @@ f_out.write('# id, ra, dec, z, match \n')
  
 
 for i in range(len(cat)):
+    print "\n--- SoFiA: Working on source %i of %i of input catalogue ---"%(i+1,len(cat))
+    sys.stdout.flush()
     # define the subregion:
     subcube  = [float(cat[i]['ra']),float(cat[i]['dec']),float(cat[i]['z']),spatSize,spatSize,specSize]
 
