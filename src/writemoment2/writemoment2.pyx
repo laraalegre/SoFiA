@@ -76,16 +76,16 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
     sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
   else:
     hdu.writeto(name, output_verify = 'warn', clobber = True)
-  
-  datacube[maskcube==0]=0
+  datacubeCopy = datacube.copy()
+  datacubeCopy[maskcube==0]=0
   if 'cellscal' in header:
     if header['cellscal'] == '1/F':
       print 'WARNING: CELLSCAL keyword with value 1/F found.'
       print 'Will regrid masked cube before making moment images.'
-      datacube=regridMaskedChannels(datacube,maskcube,header)
-  datacube = np.array(datacube, dtype=np.single)
+      datacubeCopy=regridMaskedChannels(datacubeCopy,maskcube,header)
+  datacubeCopy = np.array(datacubeCopy, dtype=np.single)
   if domom0 or domom1:
-    m0 = mom0(datacube)
+    m0 = mom0(datacubeCopy)
   if domom0:
     print 'Writing moment-0' # in units of header['bunit']*km/s
     if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
@@ -122,7 +122,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
         hdu.writeto(name,output_verify='warn',clobber=True)
   if domom1:
     print 'Writing moment-1'
-    m1 = mom1(datacube,m0,header['crpix3'],header['crval3'],header['cdelt3'])
+    m1 = mom1(datacubeCopy,m0,header['crpix3'],header['crval3'],header['cdelt3'])
     # convert it to km/s (using radio velocity definition to go from Hz to km/s)
     if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
       if not 'cunit3' in header:
