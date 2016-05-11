@@ -97,7 +97,7 @@ def merge_xml(outroot,cat,storeMultiCat):
                         f.write(line_string)
                     else:
                         stop_header = 1
-                        if line_string[0:2] != '</' or line_string[0:5] == '</TR>':
+                        if line_string[0:2] != '</' or line_string[0:5] == '</TR>' or line_string[0:5] == '</TD>':
                             f.write(line_string)
         
         
@@ -107,7 +107,7 @@ def merge_xml(outroot,cat,storeMultiCat):
                 for line in f1:
                     line_string = line                    
                     l+=1
-                    if l > hlines and line_string[0:2] != '</' or line_string[0:5] == '</TR>':
+                    if l > hlines and line_string[0:2] != '</' or line_string[0:5] == '</TR>' or line_string[0:5] == '</TD>':
                         f.write(line_string)
             
                                  
@@ -308,15 +308,8 @@ for i in range(len(cat)):
 f_out.close()
 
 
-
-
-
-
-
-    
 # --------------------
 # ---- STORE DATA ----
-
 # --------------------
 
 if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge']:
