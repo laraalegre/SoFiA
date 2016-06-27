@@ -89,6 +89,9 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			dict_Header['crpix1']-=subcube[0]
 			dict_Header['crpix2']-=subcube[2]
 			dict_Header['crpix3']-=subcube[4]
+			dict_Header['naxis1'] =subcube[1]-subcube[0]
+			dict_Header['naxis2'] =subcube[3]-subcube[2]
+			dict_Header['naxis3'] =subcube[5]-subcube[4]
 		elif not len(subcube): np_Cube = f[0].data
 		else:
 			sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given).\n" % len(subcube))
@@ -105,6 +108,9 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 				dict_Header['crpix1']-=subcube[0]
 				dict_Header['crpix2']-=subcube[2]
 				dict_Header['crpix3']-=subcube[4]
+			        dict_Header['naxis1'] =subcube[1]-subcube[0]
+			        dict_Header['naxis2'] =subcube[3]-subcube[2]
+			        dict_Header['naxis3'] =subcube[5]-subcube[4]
 			elif not len(subcube): np_Cube = f[0].section[0]
 			else:
 				sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given). Ignore 4th axis.\n" % len(subcube))
@@ -117,6 +123,8 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			np_Cube = array([f[0].section[subcube[2]:subcube[3],subcube[0]:subcube[1]]])
 			dict_Header['crpix1']-=subcube[0]
 			dict_Header['crpix2']-=subcube[2]
+			dict_Header['naxis1'] =subcube[1]-subcube[0]
+			dict_Header['naxis2'] =subcube[3]-subcube[2]
 		elif not len(subcube): np_Cube = array([f[0].data])
 		else:
 			sys.stderr.write("ERROR: The subcube list must have 4 entries (%i given).\n" % len(subcube))
