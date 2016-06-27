@@ -264,7 +264,32 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 		else:
 			print 'Loading mask cube: ' , maskFile
 			g = astropy.open(maskFile,memmap=False)
-			mask = g[0].data
+			dict_Mask_header=g[0].header
+			if dict_Mask_header['NAXIS']==3:
+				if len(subcube)==6: mask=g[0].section[subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
+				else: mask=g[0].data
+			elif dict_Mask_header['NAXIS']==4:
+				if dict_Mask_header['NAXIS4']!=1:
+					sys.stderr.write("ERROR: The 4th dimension has more than 1 value.\n")
+					raise SystemExit(1)
+				else:
+					sys.stderr.write("WARNING: The mask cube has 4 axes; first axis ignored.\n")
+					if len(subcube)==6: mask=g[0].section[0,subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
+					else: mask=g[0].section[0]
+			elif dict_Mask_header['NAXIS']==2:
+				sys.stderr.write("WARNING: The mask cube has 2 axes; third axis added.\n")
+				if len(subcube)==6 or len(subcube)==4: mask=array([g[0].section[subcube[2]:subcube[3],subcube[0]:subcube[1]]])
+				else: mask=array([g[0].data])
+			elif dict_Mask_header['NAXIS']==1:
+				sys.stderr.write("WARNING: The mask cube has 1 axis; interpreted as third axis; first and second axes added.\n")
+				if len(subcube)==6: mask=reshape(g[0].section[subcube[4]:subcube[5]],(-1,1,1))
+				elif not len(subcube): mask=reshape(g[0].data,(-1,1,1))
+				else:
+					sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given).\n" % len(subcube))
+					raise SystemExit(1)
+			else:
+				sys.stderr.write("ERROR: The mask cube has less than 1 or more than 4 dimensions.\n")
+				raise SystemExit(1)
 			mask[mask>0]=1
 			g.close()
 			print 'Mask cube loaded.'
