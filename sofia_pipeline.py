@@ -485,31 +485,6 @@ if Parameters['steps']['doParameterise'] and Parameters['steps']['doMerge'] and 
 
 
 
-# ----------------------------------------------------
-# ---- CORRECT COORDINATES IF WORKING ON SUBCUBES ----
-# ----------------------------------------------------
-
-if len(subcube) and Parameters['steps']['doMerge'] and NRdet:
-	print "\n--- %.3f seconds since start"%(time()-t0)
-	print "\n--- SoFiA: Correcting parameters for sub-cube offset ---"
-	sys.stdout.flush()
-	# list of parameters to correct for X, Y and Z offset
-	corrX=['x_geo','x','x_min','x_max']
-	corrY=['y_geo','y','y_min','y_max']
-	corrZ=['z_geo','z','z_min','z_max','bf_z']
-
-	if subcube[0]:
-		for pp in corrX:
-			if pp in catParNames: objects[:,list(catParNames).index(pp)]+=subcube[0]
-	if subcube[2]:
-		for pp in corrY:
-			if pp in catParNames: objects[:,list(catParNames).index(pp)]+=subcube[2]
-	if subcube[4]:
-		for pp in corrZ:
-			if pp in catParNames: objects[:,list(catParNames).index(pp)]+=subcube[4]
-
-
-
 # --------------------
 # ---- WRITE MASK ----
 # --------------------
@@ -558,6 +533,31 @@ if Parameters['steps']['doCubelets'] and Parameters['steps']['doMerge'] and NRde
 	objects = np.array(objects)
 	cathead = np.array(catParNames)
 	cubelets.writeSubcube(np_Cube, dict_Header, mask, objects, cathead, outroot, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
+
+
+
+# ----------------------------------------------------
+# ---- CORRECT COORDINATES IF WORKING ON SUBCUBES ----
+# ----------------------------------------------------
+
+if len(subcube) and Parameters['steps']['doMerge'] and NRdet:
+	print "\n--- %.3f seconds since start"%(time()-t0)
+	print "\n--- SoFiA: Correcting parameters for sub-cube offset ---"
+	sys.stdout.flush()
+	# list of parameters to correct for X, Y and Z offset
+	corrX=['x_geo','x','x_min','x_max']
+	corrY=['y_geo','y','y_min','y_max']
+	corrZ=['z_geo','z','z_min','z_max','bf_z']
+
+	if subcube[0]:
+		for pp in corrX:
+			if pp in catParNames: objects[:,list(catParNames).index(pp)]+=subcube[0]
+	if subcube[2]:
+		for pp in corrY:
+			if pp in catParNames: objects[:,list(catParNames).index(pp)]+=subcube[2]
+	if subcube[4]:
+		for pp in corrZ:
+			if pp in catParNames: objects[:,list(catParNames).index(pp)]+=subcube[4]
 
 
 
