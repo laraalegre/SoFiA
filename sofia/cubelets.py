@@ -144,11 +144,11 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 	hdulist.close()
 	
 	# make PV diagram
-	if 'ell_pa' in cathead:
+	if 'kin_pa' in cathead:
 		pv_sampling=10
 		pv_r=np.arange(-max(subcube.shape[1:]),max(subcube.shape[1:])-1+1./pv_sampling,1./pv_sampling)
-		pv_y=Yc-YminNew+pv_r*math.cos(float(obj[cathead=='ell_pa'][0])/180*math.pi)
-		pv_x=Xc-XminNew-pv_r*math.sin(float(obj[cathead=='ell_pa'][0])/180*math.pi)
+		pv_y=Yc-YminNew+pv_r*math.cos(float(obj[cathead=='kin_pa'][0])/180*math.pi)
+		pv_x=Xc-XminNew-pv_r*math.sin(float(obj[cathead=='kin_pa'][0])/180*math.pi)
 		pv_x,pv_y=pv_x[(pv_x>=0)*(pv_x<=subcube.shape[2]-1)],pv_y[(pv_x>=0)*(pv_x<=subcube.shape[2]-1)]
 		pv_x,pv_y=pv_x[(pv_y>=0)*(pv_y<=subcube.shape[1]-1)],pv_y[(pv_y>=0)*(pv_y<=subcube.shape[1]-1)]
 		pv_x.resize((1,pv_x.shape[0]))
