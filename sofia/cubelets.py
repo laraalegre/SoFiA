@@ -8,6 +8,35 @@ import math
 from scipy.ndimage import map_coordinates
 
 
+def regridMaskedChannels(datacube,maskcube,header):
+  
+  maskcubeFlt = maskcube.astype('float')
+  maskcubeFlt[maskcubeFlt>1] = 1
+  
+  print 'Regridding...'
+  sys.stdout.flush()
+  from scipy import interpolate
+  z=(np.arange(1.,header['naxis3']+1)-header['crpix3'])*header['cdelt3']+header['crval3']
+  if header['ctype3']=='VELO-HEL':
+    pixscale=(1-header['crval3']/2.99792458e+8)/(1-z/2.99792458e+8)
+  else:
+    sys.stderr.write("WARNING: Cannot convert axis3 coordinates to frequency. Will ignore the effect of CELLSCAL = 1/F.\n")
+    pixscale=np.ones((header['naxis3']))
+  x0,y0=header['crpix1']-1,header['crpix2']-1
+  xs=np.arange(datacube.shape[2],dtype=float)-x0
+  ys=np.arange(datacube.shape[1],dtype=float)-y0
+  for zz in range(datacube.shape[0]):
+    regrid_channel=interpolate.RectBivariateSpline(ys*pixscale[zz],xs*pixscale[zz],datacube[zz])
+    datacube[zz]=regrid_channel(ys,xs)
+    regrid_channel_mask=interpolate.RectBivariateSpline(ys*pixscale[zz],xs*pixscale[zz],maskcubeFlt[zz])
+    maskcubeFlt[zz] = regrid_channel_mask(ys,xs)
+  
+  maskMin = maskcubeFlt.min()
+  datacube[abs(maskcubeFlt)<=abs(maskMin)] = np.nan
+  del maskcubeFlt
+  
+  return datacube
+
 def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOverwrite):
     
     # strip path variable to get the file name and the directory separately
@@ -91,8 +120,15 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 	header['CRPIX2'] = cPixYCut+1
 	header['CRPIX3'] = cPixZCut+1
 	
-	# write the cubelet
+	# extract the cubelet
 	subcube = cube[ZminNew:ZmaxNew+1,YminNew:YmaxNew+1,XminNew:XmaxNew+1]
+
+	# update header keywords:
+	header['NAXIS1'] = subcube.shape[2]
+	header['NAXIS2'] = subcube.shape[1]
+	header['NAXIS3'] = subcube.shape[0]
+
+	# write the cubelet
 	hdu = pyfits.PrimaryHDU(data=subcube,header=header)
 	hdulist = pyfits.HDUList([hdu])
 	name = outputDir + cubename + '_' + str(int(obj[0])) + '.fits'
@@ -181,12 +217,13 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		if not 'cunit3' in header or header['cunit3'].lower()=='hz': dkms=abs(header['cdelt3'])/1.42040575177e+9*2.99792458e+5 # assuming Hz
 		elif header['cunit3'].lower()=='khz': dkms=abs(header['cdelt3'])/1.42040575177e+6*2.99792458e+5
 		else: dkms=1. # no scaling, avoids crashing
-	m0=np.nan_to_num(subcube*submask.astype(bool)).sum(axis=0)
+	subcubeCopy = subcube.copy()
+	subcubeCopy[submask==0] = 0
+	subcubeCopy = regridMaskedChannels(subcubeCopy,submask,header)
+	m0=np.nan_to_num(subcubeCopy).sum(axis=0)
 	m0*=dkms
 	hdu = pyfits.PrimaryHDU(data=m0,header=header)
 	hdu.header['bunit']+='.km/s'
-	#hdu.header['datamin']=m0.min()
-	#hdu.header['datamax']=m0.max()
 	hdu.header['datamin']=np.nanmin(m0)
 	hdu.header['datamax']=np.nanmax(m0)
 	del(hdu.header['crpix3'])
@@ -205,7 +242,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 	
 	
 	# moment 1
-	m1=(np.arange(subcube.shape[0]).reshape((subcube.shape[0],1,1))*np.ones(subcube.shape)-header['crpix3']+1)*header['cdelt3']+header['crval3']
+	m1=(np.arange(subcubeCopy.shape[0]).reshape((subcubeCopy.shape[0],1,1))*np.ones(subcubeCopy.shape)-header['crpix3']+1)*header['cdelt3']+header['crval3']
 	if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
 		if not 'cunit3' in header: m1/=1e+3 # assuming m/s
 		elif header['cunit3'].lower()=='km/s': pass
@@ -214,7 +251,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		elif header['cunit3'].lower()=='khz': m1*=2.99792458e+5/1.42040575177e+6
 	m0[m0==0]=np.nan
 	m0/=dkms
-	m1=np.divide(np.array(np.nan_to_num(m1*subcube*submask.astype('bool')).sum(axis=0)),m0)
+	m1=np.divide(np.array(np.nan_to_num(m1*subcubeCopy).sum(axis=0)),m0)
 	hdu = pyfits.PrimaryHDU(data=m1,header=header)
 	hdu.header['bunit']='km/s'
 	hdu.header['datamin']=np.nanmin(m1)
@@ -235,7 +272,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 	
 	
 	# moment 2
-	m2=(np.arange(subcube.shape[0]).reshape((subcube.shape[0],1,1))*np.ones(subcube.shape)-header['crpix3']+1)*header['cdelt3']+header['crval3']
+	m2=(np.arange(subcubeCopy.shape[0]).reshape((subcubeCopy.shape[0],1,1))*np.ones(subcubeCopy.shape)-header['crpix3']+1)*header['cdelt3']+header['crval3']
 	if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
 		if not 'cunit3' in header: m2/=1e+3 # assuming m/s
 		elif header['cunit3'].lower()=='km/s': pass
@@ -243,7 +280,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		if not 'cunit3' in header or header['cunit3'].lower()=='hz': m2*=2.99792458e+5/1.42040575177e+9 # assuming Hz
 		elif header['cunit3'].lower()=='khz': m2*=2.99792458e+5/1.42040575177e+6
 	m2 = m2**2
-	m2=np.divide(np.array(np.nan_to_num(m2*subcube*submask.astype('bool')).sum(axis=0)),m0)
+	m2=np.divide(np.array(np.nan_to_num(m2*subcubeCopy).sum(axis=0)),m0)
 	m2-=m1*m1
 	m2=np.sqrt(m2)
 	hdu = pyfits.PrimaryHDU(data=m2,header=header)
@@ -266,7 +303,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 	
 	
 	# spectra
-	spec = np.nansum(subcube*submask,axis=(1,2))
+	spec = np.nansum(subcubeCopy,axis=(1,2))
 	
 	name = outputDir + cubename + '_' + str(int(obj[0])) + '_spec.txt'
 	if compress: name += '.gz'
