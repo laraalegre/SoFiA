@@ -32,6 +32,7 @@
 #ifndef BUSYFIT_H
 #define BUSYFIT_H
 
+#include <gsl/gsl_version.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_vector.h>

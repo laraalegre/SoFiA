@@ -496,6 +496,9 @@ int BusyFit::LMSolver()
 	gsl_vector_view                    x     = gsl_vector_view_array(x_init, BUSYFIT_FREE_PARAM);
 	const gsl_rng_type                *type;
 	gsl_rng                           *r;
+#if GSL_MAJOR_VERSION >= 2
+	gsl_matrix                        *J = gsl_matrix_alloc(BUSYFIT_FREE_PARAM, BUSYFIT_FREE_PARAM);
+#endif
 	
 	gsl_rng_env_setup();
 	
@@ -543,9 +546,14 @@ int BusyFit::LMSolver()
 		status = gsl_multifit_test_delta(s->dx, s->x, 1.0e-4, 1.0e-4);
 	}
 	while(status == GSL_CONTINUE and iter < iterMax);
-	
+
+#if GSL_MAJOR_VERSION < 2	
 	gsl_multifit_covar(s->J, 0.0, covar);
-	
+#else 
+	gsl_multifit_fdfsolver_jac(s,J);
+	gsl_multifit_covar(J, 0.0, covar);
+#endif
+
 	int nFreePar = 0;
 	
 	for(int i = 0; i < BUSYFIT_FREE_PARAM; i++)
@@ -578,6 +586,9 @@ int BusyFit::LMSolver()
 	
 	gsl_multifit_fdfsolver_free(s);
 	gsl_matrix_free(covar);
+#if GSL_MAJOR_VERSION >= 2
+	gsl_matrix_free(J);
+#endif
 	gsl_rng_free(r);
 	
 	return status;
