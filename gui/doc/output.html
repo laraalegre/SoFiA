@@ -50,6 +50,69 @@
       <li>Small subcubes, so-called <strong>cubelets</strong>, of each individual source detected by SoFiA. This also includes <strong>0<sup>th</sup></strong>, <strong>1<sup>st</sup></strong> and <strong>2<sup>nd</sup> moment</strong> maps created from the cubelet, a <strong>position&ndash;velocity diagram</strong> along the morphological major axis of each source, and an <strong>integrated spectrum</strong> of the source. All these individual products will be stored in a separate sub-folder named <code>objects</code>. Maps and cubes are stored in FITS format, while the integrated spectrum is stored as a plain text file.</li>
     </ul>
     
+    <h2>Source Parameters</h2>
+    
+    <p>
+      The following table lists all of the source parameters that can occur in SoFiA&rsquo;s output catalogues. The first two columns contain the name of the parameter as it appears in the catalogue header and a brief description of the parameter&rsquo;s physical meaning. The third column lists the associated <a href="http://www.ivoa.net/documents/latest/UCD.html">Unified Content Descriptor</a> (UCD) as defined by the <a href="http://www.ivoa.net/">International Virtual Observatory Alliance</a>. Note that UCDs will only appear in SoFiA&rsquo;s VO-compatible XML catalogues, but not in ASCII catalogues.
+    </p>
+    
+    <table>
+      <tr><td class="head">Parameter</td>              <td class="head">Description</td>                                                                  <td class="head">UCD</td></tr>
+      <tr><td class="body"><code>id</code></td>        <td class="body">Unique identifier</td>                                                            <td class="body"><code>meta.id</code></td></tr>
+      <tr><td class="body"><code>name</code></td>      <td class="body">IAU-compliant source name</td>                                                    <td class="body"><code>meta.id</code></td></tr>
+      <tr><td class="body"><code>x</code></td>         <td class="body">X-coordinate of flux-weighted centre</td>                                         <td class="body"><code>pos.cartesian.x</code></td></tr>
+      <tr><td class="body"><code>y</code></td>         <td class="body">Y-coordinate of flux-weighted centre</td>                                         <td class="body"><code>pos.cartesian.y</code></td></tr>
+      <tr><td class="body"><code>z</code></td>         <td class="body">Z-coordinate of flux-weighted centre</td>                                         <td class="body"><code>pos.cartesian.z</code></td></tr>
+      <tr><td class="body"><code>x_geo</code></td>     <td class="body">X-coordinate of geometric centre</td>                                             <td class="body"><code>pos.cartesian.x</code></td></tr>
+      <tr><td class="body"><code>y_geo</code></td>     <td class="body">Y-coordinate of geometric centre</td>                                             <td class="body"><code>pos.cartesian.x</code></td></tr>
+      <tr><td class="body"><code>z_geo</code></td>     <td class="body">Z-coordinate of geometric centre</td>                                             <td class="body"><code>pos.cartesian.x</code></td></tr>
+      <tr><td class="body"><code>x_min</code></td>     <td class="body">X-coordinate of lower boundary</td>                                               <td class="body"><code>pos.cartesian.x;stat.min</code></td></tr>
+      <tr><td class="body"><code>x_max</code></td>     <td class="body">X-coordinate of upper boundary</td>                                               <td class="body"><code>pos.cartesian.x;stat.max</code></td></tr>
+      <tr><td class="body"><code>y_min</code></td>     <td class="body">Y-coordinate of lower boundary</td>                                               <td class="body"><code>pos.cartesian.y;stat.min</code></td></tr>
+      <tr><td class="body"><code>y_max</code></td>     <td class="body">Y-coordinate of upper boundary</td>                                               <td class="body"><code>pos.cartesian.y;stat.max</code></td></tr>
+      <tr><td class="body"><code>z_min</code></td>     <td class="body">Z-coordinate of lower boundary</td>                                               <td class="body"><code>pos.cartesian.z;stat.min</code></td></tr>
+      <tr><td class="body"><code>z_max</code></td>     <td class="body">Z-coordinate of upper boundary</td>                                               <td class="body"><code>pos.cartesian.z;stat.max</code></td></tr>
+      <tr><td class="body"><code>n_pix</code></td>     <td class="body">Total number of spatial and spectral pixels</td>                                  <td class="body"><code>meta.number;instr.pixel</code></td></tr>
+      <tr><td class="body"><code>n_los</code></td>     <td class="body">Number of spatial pixels covered by the source</td>                               <td class="body"><code>meta.number;instr.pixel</code></td></tr>
+      <tr><td class="body"><code>n_chan</code></td>    <td class="body">Number of spectral channels covered by the source</td>                            <td class="body"><code>meta.number;instr.pixel</code></td></tr>
+      <tr><td class="body"><code>rel</code></td>       <td class="body">Reliability</td>                                                                  <td class="body"><code>stat.probability</code></td></tr>
+      <tr><td class="body"><code>bf_a</code></td>      <td class="body">Busy Function free parameter A</td>                                               <td class="body"><code>stat.fit.param</code></td></tr>
+      <tr><td class="body"><code>bf_b1</code></td>     <td class="body">Busy Function free parameter B<sub>1</sub></td>                                   <td class="body"><code>stat.fit.param</code></td></tr>
+      <tr><td class="body"><code>bf_b2</code></td>     <td class="body">Busy Function free parameter B<sub>2</sub></td>                                   <td class="body"><code>stat.fit.param</code></td></tr>
+      <tr><td class="body"><code>bf_c</code></td>      <td class="body">Busy Function free parameter C</td>                                               <td class="body"><code>stat.fit.param</code></td></tr>
+      <tr><td class="body"><code>bf_chi2</code></td>   <td class="body">Reduced &chi;<sup>2</sup> of Busy Function fit</td>                               <td class="body"><code>stat.fit.chi2</code></td></tr>
+      <tr><td class="body"><code>bf_flag</code></td>   <td class="body">Success flag of Busy Function fit</td>                                            <td class="body"><code>meta.code;stat.fit</code></td></tr>
+      <tr><td class="body"><code>bf_f_int</code></td>  <td class="body">Integrated flux derived from Busy Function fit</td>                               <td class="body"><code>stat.fit.param</code></td></tr>
+      <tr><td class="body"><code>bf_f_peak</code></td> <td class="body">Peak flux density derived from Busy Function fit</td>                             <td class="body"><code>stat.fit.param</code></td></tr>
+      <tr><td class="body"><code>bf_w</code></td>      <td class="body">Busy Function free parameter W</td>                                               <td class="body"><code>stat.fit.param</code></td></tr>
+      <tr><td class="body"><code>bf_w20</code></td>    <td class="body">Line width (w<sub>20</sub>) derived from Busy Function fit</td>                   <td class="body"><code>stat.fit.param</code></td></tr>
+      <tr><td class="body"><code>bf_w50</code></td>    <td class="body">Line width (w<sub>50</sub>) derived from Busy Function fit</td>                   <td class="body"><code>stat.fit.param</code></td></tr>
+      <tr><td class="body"><code>bf_xe</code></td>     <td class="body">Busy Function free parameter X<sub>e</sub></td>                                   <td class="body"><code>stat.fit.param</code></td></tr>
+      <tr><td class="body"><code>bf_xp</code></td>     <td class="body">Busy Function free parameter X<sub>p</sub></td>                                   <td class="body"><code>stat.fit.param</code></td></tr>
+      <tr><td class="body"><code>bf_z</code></td>      <td class="body">Line centroid derived from Busy Function fit</td>                                 <td class="body"><code>stat.fit.param</code></td></tr>
+      <tr><td class="body"><code>ell_maj</code></td>   <td class="body">Major axis of ellipse fitted to source (flux-weighted)</td>                       <td class="body"><code>phys.angSize</code></td></tr>
+      <tr><td class="body"><code>ell_min</code></td>   <td class="body">Minor axis of ellipse fitted to source (flux-weighted)</td>                       <td class="body"><code>phys.angSize</code></td></tr>
+      <tr><td class="body"><code>ell_pa</code></td>    <td class="body">Position angle of ellipse fitted to source (flux-weighted)</td>                   <td class="body"><code>pos.posAng</code></td></tr>
+      <tr><td class="body"><code>ell3s_maj</code></td> <td class="body">Major axis of ellipse fitted to > 3σ pixels of moment map (equal weight)</td>     <td class="body"><code>phys.angSize</code></td></tr>
+      <tr><td class="body"><code>ell3s_min</code></td> <td class="body">Minor axis of ellipse fitted to > 3σ pixels of moment map (equal weight)</td>     <td class="body"><code>phys.angSize</code></td></tr>
+      <tr><td class="body"><code>ell3s_pa</code></td>  <td class="body">Position angle of ellipse fitted to > 3σ pixels of moment map (equal weight)</td> <td class="body"><code>pos.posAng</code></td></tr>
+      <tr><td class="body"><code>kin_pa</code></td>    <td class="body">Position angle of kinematic major axis</td>                                       <td class="body"><code>pos.posAng</code></td></tr>
+      <tr><td class="body"><code>f_peak</code></td>    <td class="body">Peak flux density</td>                                                            <td class="body"><code>phot.flux.density;stat.max</code></td></tr>
+      <tr><td class="body"><code>f_int</code></td>     <td class="body">Integrated flux</td>                                                              <td class="body"><code>phot.flux</code></td></tr>
+      <tr><td class="body"><code>f_wm50</code></td>    <td class="body">Integrated flux within w<sub>m50</sub> line width</td>                            <td class="body"><code>phot.flux</code></td></tr>
+      <tr><td class="body"><code>snr_int</code></td>   <td class="body">Integrated signal-to-noise ratio;beam correction missing!</td>                    <td class="body"><code>stat.snr</code></td></tr>
+      <tr><td class="body"><code>rms</code></td>       <td class="body">RMS noise level</td>                                                              <td class="body"><code>instr.det.noise</code></td></tr>
+      <tr><td class="body"><code>w20</code></td>       <td class="body">Line width (w<sub>20</sub>)</td>                                                  <td class="body"><code>spect.line.width</code></td></tr>
+      <tr><td class="body"><code>w50</code></td>       <td class="body">Line width (w<sub>50</sub>)</td>                                                  <td class="body"><code>spect.line.width</code></td></tr>
+      <tr><td class="body"><code>wm50</code></td>      <td class="body">Line width (w<sub>m50</sub>)</td>                                                 <td class="body"><code>spect.line.width</code></td></tr>
+      <tr><td class="body"><code>ra</code></td>        <td class="body">Right ascension of flux-weighted centre</td>                                      <td class="body"><code>pos.eq.ra</code></td></tr>
+      <tr><td class="body"><code>dec</code></td>       <td class="body">Declination of flux-weighted centre</td>                                          <td class="body"><code>pos.eq.dec</code></td></tr>
+      <tr><td class="body"><code>lon</code></td>       <td class="body">Longitude of flux-weighted centre</td>                                            <td class="body"><code>pos.galactic.lon</code></td></tr>
+      <tr><td class="body"><code>lat</code></td>       <td class="body">Latitude of flux-weighted centre</td>                                             <td class="body"><code>pos.galactic.lat</code></td></tr>
+      <tr><td class="body"><code>freq</code></td>      <td class="body">Frequency of flux-weighted centre</td>                                            <td class="body"><code>em.freq</code></td></tr>
+      <tr><td class="body"><code>velo</code></td>      <td class="body">Radial velocity of flux-weighted centre</td>                                      <td class="body"><code>spect.dopplerVeloc</code></td></tr>
+    </table>
+    
     <p align="center">
       <a href="pipeline.html">&larr;&nbsp;Previous</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="index.html">&uarr;&nbsp;Up</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="references.html">Next&nbsp;&rarr;</a>
     </p>
