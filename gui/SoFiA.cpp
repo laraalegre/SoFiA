@@ -3188,6 +3188,8 @@ void SoFiA::createInterface()
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_xe,     5, 5);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_xp,     6, 5);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_w,      7, 5);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_chi2,   8, 5);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_flag,   9, 5);
 	
 	tabOutputLayoutParameters->addWidget(tabOutputLabelParametersBFPhys,     0, 6);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_z,      1, 6);
@@ -3195,8 +3197,6 @@ void SoFiA::createInterface()
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_w50,    3, 6);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_f_peak, 4, 6);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_f_int,  5, 6);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_chi2,   6, 6);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_bf_flag,   7, 6);
 	
 	tabOutputWidgetParameters->setLayout(tabOutputLayoutParameters);
 	
