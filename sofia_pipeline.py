@@ -68,9 +68,9 @@ print "\n--- SoFiA: Reading default parameters ---"
 sys.stdout.flush()
 
 # This reads in the default parameters:
-default_file = '%s/SoFiA_default_input.txt'%(os.path.dirname(os.path.realpath(__file__)))
+#default_file = '%s/SoFiA_default_input.txt'%(os.path.dirname(os.path.realpath(__file__)))
 #default_file = 'SoFiA_default_input.txt'
-#default_file = os.getenv('SOFIA_PIPELINE_PATH').replace('sofia_pipeline.py','SoFiA_default_input.txt')
+default_file = os.getenv('SOFIA_PIPELINE_PATH').replace('sofia_pipeline.py','SoFiA_default_input.txt')
 Parameters = readoptions.readPipelineOptions(default_file)
 
 
