@@ -72,7 +72,7 @@ folder where the downloaded file was saved. Then follow the steps below.
 
    > python setup.py build --force
    
-   (add --no-gui=True if you do not want to compile the GUI)
+   (add `--no-gui=True` if you do not want to compile the GUI)
 
 4. Set up environment variables
 
