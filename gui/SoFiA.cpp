@@ -439,8 +439,8 @@ int SoFiA::updateVariables()
 		if(tabOutputButtonParameter_z_min->isChecked())     listOutputPar.append(QString("\'z_min\',"));
 		if(tabOutputButtonParameter_z_max->isChecked())     listOutputPar.append(QString("\'z_max\',"));
 		if(tabOutputButtonParameter_n_pix->isChecked())     listOutputPar.append(QString("\'n_pix\',"));
-		if(tabOutputButtonParameter_n_pos->isChecked())     listOutputPar.append(QString("\'n_pos\',"));
-		if(tabOutputButtonParameter_n_neg->isChecked())     listOutputPar.append(QString("\'n_neg\',"));
+		if(tabOutputButtonParameter_n_los->isChecked())     listOutputPar.append(QString("\'n_los\',"));
+		if(tabOutputButtonParameter_n_chan->isChecked())    listOutputPar.append(QString("\'n_chan\',"));
 		if(tabOutputButtonParameter_rel->isChecked())       listOutputPar.append(QString("\'rel\',"));
 		if(tabOutputButtonParameter_bf_a->isChecked())      listOutputPar.append(QString("\'bf_a\',"));
 		if(tabOutputButtonParameter_bf_b1->isChecked())     listOutputPar.append(QString("\'bf_b1\',"));
@@ -602,8 +602,8 @@ int SoFiA::setFields()
 		tabOutputButtonParameter_z_min->setChecked(false);
 		tabOutputButtonParameter_z_max->setChecked(false);
 		tabOutputButtonParameter_n_pix->setChecked(false);
-		tabOutputButtonParameter_n_pos->setChecked(false);
-		tabOutputButtonParameter_n_neg->setChecked(false);
+		tabOutputButtonParameter_n_los->setChecked(false);
+		tabOutputButtonParameter_n_chan->setChecked(false);
 		tabOutputButtonParameter_rel->setChecked(false);
 		tabOutputButtonParameter_bf_a->setChecked(false);
 		tabOutputButtonParameter_bf_b1->setChecked(false);
@@ -655,8 +655,8 @@ int SoFiA::setFields()
 		if(listOutputPar.contains(QString("\'z_min\'")))     tabOutputButtonParameter_z_min->setChecked(true);
 		if(listOutputPar.contains(QString("\'z_max\'")))     tabOutputButtonParameter_z_max->setChecked(true);
 		if(listOutputPar.contains(QString("\'n_pix\'")))     tabOutputButtonParameter_n_pix->setChecked(true);
-		if(listOutputPar.contains(QString("\'n_pos\'")))     tabOutputButtonParameter_n_pos->setChecked(true);
-		if(listOutputPar.contains(QString("\'n_neg\'")))     tabOutputButtonParameter_n_neg->setChecked(true);
+		if(listOutputPar.contains(QString("\'n_los\'")))     tabOutputButtonParameter_n_los->setChecked(true);
+		if(listOutputPar.contains(QString("\'n_chan\'")))    tabOutputButtonParameter_n_chan->setChecked(true);
 		if(listOutputPar.contains(QString("\'rel\'")))       tabOutputButtonParameter_rel->setChecked(true);
 		if(listOutputPar.contains(QString("\'bf_a\'")))      tabOutputButtonParameter_bf_a->setChecked(true);
 		if(listOutputPar.contains(QString("\'bf_b1\'")))     tabOutputButtonParameter_bf_b1->setChecked(true);
@@ -1043,8 +1043,8 @@ void SoFiA::updateFields()
 	tabOutputButtonParameter_z_min->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_z_max->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_n_pix->setEnabled(tabOutputGroupBox2->isChecked());
-	tabOutputButtonParameter_n_pos->setEnabled(tabOutputGroupBox2->isChecked());
-	tabOutputButtonParameter_n_neg->setEnabled(tabOutputGroupBox2->isChecked());
+	tabOutputButtonParameter_n_los->setEnabled(tabOutputGroupBox2->isChecked());
+	tabOutputButtonParameter_n_chan->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_rel->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_bf_a->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_bf_b1->setEnabled(tabOutputGroupBox2->isChecked());
@@ -2920,8 +2920,8 @@ void SoFiA::createInterface()
 	tabOutputButtonParameter_z_min     = new QCheckBox(tr("z_min"), tabOutputGroupBox2);
 	tabOutputButtonParameter_z_max     = new QCheckBox(tr("z_max"), tabOutputGroupBox2);
 	tabOutputButtonParameter_n_pix     = new QCheckBox(tr("n_pix"), tabOutputGroupBox2);
-	tabOutputButtonParameter_n_pos     = new QCheckBox(tr("n_pos"), tabOutputGroupBox2);
-	tabOutputButtonParameter_n_neg     = new QCheckBox(tr("n_neg"), tabOutputGroupBox2);
+	tabOutputButtonParameter_n_los     = new QCheckBox(tr("n_los"), tabOutputGroupBox2);
+	tabOutputButtonParameter_n_chan    = new QCheckBox(tr("n_chan"), tabOutputGroupBox2);
 	tabOutputButtonParameter_rms       = new QCheckBox(tr("rms"), tabOutputGroupBox2);
 	tabOutputButtonParameter_rel       = new QCheckBox(tr("rel"), tabOutputGroupBox2);
 	tabOutputButtonParameter_ra        = new QCheckBox(tr("ra"), tabOutputGroupBox2);
@@ -2973,8 +2973,8 @@ void SoFiA::createInterface()
 	tabOutputButtonParameter_z_min     -> setObjectName("parameter_z_min");
 	tabOutputButtonParameter_z_max     -> setObjectName("parameter_z_max");
 	tabOutputButtonParameter_n_pix     -> setObjectName("parameter_n_pix");
-	tabOutputButtonParameter_n_pos     -> setObjectName("parameter_n_pos");
-	tabOutputButtonParameter_n_neg     -> setObjectName("parameter_n_neg");
+	tabOutputButtonParameter_n_los     -> setObjectName("parameter_n_los");
+	tabOutputButtonParameter_n_chan    -> setObjectName("parameter_n_chan");
 	tabOutputButtonParameter_rel       -> setObjectName("parameter_rel");
 	tabOutputButtonParameter_bf_a      -> setObjectName("parameter_bf_a");
 	tabOutputButtonParameter_bf_b1     -> setObjectName("parameter_bf_b1");
@@ -3026,8 +3026,8 @@ void SoFiA::createInterface()
 	tabOutputButtonParameter_z_min     -> setToolTip(tr("Z-coordinate of lower boundary"));
 	tabOutputButtonParameter_z_max     -> setToolTip(tr("Z-coordinate of upper boundary"));
 	tabOutputButtonParameter_n_pix     -> setToolTip(tr("Total number of spatial and spectral pixels"));
-	tabOutputButtonParameter_n_pos     -> setToolTip(tr("Number of spatial and spectral pixels with positive flux"));
-	tabOutputButtonParameter_n_neg     -> setToolTip(tr("Number of spatial and spectral pixels with negative flux"));
+	tabOutputButtonParameter_n_los     -> setToolTip(tr("Number of spatial pixels covered by the source"));
+	tabOutputButtonParameter_n_chan    -> setToolTip(tr("Number of spectral channels covered by the source"));
 	tabOutputButtonParameter_rel       -> setToolTip(tr("Reliability"));
 	tabOutputButtonParameter_bf_a      -> setToolTip(tr("Busy Function free parameter A"));
 	tabOutputButtonParameter_bf_b1     -> setToolTip(tr("Busy Function free parameter B<sub>1</sub>"));
@@ -3079,8 +3079,8 @@ void SoFiA::createInterface()
 	connect(tabOutputButtonParameter_z_min,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_z_max,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_n_pix,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	connect(tabOutputButtonParameter_n_pos,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	connect(tabOutputButtonParameter_n_neg,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	connect(tabOutputButtonParameter_n_los,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	connect(tabOutputButtonParameter_n_chan,    SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_rel,       SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_bf_a,      SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	connect(tabOutputButtonParameter_bf_b1,     SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
@@ -3152,8 +3152,8 @@ void SoFiA::createInterface()
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_z_min,     5, 1);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_z_max,     6, 1);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_pix,     7, 1);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_pos,     8, 1);
-	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_neg,     9, 1);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_los,     8, 1);
+	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_n_chan,    9, 1);
 	
 	tabOutputLayoutParameters->addWidget(tabOutputLabelParametersWCS,        0, 2);
 	tabOutputLayoutParameters->addWidget(tabOutputButtonParameter_ra,        1, 2);

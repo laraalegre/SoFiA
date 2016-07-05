@@ -521,8 +521,8 @@ private:
 	QCheckBox    *tabOutputButtonParameter_z_min;
 	QCheckBox    *tabOutputButtonParameter_z_max;
 	QCheckBox    *tabOutputButtonParameter_n_pix;
-	QCheckBox    *tabOutputButtonParameter_n_pos;
-	QCheckBox    *tabOutputButtonParameter_n_neg;
+	QCheckBox    *tabOutputButtonParameter_n_los;
+	QCheckBox    *tabOutputButtonParameter_n_chan;
 	QCheckBox    *tabOutputButtonParameter_rel;
 	QCheckBox    *tabOutputButtonParameter_bf_a;
 	QCheckBox    *tabOutputButtonParameter_bf_b1;
