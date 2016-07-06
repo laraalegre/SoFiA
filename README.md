@@ -55,7 +55,7 @@ folder where the downloaded file was saved. Then follow the steps below.
 
    Download and unpack the zipped archive into a directory of your choice:
 
-   > unzip SoFiA-[version].zip
+       unzip SoFiA-[version].zip
 
    or
 
