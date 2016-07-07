@@ -50,8 +50,8 @@ def checkOverwrite(outputFile, isFile=True, isDir=False):
 		sys.stderr.write("       1) enable overwrite in GUI or parameter file\n")
 		sys.stderr.write("       2) rename existing directory\n")
 		sys.stderr.write("       3) change base name and/or output directory in GUI or parameter file\n")
+		sys.exit(1)
 	return
-
 
 
 
@@ -60,6 +60,8 @@ def checkOverwrite(outputFile, isFile=True, isDir=False):
 # --------------------------------
 
 t0=time()
+
+
 
 # ---------------------------------
 # ---- READ DEFAULT PARAMETERS ----
@@ -88,6 +90,7 @@ sys.stdout.flush()
 parameter_file = sys.argv[1]
 print 'Parameters extracted from: ', parameter_file
 print
+sys.stdout.flush()
 User_Parameters = readoptions.readPipelineOptions(parameter_file)
 
 # Overwrite default parameters with user parameters (if exist):
@@ -115,7 +118,13 @@ else:
 	if outputDir[-1] != '/': outputDir += '/'
 	outroot = outputDir + outroot
 
-# Check if any output file already exists:
+
+
+# -------------------------------------------
+# ---- CHECK FOR FILES TO BE OVERWRITTEN ----
+# -------------------------------------------
+
+
 outputFilteredCube  = '%s_filtered.fits'%outroot
 outputSkellamPDF    = '%s_skel.pdf'%outroot
 outputScatterPDF    = '%s_scat.pdf'%outroot
@@ -161,6 +170,29 @@ if not Parameters['writeCat']['overwrite']:
 		checkOverwrite(outputCatXml)
 	if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge'] and Parameters['writeCat']['writeASCII']:
 		checkOverwrite(outputCatAscii)
+
+
+
+# --------------------------------------------------------------
+# ---- DEFINE LINKER'S OUTPUT AND CHECK RELIBILITY SETTINGS ----
+# --------------------------------------------------------------
+
+if Parameters['steps']['doMerge']:
+        # Define parameters returned by the linker module
+        catParNames = ('id','x_geo','y_geo','z_geo','x','y','z','x_min','x_max','y_min','y_max','z_min','z_max','n_pix','snr_min','snr_max','snr_sum','x_p','y_p','z_p','x_n','y_n','z_n','snr_sum_p','snr_sum_n','snr_mean','snr_std','snr_rms','w20','w50','w20_cfd','w50_cfd','n_x','n_y','n_chan','n_los')
+        catParUnits = ('-','pix','pix','chan','pix','pix','chan','pix','pix','pix','pix','chan','chan','-','-','-','-','pix','pix','chan','pix','pix','chan','-','-','-','-','-','chan','chan','chan','chan','pix','pix','chan','-')
+        catParFormt = ('%10i', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%7i', '%7i', '%7i', '%7i', '%7i', '%7i', '%8i', '%12.3e', '%12.3e', '%12.3e','%10.3f','%10.3f','%10.3f','%10.3f','%10.3f','%10.3f','%12.3e','%12.3e','%12.3e','%12.3e','%12.3e','%10.3f','%10.3f','%10.3f','%10.3f','%7i','%7i','%7i','%7i')
+	if Parameters['steps']['doReliability']:
+		# Check that the parameters to be used for the reliability calculation are included in catParNames
+		for pp in Parameters['reliability']['parSpace']:
+			if pp not in catParNames:
+				sys.stderr.write("ERROR: You asked to calculate the sources' reliability in the parameter space:\n")
+				sys.stderr.write("       "+str(Parameters['reliability']['parSpace'])+"\n")
+				sys.stderr.write("       Unfortunately, the parameter %s is not recognised by SoFiA.\n"%(pp))
+				sys.stderr.write("       The allowed parameter names are:\n")
+				for allowedPar in catParNames: sys.stderr.write("         %s\n"%allowedPar)
+				sys.stderr.write("       Please use parameter names from the above list and try again.\n")
+				sys.exit(1)
 
 
 
@@ -283,9 +315,6 @@ if Parameters['steps']['doMerge'] and NRdet:
 	# set catalog header	
 	if 'bunit' in dict_Header: dunits=dict_Header['bunit']
 	else: dunits='-'
-	catParNames = ('id','x_geo','y_geo','z_geo','x','y','z','x_min','x_max','y_min','y_max','z_min','z_max','n_pix','snr_min','snr_max','snr_sum','x_p','y_p','z_p','x_n','y_n','z_n','snr_sum_p','snr_sum_n','snr_mean','snr_std','snr_rms','w20','w50','w20_cfd','w50_cfd','n_x','n_y','n_chan','n_los')
-	catParUnits = ('-','pix','pix','chan','pix','pix','chan','pix','pix','pix','pix','chan','chan','-','-','-','-','pix','pix','chan','pix','pix','chan','-','-','-','-','-','chan','chan','chan','chan','pix','pix','chan','-')
-	catParFormt = ('%10i', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%7i', '%7i', '%7i', '%7i', '%7i', '%7i', '%8i', '%12.3e', '%12.3e', '%12.3e','%10.3f','%10.3f','%10.3f','%10.3f','%10.3f','%10.3f','%12.3e','%12.3e','%12.3e','%12.3e','%12.3e','%10.3f','%10.3f','%10.3f','%10.3f','%7i','%7i','%7i','%7i')
 
 
 

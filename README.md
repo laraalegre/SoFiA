@@ -108,13 +108,21 @@ Documentation
 
 SoFiA comes with its own built-in help browser that can be launched from 
 the help menu in the user interface. Alternatively, you can use your web 
-browser to open the index.html file located in the gui/doc/ sub-folder. 
-Please note that the user manual is still work in progress, and only 
-basic help is available at this stage.
+browser to open the index.html file located in the gui/doc/ sub-folder.
 
 
 Version history
 ---------------
+
+* SoFiA 1.0.0
+  * Released 12/07/2016
+  * Adds several new features, including improvements in reliability
+    calculation, the inclusion of new source parameters aimed at exteded
+    galaxies, and the introduction of basic GUI configuration options.
+  * Fixes a large number of bugs across the entire pipeline that have
+    led to frequent crashes in the past.
+  * See release notes for details:
+    https://github.com/SoFiA-Admin/SoFiA/releases/tag/v1.0.0
 
 * SoFiA 0.5.0
   * Released 22/09/2015
