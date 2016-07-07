@@ -2803,7 +2803,7 @@ void SoFiA::createInterface()
 	tabOutputButtonSQL = new QCheckBox(tr("SQL "), tabOutputGroupBox1);
 	tabOutputButtonSQL->setObjectName("writeCat.writeSQL");
 	tabOutputButtonSQL->setChecked(false);
-	tabOutputButtonSQL->setEnabled(false);
+	tabOutputButtonSQL->setEnabled(true);
 	connect(tabOutputButtonSQL, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutputButtonSQL, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
@@ -3550,7 +3550,7 @@ void SoFiA::createWhatsThis()
 	tabOutputFieldDirectory->setWhatsThis(tr("<h3>writeCat.outputDir</h3><p>Optional directory path to which all output files are written. If not specified, the directory of the input cube will be used by default.</p>"));
 	tabOutputGroupBox2->setWhatsThis(tr("<h3>writeCat.parameters</h3><p>List of parameters to appear in source catalogue. Format:</p><p>['par1', 'par2', ...]</p><p>An asterisk, <span style=\"font-family:monospace;\">['*']</span>, means that all available parameters are written to the catalogue (default behaviour).</p><p> Note that, depending on the actual pipeline settings, some selected parameters may not appear in the source catalogue.</p>"));
 	tabOutputButtonASCII->setWhatsThis(tr("<h3>writeCat.writeASCII</h3><p>Write catalogue in ASCII format.</p>"));
-	tabOutputButtonSQL->setWhatsThis(tr("<h3>writeCat.writeSQL</h3><p>Write catalogue in SQL format (not yet implemented).</p>"));
+	tabOutputButtonSQL->setWhatsThis(tr("<h3>writeCat.writeSQL</h3><p>Write catalogue in SQL format.</p>"));
 	tabOutputButtonXML->setWhatsThis(tr("<h3>writeCat.writeXML</h3><p>Write catalogue in VO table (XML) format.</p>"));
 	
 	return;

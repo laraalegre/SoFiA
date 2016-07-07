@@ -15,7 +15,7 @@ def make_ascii(objects, store_pars, outname, compress, flagOverwrite):
         sys.stderr.write("ERROR: Output file exists: " + outname + ".\n")
     else:
         f1 = open(outname, 'w+')
-        f1.write('# SoFia catalogue\n')
+        f1.write('# SoFiA catalogue\n')
         f1.write('#\n')
 
         # write the parameters in

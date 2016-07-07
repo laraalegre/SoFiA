@@ -23,6 +23,7 @@ from sofia import writemoment2
 from sofia import linker
 from sofia import store_xml
 from sofia import store_ascii
+from sofia import store_sql
 from sofia import cubelets
 from sofia import parametrisation
 from sofia import wcs_coordinates
@@ -126,6 +127,7 @@ outputMom1Image     = '%s_mom1.fits'%outroot
 outputCubeletsDir   = '%s/objects/'%outroot
 outputCatXml        = '%s_cat.xml'%outroot
 outputCatAscii      = '%s_cat.ascii'%outroot
+outputCatSQL        = '%s_cat.sql'%outroot
 outputCatAsciiDebug = '%s_cat.debug.ascii'%outroot
 
 if not Parameters['writeCat']['overwrite']:
@@ -587,6 +589,8 @@ if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge'] and NRde
 	if Parameters['writeCat']['writeASCII'] and Parameters['steps']['doMerge'] and NRdet:
 		store_ascii.make_ascii_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatAscii, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
 		#store_ascii.make_ascii(results, Parameters['writeCat']['parameters'], outroot + '_cat.ascii', Parameters['writeCat']['overwrite'])
+	if Parameters['writeCat']['writeSQL'] and Parameters['steps']['doMerge'] and NRdet:
+		store_sql.make_sql_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatSQL, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
 
 
 
