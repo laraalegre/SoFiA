@@ -242,7 +242,7 @@
     </p>
     
     <p>
-      SoFiA can either produce a separate output catalogue for each input position or alternatively merge all the individual output catalogues into a single catalogue. The behaviour can be controlled by the user with the <code>optical.storeMultiCat</code> parameter.
+      SoFiA can either produce a separate output catalogue for each input position or alternatively merge all the individual output catalogues into a single catalogue. The behaviour can be controlled by the user with the <code>optical.storeMultiCat</code> parameter. Note that the current implementation <strong>does not remove duplicate entries</strong>, so if some of the sub-cubes to be searched overlap with each other, sources found in the overlap region will be listed multiple times in the merged output catalogue!
     </p>
     
     <table id="steps.doOptical">
