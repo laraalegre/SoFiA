@@ -28,12 +28,13 @@
     <h2>Catalogues</h2>
     
     <p>
-      SoFiA currently offers two different catalogue formats:
+      SoFiA currently offers three different catalogue formats:
     </p>
     
     <ul>
       <li>A simple <strong>ASCII file</strong> that contains the source catalogue in human-readable format. Each source is listed in a separate line, while the columns list the individual source parameters. The file also contains a few header lines with additional information such as parameters names and units.</li>
       <li>An <strong>XML file</strong> that contains the source catalogue in <a href="http://www.ivoa.net/documents/VOTable/">VOTable</a> format to be used in <a href="http://www.ivoa.net/">Virtual Observatory</a> tools such as <a href="http://www.star.bris.ac.uk/~mbt/topcat/">TOPCAT</a>.</li>
+      <li>An <strong>SQL file</strong> that contains queries to insert the source catalogue into an <a href="https://en.wikipedia.org/wiki/SQL">SQL</a> database table named &ldquo;SoFiA-Catalogue&rdquo;.</li>
     </ul>
     
     <h2>Additional Data Products</h2>
@@ -49,6 +50,10 @@
       <li>A map showing the total number of detected <strong>channels</strong> for each spatial pixel. (Note that this cannot currently be selected, but is automatically created whenever a moment-0 or 1 map is requested.)</li>
       <li>Small subcubes, so-called <strong>cubelets</strong>, of each individual source detected by SoFiA. This also includes <strong>0<sup>th</sup></strong>, <strong>1<sup>st</sup></strong> and <strong>2<sup>nd</sup> moment</strong> maps created from the cubelet, a <strong>position&ndash;velocity diagram</strong> along the morphological major axis of each source, and an <strong>integrated spectrum</strong> of the source. All these individual products will be stored in a separate sub-folder named <code>objects</code>. Maps and cubes are stored in FITS format, while the integrated spectrum is stored as a plain text file.</li>
     </ul>
+    
+    <p>
+      The optically-motivated source finder implemented in SoFiA might produce a few additional output products required for internal processing and merging the resulting output source catalogues.
+    </p>
     
     <h2>Source Parameters</h2>
     
