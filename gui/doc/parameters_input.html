@@ -226,7 +226,19 @@
     </p>
     
     <p>
-      The spatial and spectral size of the subcubes can be set with the <code>optical.spatSize</code> and <code>optical.specSize</code> parameters, respectively. The input source catalogue is specified with the <code>optical.sourceCatalogue</code> parameter. Currently, SoFiA supports only CSV (comma-separated value) files as input catalogues, and they must contain at least four columns with the labels &lsquo;id&rsquo;, &lsquo;ra&rsquo;, &lsquo;dec&rsquo; and &lsquo;z&rsquo;. All spatial and spectral coordinates must be given in the native units of the input cube, e.g. in degrees and hertz (the default units of equatorial coordinates and frequencies in FITS files).
+      The spatial and spectral size of the subcubes can be set with the <code>optical.spatSize</code> and <code>optical.specSize</code> parameters, respectively. The input source catalogue is specified with the <code>optical.sourceCatalogue</code> parameter. Currently, SoFiA supports only CSV (comma-separated value) files as input catalogues, and they must contain at least four columns with the labels <code>id</code>, <code>ra</code>, <code>dec</code> and <code>z</code>. All spatial and spectral coordinates must be given in the native units of the input cube, e.g. in degrees and hertz (the default units of equatorial coordinates and frequencies in FITS files).
+    </p>
+    
+    <p>
+      An example of what the input source catalogue (here of two search positions) might look like is shown below:
+    </p>
+    
+    <pre>  id, ra,     dec,    z
+  1   121.30, -17.91, 123410.1
+  2   119.85, -18.23, 129791.4</pre>
+    
+    <p>
+      In this example, <code>ra</code> and <code>dec</code> are given in degrees (the default unit for spatial coordinates in the FITS standard), while the spectral axis is given as velocity in units of m/s (which again is the default velocity unit in the FITS standard).
     </p>
     
     <p>
@@ -252,22 +264,22 @@
     </table>
     
     <table id="optical.sourceCatalogue">
-        <tr>
-            <td class="head">Parameter:</td><td class="body2">optical.sourceCatalogue</td>
-        </tr>
-        <tr>
-            <td class="head">Type:</td><td class="body"><code>string</code></td>
-        </tr>
-        <tr>
-            <td class="head">Values:</td><td class="body"></td>
-        </tr>
-        <tr>
-            <td class="head">Default:</td><td class="body"><code></code></td>
-        </tr>
-        <tr>
-            <td class="head">Description:</td><td class="body">This parameter defines the full path to the input catalogue required for catalogue-based source finding (see parameter <a href="#steps.doOptical">steps.doOptical</a>). There is no default.</td>
-        </tr>
-    </table>
+      <tr>
+        <td class="head">Parameter:</td><td class="body2">optical.sourceCatalogue</td>
+      </tr>
+      <tr>
+        <td class="head">Type:</td><td class="body"><code>string</code></td>
+      </tr>
+      <tr>
+        <td class="head">Values:</td><td class="body"></td>
+      </tr>
+      <tr>
+        <td class="head">Default:</td><td class="body"><code></code></td>
+      </tr>
+      <tr>
+        <td class="head">Description:</td><td class="body">This parameter defines the full path to the input catalogue required for catalogue-based source finding (see parameter <a href="#steps.doOptical">steps.doOptical</a>). There is no default. Catalogues must be comma-separated and contain at least four columns containing a unique ID number, right ascension, declination and frequency/velocity of the positions to be searched. All parameters must be specified in the native WCS units of the cube. In addition, a header line must be provided, with the four parameter columns above listed as <code>id</code>, <code>ra</code>, <code>dec</code> and <code>z</code>.</td>
+      </tr>
+</table>
     
     <table id="optical.spatSize">
         <tr>

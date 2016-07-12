@@ -217,6 +217,42 @@
   </tr>
 </table>
 
+<table id="reliability.kernel">
+  <tr>
+    <td class="head2">Parameter:</td><td class="body3">reliability.kernel</td>
+  </tr>
+  <tr>
+    <td class="head2">Type:</td><td class="body"><code>list</code></td>
+  </tr>
+  <tr>
+    <td class="head2">Values:</td><td class="body"></td>
+  </tr>
+  <tr>
+    <td class="head2">Default:</td><td class="body"><code>[0.15, 0.05, 0.1]</code></td>
+  </tr>
+  <tr>
+    <td class="head2">Description:</td><td class="body">Size of the 3D smoothing kernel in log(parameter) space (see <a href="#reliability.parSpace">reliability.parSpace</a>). This parameter will be ignored if <a href="#reliability.autoKernel">reliability.autoKernel</a> is set to <code>true</code> (default behaviour). Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+  </tr>
+</table>
+
+<table id="reliability.autoKernel">
+  <tr>
+    <td class="head2">Parameter:</td><td class="body3">reliability.autoKernel</td>
+  </tr>
+  <tr>
+    <td class="head2">Type:</td><td class="body"><code>bool</code></td>
+  </tr>
+  <tr>
+    <td class="head2">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+  </tr>
+  <tr>
+    <td class="head2">Default:</td><td class="body"><code>true</code></td>
+  </tr>
+  <tr>
+    <td class="head2">Description:</td><td class="body">This parameter controls whether the kernel size to be used for reliability calculation should be determined automatically (<code>true</code>) or manually (<code>false</code>). Default is <code>true</code>. If set to <code>false</code>, the <a href="#reliability.kernel">reliability.kernel</a> parameter must be used to specify the kernel size. Note that this is a <em>hidden</em> option not accessible through the graphical user interface. Also see the <a href="#reliability.negPerBin">reliability.negPerBin</a> and <a href="#reliability.skellamTol">reliability.skellamTol</a> parameters.</td>
+  </tr>
+</table>
+
 <table id="reliability.makePlot">
   <tr>
     <td class="head">Parameter:</td><td class="body2">reliability.makePlot</td>
@@ -235,42 +271,6 @@
   </tr>
 </table>
 
-<table id="reliability.kernel">
-  <tr>
-    <td class="head2">Parameter:</td><td class="body2">reliability.kernel</td>
-  </tr>
-  <tr>
-    <td class="head2">Type:</td><td class="body"><code>list</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Values:</td><td class="body"></td>
-  </tr>
-  <tr>
-    <td class="head2">Default:</td><td class="body"><code>[0.15, 0.05, 0.1]</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Description:</td><td class="body">Size of the 3D smoothing kernel in log(parameter) space (see <a href="#reliability.parSpace">reliability.parSpace</a>). This parameter will be ignored if <a href="#reliability.autoKernel">reliability.autoKernel</a> is set to <code>true</code> (default behaviour). Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
-  </tr>
-</table>
-
-<table id="reliability.autoKernel">
-  <tr>
-    <td class="head2">Parameter:</td><td class="body2">reliability.autoKernel</td>
-  </tr>
-  <tr>
-    <td class="head2">Type:</td><td class="body"><code>bool</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Default:</td><td class="body"><code>true</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Description:</td><td class="body">This parameter controls whether the kernel size to be used for reliability calculation should be determined automatically (<code>true</code>) or manually (<code>false</code>). Default is <code>true</code>. If set to <code>false</code>, the <a href="#reliability.kernel">reliability.kernel</a> parameter must be used to specify the kernel size. Note that this is a <em>hidden</em> option not accessible through the graphical user interface. Also see the <a href="#reliability.negPerBin">reliability.negPerBin</a> and <a href="#reliability.skellamTol">reliability.skellamTol</a> parameters.</td>
-  </tr>
-</table>
-
 <table id="reliability.parSpace">
   <tr>
     <td class="head2">Parameter:</td><td class="body3">reliability.parSpace</td>
@@ -282,7 +282,7 @@
     <td class="head2">Values:</td><td class="body"></td>
   </tr>
   <tr>
-    <td class="head2">Default:</td><td class="body"><code>['ftot', 'fmax', 'nrvox']</code></td>
+    <td class="head2">Default:</td><td class="body"><code>['n_pix', 'snr_sum', 'snr_max']</code></td>
   </tr>
   <tr>
     <td class="head2">Description:</td><td class="body">Defines the 3D parameter space in which to determine reliability. It is strongly recommended to use the pre-defined default settings. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
@@ -300,7 +300,7 @@
     <td class="head2">Values:</td><td class="body">&ge; <code>0.0</code></td>
   </tr>
   <tr>
-    <td class="head2">Default:</td><td class="body"><code>0.0</code></td>
+    <td class="head2">Default:</td><td class="body"><code>10.0</code></td>
   </tr>
   <tr>
     <td class="head2">Description:</td><td class="body">Minimum total flux for a source to be considered reliable. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
@@ -318,7 +318,7 @@
     <td class="head2">Values:</td><td class="body">&ge; <code>1.0</code></td>
   </tr>
   <tr>
-    <td class="head2">Default:</td><td class="body"><code>5.0</code></td>
+    <td class="head2">Default:</td><td class="body"><code>1.0</code></td>
   </tr>
   <tr>
     <td class="head2">Description:</td><td class="body">This parameter defines the minimum number of negative detections per bin in parameter space required for the automatic kernel size determination. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
@@ -336,7 +336,7 @@
     <td class="head2">Values:</td><td class="body"></td>
   </tr>
   <tr>
-    <td class="head2">Default:</td><td class="body"><code>-0.2</code></td>
+    <td class="head2">Default:</td><td class="body"><code>-0.5</code></td>
   </tr>
   <tr>
     <td class="head2">Description:</td><td class="body">Tolerance parameter for reliability kernel size determination. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
@@ -375,7 +375,7 @@
     <td class="head2">Default:</td><td class="body"><code>[1,1,1]</code></td>
   </tr>
   <tr>
-    <td class="head2">Description:</td><td class="body">No idea what this is good for. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+    <td class="head2">Description:</td><td class="body">For each source parameter defined in <a href="#reliability.parSpace">reliability.parSpace</a> this parameter defines whether the reliability analysis is carried out in linear space (<code>0</code>) or in logarithmic space (<code>1</code>). Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
   </tr>
 </table>
     
