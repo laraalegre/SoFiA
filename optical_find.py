@@ -140,26 +140,42 @@ def merge_sql(outroot,cat,storeMultiCat):
     # merge the ascii tables:
     outfile = outroot + '_cat.sql'
     f=open(outfile,'w')
-    h = 0    
+    h = 0
+    merge_id = int(0)    
     for i in range(len(cat)):
         temp_sql = outroot + '_' + cat[i]['id'] + '_cat.sql'
         # check whether the file exists:
         n = 0
-        if os.path.isfile(temp_sql) == True:
+        if os.path.isfile(temp_sql):
             f1=open(temp_sql,'r')
             for line in f1:
                 h += 1
                 if h < 8:
-                    f.write(line)  
+                    temp_line = line
+                    print h
+                    # add a merge_id
+                    if h == 5:
+                        print temp_line
+                        temp_line=temp_line.replace('SoFiA-Catalogue` (','SoFiA-Catalogue` (`merge_id` INT NOT NULL,')
+                        temp_line=temp_line.replace('PRIMARY KEY (`id`), KEY (`id`)','PRIMARY KEY (`merge_id`), KEY (`merge_id`)')
+                        print temp_line
+                    if h == 7:
+                        print temp_line
+                        temp_line=temp_line.replace('SoFiA-Catalogue` (','SoFiA-Catalogue` (`merge_id`, ')
+                        print temp_line
+                    f.write(temp_line)  
 
                 n += 1
                 if  n > 7:
+                    merge_id += 1
                     if i != len(cat)-1:
                         # if it is not the last file, end every object with a ','
-                        f.write(line[0:-2] + ',\n')
+                        temp_line = line[1:-2]
+                        f.write('(' + str(merge_id) + ', ' + temp_line + ',\n')
                     else:
                         # if it is the last file, end the last object with a ';', as for a single sql file
-                        f.write(line)
+                        temp_line = line[1:]
+                        f.write('(' + str(merge_id) + ', ' + temp_line)
                     
             f1.close
             # throw away the intermediate catalogues if not needed
