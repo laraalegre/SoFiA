@@ -134,6 +134,52 @@ def merge_xml(outroot,cat,storeMultiCat):
     return
 
 
+
+
+def merge_sql(outroot,cat,storeMultiCat):
+    # merge the ascii tables:
+    outfile = outroot + '_cat.sql'
+    f=open(outfile,'w')
+    h = 0    
+    for i in range(len(cat)):
+        temp_sql = outroot + '_' + cat[i]['id'] + '_cat.sql'
+        # check whether the file exists:
+        n = 0
+        if os.path.isfile(temp_sql) == True:
+            f1=open(temp_sql,'r')
+            for line in f1:
+                h += 1
+                if h < 8:
+                    f.write(line)  
+
+                n += 1
+                if  n > 7:
+                    if i != len(cat)-1:
+                        # if it is not the last file, end every object with a ','
+                        f.write(line[0:-2] + ',\n')
+                    else:
+                        # if it is the last file, end the last object with a ';', as for a single sql file
+                        f.write(line)
+                    
+            f1.close
+            # throw away the intermediate catalogues if not needed
+            if storeMultiCat == False:
+            # security check whether this is a legitimate file (and not a link) before deleting anything
+                if os.path.isfile(temp_sql) == True and os.path.islink(temp_sql) == False:
+                    os.system('rm -f ' + temp_sql)
+                else:
+                    sys.stderr.write("ERROR: The specified file does not seem to be valid \n")
+                    sys.stderr.write("       Cannot identify: " + temp_sql + " as a normal file\n")
+                    raise SystemExit(1)
+
+            
+    f.close    
+    return
+
+
+
+
+
 ######################################
 ######################################
 ######################################
@@ -224,15 +270,17 @@ sys.stdout.flush()
 # id, ra (degrees), dec (degrees) and z (units of cube)    
 
 f = open(catalogue,'rb')
-reader = csv.DictReader(f)
+reader = csv.DictReader(f,skipinitialspace=True)
 cat = list(reader)
 f.close()
+
+
 
 
 # check whether the file has the right columns (id, ra, dec, z)
 if 'id' not in cat[0] or 'ra' not in cat[0] or 'dec' not in cat[0] or 'z' not in cat[0]: 
     sys.stderr.write("ERROR: The specified source catalogue does not have the right input\n")
-    sys.stderr.write("       it should contain at least for columns with values id, ra, dec and z \n")
+    sys.stderr.write("       it should contain at least four columns with values id, ra, dec and z \n")
     sys.stderr.write("       Cannot work on: " + catalogue + "\n")
     raise SystemExit(1)
 
@@ -323,6 +371,9 @@ if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge']:
         print 'Merge the ascii file'
         merge_ascii(outroot,cat,storeMultiCat)
 				
+    if Parameters['writeCat']['writeSQL'] and Parameters['steps']['doMerge']:
+        print 'Merge the sql file'
+        merge_sql(outroot,cat,storeMultiCat)
 
 
 
