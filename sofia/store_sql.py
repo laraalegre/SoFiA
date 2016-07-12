@@ -40,6 +40,11 @@ def make_sql_from_array(objects, cathead, catunits, catfmt, store_pars, outname,
 			sys.stderr.write("ERROR: Failed to write to SQL output file: " + outname + ".\n");
 			return;
 		
+		# Check if there is an ID column in the catalogue:
+		# (If no ID is present, we will create one to use it as the primary key.)
+		noID = False;
+		if (store_pars != ["*"]) and ("id" not in store_pars): noID = True;
+		
 		# Write some header information:
 		fp.write(title);
 		fp.write("SET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";\n\n");
@@ -47,34 +52,38 @@ def make_sql_from_array(objects, cathead, catunits, catfmt, store_pars, outname,
 		# Write table structure:
 		counter = 0;
 		fp.write("CREATE TABLE IF NOT EXISTS `SoFiA-Catalogue` (");
+		if noID: fp.write("`id` INT NOT NULL");
 		for i in range(0, len(cathead)):
 			if store_pars == ["*"] or cathead[i] in store_pars:
-				if counter > 0: fp.write(", ");
+				if counter > 0 or noID: fp.write(", ");
 				fp.write("`" + cathead[i] + "` ");
 				if   "i" in catfmt[i] or "d" in catfmt[i]: fp.write("INT");
 				elif "f" in catfmt[i] or "e" in catfmt[i]: fp.write("DOUBLE");
 				else: fp.write("VARCHAR(256)");
 				fp.write(" NOT NULL");
 				counter += 1;
-		if store_pars == ["*"] or "id" in store_pars: fp.write(", PRIMARY KEY (`id`), KEY (`id`)");
-		fp.write(") DEFAULT CHARSET=utf8 COMMENT=\'SoFiA source catalogue\';\n\n");
+		fp.write(", PRIMARY KEY (`id`), KEY (`id`)) DEFAULT CHARSET=utf8 COMMENT=\'SoFiA source catalogue\';\n\n");
 		
 		# Write data:
 		counter = 0;
 		fp.write("INSERT INTO `SoFiA-Catalogue` (");
+		if noID: fp.write("`id`");
 		for i in range(0, len(cathead)):
 			if store_pars == ["*"] or cathead[i] in store_pars:
-				if counter > 0: fp.write(", ");
+				if counter > 0 or noID: fp.write(", ");
 				fp.write("`" + cathead[i] + "`");
 				counter += 1;
 		fp.write(") VALUES\n");
 		
+		source_count = 0;
 		for i in range(0, len(objects)):
+			source_count += 1;
 			counter = 0;
 			fp.write("(");
+			if noID: fp.write(str(int(source_count)));
 			for j in range(0, len(objects[i])):
 				if store_pars == ["*"] or cathead[j] in store_pars:
-					if counter > 0: fp.write(", ");
+					if counter > 0 or noID: fp.write(", ");
 					if "f" in catfmt[j] or "e" in catfmt[j]: fp.write(str(float(objects[i][j])));
 					elif "i" in catfmt[j] or "d" in catfmt[j]: fp.write(str(int(objects[i][j])));
 					else: fp.write("\'" + str(objects[i][j]) + "\'");
