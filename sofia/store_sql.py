@@ -57,8 +57,8 @@ def make_sql_from_array(objects, cathead, catunits, catfmt, store_pars, outname,
 			if store_pars == ["*"] or cathead[i] in store_pars:
 				if counter > 0 or noID: fp.write(", ");
 				fp.write("`" + cathead[i] + "` ");
-				if   "i" in catfmt[i] or "d" in catfmt[i]: fp.write("INT");
-				elif "f" in catfmt[i] or "e" in catfmt[i]: fp.write("DOUBLE");
+				if   "f" in catfmt[i] or "e" in catfmt[i]: fp.write("DOUBLE");
+				elif "i" in catfmt[i] or "d" in catfmt[i]: fp.write("INT");
 				else: fp.write("VARCHAR(256)");
 				fp.write(" NOT NULL");
 				counter += 1;
