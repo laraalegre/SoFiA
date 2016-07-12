@@ -41,7 +41,7 @@ def merge_ascii(outroot,cat,storeMultiCat):
         temp_ascii = outroot + '_' + cat[i]['id'] + '_cat.ascii'
         # check whether the file exists:
         n = 0
-        if os.path.isfile(temp_ascii) == True:
+        if os.path.isfile(temp_ascii):
             f1=open(temp_ascii,'r')
             for line in f1:
                 h += 1
@@ -55,7 +55,7 @@ def merge_ascii(outroot,cat,storeMultiCat):
             # throw away the intermediate catalogues if not needed
             if storeMultiCat == False:
             # security check whether this is a legitimate file (and not a link) before deleting anything
-                if os.path.isfile(temp_ascii) == True and os.path.islink(temp_ascii) == False:
+                if os.path.isfile(temp_ascii) and not os.path.islink(temp_ascii):
                     os.system('rm -f ' + temp_ascii)
                 else:
                     sys.stderr.write("ERROR: The specified file does not seem to be valid \n")
@@ -82,7 +82,7 @@ def merge_xml(outroot,cat,storeMultiCat):
         temp_xml = outroot + '_' + cat[i]['id'] + '_cat.xml'
         # check whether the file exists:
         #n = 0
-        if os.path.isfile(temp_xml) == True:
+        if os.path.isfile(temp_xml):
             cat_nr += 1
             f1=open(temp_xml,'r')
             if cat_nr == 1:
@@ -116,7 +116,7 @@ def merge_xml(outroot,cat,storeMultiCat):
             # throw away the intermediate catalogues if not needed
             if storeMultiCat == False:
                 # security check whether this is a legitimate file (and not a link) before deleting anything
-                if os.path.isfile(temp_xml) == True and os.path.islink(temp_xml) == False:
+                if os.path.isfile(temp_xml) and not os.path.islink(temp_xml):
                     os.system('rm -f ' + temp_xml)
                 else:
                     sys.stderr.write("ERROR: The specified file does not seem to be valid \n")
@@ -181,7 +181,7 @@ def merge_sql(outroot,cat,storeMultiCat):
             # throw away the intermediate catalogues if not needed
             if storeMultiCat == False:
             # security check whether this is a legitimate file (and not a link) before deleting anything
-                if os.path.isfile(temp_sql) == True and os.path.islink(temp_sql) == False:
+                if os.path.isfile(temp_sql) and not os.path.islink(temp_sql):
                     os.system('rm -f ' + temp_sql)
                 else:
                     sys.stderr.write("ERROR: The specified file does not seem to be valid \n")
@@ -358,7 +358,7 @@ for i in range(len(cat)):
     # check whether the file exists:
     n = 0
     nr_sources = 0
-    if os.path.exists(temp_ascii) == True:
+    if os.path.exists(temp_ascii):
         f1=open(temp_ascii,'r')
         for line in f1:
             n += 1
