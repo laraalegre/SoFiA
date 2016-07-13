@@ -115,7 +115,7 @@ Version history
 ---------------
 
 * SoFiA 1.0.0
-  * Released 12/07/2016
+  * Released 13/07/2016
   * Adds several new features, including improvements in reliability
     calculation, the inclusion of new source parameters aimed at exteded
     galaxies, and the introduction of basic GUI configuration options.
