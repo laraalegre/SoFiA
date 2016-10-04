@@ -219,7 +219,8 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		else: dkms=1. # no scaling, avoids crashing
 	subcubeCopy = subcube.copy()
 	subcubeCopy[submask==0] = 0
-	subcubeCopy = regridMaskedChannels(subcubeCopy,submask,header)
+	if 'cellscal' in header:
+		if header['cellscal'] == '1/F': subcubeCopy = regridMaskedChannels(subcubeCopy,submask,header)
 	m0=np.nan_to_num(subcubeCopy).sum(axis=0)
 	m0*=dkms
 	hdu = pyfits.PrimaryHDU(data=m0,header=header)
