@@ -2282,6 +2282,7 @@ void SoFiA::createInterface()
 	tabSourceFindingFieldKernels->setObjectName("SCfind.kernels");
 	tabSourceFindingFieldKernels->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	tabSourceFindingFieldKernels->setMaximumHeight(120);
+	connect(tabSourceFindingFieldKernels, SIGNAL(textChanged()), this, SLOT(parameterChanged()));
 	
 	tabSourceFindingForm1Left->addRow(tr("Threshold:"), tabSourceFindingFieldThreshold);
 	tabSourceFindingForm1Left->addRow(tr("Edge mode:"), tabSourceFindingFieldEdgeMode);
