@@ -121,6 +121,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 	header['CRPIX3'] = cPixZCut+1
 	
 	# extract the cubelet
+        [ZminNew,ZmaxNew,YminNew,YmaxNew,XminNew,XmaxNew]=map(int,[ZminNew,ZmaxNew,YminNew,YmaxNew,XminNew,XmaxNew])
 	subcube = cube[ZminNew:ZmaxNew+1,YminNew:YmaxNew+1,XminNew:XmaxNew+1]
 
 	# update header keywords:
@@ -147,8 +148,8 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 	if 'kin_pa' in cathead:
 		pv_sampling=10
 		pv_r=np.arange(-max(subcube.shape[1:]),max(subcube.shape[1:])-1+1./pv_sampling,1./pv_sampling)
-		pv_y=Yc-YminNew+pv_r*math.cos(float(obj[cathead=='kin_pa'][0])/180*math.pi)
-		pv_x=Xc-XminNew-pv_r*math.sin(float(obj[cathead=='kin_pa'][0])/180*math.pi)
+		pv_y=Yc-float(YminNew)+pv_r*math.cos(float(obj[cathead=='kin_pa'][0])/180*math.pi)
+		pv_x=Xc-float(XminNew)-pv_r*math.sin(float(obj[cathead=='kin_pa'][0])/180*math.pi)
 		pv_x,pv_y=pv_x[(pv_x>=0)*(pv_x<=subcube.shape[2]-1)],pv_y[(pv_x>=0)*(pv_x<=subcube.shape[2]-1)]
 		pv_x,pv_y=pv_x[(pv_y>=0)*(pv_y<=subcube.shape[1]-1)],pv_y[(pv_y>=0)*(pv_y<=subcube.shape[1]-1)]
 		pv_x.resize((1,pv_x.shape[0]))
@@ -321,7 +322,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		#f.write('# '+specTypeX+' ('+specUnitX+')'+'  '+specTypeY+' ('+specUnitY+')\n')
 		
 		for i in range(0,len(spec)):
-			xspec = cValZ + (i+ZminNew-cPixZ) * dZ
-			f.write('%9.0f %15.6e %15.6e\n'%(i+ZminNew,xspec,spec[i]))
+			xspec = cValZ + (i+float(ZminNew)-cPixZ) * dZ
+			f.write('%9.0f %15.6e %15.6e\n'%(i+float(ZminNew),xspec,spec[i]))
 		
 		f.close()
