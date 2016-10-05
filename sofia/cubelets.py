@@ -303,9 +303,8 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 	
 	# moment 2
 	m2=((np.arange(subcubeCopy.shape[0]).reshape((subcubeCopy.shape[0],1,1))*np.ones(subcubeCopy.shape)-header['crpix3']+1)*header['cdelt3']+header['crval3'])*scalemom12
-	m2 = m2**2
+	m2 = (m2-m1)**2
 	m2=np.divide(np.array(np.nan_to_num(m2*subcubeCopy).sum(axis=0)),m0)
-	m2-=m1*m1
 	m2=np.sqrt(m2)
 	hdu = pyfits.PrimaryHDU(data=m2,header=header)
 	hdu.header['bunit']=bunitExt[1:]
