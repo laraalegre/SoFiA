@@ -445,12 +445,12 @@ if Parameters['steps']['doMerge'] and NRdet:
 	catParNames=np.array(catParNames)
 	for rr in reliable:
 		objrr=objects[objects[:,1]==rr][0]
-		Xmin = objrr[catParNames=='x_min']
-		Ymin = objrr[catParNames=='y_min']
-		Zmin = objrr[catParNames=='z_min']
-		Xmax = objrr[catParNames=='x_max']
-		Ymax = objrr[catParNames=='y_max']
-		Zmax = objrr[catParNames=='z_max']
+		Xmin = int(objrr[catParNames=='x_min'])
+		Ymin = int(objrr[catParNames=='y_min'])
+		Zmin = int(objrr[catParNames=='z_min'])
+		Xmax = int(objrr[catParNames=='x_max'])
+		Ymax = int(objrr[catParNames=='y_max'])
+		Zmax = int(objrr[catParNames=='z_max'])
 		mask[Zmin:Zmax+1,Ymin:Ymax+1,Xmin:Xmax+1][mask[Zmin:Zmax+1,Ymin:Ymax+1,Xmin:Xmax+1] == -rr] = index
 		index += 1
 	mask[mask < 0] = 0
