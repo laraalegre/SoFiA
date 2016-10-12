@@ -16,8 +16,10 @@ def regridMaskedChannels(datacube,maskcube,header):
 	sys.stdout.flush()
 	from scipy import interpolate
 	z=(np.arange(1.,header['naxis3']+1)-header['crpix3'])*header['cdelt3']+header['crval3']
-	if header['ctype3']=='VELO-HEL':
-		pixscale=(1-header['crval3']/2.99792458e+8)/(1-z/2.99792458e+8)
+	if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
+		pixscale=(1-header['crval3']/2.99792458e+8)/(1-z/2.99792458e+8) # strictly correct only for the radio velocity definition
+	elif 'freq' in header['ctype3'].lower():
+		pixscale=header['crval3']/z
 	else:
 		sys.stderr.write("WARNING: Cannot convert axis3 coordinates to frequency. Will ignore the effect of CELLSCAL = 1/F.\n")
 		pixscale=np.ones((header['naxis3']))
