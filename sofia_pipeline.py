@@ -59,7 +59,7 @@ def checkOverwrite(outputFile, isFile=True, isDir=False):
 # ---- START OF SoFiA PIPELINE ---
 # --------------------------------
 
-t0=time()
+t0 = time()
 
 
 
@@ -178,10 +178,10 @@ if not Parameters['writeCat']['overwrite']:
 # --------------------------------------------------------------
 
 if Parameters['steps']['doMerge']:
-        # Define parameters returned by the linker module
-        catParNames = ('id','x_geo','y_geo','z_geo','x','y','z','x_min','x_max','y_min','y_max','z_min','z_max','n_pix','snr_min','snr_max','snr_sum','x_p','y_p','z_p','x_n','y_n','z_n','snr_sum_p','snr_sum_n','snr_mean','snr_std','snr_rms','w20','w50','w20_cfd','w50_cfd','n_x','n_y','n_chan','n_los')
-        catParUnits = ('-','pix','pix','chan','pix','pix','chan','pix','pix','pix','pix','chan','chan','-','-','-','-','pix','pix','chan','pix','pix','chan','-','-','-','-','-','chan','chan','chan','chan','pix','pix','chan','-')
-        catParFormt = ('%10i', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%7i', '%7i', '%7i', '%7i', '%7i', '%7i', '%8i', '%12.3e', '%12.3e', '%12.3e','%10.3f','%10.3f','%10.3f','%10.3f','%10.3f','%10.3f','%12.3e','%12.3e','%12.3e','%12.3e','%12.3e','%10.3f','%10.3f','%10.3f','%10.3f','%7i','%7i','%7i','%7i')
+	# Define parameters returned by the linker module
+	catParNames = ('id','x_geo','y_geo','z_geo','x','y','z','x_min','x_max','y_min','y_max','z_min','z_max','n_pix','snr_min','snr_max','snr_sum','x_p','y_p','z_p','x_n','y_n','z_n','snr_sum_p','snr_sum_n','snr_mean','snr_std','snr_rms','w20','w50','w20_cfd','w50_cfd','n_x','n_y','n_chan','n_los')
+	catParUnits = ('-','pix','pix','chan','pix','pix','chan','pix','pix','pix','pix','chan','chan','-','-','-','-','pix','pix','chan','pix','pix','chan','-','-','-','-','-','chan','chan','chan','chan','pix','pix','chan','-')
+	catParFormt = ('%10i', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%7i', '%7i', '%7i', '%7i', '%7i', '%7i', '%8i', '%12.3e', '%12.3e', '%12.3e','%10.3f','%10.3f','%10.3f','%10.3f','%10.3f','%10.3f','%12.3e','%12.3e','%12.3e','%12.3e','%12.3e','%10.3f','%10.3f','%10.3f','%10.3f','%7i','%7i','%7i','%7i')
 	if Parameters['steps']['doReliability']:
 		# Check that the parameters to be used for the reliability calculation are included in catParNames
 		for pp in Parameters['reliability']['parSpace']:
@@ -361,7 +361,7 @@ if Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and N
 	print 'The following sources have been detected:', reliable
 	print
 	catParNames = tuple(list(catParNames) + ['n_pos',  'n_neg',  'rel'])
-	catParUnits = tuple(list(catParUnits) + ['-','-','-'])
+	catParUnits = tuple(list(catParUnits) + ['-',      '-',      '-'])
 	catParFormt = tuple(list(catParFormt) + ['%12.3e', '%12.3e', '%12.6f'])
 
 elif Parameters['steps']['doMerge'] and NRdet:
@@ -390,7 +390,7 @@ if Parameters['steps']['doDebug']:
 
 if Parameters['steps']['doMerge'] and NRdet:
 	objects,catParNames,catParUnits,catParFormt=np.array(objects),list(catParNames),list(catParUnits),list(catParFormt)
-	removecols=['snr_min','snr_max','snr_sum','x_p','y_p','z_p','x_n','y_n','z_n','snr_sum_p','snr_sum_n','snr_mean','snr_std','snr_rms','w20','w50','w20_cfd','w50_cfd','n_pos','n_neg','n_x','n_y']
+	removecols = ['snr_min', 'snr_max', 'snr_sum', 'x_p', 'y_p', 'z_p', 'x_n', 'y_n', 'z_n', 'snr_sum_p', 'snr_sum_n', 'snr_mean', 'snr_std', 'snr_rms', 'w20', 'w50', 'w20_cfd', 'w50_cfd', 'n_pos', 'n_neg', 'n_x', 'n_y']
 	for remcol in removecols:
 		if remcol in catParNames:
 			remind=catParNames.index(remcol)
@@ -434,11 +434,11 @@ if Parameters['steps']['doMerge'] and NRdet:
 	tmpCatParFormt = list(catParFormt);
 	tmpCatParFormt.insert(1, "%10i");
 	catParFormt= tuple(tmpCatParFormt);
-	
+
 	tmpCatParUnits = list(catParUnits);
 	tmpCatParUnits.insert(1, "-");
 	catParUnits= tuple(tmpCatParUnits);
-	
+
 	# in the mask file
 	mask *= -1
 	index = 1
@@ -510,7 +510,6 @@ if Parameters['steps']['doParameterise'] and Parameters['steps']['doMerge'] and 
 	catParUnits=tuple(catParUnits)
 	catParFormt=tuple(catParFormt)
 
-        
 	print 'Parameterisation complete'
 	print
 
