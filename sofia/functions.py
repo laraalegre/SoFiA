@@ -6,6 +6,16 @@ import scipy as sp
 from scipy import stats
 from scipy import optimize
 import scipy.ndimage as nd
+from distutils.version import StrictVersion, LooseVersion
+
+## check numpy and scipy version numbers for the nanmedian function import
+if LooseVersion(np.__version__)>=LooseVersion('1.9.0'):
+	from numpy import nanmedian
+elif LooseVersion(sp.__version__)<LooseVersion('0.15.0'):
+	from scipy.stats import nanmedian
+else:
+	from scipy import nanmedian
+
 
 
 def GaussianNoise(F,N0,s0):
@@ -46,7 +56,7 @@ def GetRMS(cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=1,nrbins=10000,verbose=
 
 		rms=abs(optimize.curve_fit(GaussianNoise,fluxval,rmshisto,p0=[rmshisto.max(),-fluxval[rmshisto<rmshisto.max()/2].max()*2/2.355])[0][1])
 	elif rmsMode=='mad':
-                rms=sp.stats.nanmedian(abs(cube[z0:z1:sample,y0:y1:sample,x0:x1:sample]-sp.stats.nanmedian(cube[z0:z1:sample,y0:y1:sample,x0:x1:sample],axis=None)),axis=None)/0.6745
+                rms=nanmedian(abs(cube[z0:z1:sample,y0:y1:sample,x0:x1:sample]-nanmedian(cube[z0:z1:sample,y0:y1:sample,x0:x1:sample],axis=None)),axis=None)/0.6745
 
             
 	elif rmsMode=='std':
