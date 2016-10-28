@@ -25,6 +25,7 @@ def dilate(cube,mask,objects,cathead,Parameters):
     	ymax=min(ymax,cube.shape[1]-1)
     	zmin=max(0,zmin)
     	zmax=min(zmax,cube.shape[0]-1)
+        [zmin,zmax,ymin,ymax,xmin,xmax]=map(int,[zmin,zmax,ymin,ymax,xmin,xmax])
     	objcube=cube[zmin:zmax+1,ymin:ymax+1,xmin:xmax+1].copy()
     	objmask=mask[zmin:zmax+1,ymin:ymax+1,xmin:xmax+1].copy()
     	allmask=mask[zmin:zmax+1,ymin:ymax+1,xmin:xmax+1].copy()
