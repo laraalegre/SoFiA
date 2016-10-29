@@ -514,6 +514,7 @@ int SoFiA::setFields()
 		if(parameters.contains(w->objectName()))      // Only existing parameters will get updated!
 		{
 			w->setText(parameters.value(w->objectName()));
+			if(w == tabParametrisationFieldScaleKernel) tabParametrisationSliderScaleKernel->setValue(static_cast<int>((parameters.value(w->objectName())).toDouble() * KERNEL_SCALE_FACTOR));
 		}
 	}
 	
