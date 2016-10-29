@@ -1002,6 +1002,11 @@ void SoFiA::updateFields()
 	// Disable kernel size field if autoKernel is selected:
 	//tabParametrisationFieldRelKernel->setEnabled(not tabParametrisationButtonAutoKernel->isChecked());
 	
+	// Check kernel scale slider position:
+	int tmpKernelScale = tabParametrisationSliderScaleKernel->value();
+	if(tmpKernelScale == 0) tabParametrisationFieldScaleKernel->setText("auto");
+	else tabParametrisationFieldScaleKernel->setText(QString::number(static_cast<double>(tmpKernelScale) / KERNEL_SCALE_FACTOR, 'f', 2));
+	
 	// Ensure that reliability range is within 0 and 1:
 	n = tabParametrisationFieldRelMin->text().toDouble();
 	if(n < 0.0) tabParametrisationFieldRelMin->setText("0.0");
@@ -1858,14 +1863,14 @@ void SoFiA::createInterface()
 	
 	toolBoxIP = new QToolBox(tabInput);
 	
-	tabInputLayout = new QVBoxLayout;
+	tabInputLayout = new QVBoxLayout();
 	
 	// input files
 	tabInputGroupBox1 = new QGroupBox(tr("Files and settings"), toolBoxIP);
-	tabInputForm1 = new QFormLayout;
+	tabInputForm1 = new QFormLayout();
 	
 	tabInputWidgetData = new QWidget(tabInputGroupBox1);
-	tabInputLayoutData = new QHBoxLayout;
+	tabInputLayoutData = new QHBoxLayout();
 	tabInputFieldData  = new QLineEdit(tabInputWidgetData);
 	tabInputFieldData->setObjectName("import.inFile");
 	connect(tabInputFieldData, SIGNAL(editingFinished()), this, SLOT(updateFields()));
@@ -1879,7 +1884,7 @@ void SoFiA::createInterface()
 	tabInputWidgetData->setLayout(tabInputLayoutData);
 	
 	tabInputWidgetMask = new QWidget(tabInputGroupBox1);
-	tabInputLayoutMask = new QHBoxLayout;
+	tabInputLayoutMask = new QHBoxLayout();
 	tabInputFieldMask  = new QLineEdit(tabInputWidgetMask);
 	tabInputFieldMask->setObjectName("import.maskFile");
 	connect(tabInputFieldMask, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
@@ -1892,7 +1897,7 @@ void SoFiA::createInterface()
 	tabInputWidgetMask->setLayout(tabInputLayoutMask);
 	
 	tabInputWidgetWeights = new QWidget(tabInputGroupBox1);
-	tabInputLayoutWeights = new QHBoxLayout;
+	tabInputLayoutWeights = new QHBoxLayout();
 	tabInputFieldWeights  = new QLineEdit(tabInputWidgetWeights);
 	tabInputFieldWeights->setObjectName("import.weightsFile");
 	connect(tabInputFieldWeights, SIGNAL(textChanged(const QString &)), this, SLOT(updateFields()));
@@ -1924,7 +1929,7 @@ void SoFiA::createInterface()
 	tabInputGroupBox4->setChecked(false);
 	connect(tabInputGroupBox4, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabInputGroupBox4, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabInputForm4 = new QFormLayout;
+	tabInputForm4 = new QFormLayout();
 	
 	tabInputFieldSubcube = new QLineEdit(tabInputGroupBox4);
 	tabInputFieldSubcube->setObjectName("import.subcube");
@@ -1947,7 +1952,7 @@ void SoFiA::createInterface()
 	tabInputGroupBox3->setChecked(false);
 	connect(tabInputGroupBox3, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabInputGroupBox3, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabInputForm3 = new QFormLayout;
+	tabInputForm3 = new QFormLayout();
 	
 	tabInputFieldFlags = new QLineEdit(tabInputGroupBox3);
 	tabInputFieldFlags->setObjectName("flag.regions");
@@ -1964,10 +1969,10 @@ void SoFiA::createInterface()
 	tabInputGroupBox2->setChecked(false);
 	connect(tabInputGroupBox2, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabInputGroupBox2, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabInputForm2 = new QFormLayout;
+	tabInputForm2 = new QFormLayout();
 	
 	tabInputWidgetCatalog = new QWidget(tabInputGroupBox2);
-	tabInputLayoutCatalog = new QHBoxLayout;
+	tabInputLayoutCatalog = new QHBoxLayout();
 	tabInputFieldCatalog = new QLineEdit(tabInputWidgetCatalog);
 	tabInputFieldCatalog->setObjectName("optical.sourceCatalogue");
 	connect(tabInputFieldCatalog, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
@@ -2030,7 +2035,7 @@ void SoFiA::createInterface()
 	
 	toolBoxIF = new QToolBox(tabInFilter);
 	
-	tabInFilterLayout = new QVBoxLayout;
+	tabInFilterLayout = new QVBoxLayout();
 	
 	tabInFilterGroupBox1 = new QGroupBox(tr("Enable"), toolBoxIF);
 	tabInFilterGroupBox1->setObjectName("steps.doSmooth");
@@ -2039,7 +2044,7 @@ void SoFiA::createInterface()
 	connect(tabInFilterGroupBox1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabInFilterGroupBox1, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
-	tabInFilterForm1 = new QFormLayout;
+	tabInFilterForm1 = new QFormLayout();
 	
 	tabInFilterFieldKernel = new QComboBox(tabInFilterGroupBox1);
 	tabInFilterFieldKernel->setObjectName("smooth.kernel");
@@ -2091,10 +2096,10 @@ void SoFiA::createInterface()
 	connect(tabInFilterGroupBox2, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabInFilterGroupBox2, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
-	tabInFilterForm2 = new QFormLayout;
+	tabInFilterForm2 = new QFormLayout();
 	
 	tabInFilterWidgetScaleXYZ = new QWidget(tabInFilterGroupBox2);
-	tabInFilterLayoutScaleXYZ = new QHBoxLayout;
+	tabInFilterLayoutScaleXYZ = new QHBoxLayout();
 	tabInFilterFieldScaleX = new QCheckBox(tr("X "), tabInFilterWidgetScaleXYZ);
 	tabInFilterFieldScaleX->setObjectName("scaleNoise.scaleX");
 	tabInFilterFieldScaleX->setChecked(false);
@@ -2154,7 +2159,7 @@ void SoFiA::createInterface()
 	connect(tabInFilterGroupBox3, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabInFilterGroupBox3, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
-	tabInFilterForm3 = new QFormLayout;
+	tabInFilterForm3 = new QFormLayout();
 	
 	tabInFilterField2d1dThreshold = new QLineEdit(tabInFilterGroupBox3);
 	tabInFilterField2d1dThreshold->setObjectName("wavelet.threshold");
@@ -2233,7 +2238,7 @@ void SoFiA::createInterface()
 	
 	toolBoxSF = new QToolBox(tabSourceFinding);
 	
-	tabSourceFindingLayout = new QVBoxLayout;
+	tabSourceFindingLayout = new QVBoxLayout();
 	
 	//S+C
 	tabSourceFindingGroupBox1 = new QGroupBox(tr("Enable"), toolBoxSF);
@@ -2245,9 +2250,9 @@ void SoFiA::createInterface()
 	
 	tabSourceFindingWidget1Left = new QWidget(tabSourceFindingGroupBox1);
 	tabSourceFindingWidget1Right = new QWidget(tabSourceFindingGroupBox1);
-	tabSourceFindingForm1Left = new QFormLayout;
-	tabSourceFindingForm1Right = new QFormLayout;
-	tabSourceFindingForm1Layout = new QHBoxLayout;
+	tabSourceFindingForm1Left = new QFormLayout();
+	tabSourceFindingForm1Right = new QFormLayout();
+	tabSourceFindingForm1Layout = new QHBoxLayout();
 	
 	tabSourceFindingFieldThreshold  = new QLineEdit(tabSourceFindingGroupBox1);
 	tabSourceFindingFieldThreshold->setObjectName("SCfind.threshold");
@@ -2310,7 +2315,7 @@ void SoFiA::createInterface()
 	connect(tabSourceFindingGroupBox3, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabSourceFindingGroupBox3, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
-	tabSourceFindingForm3 = new QFormLayout;
+	tabSourceFindingForm3 = new QFormLayout();
 	
 	tabSourceFindingFieldPReq  = new QLineEdit(tabSourceFindingGroupBox3);
 	tabSourceFindingFieldPReq->setObjectName("CNHI.pReq");
@@ -2370,7 +2375,7 @@ void SoFiA::createInterface()
 	connect(tabSourceFindingGroupBox2, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabSourceFindingGroupBox2, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
-	tabSourceFindingForm2 = new QFormLayout;
+	tabSourceFindingForm2 = new QFormLayout();
 	
 	tabSourceFindingFieldThreshold2 = new QLineEdit(tabSourceFindingGroupBox2);
 	tabSourceFindingFieldThreshold2->setObjectName("threshold.threshold");
@@ -2431,7 +2436,7 @@ void SoFiA::createInterface()
 	
 	toolBoxME = new QToolBox(tabMerging);
 	
-	tabMergingLayout = new QVBoxLayout;
+	tabMergingLayout = new QVBoxLayout();
 	
 	tabMergingGroupBox1 = new QGroupBox(tr("Enable"), toolBoxME);
 	tabMergingGroupBox1->setObjectName("steps.doMerge");
@@ -2439,7 +2444,7 @@ void SoFiA::createInterface()
 	tabMergingGroupBox1->setChecked(true);
 	connect(tabMergingGroupBox1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabMergingGroupBox1, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabMergingForm1 = new QFormLayout;
+	tabMergingForm1 = new QFormLayout();
 	
 	tabMergingFieldRadiusX = new QSpinBox(tabMergingGroupBox1);
 	tabMergingFieldRadiusX->setObjectName("merge.radiusX");
@@ -2516,7 +2521,7 @@ void SoFiA::createInterface()
 	
 	toolBoxPA = new QToolBox(tabParametrisation);
 	
-	tabParametrisationLayout = new QVBoxLayout;
+	tabParametrisationLayout = new QVBoxLayout();
 	
 	tabParametrisationGroupBox1 = new QGroupBox(tr("Enable"), toolBoxPA);
 	tabParametrisationGroupBox1->setObjectName("steps.doParameterise");
@@ -2524,7 +2529,7 @@ void SoFiA::createInterface()
 	tabParametrisationGroupBox1->setChecked(true);
 	connect(tabParametrisationGroupBox1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabParametrisationGroupBox1, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabParametrisationForm1 = new QFormLayout;
+	tabParametrisationForm1 = new QFormLayout();
 	
 	tabParametrisationButtonMaskOpt = new QCheckBox(tr("Optimise mask (ellipse) "), tabParametrisationGroupBox1);
 	tabParametrisationButtonMaskOpt->setObjectName("parameters.optimiseMask");
@@ -2553,7 +2558,7 @@ void SoFiA::createInterface()
 	tabParametrisationGroupBox2->setChecked(true);
 	connect(tabParametrisationGroupBox2, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabParametrisationGroupBox2, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabParametrisationForm2 = new QFormLayout;
+	tabParametrisationForm2 = new QFormLayout();
 	
 	tabParametrisationFieldRelMin = new QLineEdit(tabParametrisationGroupBox2);
 	tabParametrisationFieldRelMin->setObjectName("reliability.threshold");
@@ -2573,7 +2578,30 @@ void SoFiA::createInterface()
 	//connect(tabParametrisationButtonAutoKernel, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	//connect(tabParametrisationButtonAutoKernel, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	
-	tabParametrisationButtonRelPlot = new QCheckBox(tr("Enable "), tabParametrisationGroupBox1);
+	tabParametrisationWidgetScaleKernel = new QWidget(tabParametrisationGroupBox2);
+	tabParametrisationLayoutScaleKernel = new QHBoxLayout();
+	tabParametrisationSliderScaleKernel = new QSlider(Qt::Horizontal, tabParametrisationWidgetScaleKernel);
+	tabParametrisationSliderScaleKernel->setMinimum(0);
+	tabParametrisationSliderScaleKernel->setMaximum(100);
+	tabParametrisationSliderScaleKernel->setValue(0.1 * KERNEL_SCALE_FACTOR);  // WARNING: This needs to be changed later!
+	tabParametrisationSliderScaleKernel->setSingleStep(1);
+	tabParametrisationSliderScaleKernel->setPageStep(10);
+	tabParametrisationSliderScaleKernel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	connect(tabParametrisationSliderScaleKernel, SIGNAL(valueChanged(int)), this, SLOT(updateFields()));
+	connect(tabParametrisationSliderScaleKernel, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
+	tabParametrisationFieldScaleKernel = new QLineEdit(tabParametrisationWidgetScaleKernel);
+	tabParametrisationFieldScaleKernel->setObjectName("reliability.scaleKernel");
+	tabParametrisationFieldScaleKernel->setMaxLength(10);
+	tabParametrisationFieldScaleKernel->setText("0.1");  // WARNING: This needs to be changed later!
+	tabParametrisationFieldScaleKernel->setReadOnly(true);
+	tabParametrisationFieldScaleKernel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	tabParametrisationLayoutScaleKernel->addWidget(tabParametrisationSliderScaleKernel);
+	tabParametrisationLayoutScaleKernel->addWidget(tabParametrisationFieldScaleKernel);
+	tabParametrisationLayoutScaleKernel->setContentsMargins(0, 0, 0, 0);
+	tabParametrisationWidgetScaleKernel->setLayout(tabParametrisationLayoutScaleKernel);
+	
+	
+	tabParametrisationButtonRelPlot = new QCheckBox(tr("Enable "), tabParametrisationGroupBox2);
 	tabParametrisationButtonRelPlot->setObjectName("reliability.makePlot");
 	tabParametrisationButtonRelPlot->setEnabled(true);
 	tabParametrisationButtonRelPlot->setChecked(false);
@@ -2582,6 +2610,7 @@ void SoFiA::createInterface()
 	tabParametrisationForm2->addRow(tr("Threshold:"), tabParametrisationFieldRelMin);
 	//tabParametrisationForm2->addRow(tr("Kernel:"), tabParametrisationFieldRelKernel);
 	//tabParametrisationForm2->addRow(tr(""), tabParametrisationButtonAutoKernel);
+	tabParametrisationForm2->addRow(tr("Kernel scale:"), tabParametrisationWidgetScaleKernel);
 	tabParametrisationForm2->addRow(tr("Diagnostic plot:"), tabParametrisationButtonRelPlot);
 	tabParametrisationForm2->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 	tabParametrisationGroupBox2->setLayout(tabParametrisationForm2);
@@ -2616,12 +2645,12 @@ void SoFiA::createInterface()
 	
 	toolBoxOF = new QToolBox(tabOutFilter);
 	
-	tabOutFilterLayout = new QVBoxLayout;
+	tabOutFilterLayout = new QVBoxLayout();
 	
 	tabOutFilterGroupBox1 = new QGroupBox(tr("Parameter range"), toolBoxOF);
 	tabOutFilterGroupBox1->setEnabled(false);
 	
-	tabOutFilterForm1 = new QFormLayout;
+	tabOutFilterForm1 = new QFormLayout();
 	
 	tabOutFilterFieldW50Min   = new QLineEdit(tabOutFilterGroupBox1);
 	tabOutFilterFieldW50Min->setObjectName("widthW50Min");
@@ -2693,7 +2722,7 @@ void SoFiA::createInterface()
 	connect(tabOutFilterButtonFint, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
 	tabOutFilterWidgetW50 = new QWidget(tabOutFilterGroupBox1);
-	tabOutFilterLayoutW50 = new QHBoxLayout;
+	tabOutFilterLayoutW50 = new QHBoxLayout();
 	tabOutFilterLayoutW50->addWidget(tabOutFilterFieldW50Min);
 	tabOutFilterLayoutW50->addWidget(labelW50);
 	tabOutFilterLayoutW50->addWidget(tabOutFilterFieldW50Max);
@@ -2703,7 +2732,7 @@ void SoFiA::createInterface()
 	tabOutFilterWidgetW50->setLayout(tabOutFilterLayoutW50);
 	
 	tabOutFilterWidgetW20 = new QWidget(tabOutFilterGroupBox1);
-	tabOutFilterLayoutW20 = new QHBoxLayout;
+	tabOutFilterLayoutW20 = new QHBoxLayout();
 	tabOutFilterLayoutW20->addWidget(tabOutFilterFieldW20Min);
 	tabOutFilterLayoutW20->addWidget(labelW20);
 	tabOutFilterLayoutW20->addWidget(tabOutFilterFieldW20Max);
@@ -2713,7 +2742,7 @@ void SoFiA::createInterface()
 	tabOutFilterWidgetW20->setLayout(tabOutFilterLayoutW20);
 	
 	tabOutFilterWidgetFpeak = new QWidget(tabOutFilterGroupBox1);
-	tabOutFilterLayoutFpeak = new QHBoxLayout;
+	tabOutFilterLayoutFpeak = new QHBoxLayout();
 	tabOutFilterLayoutFpeak->addWidget(tabOutFilterFieldFpeakMin);
 	tabOutFilterLayoutFpeak->addWidget(labelFpeak);
 	tabOutFilterLayoutFpeak->addWidget(tabOutFilterFieldFpeakMax);
@@ -2723,7 +2752,7 @@ void SoFiA::createInterface()
 	tabOutFilterWidgetFpeak->setLayout(tabOutFilterLayoutFpeak);
 	
 	tabOutFilterWidgetFint = new QWidget(tabOutFilterGroupBox1);
-	tabOutFilterLayoutFint = new QHBoxLayout;
+	tabOutFilterLayoutFint = new QHBoxLayout();
 	tabOutFilterLayoutFint->addWidget(tabOutFilterFieldFintMin);
 	tabOutFilterLayoutFint->addWidget(labelFint);
 	tabOutFilterLayoutFint->addWidget(tabOutFilterFieldFintMax);
@@ -2765,11 +2794,11 @@ void SoFiA::createInterface()
 	
 	toolBoxOP = new QToolBox(tabOutput);
 	
-	tabOutputLayout = new QVBoxLayout;
+	tabOutputLayout = new QVBoxLayout();
 	
 	tabOutputGroupBox1 = new QGroupBox(tr("Files and settings"), toolBoxOP);
 	
-	tabOutputForm1 = new QFormLayout;
+	tabOutputForm1 = new QFormLayout();
 	
 	tabOutputFieldBaseName = new QLineEdit(tabOutputGroupBox1);
 	tabOutputFieldBaseName->setObjectName("writeCat.basename");
@@ -2777,7 +2806,7 @@ void SoFiA::createInterface()
 	connect(tabOutputFieldBaseName, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
 	
 	tabOutputWidgetDirectory = new QWidget(tabOutputGroupBox1);
-	tabOutputLayoutDirectory = new QHBoxLayout;
+	tabOutputLayoutDirectory = new QHBoxLayout();
 	tabOutputFieldDirectory  = new QLineEdit(tabOutputWidgetDirectory);
 	tabOutputFieldDirectory->setObjectName("writeCat.outputDir");
 	connect(tabOutputFieldDirectory, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
@@ -2883,7 +2912,7 @@ void SoFiA::createInterface()
 	connect(tabOutputGroupBox2, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
 	
-	tabOutputForm2 = new QFormLayout;
+	tabOutputForm2 = new QFormLayout();
 	
 	tabOutputLabelParameters = new QLabel(tr("<b>Note:</b> Depending on the actual pipeline settings, some selected parameters may not be created.<br />Please see the <a href=\"https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Source-Parameters\">SoFiA wiki</a> for a complete list of source parameters."));
 	tabOutputLabelParameters->setTextFormat(Qt::RichText);
@@ -3501,6 +3530,8 @@ void SoFiA::createWhatsThis()
 	tabParametrisationButtonMaskOpt->setWhatsThis(tr("<h3>parameters.optimiseMask</h3><p>Run the mask optimisation algorithm based on fitting and <b>growing</b> ellipses to achieve more accurate flux measurements.</p>"));
 	//tabParametrisationButtonAutoKernel->setWhatsThis(tr("<h3>reliability.autoKernel</h3><p>This parameter controls whether the kernel size to be used for reliability calculation should be determined automatically (<strong>true</strong>) or manually (<strong>false</strong>). Default is true.</p>"));
 	//tabParametrisationFieldRelKernel->setWhatsThis(tr("<h3>reliability.kernel</h3><p>Size of 3D smoothing kernel in log(parameter) space (see <b>reliability.parSpace</b>).</p>"));
+	tabParametrisationFieldScaleKernel->setWhatsThis(tr("<h3>reliability.scaleKernel</h3><p>If <b>autoKernel</b> is set to <b>true</b>, then this parameter will determine whether the kernel size will be set automatically by SoFiA (<b>auto</b>) or scaled by the given factor (<b>&gt;&nbsp;0</b>). If <b>autoKernel</b> is <b>false</b>, this option will be ignored."));
+	tabParametrisationSliderScaleKernel->setWhatsThis(tr("<h3>reliability.scaleKernel</h3><p>If <b>autoKernel</b> is set to <b>true</b>, then this parameter will determine whether the kernel size will be set automatically by SoFiA (<b>auto</b>) or scaled by the given factor (<b>&gt;&nbsp;0</b>). If <b>autoKernel</b> is <b>false</b>, this option will be ignored."));
 	tabParametrisationButtonRelPlot->setWhatsThis(tr("<h3>reliability.makePlot</h3><p>If set to <b>true</b>, PDF files showing the distribution of positive and negative detections in parameter space will be created for diagnostic purposes.</p>"));
 	tabParametrisationFieldRelMin->setWhatsThis(tr("<h3>reliability.threshold</h3><p>Discard sources whose reliability is below this threshold.</p>"));
 	tabInFilterFieldEdgeX->setWhatsThis(tr("<h3>scaleNoise.edgeX</h3><p>Size of edge (in pixels) to be excluded in first coordinate.</p>"));

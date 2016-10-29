@@ -47,6 +47,8 @@
 #define MESSAGE_WARNING 1
 #define MESSAGE_ERROR   2
 
+#define KERNEL_SCALE_FACTOR 100.0
+
 #include <iostream>
 
 #include <QtGlobal>
@@ -86,6 +88,7 @@
 	#include <QtGui/QCheckBox>
 	#include <QtGui/QSpinBox>
 	#include <QtGui/QComboBox>
+	#include <QtGui/QSlider>
 	#include <QtGui/QFileDialog>
 	#include <QtGui/QMessageBox>
 	#include <QtGui/QWhatsThis>
@@ -111,6 +114,7 @@
 	#include <QtWidgets/QCheckBox>
 	#include <QtWidgets/QSpinBox>
 	#include <QtWidgets/QComboBox>
+	#include <QtWidgets/QSlider>
 	#include <QtWidgets/QFileDialog>
 	#include <QtWidgets/QMessageBox>
 	#include <QtWidgets/QWhatsThis>
@@ -405,6 +409,8 @@ private:
 	QToolBox     *toolBoxPA;
 	
 	QVBoxLayout  *tabParametrisationLayout;
+	QWidget      *tabParametrisationWidgetScaleKernel;
+	QHBoxLayout  *tabParametrisationLayoutScaleKernel;
 	
 	QGroupBox    *tabParametrisationGroupBox1;
 	QFormLayout  *tabParametrisationForm1;
@@ -418,6 +424,8 @@ private:
 	//QLineEdit    *tabParametrisationFieldRelMax;
 	//QLineEdit    *tabParametrisationFieldRelKernel;
 	//QCheckBox    *tabParametrisationButtonAutoKernel;
+	QSlider      *tabParametrisationSliderScaleKernel;
+	QLineEdit    *tabParametrisationFieldScaleKernel;
 	QCheckBox    *tabParametrisationButtonRelPlot;
 	
 	QHBoxLayout  *tabParametrisationLayoutControls;
