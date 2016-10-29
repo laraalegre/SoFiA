@@ -351,7 +351,8 @@ int SoFiA::updateVariables()
 	{
 		if(parameters.contains(w->objectName()))      // Only existing parameters will get updated!
 		{
-			parameters.insert(w->objectName(), w->text());
+			if(w->text() == "auto") parameters.insert(w->objectName(), "0.0"); // for scaleKernel
+			else parameters.insert(w->objectName(), w->text());
 		}
 	}
 	
