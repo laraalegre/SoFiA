@@ -17,7 +17,7 @@ class gaussian_kde_set_covariance(stats.gaussian_kde):
 		self.inv_cov = np.linalg.inv(self.covariance)
 		self._norm_factor = np.sqrt(np.linalg.det(2*np.pi*self.covariance)) * self.n
 
-def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],logPars=[1,1,1],autoKernel=True,negPerBin=1,skellamTol=-0.5,kernel=[0.15,0.05,0.1],usecov=False,doscatter=1,docontour=1,doskellam=1,dostats=0,saverel=1,threshold=0.99,fMin=0,verb=0,makePlot=False):
+def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],logPars=[1,1,1],autoKernel=True,scaleKernel=1,negPerBin=1,skellamTol=-0.5,kernel=[0.15,0.05,0.1],usecov=False,doscatter=1,docontour=1,doskellam=1,dostats=0,saverel=1,threshold=0.99,fMin=0,verb=0,makePlot=False):
 
 	# matplotlib stuff
 	if makePlot:
@@ -112,33 +112,53 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
         # The kernel is then grown until convergence is reached on the Skellam plot.
 	# If autoKernel is False, use the kernel given by 'kernel' parameter (argument of EstimateRel); this is sigma, and is squared
         #    to be consistent with the auto kernel above.
+
 	if autoKernel:
-		#kernel=(pars[:,neg].max(axis=1)-pars[:,neg].min(axis=1))/(float(neg.sum())/negPerBin) # kernel from pars range
-                parcov=np.cov(pars[:,neg])
+                # set the kernel shape to that of the variance or covariance matrix
+                kernel=np.cov(pars[:,neg])
+                kernelType='covariance'
+                if not usecov:
+                        kernel=np.diag(np.diag(kernel))
+                        kernelType='variance'
                 kernelIter=0.
-                kernel=parcov*((negPerBin+kernelIter)/Nneg)**(2./(len(parCol)-1))     # kernel from covariance matrix
-                if not usecov: kernel=np.diag(np.diag(kernel))      # kernel from diagonal of covariance matrix
-	        deltOLD=-1e+9 # used to stop kernel growth if P-N stops moving closer to zero [NOT USED CURRENTLY]
                 deltplot=[]
-	        print '# Starting with (co-)variance kernel:'
-                print kernel
-                print '# Growing kernel...'
-                sys.stdout.flush()
+
+                # scale the kernel size as requested by the user or by the auto-scale algorithm (scaleKernel>0)
+                if scaleKernel:
+                        # scale kernel size as requested by the user
+                        # note that the scale factor is squared because users are asked to give a factor to apply to sqrt(kernel)  
+                        kernel*=scaleKernel**2
+	                print '# Using a kernel with the shape of the %s and size scaled by a factor %.2f.'%(kernelType,scaleKernel)
+                        print '# The sqrt(kernel) size is:'
+                        print np.sqrt(kernel)
+                else:
+                        # scale kernel size to start the kernel-growing loop
+                        # the scale factor for sqrt(kernel) is elevated to the power of 1./len(parCol)
+                        kernel*=((negPerBin+kernelIter)/Nneg)**(2./len(parCol))
+	                print '# Will find the best kernel as a scaled version of the %s:'%kernelType
+                        print '# Starting from the kernel with sqrt(kernel) size:'
+                        print np.sqrt(kernel)
+                        print '# Growing kernel...'
+                        sys.stdout.flush()
+
+	        #deltOLD=-1e+9 # used to stop kernel growth if P-N stops moving closer to zero [NOT USED CURRENTLY]
         	if doskellam and makePlot: fig0=plt.figure()
 	else:
-	        print '# Using user-defined variance kernel:' # NOTE THAT THE USER MUST GIVE THE VARIANCE, NOT SIGMA!
+	        print '# Using user-defined variance kernel with sqrt(kernel) size:' # Note that the user must give sigma, which then gets squared
                 print np.array(kernel)
                 sys.stdout.flush()
-                kernel=np.identity(len(kernel))*np.array(kernel)
+                kernel=np.identity(len(kernel))*np.array(kernel)**2
 
-	grow_kernel=1 # set to 1 to start the kernel growing loop below; if autoKernel=0 will do just one pass (i.e., will not grow the kernel)
+	grow_kernel=1 # set to 1 to start the kernel growing loop below;
+                      # this loop will estimate the reliability, check whether the kernel is large enough, and if not pick a larger kernel;
+                      # if autoKernel=0 or scaleKernel=0 will do just one pass (i.e., will not grow the kernel)
 	while grow_kernel:
 
 		################################
 		### EVALUATE N-d RELIABILITY ###
 		################################
 
-		if verb: print '  estimate normalised positive and negative density fields ...'
+		if verb: print '#  estimate normalised positive and negative density fields ...'
 		
 		Np=gaussian_kde_set_covariance(pars[:,pos],kernel)
 		Nn=gaussian_kde_set_covariance(pars[:,neg],kernel)
@@ -160,12 +180,12 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 			sys.exit(1)
 
 		# find pseudoreliable sources
-		# (taking maximum(Rs,0) in order to include objects with Rs<0 if threshold==0)
+		# (taking maximum(Rs,0) in order to include objects with Rs<0 if threshold==0; Rs may be <0 becauase of insufficient statistics)
 		pseudoreliable=np.maximum(Rs,0)>=threshold
 		# these are called pseudoreliable because some objets may be discarded later based on additional criteria below
 
 		# find reliable sources
-		# (taking maximum(Rs,0) in order to include objects with Rs<0 if threshold==0)
+		# (taking maximum(Rs,0) in order to include objects with Rs<0 if threshold==0; Rs may be <0 becauase of insufficient statistics)
                 #reliable=(np.maximum(Rs,0)>=threshold)*(data[pos,ftotCOL].reshape(-1,)>fMin)*(data[pos,fmaxCOL].reshape(-1,)>4)
 		reliable=(np.maximum(Rs,0)>=threshold)*(data[pos,ftotCOL].reshape(-1,)>fMin)
 		
@@ -179,27 +199,28 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 
                         if deltmed/deltstd>-100 and doskellam and makePlot:
                                 plt.hist(delt/deltstd,bins=np.arange(deltmin/deltstd,max(5.1,deltmax/deltstd),0.01),cumulative=True,histtype='step',color=(min(1,float(negPerBin+kernelIter)/Nneg),0,0),normed=True)
-                                deltplot.append([negPerBin+kernelIter,deltmed/deltstd])
+                                deltplot.append([((negPerBin+kernelIter)/Nneg)**(1./len(parCol)),deltmed/deltstd])
 
                         print ' iteration, median, width, median/width = %3i, %9.2e, %9.2e, %9.2e'%(kernelIter,deltmed,deltstd,deltmed/deltstd)
                         sys.stdout.flush()
 
-		        if deltmed/deltstd>skellamTol or negPerBin+kernelIter>=Nneg:
+                        if scaleKernel: grow_kernel=0
+		        elif deltmed/deltstd>skellamTol or negPerBin+kernelIter>=Nneg:
                                 grow_kernel=0
-	                        print '# Found good kernel after %i kernel growth iterations:'%kernelIter
-                                print kernel
+	                        print '# Found good kernel after %i kernel growth iterations. The sqrt(kernel) size is:'%kernelIter
+                                print np.sqrt(kernel)
                                 sys.stdout.flush()
                         elif deltmed/deltstd<5*skellamTol:
-                	        kernel*=(float(negPerBin+kernelIter+20)/(negPerBin+kernelIter))**(2./(len(parCol)-1)) 
+                	        kernel*=(float(negPerBin+kernelIter+20)/(negPerBin+kernelIter))**(2./len(parCol)) 
 			        kernelIter+=20
                         elif deltmed/deltstd<2*skellamTol:
-                	        kernel*=(float(negPerBin+kernelIter+10)/(negPerBin+kernelIter))**(2./(len(parCol)-1))
+                	        kernel*=(float(negPerBin+kernelIter+10)/(negPerBin+kernelIter))**(2./len(parCol))
 			        kernelIter+=10
                         elif deltmed/deltstd<1.5*skellamTol:
-                	        kernel*=(float(negPerBin+kernelIter+3)/(negPerBin+kernelIter))**(2./(len(parCol)-1))
+                	        kernel*=(float(negPerBin+kernelIter+3)/(negPerBin+kernelIter))**(2./len(parCol))
 			        kernelIter+=3
 		        else:
-                	        kernel*=(float(negPerBin+kernelIter+1)/(negPerBin+kernelIter))**(2./(len(parCol)-1))
+                	        kernel*=(float(negPerBin+kernelIter+1)/(negPerBin+kernelIter))**(2./len(parCol))
 			        kernelIter+=1
 
 		else: grow_kernel=0
@@ -221,13 +242,14 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 		plt.plot([0,0],[0,1],'k--')
 		fig0.savefig('%s_skel.pdf'%pdfoutname,rasterized=True)
 
-                fig3=plt.figure()
-                deltplot=np.array(deltplot)
-                plt.plot(deltplot[:,0],deltplot[:,1],'ko-')
-		plt.xlabel('kernel size (1D-sigma, aribtrary units)')
-		plt.ylabel('median/std of (P-N)/sqrt(P+N)')
-                plt.axhline(y=skellamTol,linestyle='--',color='r')
-		fig3.savefig('%s_delt.pdf'%pdfoutname,rasterized=True)
+                if not scaleKernel:
+                        fig3=plt.figure()
+                        deltplot=np.array(deltplot)
+                        plt.plot(deltplot[:,0],deltplot[:,1],'ko-')
+		        plt.xlabel('kernel size (1D-sigma, aribtrary units)')
+		        plt.ylabel('median/std of (P-N)/sqrt(P+N)')
+                        plt.axhline(y=skellamTol,linestyle='--',color='r')
+		        fig3.savefig('%s_delt.pdf'%pdfoutname,rasterized=True)
 
 
 	############################
@@ -296,7 +318,7 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 			plt.contour(x1,x2,Nn,origin='lower',colors='r',levels=levs,zorder=1)
 
 			if reliable.sum(): plt.scatter(pars[p1,pos][reliable],pars[p2,pos][reliable],marker='o',s=10,edgecolor='k',facecolor='k',zorder=4)
-			if (pseudoreliable*(reliable==False)).sum(): plt.scatter(pars[p1,pos][pseudoreliable*(reliable==False)],pars[p2,pos][pseudoreliable*(reliable==False)],marker='x',s=40,edgecolor='0.5',zorder=3)
+			if (pseudoreliable*(reliable==False)).sum(): plt.scatter(pars[p1,pos][pseudoreliable*(reliable==False)],pars[p2,pos][pseudoreliable*(reliable==False)],marker='x',s=40,edgecolor='0.5',facecolor='0.5',zorder=3)
                         for si in specialids: plt.plot(pars[p1,ids==si],pars[p2,ids==si],'kd',zorder=10000,ms=7,mfc='none',mew=2)
 			plt.xlim(lims[p1][0],lims[p1][1])
 			plt.ylim(lims[p2][0],lims[p2][1])
