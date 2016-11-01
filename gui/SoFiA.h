@@ -48,6 +48,7 @@
 #define MESSAGE_ERROR   2
 
 #define KERNEL_SCALE_FACTOR 100.0
+#define RELMIN_SCALE_FACTOR 100.0
 
 #include <iostream>
 
@@ -409,6 +410,8 @@ private:
 	QToolBox     *toolBoxPA;
 	
 	QVBoxLayout  *tabParametrisationLayout;
+	QWidget      *tabParametrisationWidgetRelMin;
+	QHBoxLayout  *tabParametrisationLayoutRelMin;
 	QWidget      *tabParametrisationWidgetScaleKernel;
 	QHBoxLayout  *tabParametrisationLayoutScaleKernel;
 	
@@ -420,6 +423,7 @@ private:
 	
 	QGroupBox    *tabParametrisationGroupBox2;
 	QFormLayout  *tabParametrisationForm2;
+	QSlider      *tabParametrisationSliderRelMin;
 	QLineEdit    *tabParametrisationFieldRelMin;
 	//QLineEdit    *tabParametrisationFieldRelMax;
 	//QLineEdit    *tabParametrisationFieldRelKernel;

@@ -515,6 +515,7 @@ int SoFiA::setFields()
 		{
 			w->setText(parameters.value(w->objectName()));
 			if(w == tabParametrisationFieldScaleKernel) tabParametrisationSliderScaleKernel->setValue(static_cast<int>((parameters.value(w->objectName())).toDouble() * KERNEL_SCALE_FACTOR));
+			else if(w == tabParametrisationFieldRelMin) tabParametrisationSliderRelMin->setValue(static_cast<int>((parameters.value(w->objectName())).toDouble() * RELMIN_SCALE_FACTOR));
 		}
 	}
 	
@@ -1003,6 +1004,9 @@ void SoFiA::updateFields()
 	
 	// Disable kernel size field if autoKernel is selected:
 	//tabParametrisationFieldRelKernel->setEnabled(not tabParametrisationButtonAutoKernel->isChecked());
+	
+	// Check reliability threshold slider position:
+	tabParametrisationFieldRelMin->setText(QString::number(static_cast<double>(tabParametrisationSliderRelMin->value()) / RELMIN_SCALE_FACTOR, 'f', 2));
 	
 	// Check kernel scale slider position:
 	int tmpKernelScale = tabParametrisationSliderScaleKernel->value();
@@ -2562,12 +2566,28 @@ void SoFiA::createInterface()
 	connect(tabParametrisationGroupBox2, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	tabParametrisationForm2 = new QFormLayout();
 	
+	tabParametrisationWidgetRelMin = new QWidget(tabParametrisationGroupBox1);
+	tabParametrisationLayoutRelMin = new QHBoxLayout();
+	tabParametrisationSliderRelMin = new QSlider(Qt::Horizontal, tabParametrisationWidgetRelMin);
+	tabParametrisationSliderRelMin->setMinimum(0);
+	tabParametrisationSliderRelMin->setMaximum(100);
+	tabParametrisationSliderRelMin->setValue(0.1 * RELMIN_SCALE_FACTOR);
+	tabParametrisationSliderRelMin->setSingleStep(1);
+	tabParametrisationSliderRelMin->setPageStep(5);
+	tabParametrisationSliderRelMin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	connect(tabParametrisationSliderRelMin, SIGNAL(valueChanged(int)), this, SLOT(updateFields()));
+	connect(tabParametrisationSliderRelMin, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
 	tabParametrisationFieldRelMin = new QLineEdit(tabParametrisationGroupBox2);
 	tabParametrisationFieldRelMin->setObjectName("reliability.threshold");
-	tabParametrisationFieldRelMin->setMaximumWidth(100);
 	tabParametrisationFieldRelMin->setMaxLength(10);
-	connect(tabParametrisationFieldRelMin, SIGNAL(editingFinished()), this, SLOT(updateFields()));
-	connect(tabParametrisationFieldRelMin, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
+	tabParametrisationFieldRelMin->setReadOnly(true);
+	tabParametrisationFieldRelMin->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	//connect(tabParametrisationFieldRelMin, SIGNAL(editingFinished()), this, SLOT(updateFields()));
+	//connect(tabParametrisationFieldRelMin, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
+	tabParametrisationLayoutRelMin->addWidget(tabParametrisationSliderRelMin);
+	tabParametrisationLayoutRelMin->addWidget(tabParametrisationFieldRelMin);
+	tabParametrisationLayoutRelMin->setContentsMargins(0, 0, 0, 0);
+	tabParametrisationWidgetRelMin->setLayout(tabParametrisationLayoutRelMin);
 	
 	//tabParametrisationFieldRelKernel = new QLineEdit(tabParametrisationGroupBox2);
 	//tabParametrisationFieldRelKernel->setObjectName("reliability.kernel");
@@ -2585,16 +2605,14 @@ void SoFiA::createInterface()
 	tabParametrisationSliderScaleKernel = new QSlider(Qt::Horizontal, tabParametrisationWidgetScaleKernel);
 	tabParametrisationSliderScaleKernel->setMinimum(0);
 	tabParametrisationSliderScaleKernel->setMaximum(100);
-	tabParametrisationSliderScaleKernel->setValue(0.1 * KERNEL_SCALE_FACTOR);  // WARNING: This needs to be changed later!
 	tabParametrisationSliderScaleKernel->setSingleStep(1);
-	tabParametrisationSliderScaleKernel->setPageStep(10);
+	tabParametrisationSliderScaleKernel->setPageStep(5);
 	tabParametrisationSliderScaleKernel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	connect(tabParametrisationSliderScaleKernel, SIGNAL(valueChanged(int)), this, SLOT(updateFields()));
 	connect(tabParametrisationSliderScaleKernel, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
 	tabParametrisationFieldScaleKernel = new QLineEdit(tabParametrisationWidgetScaleKernel);
 	tabParametrisationFieldScaleKernel->setObjectName("reliability.scaleKernel");
 	tabParametrisationFieldScaleKernel->setMaxLength(10);
-	tabParametrisationFieldScaleKernel->setText("0.1");  // WARNING: This needs to be changed later!
 	tabParametrisationFieldScaleKernel->setReadOnly(true);
 	tabParametrisationFieldScaleKernel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	tabParametrisationLayoutScaleKernel->addWidget(tabParametrisationSliderScaleKernel);
@@ -2609,7 +2627,7 @@ void SoFiA::createInterface()
 	tabParametrisationButtonRelPlot->setChecked(false);
 	connect(tabParametrisationButtonRelPlot, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
-	tabParametrisationForm2->addRow(tr("Threshold:"), tabParametrisationFieldRelMin);
+	tabParametrisationForm2->addRow(tr("Threshold:"), tabParametrisationWidgetRelMin);
 	//tabParametrisationForm2->addRow(tr("Kernel:"), tabParametrisationFieldRelKernel);
 	//tabParametrisationForm2->addRow(tr(""), tabParametrisationButtonAutoKernel);
 	tabParametrisationForm2->addRow(tr("Kernel scale:"), tabParametrisationWidgetScaleKernel);
