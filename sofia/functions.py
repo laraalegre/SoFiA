@@ -42,7 +42,7 @@ def GetRMS(cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=1,nrbins=10000,verbose=
 		cubemin=np.nanmin(cube)
 		bins=np.arange(cubemin,abs(cubemin)/nrbins-1e-12,abs(cubemin)/nrbins)
 		fluxval=(bins[:-1]+bins[1:])/2
-		rmshisto=np.histogram(cube[z0:z1:sample,y0:y1:sample,x0:x1:sample],bins=bins)[0]
+		rmshisto=np.histogram(cube[z0:z1:sample,y0:y1:sample,x0:x1:sample][~np.isnan(cube[z0:z1:sample,y0:y1:sample,x0:x1:sample])],bins=bins)[0]
 
 		nrsummedbins=0
 		while rmshisto[-nrsummedbins-1:].sum()<min_hist_peak*rmshisto.sum():
@@ -52,7 +52,7 @@ def GetRMS(cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=1,nrbins=10000,verbose=
 			nrbins/=(nrsummedbins+1)
 			bins=np.arange(cubemin,abs(cubemin)/nrbins-1e-12,abs(cubemin)/nrbins)
 			fluxval=(bins[:-1]+bins[1:])/2
-			rmshisto=np.histogram(cube[z0:z1:sample,y0:y1:sample,x0:x1:sample],bins=bins)[0]
+			rmshisto=np.histogram(cube[z0:z1:sample,y0:y1:sample,x0:x1:sample][~np.isnan(cube[z0:z1:sample,y0:y1:sample,x0:x1:sample])],bins=bins)[0]
 
 		rms=abs(optimize.curve_fit(GaussianNoise,fluxval,rmshisto,p0=[rmshisto.max(),-fluxval[rmshisto<rmshisto.max()/2].max()*2/2.355])[0][1])
 	elif rmsMode=='mad':
