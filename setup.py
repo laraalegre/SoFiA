@@ -219,11 +219,13 @@ print 'Please add the following lines to your shell configuration file:'
 print '  for bash (~/.bashrc)'
 print '      export SOFIA_MODULE_PATH=' + sofiaModulesPath
 print '      export SOFIA_PIPELINE_PATH="' + cwd + '/sofia_pipeline.py"'
-if compile_gui: print '      export PATH=$PATH:' + sofiaApplicationPath + ':' + cwd
+if compile_gui: print '      export PATH=$PATH:' + cwd + ':' + sofiaApplicationPath
+else:           print '      export PATH=$PATH:' + cwd
 print '  for (t)csh (~/.cshrc)'
 print '      setenv SOFIA_MODULE_PATH ' + sofiaModulesPath
 print '      setenv SOFIA_PIPELINE_PATH "' + cwd + '/sofia_pipeline.py"'
-if compile_gui: print '      setenv PATH {$PATH}:' + sofiaApplicationPath + ':' + cwd
+if compile_gui:  print '      setenv PATH {$PATH}:' + cwd + ':' + sofiaApplicationPath
+else:            print '      setenv PATH {$PATH}:' + cwd
 print '\n'
 
 ## test sofia installation
