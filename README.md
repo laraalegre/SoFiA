@@ -35,14 +35,18 @@ SoFiA:
         astropy (≥ 0.2.5)
         matplotlib (≥ 1.1; optional, only needed for reliability plot)
     Packages (C++):
-        GCC (≥ 4.6)
-        GNU Scientific Library (≥ 1.15; including dev files)
-        Qt (≥ 4.7; including dev files and qmake)
+        GCC (≥ 4.6; including g++)
+        zlib (≥ 1.2.8; including dev package)
+        GNU Scientific Library (≥ 1.15; including dev package)
+        Qt (≥ 4.7; including dev package and qmake)
 
 All of the above packages must be installed before SoFiA can be compiled and 
 run. It is recommended that you install them through your operating system’s 
-package manager. Please ensure that the development packages of the GNU 
-Scientific Library and the Qt library are installed as well.
+package manager. Please ensure that the **development packages** of zlib, the 
+GNU Scientific Library and the Qt library are installed as well.
+
+_Just as an example, on an Ubuntu system with Qt4 the `zlib1g-dev`, 
+`libgsl0-dev`, `libqt4-dev` and `qt4-qmake` packages must be installed as well._
 
 
 Installation
