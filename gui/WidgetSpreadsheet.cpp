@@ -29,6 +29,9 @@
 /// ____________________________________________________________________ ///
 ///                                                                      ///
 
+// Include zlib.h for decompression of catalogue file
+#include <zlib.h>
+
 #include "TableWidget.h"
 #include "WidgetSpreadsheet.h"
 
@@ -134,16 +137,38 @@ int WidgetSpreadsheet::loadCatalog(QString &filename)
 	
 	QDomDocument catalogue(currentFileName);
 	QFile file(currentFileName);
+	QByteArray catalogueData;
 	
-	if(!file.open(QIODevice::ReadOnly)) return 1;
-	
-	if(!catalogue.setContent(&file))
+	// Try to open file
+	if(!file.open(QIODevice::ReadOnly))
 	{
+		// Doesn't work - let's check for compressed file (using zlib)
+		currentFileName.append(".gz");
+		gzFile compressedFile = gzopen(currentFileName.toUtf8().constData(), "rb");
+		
+		if(compressedFile)
+		{
+			char buffer[1024];
+			int nBytes = 0;
+			while((nBytes = gzread(compressedFile, buffer, sizeof(buffer))) > 0) catalogueData.append(buffer, nBytes);
+			gzclose(compressedFile);
+		}
+		else
+		{
+			// Doesn't work either, so let's quit.
+			return 1;
+		}
+	}
+	else
+	{
+		// Read file content into byte array
+		catalogueData = file.readAll();
+		
+		// Close file again
 		file.close();
-		return 1;
 	}
 	
-	file.close();
+	if(!catalogue.setContent(catalogueData)) return 1;
 	
 	// Get all tags named FIELD (contains header information):
 	QDomNodeList headerTags = catalogue.elementsByTagName("FIELD");
@@ -277,4 +302,67 @@ void WidgetSpreadsheet::closeEvent(QCloseEvent *event)
 {
 	emit widgetClosed();
 	event->accept();
+}
+
+
+
+// ----------------------------------- //
+// FUNCTION TO DECOMPRESS GZIP STREAMS //
+// ----------------------------------- //
+
+// ALERT THIS DOES NOT WORK, BUT CAUSES A SEGMENTATION FAULT INSTEAD!
+
+QByteArray WidgetSpreadsheet::gzipDecompress(QByteArray &compressedData)
+{
+	// Strip header and trailer
+	compressedData.remove(0, 10);
+	compressedData.chop(12);
+	
+	const int buffersize = 16384;
+	quint8 buffer[buffersize];
+	
+	z_stream cmpr_stream;
+	cmpr_stream.next_in  = reinterpret_cast<Bytef*>(compressedData.data());
+	cmpr_stream.avail_in = compressedData.size();
+	cmpr_stream.total_in = 0;
+	
+	cmpr_stream.next_out  = buffer;
+	cmpr_stream.avail_out = buffersize;
+	cmpr_stream.total_out = 0;
+	
+	cmpr_stream.zalloc = Z_NULL;
+	cmpr_stream.zalloc = Z_NULL;
+	
+	if(inflateInit2(&cmpr_stream, -8) != Z_OK)
+	{
+		std::cerr << "Decompression error.\n";
+		return compressedData;
+	}
+	
+	QByteArray decompressedData;
+	
+	do
+	{
+		int status = inflate(&cmpr_stream, Z_SYNC_FLUSH);
+		
+		if(status == Z_OK or status == Z_STREAM_END)
+		{
+			decompressedData.append(QByteArray::fromRawData((char *)buffer, buffersize - cmpr_stream.avail_out));
+			cmpr_stream.next_out  = buffer;
+			cmpr_stream.avail_out = buffersize;
+		}
+		else
+		{
+			inflateEnd(&cmpr_stream);
+		}
+		
+		if(status == Z_STREAM_END)
+		{
+			inflateEnd(&cmpr_stream);
+			break;
+		}
+		
+	} while(cmpr_stream.avail_out == 0);
+	
+	return decompressedData;
 }

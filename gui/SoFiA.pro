@@ -7,6 +7,7 @@ TARGET = SoFiA
 DEPENDPATH += .
 INCLUDEPATH += .
 QT += xml
+LIBS += -lz
 
 # Include module 'widgets' for Qt 5 or greater:
 greaterThan(QT_MAJOR_VERSION, 4)

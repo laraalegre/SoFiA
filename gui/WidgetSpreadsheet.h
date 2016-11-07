@@ -39,6 +39,7 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QFile>
+#include <QtCore/QByteArray>
 
 #include <QtGui/QCloseEvent>
 
@@ -74,6 +75,8 @@ public:
 	int loadCatalog(QString &filename);
 	
 private:
+	QByteArray gzipDecompress(QByteArray &compressedData);
+	
 	QString currentFileName;
 	int tableWidth;
 	int tableHeight;

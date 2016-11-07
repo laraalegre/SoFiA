@@ -1631,7 +1631,7 @@ void SoFiA::showCatalogue()
 	// Load catalogue:
 	if(spreadsheet->loadCatalog(filename))
 	{
-		QString messageText = tr("<p>Failed to load source catalogue:</p><p>\"%1\"</p>").arg(filename);
+		QString messageText = tr("<p>Failed to load source catalogue:</p><p>\"%1 [.gz]\"</p>").arg(filename);
 		QString statusText  = tr("Failed to load source catalogue.");
 		showMessage(MESSAGE_ERROR, messageText, statusText);
 	}
