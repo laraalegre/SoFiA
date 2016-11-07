@@ -25,20 +25,20 @@ Requirements
 The following packages and libraries will be required to install and run 
 SoFiA:
 
-    Operating system:
-        Linux or Unix (e.g. Ubuntu, Mac OS, etc.)
-        Terminal with bash or tcsh (other shells should work as well)
-    Packages (Python):
-        Python (≥ 2.4)
-        numpy (≥ 1.8)
-        scipy (≥ 0.7)
-        astropy (≥ 0.2.5)
-        matplotlib (≥ 1.1; optional, only needed for reliability plot)
-    Packages (C++):
-        GCC (≥ 4.6; including g++)
-        zlib (≥ 1.2.8; including dev package)
-        GNU Scientific Library (≥ 1.15; including dev package)
-        Qt (≥ 4.7; including dev package and qmake)
+* Operating system:
+  * Linux or Unix (e.g. Ubuntu, Mac OS, etc.)
+  * Terminal with `bash` or `tcsh` (other shells should work as well)
+* Packages (Python):
+  * `Python` (≥ 2.4)
+  * `NumPy` (≥ 1.8)
+  * `SciPy` (≥ 0.7)
+  * `Astropy` (≥ 0.2.5)
+  * `matplotlib` (≥ 1.1; optional, needed for reliability plots)
+* Packages (C++):
+  * `GCC` (≥ 4.6; including g++)
+  * `zlib` (≥ 1.2.8; including dev package)
+  * `GSL` (≥ 1.15; including dev package)
+  * `Qt` (≥ 4.7; including dev package and qmake; optional, needed for GUI)
 
 All of the above packages must be installed before SoFiA can be compiled and 
 run. It is recommended that you install them through your operating system’s 
