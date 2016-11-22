@@ -119,7 +119,7 @@ writemoment2_src = [writemoment2_src_base + f for f in writemoment2_src_files]
 # Interface to the parametrization code
 parametrizer_src_base = 'src/parametrizer/'
 parametrizer_src_files = [
-    'BusyFit.cpp',
+    #'BusyFit.cpp',
     'cparametrizer.cpp',
     'DataCube.cpp',
     'helperFunctions.cpp',
@@ -164,8 +164,8 @@ setup(
             parametrizer_src,
             extra_compile_args=['-O3'],
             include_dirs=include_dirs + ext_include_dirs,
-            library_dirs=ext_library_dirs + ext_include_dirs,
-            libraries=['gsl', 'gslcblas']
+            library_dirs=ext_library_dirs + ext_include_dirs#,
+            #libraries=['gsl', 'gslcblas']
             )
         ],
     package_dir={'sofia': 'sofia'},

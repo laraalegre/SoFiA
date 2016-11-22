@@ -25,7 +25,7 @@ private:
 	int fitEllipse();
 	int kinematicMajorAxis();
 	int createIntegratedSpectrum();
-	int fitBusyFunction();
+	//int fitBusyFunction();
 	int writeParameters();
 	
 	bool doBusyFunction;
@@ -79,15 +79,15 @@ private:
 	bool   flagKinematicPA;
 	bool   flagWarp;
 	
-	int    busyFitSuccess;
-	double busyFunctionChi2;
-	double busyFitParameters[BUSYFIT_FREE_PARAM];
-	double busyFitUncertainties[BUSYFIT_FREE_PARAM];
-	double busyFunctionCentroid;
-	double busyFunctionW20;
-	double busyFunctionW50;
-	double busyFunctionFpeak;
-	double busyFunctionFint;
+	//int    busyFitSuccess;
+	//double busyFunctionChi2;
+	//double busyFitParameters[BUSYFIT_FREE_PARAM];
+	//double busyFitUncertainties[BUSYFIT_FREE_PARAM];
+	//double busyFunctionCentroid;
+	//double busyFunctionW20;
+	//double busyFunctionW50;
+	//double busyFunctionFpeak;
+	//double busyFunctionFint;
 };
 
 #endif

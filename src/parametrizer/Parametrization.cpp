@@ -6,7 +6,7 @@
 #include "helperFunctions.h"
 #include "DataCube.h"
 #include "Parametrization.h"
-#include "BusyFit.h"
+//#include "BusyFit.h"
 #include "Measurement.h"
 
 #ifndef M_PI
@@ -42,19 +42,19 @@ Parametrization::Parametrization()
 	flagKinematicPA      = false;
 	flagWarp             = false;
 	
-	busyFitSuccess       = 0;
-	busyFunctionChi2     = 0.0;
-	busyFunctionCentroid = 0.0;
-	busyFunctionW20      = 0.0;
-	busyFunctionW50      = 0.0;
-	busyFunctionFpeak    = 0.0;
-	busyFunctionFint     = 0.0;
+	//busyFitSuccess       = 0;
+	//busyFunctionChi2     = 0.0;
+	//busyFunctionCentroid = 0.0;
+	//busyFunctionW20      = 0.0;
+	//busyFunctionW50      = 0.0;
+	//busyFunctionFpeak    = 0.0;
+	//busyFunctionFint     = 0.0;
 	
-	for(size_t i = 0; i < BUSYFIT_FREE_PARAM; i++)
+	/*for(size_t i = 0; i < BUSYFIT_FREE_PARAM; i++)
 	{
 		busyFitParameters[i]    = 0.0;
 		busyFitUncertainties[i] = 0.0;
-	}
+	}*/
 	
 	return;
 }
@@ -100,13 +100,13 @@ int Parametrization::parametrize(DataCube<float> *d, DataCube<short> *m, Source 
 		std::cerr << "Warning (Parametrization): Measurement of kinematic PA failed.\n";
 	}
 	
-	if(doBusyFunction)
+	/*if(doBusyFunction)
 	{
 		if(fitBusyFunction() != 0)
 		{
 			std::cerr << "Warning (Parametrization): Failed to fit Busy Function.\n";
 		}
-	}
+	}*/
 	
 	if(writeParameters() != 0)
 	{
@@ -852,7 +852,7 @@ int Parametrization::measureLineWidth()
 
 // Fit Busy Function:
 
-int Parametrization::fitBusyFunction()
+/*int Parametrization::fitBusyFunction()
 {
 	if(data.empty() or spectrum.empty())
 	{
@@ -874,7 +874,7 @@ int Parametrization::fitBusyFunction()
 	busyFunctionCentroid += subRegionZ1;
 	
 	return 0;
-}
+}*/
 
 
 
@@ -906,7 +906,7 @@ int Parametrization::writeParameters()
 	
 	source->setParameter("rms",       noiseSubCube);
 	
-	if(doBusyFunction)
+	/*if(doBusyFunction)
 	{
 		source->setParameter("bf_flag",   busyFitSuccess);
 		source->setParameter("bf_chi2",   busyFunctionChi2);
@@ -922,7 +922,7 @@ int Parametrization::writeParameters()
 		source->setParameter("bf_w50",    busyFunctionW50);
 		source->setParameter("bf_f_peak", busyFunctionFpeak);
 		source->setParameter("bf_f_int",  busyFunctionFint);
-	}
+	}*/
 	
 	return 0;
 }
