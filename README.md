@@ -37,16 +37,15 @@ SoFiA:
 * Packages (C++):
   * `GCC` (≥ 4.6; including g++)
   * `zlib` (≥ 1.2.8; including dev package)
-  * `GSL` (≥ 1.15; including dev package)
   * `Qt` (≥ 4.7; including dev package and qmake; optional, needed for GUI)
 
 All of the above packages must be installed before SoFiA can be compiled and 
 run. It is recommended that you install them through your operating system’s 
-package manager. Please ensure that the **development packages** of zlib, the 
-GNU Scientific Library and the Qt library are installed as well.
+package manager. Please ensure that the **development packages** of zlib and 
+the Qt library are installed as well.
 
 _Just as an example, on an Ubuntu system with Qt4 the `zlib1g-dev`, 
-`libgsl0-dev`, `libqt4-dev` and `qt4-qmake` packages must be installed as well._
+`libqt4-dev` and `qt4-qmake` packages must be installed as well._
 
 
 Installation
@@ -100,9 +99,9 @@ that some of the packages are outdated. Please check that the required
 versions of all packages are installed and properly set up such that they 
 can be found by Python and the GCC. On some systems it may be necessary to 
 explicitly install the GNU C++ compiler (g++, should normally be part of 
-the GCC) as well as the development packages (dev) of Qt and the GNU 
-Scientific Library. Please also see the trouble shooting page on the SoFiA 
-wiki for more information on a few commonly encountered problems:
+the GCC) as well as the development packages (dev) of Qt. Please also see 
+the trouble shooting page on the SoFiA wiki for more information on a few 
+commonly encountered problems:
 
 * https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Troubleshooting
 
