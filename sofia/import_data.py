@@ -118,12 +118,9 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 				sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given). Ignore 4th axis.\n" % len(subcube))
 				raise SystemExit(1)
 			dict_Header['naxis']=3
-			del(dict_Header['ctype4'])
-			del(dict_Header['crpix4'])
-			del(dict_Header['crval4'])
-			del(dict_Header['cdelt4'])
-			del(dict_Header['cunit4'])
-			del(dict_Header['naxis4'])
+			for key in ['ctype4','crpix4','crval4','cdelt4','cunit4','naxis4']:
+				if key in dict_Header:
+					del(dict_Header[key])
 	elif dict_Header['NAXIS'] == 2:
 		sys.stderr.write("WARNING: The input cube has 2 axes, third axis added.\n")
 		print 'type: ', dict_Header['CTYPE1'], dict_Header['CTYPE2']
