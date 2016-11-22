@@ -4,9 +4,17 @@
 from sofia import cparametrizer as cp
 import numpy as np
 import scipy.ndimage as nd
+from scipy.optimize import curve_fit
+from scipy.special import erf
 import sys
 
-def dilate(cube,mask,objects,cathead,Parameters):
+
+# Define Busy Function
+def BusyFunction(x, a, b1, b2, c, w, xe, xp):
+    return (a / 4.0) * (erf(b1 * (w + x - xe)) + 1) * (erf(b2 * (w - x + xe)) + 1) * (c * np.absolute(x - xp) * np.absolute(x - xp) + 1)
+
+
+def dilate(cube, mask, objects, cathead, Parameters):
     dilateThreshold = Parameters['parameters']['dilateThreshold']
     dilatePixMax = Parameters['parameters']['dilatePixMax']
     dilateChan = Parameters['parameters']['dilateChan']
