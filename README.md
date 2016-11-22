@@ -35,9 +35,9 @@ SoFiA:
   * `Astropy` (≥ 0.2.5)
   * `matplotlib` (≥ 1.1; optional, needed for reliability plots)
 * Packages (C++):
-  * `GCC` (≥ 4.6; including g++)
+  * `GCC` (≥ 4.6; including `g++`)
   * `zlib` (≥ 1.2.8; including dev package)
-  * `Qt` (≥ 4.7; including dev package and qmake; optional, needed for GUI)
+  * `Qt` (≥ 4.7; including dev package and `qmake`; optional, needed for GUI)
 
 All of the above packages must be installed before SoFiA can be compiled and 
 run. It is recommended that you install them through your operating system’s 
