@@ -148,8 +148,8 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 	f.close()
 	
 	if 'bscale' in dict_Header and 'bzero' in dict_Header:
-		np_Cube*=dict_Header['bscale']
-		np_Cube+=dict_Header['bzero']
+		np_Cube=dict_Header['bscale']*np_Cube
+		np_Cube=dict_Header['bzero']+np_Cube
 		# NOTE: the above lines are more memory efficient than
 		#np_Cube=np_Cube*dict_Header['bscale']+dict_Header['bzero']
 		
