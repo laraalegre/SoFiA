@@ -84,7 +84,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 		print 'The input cube has 3 axes:'
 		print 'type: ', dict_Header['CTYPE1'], dict_Header['CTYPE2'], dict_Header['CTYPE3'] 
 		print 'dimensions: ', dict_Header['NAXIS1'], dict_Header['NAXIS2'], dict_Header['NAXIS3']
-                fullshape=[dict_Header['NAXIS3'],dict_Header['NAXIS2'],dict_Header['NAXIS1']]
+		fullshape=[dict_Header['NAXIS3'],dict_Header['NAXIS2'],dict_Header['NAXIS1']]
 		if len(subcube)==6:
 			np_Cube = f[0].section[subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
 			dict_Header['crpix1']-=subcube[0]
@@ -104,7 +104,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			sys.stderr.write("ERROR: The size of the 4th dimension is > 1.\n")
 			raise SystemExit(1)
 		else:
-                        fullshape=[dict_Header['NAXIS3'],dict_Header['NAXIS2'],dict_Header['NAXIS1']]
+			fullshape=[dict_Header['NAXIS3'],dict_Header['NAXIS2'],dict_Header['NAXIS1']]
 			if len(subcube)==6:
 				np_Cube = f[0].section[0,subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
 				dict_Header['crpix1']-=subcube[0]
@@ -125,7 +125,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 		sys.stderr.write("WARNING: The input cube has 2 axes, third axis added.\n")
 		print 'type: ', dict_Header['CTYPE1'], dict_Header['CTYPE2']
 		print 'dimensions: ', dict_Header['NAXIS1'], dict_Header['NAXIS2']
-                fullshape=[dict_Header['NAXIS2'],dict_Header['NAXIS1']]
+		fullshape=[dict_Header['NAXIS2'],dict_Header['NAXIS1']]
 		if len(subcube)==4:
 			np_Cube = array([f[0].section[subcube[2]:subcube[3],subcube[0]:subcube[1]]])
 			dict_Header['crpix1']-=subcube[0]
