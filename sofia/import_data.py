@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 # import default python libraries
-import astropy.io.fits as astropy
+from astropy.io import fits
 import os
 import sys
 from numpy import *
@@ -74,7 +74,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 	else: 
 		print 'Loading cube: ' , inFile
 		subcube = []
-	f = astropy.open(inFile,memmap=False,do_not_scale_image_data=True)
+	f = fits.open(inFile,memmap=False,do_not_scale_image_data=True)
 	dict_Header = f[0].header
 
 	# check whether the number of dimensions is acceptable and read data accordingly
@@ -174,7 +174,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			# load the weights cube and convert it into a 3D array to be applied to the data 3D array
 			# (note that the data has been converted into a 3D array above)
 			print 'Loading and applying weights cube:', weightsFile
-			f=astropy.open(weightsFile, memmap=False)
+			f=fits.open(weightsFile, memmap=False)
 			dict_Weights_header=f[0].header
 			if dict_Weights_header['NAXIS']==3:
 				if len(subcube)==6: np_Cube*=f[0].section[subcube[4]:subcube[5],subcube[2]:subcube[3],subcube[0]:subcube[1]]
@@ -265,7 +265,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 
 		else:
 			print 'Loading mask cube: ' , maskFile
-			g = astropy.open(maskFile,memmap=False)
+			g = fits.open(maskFile,memmap=False)
 			dict_Mask_header=g[0].header                        
 			if dict_Mask_header['NAXIS']==3:
                                 if dict_Mask_header['CRVAL1']!=dict_Header['CRVAL1'] or dict_Mask_header['CRVAL2']!=dict_Header['CRVAL2'] or dict_Mask_header['CRVAL3']!=dict_Header['CRVAL3']:
