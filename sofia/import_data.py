@@ -25,7 +25,6 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			except ImportError: found = False
 			if found:
 				from astropy import wcs
-				from astropy.io import fits
 				hdulist = fits.open(inFile, memmap=False)
 				header = hdulist[0].header
 				hdulist.close()
