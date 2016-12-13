@@ -161,7 +161,8 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 						sys.stderr.write("WARNING: subtracting 360 deg from RA reference value.\n")
 						header['crval%i'%(kk + 1)] -= 360
 
-				wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL])
+				if header['naxis'] == 4: wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL,wcs.WCSSUB_STOKES])
+				else: wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL])
 				xyz = objects[:,catParNames.index('x'):catParNames.index('x')+3].astype(float)
 				if 'cellscal' in header and header['cellscal'] == '1/F':
 					print 'WARNING: CELLSCAL keyword with value 1/F found.'
