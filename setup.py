@@ -119,7 +119,7 @@ writemoment2_src = [writemoment2_src_base + f for f in writemoment2_src_files]
 # Interface to the parametrization code
 parametrizer_src_base = 'src/parametrizer/'
 parametrizer_src_files = [
-    #'BusyFit.cpp',
+    'BFfit.cpp',
     'cparametrizer.cpp',
     'DataCube.cpp',
     'helperFunctions.cpp',

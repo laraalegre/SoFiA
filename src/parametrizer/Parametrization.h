@@ -4,9 +4,11 @@
 #define PARAMETRIZATION_DEFAULT_SPATIAL_RADIUS  50L
 #define PARAMETRIZATION_DEFAULT_SPECTRAL_RADIUS 50L
 
+#define BUSYFIT_FREE_PARAM 8
+
 #include <vector>
 
-//#include "BusyFit.h"
+#include "BFfit.h"
 #include "DataCube.h"
 #include "Source.h"
 
@@ -25,7 +27,7 @@ private:
 	int fitEllipse();
 	int kinematicMajorAxis();
 	int createIntegratedSpectrum();
-	//int fitBusyFunction();
+	int fitBusyFunction();
 	int writeParameters();
 	
 	bool doBusyFunction;
@@ -79,15 +81,15 @@ private:
 	bool   flagKinematicPA;
 	bool   flagWarp;
 	
-	//int    busyFitSuccess;
-	//double busyFunctionChi2;
-	//double busyFitParameters[BUSYFIT_FREE_PARAM];
+	int    busyFitSuccess;
+	double busyFunctionChi2;
+	double busyFitParameters[2 * BUSYFIT_FREE_PARAM + 1];
 	//double busyFitUncertainties[BUSYFIT_FREE_PARAM];
-	//double busyFunctionCentroid;
-	//double busyFunctionW20;
-	//double busyFunctionW50;
-	//double busyFunctionFpeak;
-	//double busyFunctionFint;
+	double busyFunctionCentroid;
+	double busyFunctionW20;
+	double busyFunctionW50;
+	double busyFunctionFpeak;
+	double busyFunctionFint;
 };
 
 #endif

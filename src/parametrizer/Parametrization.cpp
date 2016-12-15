@@ -6,7 +6,7 @@
 #include "helperFunctions.h"
 #include "DataCube.h"
 #include "Parametrization.h"
-//#include "BusyFit.h"
+#include "BFfit.h"
 #include "Measurement.h"
 
 #ifndef M_PI
@@ -42,19 +42,19 @@ Parametrization::Parametrization()
 	flagKinematicPA      = false;
 	flagWarp             = false;
 	
-	//busyFitSuccess       = 0;
-	//busyFunctionChi2     = 0.0;
-	//busyFunctionCentroid = 0.0;
-	//busyFunctionW20      = 0.0;
-	//busyFunctionW50      = 0.0;
-	//busyFunctionFpeak    = 0.0;
-	//busyFunctionFint     = 0.0;
+	busyFitSuccess       = 0;
+	busyFunctionChi2     = 0.0;
+	busyFunctionCentroid = 0.0;
+	busyFunctionW20      = 0.0;
+	busyFunctionW50      = 0.0;
+	busyFunctionFpeak    = 0.0;
+	busyFunctionFint     = 0.0;
 	
-	/*for(size_t i = 0; i < BUSYFIT_FREE_PARAM; i++)
+	for(size_t i = 0; i < 2 * BUSYFIT_FREE_PARAM + 1; i++)
 	{
 		busyFitParameters[i]    = 0.0;
-		busyFitUncertainties[i] = 0.0;
-	}*/
+		//busyFitUncertainties[i] = 0.0;
+	}
 	
 	return;
 }
@@ -100,13 +100,13 @@ int Parametrization::parametrize(DataCube<float> *d, DataCube<short> *m, Source 
 		std::cerr << "Warning (Parametrization): Measurement of kinematic PA failed.\n";
 	}
 	
-	/*if(doBusyFunction)
+	if(doBusyFunction)
 	{
 		if(fitBusyFunction() != 0)
 		{
 			std::cerr << "Warning (Parametrization): Failed to fit Busy Function.\n";
 		}
-	}*/
+	}
 	
 	if(writeParameters() != 0)
 	{
@@ -852,6 +852,61 @@ int Parametrization::measureLineWidth()
 
 // Fit Busy Function:
 
+int Parametrization::fitBusyFunction()
+{
+	if(data.empty() or spectrum.empty())
+	{
+		std::cerr << "Error (Parametrization): No data loaded.\n";
+		return 1;
+	}
+	
+	// Create spectral axis:
+	std::vector<double> channels;
+	for(int i = 0; i < spectrum.size(); ++i) channels.push_back(static_cast<double>(i));
+	
+	// Create covariance matrix:
+	double **fitCov;
+	fitCov = new double*[BUSYFIT_FREE_PARAM];
+	for(int i = 0; i < BUSYFIT_FREE_PARAM; ++i) fitCov[i] = new double[BUSYFIT_FREE_PARAM];
+	
+	// Define a few parameters:
+	int bestNoP = 8;
+	int nSeeds  = 1000;
+	int iterMax = 30;
+	int iterRef = 3000;
+	int verbose = 0;
+	
+	// Carry out the fitting:
+	busyFitSuccess = FitBusyFunc(spectrum.size(), &channels[0], &spectrum[0], &noiseSpectrum[0], &busyFitParameters[0], fitCov, bestNoP, nSeeds, iterMax, verbose);
+	
+	// Repeat to refine fit:
+	//busyFitSuccess = FitBusyFunc(spectrum.size(), &channels[0], &spectrum[0], &noiseSpectrum[0], &busyFitParameters[0], fitCov, bestNoP, -1, iterRef, verbose);
+	
+	// Delete the covariance matrix again
+	// (we don't really need it anyway):
+	for(int i = 0; i < 8; ++i) delete[] fitCov[i];
+	delete[] fitCov;
+	
+	// Extract chi^2:
+	busyFunctionChi2 = busyFitParameters[2 * BUSYFIT_FREE_PARAM];
+	
+	//BusyFit busyFit;
+	//busyFit.setup(spectrum.size(), &spectrum[0], &noiseSpectrum[0], 2, true, false);
+	
+	//busyFitSuccess = busyFit.fit();
+	
+	//busyFit.getResult(&busyFitParameters[0], &busyFitUncertainties[0], busyFunctionChi2);
+	//busyFit.getParameters(busyFunctionCentroid, busyFunctionW50, busyFunctionW20, busyFunctionFpeak, busyFunctionFint);
+	
+	// Correct spectral parameters for the shift caused by operating on a sub-cube:
+	busyFitParameters[2] += subRegionZ1;
+	busyFitParameters[4] += subRegionZ1;
+	busyFitParameters[6] += subRegionZ1;
+	//busyFunctionCentroid += subRegionZ1;
+	
+	return 0;
+}
+
 /*int Parametrization::fitBusyFunction()
 {
 	if(data.empty() or spectrum.empty())
@@ -906,23 +961,23 @@ int Parametrization::writeParameters()
 	
 	source->setParameter("rms",       noiseSubCube);
 	
-	/*if(doBusyFunction)
+	if(doBusyFunction)
 	{
 		source->setParameter("bf_flag",   busyFitSuccess);
 		source->setParameter("bf_chi2",   busyFunctionChi2);
 		source->setParameter("bf_a",      busyFitParameters[0]);
 		source->setParameter("bf_b1",     busyFitParameters[1]);
-		source->setParameter("bf_b2",     busyFitParameters[2]);
-		source->setParameter("bf_c",      busyFitParameters[3]);
-		source->setParameter("bf_xe",     busyFitParameters[4]);
-		source->setParameter("bf_xp",     busyFitParameters[5]);
-		source->setParameter("bf_w",      busyFitParameters[6]);
+		source->setParameter("bf_b2",     busyFitParameters[3]);
+		source->setParameter("bf_c",      busyFitParameters[5]);
+		source->setParameter("bf_xe",     (busyFitParameters[4] + busyFitParameters[1]) / 2.0);
+		source->setParameter("bf_xp",     busyFitParameters[6]);
+		source->setParameter("bf_w",      busyFitParameters[4] - busyFitParameters[2]);
 		source->setParameter("bf_z",      busyFunctionCentroid);
 		source->setParameter("bf_w20",    busyFunctionW20);
 		source->setParameter("bf_w50",    busyFunctionW50);
 		source->setParameter("bf_f_peak", busyFunctionFpeak);
 		source->setParameter("bf_f_int",  busyFunctionFint);
-	}*/
+	}
 	
 	return 0;
 }
