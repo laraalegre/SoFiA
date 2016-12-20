@@ -310,8 +310,6 @@ void WidgetSpreadsheet::closeEvent(QCloseEvent *event)
 // FUNCTION TO DECOMPRESS GZIP STREAMS //
 // ----------------------------------- //
 
-// ALERT THIS DOES NOT WORK, BUT CAUSES A SEGMENTATION FAULT INSTEAD!
-
 QByteArray WidgetSpreadsheet::gzipDecompress(QByteArray &compressedData)
 {
 	// Strip header and trailer
