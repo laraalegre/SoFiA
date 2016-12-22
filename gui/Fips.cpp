@@ -19,14 +19,12 @@
 
 Fips::Fips()
 {
-	if(verbose) std::cout << "Initialising without filename\n";
 	initializeMembers();
 	return;
 }
 
 Fips::Fips(const std::string &url)
 {
-	if(verbose) std::cout << "Initialising with filename\n";
 	initializeMembers();
 	fileName = url;
 	
@@ -74,7 +72,7 @@ Fips::~Fips()
 
 void Fips::initializeMembers()
 {
-	verbose = true;
+	verbose = false;
 	
 	bitpix  = 0;
 	naxes   = 0;

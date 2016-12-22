@@ -30,6 +30,7 @@
 ///                                                                      ///
 
 #include "HelpBrowser.h"
+#include "WidgetDataViewer.h"
 #include "SoFiA.h"
 
 
@@ -1154,6 +1155,11 @@ void SoFiA::updateActions()
 	actionSaveLogAs->setEnabled(outputText->toPlainText() != "" and pipelineProcess->state() == QProcess::NotRunning);
 	actionClearLog->setEnabled(outputText->toPlainText() != "" and pipelineProcess->state() == QProcess::NotRunning);
 	actionShowCatalogue->setEnabled(not (tabInputFieldData->text()).isEmpty());
+	actionShowCube->setEnabled(not (tabInputFieldData->text()).isEmpty());
+	actionShowFilteredCube->setEnabled(not (tabInputFieldData->text()).isEmpty() and tabOutputButtonFilteredCube->isEnabled() and tabOutputButtonFilteredCube->isChecked());
+	actionShowMask->setEnabled(not (tabInputFieldData->text()).isEmpty() and tabOutputButtonMask->isChecked());
+	actionShowMom0->setEnabled(not (tabInputFieldData->text()).isEmpty() and tabOutputButtonMom0->isChecked());
+	actionShowMom1->setEnabled(not (tabInputFieldData->text()).isEmpty() and tabOutputButtonMom1->isChecked());
 	
 	return;
 }
@@ -1600,10 +1606,10 @@ void SoFiA::pipelineProcessError(QProcess::ProcessError error)
 
 
 // -----------------------------
-// Slot to show source catalogue
+// Function to extract file name
 // -----------------------------
 
-void SoFiA::showCatalogue()
+QString SoFiA::extractFileName(QString &extension)
 {
 	QString filename = (tabOutputFieldBaseName->text()).trimmed();
 	QString dirname = (tabOutputFieldDirectory->text()).trimmed();
@@ -1619,7 +1625,7 @@ void SoFiA::showCatalogue()
 		else filename = fullFilePath;
 	}
 	if((filename.toLower()).endsWith(".fits") and filename.size() > 5) filename = filename.left(filename.size() - 5);
-	filename.append("_cat.xml");
+	filename.append(extension);
 	
 	// Determine directory name:
 	if(dirname.isEmpty() and separatorPos > 0) dirname = fullFilePath.left(separatorPos);
@@ -1627,6 +1633,20 @@ void SoFiA::showCatalogue()
 	
 	// Concatenate directory and file names:
 	filename.prepend(dirname);
+	
+	return filename;
+}
+
+
+
+// -----------------------------
+// Slot to show source catalogue
+// -----------------------------
+
+void SoFiA::showCatalogue()
+{
+	QString extension = QString("_cat.xml");
+	QString filename = extractFileName(extension);
 	
 	// Load catalogue:
 	if(spreadsheet->loadCatalog(filename))
@@ -1640,6 +1660,91 @@ void SoFiA::showCatalogue()
 		spreadsheet->show();
 		spreadsheet->raise();
 	}
+	
+	return;
+}
+
+
+
+// ----------------------
+// Slot to show data cube
+// ----------------------
+
+void SoFiA::showCube()
+{
+	QString extension = QString(".fits");
+	QString filename = extractFileName(extension);
+	
+	WidgetDataViewer *widgetDataViewer = new WidgetDataViewer(filename.toUtf8().constData(), this);
+	widgetDataViewer->show();
+	
+	return;
+}
+
+
+
+// --------------------------
+// Slot to show filtered cube
+// --------------------------
+
+void SoFiA::showFilteredCube()
+{
+	QString extension = QString("_filtered.fits");
+	QString filename = extractFileName(extension);
+	
+	WidgetDataViewer *widgetDataViewer = new WidgetDataViewer(filename.toUtf8().constData(), this);
+	widgetDataViewer->show();
+	
+	return;
+}
+
+
+
+// ----------------------
+// Slot to show mask cube
+// ----------------------
+
+void SoFiA::showMask()
+{
+	QString extension = QString("_mask.fits");
+	QString filename = extractFileName(extension);
+	
+	WidgetDataViewer *widgetDataViewer = new WidgetDataViewer(filename.toUtf8().constData(), this);
+	widgetDataViewer->show();
+	
+	return;
+}
+
+
+
+// ----------------------
+// Slot to show mom 0 map
+// ----------------------
+
+void SoFiA::showMom0()
+{
+	QString extension = QString("_mom0.fits");
+	QString filename = extractFileName(extension);
+	
+	WidgetDataViewer *widgetDataViewer = new WidgetDataViewer(filename.toUtf8().constData(), this);
+	widgetDataViewer->show();
+	
+	return;
+}
+
+
+
+// ----------------------
+// Slot to show mom 1 map
+// ----------------------
+
+void SoFiA::showMom1()
+{
+	QString extension = QString("_mom1.fits");
+	QString filename = extractFileName(extension);
+	
+	WidgetDataViewer *widgetDataViewer = new WidgetDataViewer(filename.toUtf8().constData(), this);
+	widgetDataViewer->show();
 	
 	return;
 }
@@ -3395,6 +3500,31 @@ void SoFiA::createInterface()
 	actionShowCatalogue->setIcon(iconDocumentPreview);
 	connect(actionShowCatalogue, SIGNAL(triggered()), this, SLOT(showCatalogue()));
 	
+	actionShowCube = new QAction(tr("Data Cube"), this);
+	actionShowCube->setEnabled(false);
+	//actionShowCube->setIcon(iconDocumentPreview);
+	connect(actionShowCube, SIGNAL(triggered()), this, SLOT(showCube()));
+	
+	actionShowFilteredCube = new QAction(tr("Filtered Cube"), this);
+	actionShowFilteredCube->setEnabled(false);
+	//actionShowFilteredCube->setIcon(iconDocumentPreview);
+	connect(actionShowFilteredCube, SIGNAL(triggered()), this, SLOT(showFilteredCube()));
+	
+	actionShowMask = new QAction(tr("Mask Cube"), this);
+	actionShowMask->setEnabled(false);
+	//actionShowMask->setIcon(iconDocumentPreview);
+	connect(actionShowMask, SIGNAL(triggered()), this, SLOT(showMask()));
+	
+	actionShowMom0 = new QAction(tr("Moment 0"), this);
+	actionShowMom0->setEnabled(false);
+	//actionShowMom0->setIcon(iconDocumentPreview);
+	connect(actionShowMom0, SIGNAL(triggered()), this, SLOT(showMom0()));
+	
+	actionShowMom1 = new QAction(tr("Moment 1"), this);
+	actionShowMom1->setEnabled(false);
+	//actionShowMom1->setIcon(iconDocumentPreview);
+	connect(actionShowMom1, SIGNAL(triggered()), this, SLOT(showMom1()));
+	
 	actionToolbar = new QAction(tr("Show Toolbar"), this);
 	actionToolbar->setCheckable(true);
 	actionToolbar->setChecked(settingsToolbar);            // Note that value of settingsToolbar must be known at this point!
@@ -3473,8 +3603,17 @@ void SoFiA::createInterface()
 	menuPipeline->addAction(actionSaveLogAs);
 	menuPipeline->addAction(actionClearLog);
 	
+	menuShowImage = new QMenu(tr("&View Image"), this);
+	menuShowImage->addAction(actionShowCube);
+	menuShowImage->addAction(actionShowFilteredCube);
+	menuShowImage->addAction(actionShowMask);
+	menuShowImage->addAction(actionShowMom0);
+	menuShowImage->addAction(actionShowMom1);
+	
 	menuView = new QMenu(tr("&Analysis"), this);
 	menuView->addAction(actionShowCatalogue);
+	menuView->addSeparator();
+	menuView->addMenu(menuShowImage);
 	
 	menuSettings = new QMenu(tr("&Settings"), this);
 	menuSettings->addAction(actionToolbar);

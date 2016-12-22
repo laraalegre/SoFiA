@@ -16,6 +16,9 @@
         <file>icons/16/go-previous.png</file>
         <file>icons/16/go-previous-view.png</file>
         <file>icons/16/go-next-view.png</file>
+        <file>icons/16/go-first-view.png</file>
+        <file>icons/16/go-last-view.png</file>
+        <file>icons/16/fill-color.png</file>
         <file>icons/16/edit-copy.png</file>
         <file>icons/16/edit-select-all.png</file>
         <file>icons/16/edit-clear.png</file>
@@ -40,6 +43,9 @@
         <file>icons/22/go-previous.png</file>
         <file>icons/22/go-previous-view.png</file>
         <file>icons/22/go-next-view.png</file>
+        <file>icons/22/go-first-view.png</file>
+        <file>icons/22/go-last-view.png</file>
+        <file>icons/22/fill-color.png</file>
         <file>icons/22/edit-copy.png</file>
         <file>icons/22/edit-select-all.png</file>
         <file>icons/22/edit-clear.png</file>

@@ -43,7 +43,7 @@
 	#include <QtGui/QLabel>
 	#include <QtGui/QVBoxLayout>
 	#include <QtGui/QHBoxLayout>
-	#include <QtGui/QPushButton>
+	#include <QtGui/QToolButton>
 	#include <QtGui/QLineEdit>
 	#include <QtGui/QSlider>
 	#include <QtGui/QMenu>
@@ -52,7 +52,7 @@
 	#include <QtWidgets/QLabel>
 	#include <QtWidgets/QVBoxLayout>
 	#include <QtWidgets/QHBoxLayout>
-	#include <QtWidgets/QPushButton>
+	#include <QtWidgets/QToolButton>
 	#include <QtWidgets/QLineEdit>
 	#include <QtWidgets/QSlider>
 	#include <QtWidgets/QMenu>
@@ -74,7 +74,7 @@ class WidgetDataViewer : public QWidget
 	Q_OBJECT
 	
 public:
-	WidgetDataViewer(QWidget *parent = 0);
+	WidgetDataViewer(const std::string &url, QWidget *parent = 0);
 
 private slots:
 	void showPrevChannel();
@@ -104,10 +104,16 @@ private:
 	QLabel *status;
 	QWidget *controls;
 	
-	QPushButton *buttonFirst;
-	QPushButton *buttonLast;
-	QPushButton *buttonPrev;
-	QPushButton *buttonNext;
+	QIcon iconGoPreviousView;
+	QIcon iconGoNextView;
+	QIcon iconGoFirstView;
+	QIcon iconGoLastView;
+	QIcon iconFillColor;
+	
+	QToolButton *buttonFirst;
+	QToolButton *buttonLast;
+	QToolButton *buttonPrev;
+	QToolButton *buttonNext;
 	QLineEdit   *fieldChannel;
 	QSlider     *slider;
 	

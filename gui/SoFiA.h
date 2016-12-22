@@ -157,6 +157,11 @@ private slots:
 	void pipelineProcessCancel();
 	void pipelineProcessError(QProcess::ProcessError error);
 	void showCatalogue();
+	void showCube();
+	void showFilteredCube();
+	void showMask();
+	void showMom0();
+	void showMom1();
 	void toggleToolbar();
 	void togglePipeline();
 	void togglePipeline(bool state);
@@ -193,6 +198,7 @@ private:
 	void createWhatsThis();
 	void updateActions();
 	void updateWindowTitle();
+	QString extractFileName(QString &extension);
 	
 	QIcon iconSoFiA;
 	QIcon iconDocumentNew;
@@ -217,6 +223,7 @@ private:
 	QMenu      *menuFile;
 	QMenu      *menuPipeline;
 	QMenu      *menuView;
+	QMenu      *menuShowImage;
 	QMenu      *menuSettings;
 	QMenu      *menuHelp;
 	
@@ -232,6 +239,11 @@ private:
 	QAction    *actionSaveLogAs;
 	QAction    *actionClearLog;
 	QAction    *actionShowCatalogue;
+	QAction    *actionShowCube;
+	QAction    *actionShowFilteredCube;
+	QAction    *actionShowMask;
+	QAction    *actionShowMom0;
+	QAction    *actionShowMom1;
 	QAction    *actionToolbar;
 	QAction    *actionPipeline;
 	QAction    *actionSaveOnExit;

@@ -40,9 +40,10 @@
 // CONSTRUCTOR //
 // ----------- //
 
-WidgetDataViewer::WidgetDataViewer(QWidget *parent)
+WidgetDataViewer::WidgetDataViewer(const std::string &url, QWidget *parent) : QWidget(parent, Qt::Window)
 {
 	this->setParent(parent);
+	this->setWindowTitle("SoFiA Image Viewer");
 	
 	setUpInterface();
 	
@@ -50,16 +51,20 @@ WidgetDataViewer::WidgetDataViewer(QWidget *parent)
 	offset = 0.0;
 	dataMin = 0.0;
 	dataMax = 1.0;
+	plotMin = 0.0;
+	plotMax = 1.0;
 	
 	currentChannel = 0;
 	fieldChannel->setText(QString::number(currentChannel));
 	
 	fips = new Fips;
-	openFitsFile("/home/twestmei/tmp/SoFiA_Test/sofiatestcube.fits");
 	
-	plotMin = dataMin;
-	plotMax = dataMax;
-	plotChannelMap(currentChannel);
+	if(not openFitsFile(url))
+	{
+		plotMin = dataMin;
+		plotMax = dataMax;
+		plotChannelMap(currentChannel);
+	}
 	
 	return;
 }
@@ -115,8 +120,8 @@ int WidgetDataViewer::openFitsFile(const std::string &url)
 		dataMax = fips->maximum();
 	}
 	
-	std::cout << "DATAMIN = " << dataMin << "\n";
-	std::cout << "DATAMAX = " << dataMax << "\n";
+	//std::cout << "DATAMIN = " << dataMin << "\n";
+	//std::cout << "DATAMAX = " << dataMax << "\n";
 	
 	// Adjust user interface
 	slider->setMaximum(fips->dimension() < 3 ? 0 : fips->dimension(3) - 1);
@@ -299,25 +304,53 @@ void WidgetDataViewer::setUpInterface()
 	status = new QLabel(this);
 	status->setText("Status information");
 	
+	iconGoPreviousView.addFile(QString(":/icons/22/go-previous-view.png"), QSize(22, 22));
+	iconGoPreviousView.addFile(QString(":/icons/16/go-previous-view.png"), QSize(16, 16));
+	iconGoPreviousView  = QIcon::fromTheme("go-previous-view", iconGoPreviousView);
+	
+	iconGoNextView.addFile(QString(":/icons/22/go-next-view.png"), QSize(22, 22));
+	iconGoNextView.addFile(QString(":/icons/16/go-next-view.png"), QSize(16, 16));
+	iconGoNextView      = QIcon::fromTheme("go-next-view", iconGoNextView);
+	
+	iconGoFirstView.addFile(QString(":/icons/22/go-first-view.png"), QSize(22, 22));
+	iconGoFirstView.addFile(QString(":/icons/16/go-first-view.png"), QSize(16, 16));
+	iconGoFirstView     = QIcon::fromTheme("go-first-view", iconGoNextView);
+	
+	iconGoLastView.addFile(QString(":/icons/22/go-last-view.png"), QSize(22, 22));
+	iconGoLastView.addFile(QString(":/icons/16/go-last-view.png"), QSize(16, 16));
+	iconGoLastView      = QIcon::fromTheme("go-last-view", iconGoNextView);
+	
+	iconFillColor.addFile(QString(":/icons/22/fill-color.png"), QSize(22, 22));
+	iconFillColor.addFile(QString(":/icons/16/fill-color.png"), QSize(16, 16));
+	iconFillColor       = QIcon::fromTheme("fill-color", iconGoNextView);
+	
 	controls = new QWidget(this);
-	buttonFirst  = new QPushButton("|<<", controls);
+	buttonFirst  = new QToolButton(controls);
+	buttonFirst->setToolButtonStyle(Qt::ToolButtonIconOnly);
 	buttonFirst->setEnabled(false);
-	buttonFirst->setMaximumWidth(50);
+	buttonFirst->setText("First");
+	buttonFirst->setIcon(iconGoFirstView);
 	buttonFirst->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	connect(buttonFirst, SIGNAL(clicked()), this, SLOT(showFirstChannel()));
-	buttonLast   = new QPushButton(">>|",  controls);
+	buttonLast   = new QToolButton(controls);
+	buttonLast->setToolButtonStyle(Qt::ToolButtonIconOnly);
 	buttonLast->setEnabled(false);
-	buttonLast->setMaximumWidth(50);
+	buttonLast->setText("Last");
+	buttonLast->setIcon(iconGoLastView);
 	buttonLast->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	connect(buttonLast, SIGNAL(clicked()), this, SLOT(showLastChannel()));
-	buttonPrev   = new QPushButton("<<", controls);
+	buttonPrev   = new QToolButton(controls);
+	buttonPrev->setToolButtonStyle(Qt::ToolButtonIconOnly);
 	buttonPrev->setEnabled(false);
-	buttonPrev->setMaximumWidth(50);
+	buttonPrev->setText("Prev.");
+	buttonPrev->setIcon(iconGoPreviousView);
 	buttonPrev->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	connect(buttonPrev, SIGNAL(clicked()), this, SLOT(showPrevChannel()));
-	buttonNext   = new QPushButton(">>",  controls);
+	buttonNext   = new QToolButton(controls);
+	buttonNext->setToolButtonStyle(Qt::ToolButtonIconOnly);
 	buttonNext->setEnabled(false);
-	buttonNext->setMaximumWidth(50);
+	buttonNext->setText("Next");
+	buttonNext->setIcon(iconGoNextView);
 	buttonNext->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	connect(buttonNext, SIGNAL(clicked()), this, SLOT(showNextChannel()));
 	fieldChannel = new QLineEdit(controls);
@@ -475,8 +508,9 @@ bool WidgetDataViewer::eventFilter(QObject *obj, QEvent *event)
 
 void WidgetDataViewer::showContextMenu(const QPoint &where)
 {
-	QMenu contextMenu("Context menu", this);
-	QMenu menuLut("Colour scale", this);
+	QMenu contextMenu("Context Menu", this);
+	QMenu menuLut("Colour Scale", this);
+	
 	QAction actionLutGreyscale("Greyscale", this);
 	QAction actionLutRainbow("Rainbow", this);
 	QAction actionLutRandom("Random", this);
@@ -497,6 +531,7 @@ void WidgetDataViewer::showContextMenu(const QPoint &where)
 	menuLut.addAction(&actionLutGreyscale);
 	menuLut.addAction(&actionLutRainbow);
 	menuLut.addAction(&actionLutRandom);
+	menuLut.setIcon(iconFillColor);
 	
 	/*contextMenu.addAction(&actionPrevChannel);
 	contextMenu.addAction(&actionNextChannel);
