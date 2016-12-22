@@ -44,6 +44,7 @@ WidgetDataViewer::WidgetDataViewer(const std::string &url, QWidget *parent) : QW
 {
 	this->setParent(parent);
 	this->setWindowTitle("SoFiA Image Viewer");
+	this->setAttribute(Qt::WA_DeleteOnClose);
 	
 	setUpInterface();
 	
@@ -66,6 +67,18 @@ WidgetDataViewer::WidgetDataViewer(const std::string &url, QWidget *parent) : QW
 		plotChannelMap(currentChannel);
 	}
 	
+	return;
+}
+
+
+
+// ---------- //
+// DESTRUCTOR //
+// ---------- //
+
+WidgetDataViewer::~WidgetDataViewer()
+{
+	delete fips;
 	return;
 }
 

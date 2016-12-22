@@ -75,6 +75,7 @@ class WidgetDataViewer : public QWidget
 	
 public:
 	WidgetDataViewer(const std::string &url, QWidget *parent = 0);
+	~WidgetDataViewer();
 
 private slots:
 	void showPrevChannel();
