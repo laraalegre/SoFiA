@@ -862,7 +862,7 @@ int Parametrization::fitBusyFunction()
 	
 	// Create spectral axis:
 	std::vector<double> channels;
-	for(int i = 0; i < spectrum.size(); ++i) channels.push_back(static_cast<double>(i));
+	for(size_t i = 0; i < spectrum.size(); ++i) channels.push_back(static_cast<double>(i));
 	
 	// Create covariance matrix:
 	double **fitCov;
@@ -873,7 +873,7 @@ int Parametrization::fitBusyFunction()
 	int bestNoP = 8;
 	int nSeeds  = 1000;
 	int iterMax = 30;
-	int iterRef = 3000;
+	//int iterRef = 3000;
 	int verbose = 0;
 	
 	// Carry out the fitting:
