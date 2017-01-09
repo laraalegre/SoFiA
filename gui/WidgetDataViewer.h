@@ -110,11 +110,13 @@ private:
 	QIcon iconGoFirstView;
 	QIcon iconGoLastView;
 	QIcon iconFillColor;
+	QIcon iconDialogClose;
 	
 	QToolButton *buttonFirst;
 	QToolButton *buttonLast;
 	QToolButton *buttonPrev;
 	QToolButton *buttonNext;
+	QToolButton *buttonClose;
 	QLineEdit   *fieldChannel;
 	QSlider     *slider;
 	
@@ -126,6 +128,7 @@ private:
 
 protected:
 	bool eventFilter(QObject *obj, QEvent *event);
+	virtual void closeEvent(QCloseEvent *event);
 };
 
 #endif

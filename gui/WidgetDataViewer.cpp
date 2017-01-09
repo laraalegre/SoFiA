@@ -337,11 +337,16 @@ void WidgetDataViewer::setUpInterface()
 	iconFillColor.addFile(QString(":/icons/16/fill-color.png"), QSize(16, 16));
 	iconFillColor       = QIcon::fromTheme("fill-color", iconGoNextView);
 	
+	iconDialogClose.addFile(QString(":/icons/22/dialog-close.png"), QSize(22, 22));
+	iconDialogClose.addFile(QString(":/icons/16/dialog-close.png"), QSize(16, 16));
+	iconDialogClose = QIcon::fromTheme("dialog-close", iconDialogClose);
+	
 	controls = new QWidget(this);
 	buttonFirst  = new QToolButton(controls);
 	buttonFirst->setToolButtonStyle(Qt::ToolButtonIconOnly);
 	buttonFirst->setEnabled(false);
 	buttonFirst->setText("First");
+	buttonFirst->setToolTip("First channel");
 	buttonFirst->setIcon(iconGoFirstView);
 	buttonFirst->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	connect(buttonFirst, SIGNAL(clicked()), this, SLOT(showFirstChannel()));
@@ -349,6 +354,7 @@ void WidgetDataViewer::setUpInterface()
 	buttonLast->setToolButtonStyle(Qt::ToolButtonIconOnly);
 	buttonLast->setEnabled(false);
 	buttonLast->setText("Last");
+	buttonLast->setToolTip("Last channel");
 	buttonLast->setIcon(iconGoLastView);
 	buttonLast->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	connect(buttonLast, SIGNAL(clicked()), this, SLOT(showLastChannel()));
@@ -356,6 +362,7 @@ void WidgetDataViewer::setUpInterface()
 	buttonPrev->setToolButtonStyle(Qt::ToolButtonIconOnly);
 	buttonPrev->setEnabled(false);
 	buttonPrev->setText("Prev.");
+	buttonPrev->setToolTip("Previous channel");
 	buttonPrev->setIcon(iconGoPreviousView);
 	buttonPrev->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	connect(buttonPrev, SIGNAL(clicked()), this, SLOT(showPrevChannel()));
@@ -363,6 +370,7 @@ void WidgetDataViewer::setUpInterface()
 	buttonNext->setToolButtonStyle(Qt::ToolButtonIconOnly);
 	buttonNext->setEnabled(false);
 	buttonNext->setText("Next");
+	buttonNext->setToolTip("Next channel");
 	buttonNext->setIcon(iconGoNextView);
 	buttonNext->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	connect(buttonNext, SIGNAL(clicked()), this, SLOT(showNextChannel()));
@@ -379,6 +387,14 @@ void WidgetDataViewer::setUpInterface()
 	slider->setSingleStep(1);
 	slider->setPageStep(10);
 	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(sliderChange(int)));
+	buttonClose  = new QToolButton(controls);
+	buttonClose->setToolButtonStyle(Qt::ToolButtonIconOnly);
+	buttonClose->setEnabled(true);
+	buttonClose->setText("Close");
+	buttonClose->setToolTip("Close viewer");
+	buttonClose->setIcon(iconDialogClose);
+	buttonClose->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+	connect(buttonClose, SIGNAL(clicked()), this, SLOT(close()));
 	
 	layoutControls = new QHBoxLayout;
 	layoutControls->addWidget(buttonFirst);
@@ -387,6 +403,7 @@ void WidgetDataViewer::setUpInterface()
 	layoutControls->addWidget(buttonNext);
 	layoutControls->addWidget(buttonLast);
 	layoutControls->addWidget(slider);
+	layoutControls->addWidget(buttonClose);
 	layoutControls->setContentsMargins(0, 0, 0, 0);
 	layoutControls->setSpacing(5);
 	controls->setLayout(layoutControls);
@@ -555,5 +572,17 @@ void WidgetDataViewer::showContextMenu(const QPoint &where)
 	
 	contextMenu.exec(mapToGlobal(where));
 	
+	return;
+}
+
+
+
+// ----------- //
+// Close event //
+// ----------- //
+
+void WidgetDataViewer::closeEvent(QCloseEvent *event)
+{
+	event->accept();
 	return;
 }

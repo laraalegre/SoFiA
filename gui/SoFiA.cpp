@@ -1154,12 +1154,15 @@ void SoFiA::updateActions()
 	
 	actionSaveLogAs->setEnabled(outputText->toPlainText() != "" and pipelineProcess->state() == QProcess::NotRunning);
 	actionClearLog->setEnabled(outputText->toPlainText() != "" and pipelineProcess->state() == QProcess::NotRunning);
+	
 	actionShowCatalogue->setEnabled(not (tabInputFieldData->text()).isEmpty());
-	actionShowCube->setEnabled(not (tabInputFieldData->text()).isEmpty());
-	actionShowFilteredCube->setEnabled(not (tabInputFieldData->text()).isEmpty() and tabOutputButtonFilteredCube->isEnabled() and tabOutputButtonFilteredCube->isChecked());
-	actionShowMask->setEnabled(not (tabInputFieldData->text()).isEmpty() and tabOutputButtonMask->isChecked());
-	actionShowMom0->setEnabled(not (tabInputFieldData->text()).isEmpty() and tabOutputButtonMom0->isChecked());
-	actionShowMom1->setEnabled(not (tabInputFieldData->text()).isEmpty() and tabOutputButtonMom1->isChecked());
+	
+	actionShowCube->setEnabled(not (tabInputFieldData->text()).isEmpty() and not tabOutputButtonCompress->isChecked());
+	actionShowFilteredCube->setEnabled(not (tabInputFieldData->text()).isEmpty() and tabOutputButtonFilteredCube->isEnabled() and tabOutputButtonFilteredCube->isChecked() and not tabOutputButtonCompress->isChecked());
+	actionShowMask->setEnabled(not (tabInputFieldData->text()).isEmpty() and tabOutputButtonMask->isChecked() and not tabOutputButtonCompress->isChecked());
+	actionShowMom0->setEnabled(not (tabInputFieldData->text()).isEmpty() and tabOutputButtonMom0->isChecked() and not tabOutputButtonCompress->isChecked());
+	actionShowMom1->setEnabled(not (tabInputFieldData->text()).isEmpty() and tabOutputButtonMom1->isChecked() and not tabOutputButtonCompress->isChecked());
+	menuShowImage->setEnabled(not (tabInputFieldData->text()).isEmpty() and not tabOutputButtonCompress->isChecked());
 	
 	return;
 }
@@ -1935,6 +1938,10 @@ void SoFiA::createInterface()
 	iconTaskReject.addFile(QString(":/icons/16/task-reject.png"), QSize(16, 16));
 	iconTaskReject.addFile(QString(":/icons/22/task-reject.png"), QSize(22, 22));
 	iconTaskReject      = QIcon::fromTheme("task-reject", iconTaskReject);
+	
+	iconFolderImage.addFile(QString(":/icons/16/folder-image.png"), QSize(16, 16));
+	iconFolderImage.addFile(QString(":/icons/22/folder-image.png"), QSize(22, 22));
+	iconFolderImage     = QIcon::fromTheme("folder-image", iconTaskReject);
 	
 	// Create main widget that contains everything else
 	// ------------------------------------------------
@@ -3001,6 +3008,7 @@ void SoFiA::createInterface()
 	tabOutputButtonCompress = new QCheckBox(tr("Enable "), tabOutputGroupBox1);
 	tabOutputButtonCompress->setObjectName("writeCat.compress");
 	tabOutputButtonCompress->setChecked(false);
+	connect(tabOutputButtonCompress, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutputButtonCompress, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
 	tabOutputButtonOverwrite = new QCheckBox(tr("Enable "), tabOutputGroupBox1);
@@ -3604,6 +3612,7 @@ void SoFiA::createInterface()
 	menuPipeline->addAction(actionClearLog);
 	
 	menuShowImage = new QMenu(tr("&View Image"), this);
+	menuShowImage->setIcon(iconFolderImage);
 	menuShowImage->addAction(actionShowCube);
 	menuShowImage->addAction(actionShowFilteredCube);
 	menuShowImage->addAction(actionShowMask);

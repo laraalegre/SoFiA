@@ -219,6 +219,7 @@ private:
 	QIcon iconTaskReject;
 	QIcon iconWhatsThis;
 	QIcon iconFullScreen;
+	QIcon iconFolderImage;
 	
 	QMenu      *menuFile;
 	QMenu      *menuPipeline;
