@@ -43,7 +43,7 @@
 WidgetDataViewer::WidgetDataViewer(const std::string &url, QWidget *parent) : QWidget(parent, Qt::Window)
 {
 	this->setParent(parent);
-	this->setWindowTitle("SoFiA Image Viewer");
+	this->setWindowTitle("SoFiA - Image Viewer");
 	this->setAttribute(Qt::WA_DeleteOnClose);
 	
 	setUpInterface();
