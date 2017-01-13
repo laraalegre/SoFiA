@@ -519,11 +519,19 @@ bool WidgetDataViewer::eventFilter(QObject *obj, QEvent *event)
 		
 		if(x >= 0 and static_cast<size_t>(x) < fips->dimension(1) and y >= 0 and static_cast<size_t>(y) < fips->dimension(2))
 		{
-			QString bunit = QString::fromStdString(fips->unit());
 			size_t position[3] = {static_cast<size_t>(x), static_cast<size_t>(y), currentChannel};
-			text = QString("Position: %1, %2   Value: %3   ").arg(x).arg(y).arg(fips->data(position));
-			text.append(QString("Unit: "));
-			text.append(bunit.isEmpty() ? QString("undefined") : bunit);
+			double value = fips->data(position);
+			
+			if(std::isnan(value))
+			{
+				text = QString("Position: %1, %2   Value: blank").arg(x).arg(y);
+			}
+			else
+			{
+				text = QString("Position: %1, %2   Value: %3 ").arg(x).arg(y).arg(value);
+				QString bunit = QString::fromStdString(fips->unit());
+				if(not bunit.isEmpty()) text.append(bunit);
+			}
 		}
 		else text = QString("Position: undefined   Value: undefined");
 		

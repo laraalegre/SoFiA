@@ -1675,8 +1675,7 @@ void SoFiA::showCatalogue()
 
 void SoFiA::showCube()
 {
-	QString extension = QString(".fits");
-	QString filename = extractFileName(extension);
+	QString filename = tabInputFieldData->text();
 	
 	WidgetDataViewer *widgetDataViewer = new WidgetDataViewer(filename.toUtf8().constData(), this);
 	widgetDataViewer->show();
