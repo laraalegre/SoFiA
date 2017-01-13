@@ -48,7 +48,7 @@ Version 1.0 created June 30th, 2013 by Russell J. Jurek.
 */
 
 #include<iostream>
-#include<math.h>
+#include<cmath>
 #include<cstdlib>
 #include<ctime>
 
@@ -106,7 +106,7 @@ void mrqcof(T_xvals x[], T_data y[], T_data sig[], T_count ndata, double a[], in
     }
     *chisq+=(dy*dy*sig2i);
   }
-  if((isinf(*chisq)) || (isnan(*chisq))){ *chisq = 9E30; }
+  if((std::isinf(*chisq)) || (std::isnan(*chisq))){ *chisq = 9E30; }
   for (j=1;j<mfit;j++){
     for (k=0;k<j;k++){ alpha[k][j]=alpha[j][k]; }
   }
@@ -114,13 +114,13 @@ void mrqcof(T_xvals x[], T_data y[], T_data sig[], T_count ndata, double a[], in
   // test for inf and nan values in alpha, beta and dyda
   for(j = 0; j < mfit; j++){
 
-    if(isinf(beta[j])){ beta[j] = (beta[j] > 0.0) ? 9E30 : -9E30; }
-    if(isnan(beta[j])){ beta[j] = 0.0; }
+    if(std::isinf(beta[j])){ beta[j] = (beta[j] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(beta[j])){ beta[j] = 0.0; }
 
     for(k = 0; k < mfit; k++){
 
-      if(isinf(alpha[j][k])){ alpha[j][k] = (alpha[j][k] > 0.0) ? 9E30 : -9E30; }
-      if(isnan(alpha[j][k])){ alpha[j][k] = 0.0; }
+      if(std::isinf(alpha[j][k])){ alpha[j][k] = (alpha[j][k] > 0.0) ? 9E30 : -9E30; }
+      if(std::isnan(alpha[j][k])){ alpha[j][k] = 0.0; }
 
     }
 
@@ -156,8 +156,8 @@ int mrqmin(T_xvals x[], T_data y[], T_data sig[], T_count ndata, double a[], int
   // test range of *alamda to ensure it's not ludicrously small or large during mid-stages
   if(state_flag >= 0){
 
-    if(isnan(*alamda)){ *alamda = 1E-10; }
-    if(isinf(*alamda)){ *alamda = (*alamda > 0.0) ? 1E20 : 1E-10; }
+    if(std::isnan(*alamda)){ *alamda = 1E-10; }
+    if(std::isinf(*alamda)){ *alamda = (*alamda > 0.0) ? 1E20 : 1E-10; }
     if(*alamda < 1E-10){ *alamda = 1E-10; }
     if(*alamda > 1E20){ *alamda = 1E20; }
     
@@ -194,13 +194,13 @@ int mrqmin(T_xvals x[], T_data y[], T_data sig[], T_count ndata, double a[], int
   svdcmp(temp_covar,mfit,mfit,w,v);
 
   for(j=0;j<mfit;j++){
-    if(isnan(w[j])){ w[j] = 0.0; }
-    if(isinf(w[j])){ w[j] = (w[j] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(w[j])){ w[j] = 0.0; }
+    if(std::isinf(w[j])){ w[j] = (w[j] > 0.0) ? 9E30 : -9E30; }
     for(k=0;k<mfit;k++){
-      if(isnan(temp_covar[j][k])){ temp_covar[j][k] = 0.0; }
-      if(isinf(temp_covar[j][k])){ temp_covar[j][k] = (temp_covar[j][k] > 0.0) ? 9E30 : -9E30; }
-      if(isnan(v[j][k])){ v[j][k] = 0.0; }
-      if(isinf(v[j][k])){ v[j][k] = (v[j][k] > 0.0) ? 9E30 : -9E30; }
+      if(std::isnan(temp_covar[j][k])){ temp_covar[j][k] = 0.0; }
+      if(std::isinf(temp_covar[j][k])){ temp_covar[j][k] = (temp_covar[j][k] > 0.0) ? 9E30 : -9E30; }
+      if(std::isnan(v[j][k])){ v[j][k] = 0.0; }
+      if(std::isinf(v[j][k])){ v[j][k] = (v[j][k] > 0.0) ? 9E30 : -9E30; }
     }
   }
 
@@ -301,8 +301,8 @@ template <class T_count, class T_xvals, class T_data>
   // 0. test the range of model_params
   for(i = 0; i < 17; i++){
 
-    if(isinf(model_params[i])){ model_params[i] = (model_params[i] > 0.0) ? 9E30 : -9E30; }
-    if(isnan(model_params[i])){ model_params[i] = 0.1; }
+    if(std::isinf(model_params[i])){ model_params[i] = (model_params[i] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(model_params[i])){ model_params[i] = 0.1; }
 
   }
 
@@ -355,8 +355,8 @@ template <class T_count, class T_xvals, class T_data>
 
 	c[i] = (int) floor((ran2(seed) * ((double) NOc[i]))); 
 	c_val[i] = c_min[i] + (((double) c[i]) * c_step[i]);
-	if(isinf(c_val[i])){ c_val[i] = (c_val[i] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(c_val[i])){ c_val[i] = 0.0; }
+	if(std::isinf(c_val[i])){ c_val[i] = (c_val[i] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(c_val[i])){ c_val[i] = 0.0; }
 	
       }
       c[4] = c[2] + (int) floor((ran2(seed) * ((double) (NOc[4] - c[2])))); 
@@ -424,8 +424,8 @@ template <class T_count, class T_xvals, class T_data>
       // test range of c_val[]
       for(i = 0; i < 8; i++){ 
 
-	if(isinf(c_val[i])){ c_val[i] = (c_val[i] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(c_val[i])){ c_val[i] = 0.0; }
+	if(std::isinf(c_val[i])){ c_val[i] = (c_val[i] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(c_val[i])){ c_val[i] = 0.0; }
 	
       }      
 
@@ -434,8 +434,8 @@ template <class T_count, class T_xvals, class T_data>
       for(i = 0; i < NOvals; i++){
 	
 	model_vals[i] = 0.25 * 1E-3 * (1.0 + erff((c_val[1] * ((double) x_vals[i] - c_val[2])))) * (1.0 + erff((c_val[3] * (c_val[4] - (double) x_vals[i])))) * (1.0 + (c_val[5] * (pow((fabs((double) x_vals[i] - c_val[6])),c_val[7]))));
-	if(isnan(model_vals[i])){ model_vals[i] = 0.0; }
-	if(isinf(model_vals[i])){ model_vals[i] = (model_vals[i] > 0.0) ? 9E30 : -9E30; } 
+	if(std::isnan(model_vals[i])){ model_vals[i] = 0.0; }
+	if(std::isinf(model_vals[i])){ model_vals[i] = (model_vals[i] > 0.0) ? 9E30 : -9E30; } 
 	if(model_vals[i] >= model_max){ model_max = model_vals[i]; }
 	
 	// for(i = 0; i < NOvals; i++)
@@ -447,16 +447,16 @@ template <class T_count, class T_xvals, class T_data>
 	
 	chi2_val = ((double) y_vals[i] - (c_val[0] * y_max * model_vals[i] / model_max)) / (double) n_vals[i];
 	chi2_val = chi2_val * chi2_val;
-	if((!(isnan(chi2_val))) && (!(isinf(chi2_val)))){
+	if((!(std::isnan(chi2_val))) && (!(std::isinf(chi2_val)))){
 	  
 	  chi2_sum+=chi2_val;
 	  
-	} else if(isinf(chi2_val)){ chi2_sum+=1E20; }
+	} else if(std::isinf(chi2_val)){ chi2_sum+=1E20; }
 	
 	// for(i = 0; i < NOvals; i++)
       }
      
-      if(isinf(chi2_sum)){ chi2_sum = (chi2_sum > 0.0) ? 9E30 : -9E30; }
+      if(std::isinf(chi2_sum)){ chi2_sum = (chi2_sum > 0.0) ? 9E30 : -9E30; }
 
       // re-scale c_val[0] and c_val[5]
       c_val[0]*=(y_max * 1E-3 / model_max);
@@ -672,8 +672,8 @@ template <class T_count, class T_xvals, class T_data>
       
       prev_chi2_val = chi2_val;
       SVD_flag = mrqmin(x_vals,y_vals,n_vals,NOvals,a[thrd],ia[thrd],ma,covar[thrd],alpha[thrd],&chi2_val,funcs,&alamda[thrd],fit_mode,mid,amp,mfit,ochisq,atry[thrd],beta[thrd],da[thrd],oneda[thrd]);
-      if(isinf(chi2_val)){ chi2_val = (chi2_val > 0.0) ? 9E30 : prev_chi2_val + 1.0; }
-      if(isnan(chi2_val)){ chi2_val = prev_chi2_val + 1.0; }
+      if(std::isinf(chi2_val)){ chi2_val = (chi2_val > 0.0) ? 9E30 : prev_chi2_val + 1.0; }
+      if(std::isnan(chi2_val)){ chi2_val = prev_chi2_val + 1.0; }
       if(chi2_val <= prev_chi2_val){ btr_cnt++; } else { btr_cnt = 0; }
       iter++;
       if(iter >= iter_max){ break; }
@@ -683,8 +683,8 @@ template <class T_count, class T_xvals, class T_data>
     // 4c. calculate final covariance matrix
     alamda[thrd] = -1.0;
     SVD_flag = mrqmin(x_vals,y_vals,n_vals,NOvals,a[thrd],ia[thrd],ma,covar[thrd],alpha[thrd],&chi2_val,funcs,&alamda[thrd],fit_mode,mid,amp,mfit,ochisq,atry[thrd],beta[thrd],da[thrd],oneda[thrd]);
-    if(isinf(chi2_val)){ chi2_val = (chi2_val > 0.0) ? 9E30 : prev_chi2_val + 1.0; }
-    if(isnan(chi2_val)){ chi2_val = prev_chi2_val + 1.0; }
+    if(std::isinf(chi2_val)){ chi2_val = (chi2_val > 0.0) ? 9E30 : prev_chi2_val + 1.0; }
+    if(std::isnan(chi2_val)){ chi2_val = prev_chi2_val + 1.0; }
     
     if((chi2_val > 0.0) && ((chi2_val < chi2_best) || (chi2_best < 0.0))){
             
@@ -697,14 +697,14 @@ template <class T_count, class T_xvals, class T_data>
       }
            
       best_params[thrd][0] = exp(a[thrd][0]);
-      if(isinf(best_params[thrd][0])){ best_params[thrd][0] = (best_params[thrd][0] > 0.0) ? 9E30 : -9E30; }
-      if(isnan(best_params[thrd][0])){ best_params[thrd][0] = 0.0; }
+      if(std::isinf(best_params[thrd][0])){ best_params[thrd][0] = (best_params[thrd][0] > 0.0) ? 9E30 : -9E30; }
+      if(std::isnan(best_params[thrd][0])){ best_params[thrd][0] = 0.0; }
       best_params[thrd][1] = best_params[thrd][0] * sqrt(covar[thrd][0][0]);
       switch(fit_mode){
       case 1:
 	best_params[thrd][2] = exp(a[thrd][1]);
-	if(isinf(best_params[thrd][2])){ best_params[thrd][2] = (best_params[thrd][2] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(best_params[thrd][2])){ best_params[thrd][2] = 0.0; }
+	if(std::isinf(best_params[thrd][2])){ best_params[thrd][2] = (best_params[thrd][2] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(best_params[thrd][2])){ best_params[thrd][2] = 0.0; }
 	best_params[thrd][3] = best_params[thrd][2] * sqrt(covar[thrd][1][1]);
 	best_params[thrd][4] = mid + (amp * (sin(a[thrd][2])));
 	best_params[thrd][5] = amp * fabs(cos(a[thrd][2])) * (sqrt(covar[thrd][2][2]));
@@ -733,14 +733,14 @@ template <class T_count, class T_xvals, class T_data>
 	break;
       case 2:
 	best_params[thrd][2] = exp(a[thrd][1]);
-	if(isinf(best_params[thrd][2])){ best_params[thrd][2] = (best_params[thrd][2] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(best_params[thrd][2])){ best_params[thrd][2] = 0.0; }
+	if(std::isinf(best_params[thrd][2])){ best_params[thrd][2] = (best_params[thrd][2] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(best_params[thrd][2])){ best_params[thrd][2] = 0.0; }
 	best_params[thrd][3] = best_params[thrd][2] * sqrt(covar[thrd][1][1]);
 	best_params[thrd][4] = mid + (amp * (sin(a[thrd][2])));
 	best_params[thrd][5] = amp * fabs(cos(a[thrd][2])) * (sqrt(covar[thrd][2][2]));
 	best_params[thrd][6] = exp(a[thrd][3]);
-	if(isinf(best_params[thrd][6])){ best_params[thrd][6] = (best_params[thrd][6] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(best_params[thrd][6])){ best_params[thrd][6] = 0.0; }
+	if(std::isinf(best_params[thrd][6])){ best_params[thrd][6] = (best_params[thrd][6] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(best_params[thrd][6])){ best_params[thrd][6] = 0.0; }
 	best_params[thrd][7] = best_params[thrd][6] * sqrt(covar[thrd][3][3]);
 	best_params[thrd][8] = mid + (amp * (sin(a[thrd][4])));
 	best_params[thrd][9] = amp * fabs(cos(a[thrd][4])) * (sqrt(covar[thrd][4][4]));
@@ -760,8 +760,8 @@ template <class T_count, class T_xvals, class T_data>
 	break;
       case 3:
 	best_params[thrd][2] = exp(a[thrd][1]);
-	if(isinf(best_params[thrd][2])){ best_params[thrd][2] = (best_params[thrd][2] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(best_params[thrd][2])){ best_params[thrd][2] = 0.0; }
+	if(std::isinf(best_params[thrd][2])){ best_params[thrd][2] = (best_params[thrd][2] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(best_params[thrd][2])){ best_params[thrd][2] = 0.0; }
 	best_params[thrd][3] = best_params[thrd][2] * sqrt(covar[thrd][1][1]);
 	best_params[thrd][4] = mid + (amp * (sin(a[thrd][2])));
 	best_params[thrd][5] = amp * fabs(cos(a[thrd][2])) * (sqrt(covar[thrd][2][2]));
@@ -771,8 +771,8 @@ template <class T_count, class T_xvals, class T_data>
 	best_params[thrd][9] = amp * fabs(cos(a[thrd][3])) * (sqrt(covar[thrd][3][3]));
 	//best_params[thrd][10] = exp(a[thrd][4]);
 	best_params[thrd][10] = a[thrd][4];
-	if(isinf(best_params[thrd][10])){ best_params[thrd][10] = (best_params[thrd][10] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(best_params[thrd][10])){ best_params[thrd][10] = 0.0; }
+	if(std::isinf(best_params[thrd][10])){ best_params[thrd][10] = (best_params[thrd][10] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(best_params[thrd][10])){ best_params[thrd][10] = 0.0; }
 	//best_params[thrd][11] = best_params[thrd][10] * sqrt(covar[thrd][4][4]);
 	best_params[thrd][11] = sqrt(covar[thrd][4][4]);
 	best_params[thrd][12] = 0.5 * (best_params[thrd][4] + best_params[thrd][8]);
@@ -794,8 +794,8 @@ template <class T_count, class T_xvals, class T_data>
 	break;
       case 4:
 	best_params[thrd][2] = exp(a[thrd][1]);
-	if(isinf(best_params[thrd][2])){ best_params[thrd][2] = (best_params[thrd][2] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(best_params[thrd][2])){ best_params[thrd][2] = 0.0; }
+	if(std::isinf(best_params[thrd][2])){ best_params[thrd][2] = (best_params[thrd][2] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(best_params[thrd][2])){ best_params[thrd][2] = 0.0; }
 	best_params[thrd][3] = best_params[thrd][2] * sqrt(covar[thrd][1][1]);
 	best_params[thrd][4] = mid + (amp * (sin(a[thrd][2])));
 	best_params[thrd][5] = amp * fabs(cos(a[thrd][2])) * (sqrt(covar[thrd][2][2]));
@@ -805,8 +805,8 @@ template <class T_count, class T_xvals, class T_data>
 	best_params[thrd][9] = amp * fabs(cos(a[thrd][3])) * (sqrt(covar[thrd][3][3]));
 	//best_params[thrd][10] = exp(a[thrd][4]);
 	best_params[thrd][10] = a[thrd][4];
-	if(isinf(best_params[thrd][10])){ best_params[thrd][10] = (best_params[thrd][10] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(best_params[thrd][10])){ best_params[thrd][10] = 0.0; }
+	if(std::isinf(best_params[thrd][10])){ best_params[thrd][10] = (best_params[thrd][10] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(best_params[thrd][10])){ best_params[thrd][10] = 0.0; }
 	//best_params[thrd][11] = best_params[thrd][10] * sqrt(covar[thrd][4][4]);
 	best_params[thrd][11] = sqrt(covar[thrd][4][4]);
 	best_params[thrd][12] = 0.5 * (best_params[thrd][4] + best_params[thrd][8]);
@@ -835,8 +835,8 @@ template <class T_count, class T_xvals, class T_data>
 	break;
       case 5:
 	best_params[thrd][2] = exp(a[thrd][1]);
-	if(isinf(best_params[thrd][2])){ best_params[thrd][2] = (best_params[thrd][2] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(best_params[thrd][2])){ best_params[thrd][2] = 0.0; }
+	if(std::isinf(best_params[thrd][2])){ best_params[thrd][2] = (best_params[thrd][2] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(best_params[thrd][2])){ best_params[thrd][2] = 0.0; }
 	best_params[thrd][3] = best_params[thrd][2] * sqrt(covar[thrd][1][1]);
 	best_params[thrd][4] = mid + (amp * (sin(a[thrd][2])));
 	best_params[thrd][5] = amp * fabs(cos(a[thrd][2])) * (sqrt(covar[thrd][2][2]));
@@ -846,8 +846,8 @@ template <class T_count, class T_xvals, class T_data>
 	best_params[thrd][9] = amp * fabs(cos(a[thrd][3])) * (sqrt(covar[thrd][3][3]));
 	//best_params[thrd][10] = exp(a[thrd][4]);
 	best_params[thrd][10] = a[thrd][4];
-	if(isinf(best_params[thrd][10])){ best_params[thrd][10] = (best_params[thrd][10] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(best_params[thrd][10])){ best_params[thrd][10] = 0.0; }
+	if(std::isinf(best_params[thrd][10])){ best_params[thrd][10] = (best_params[thrd][10] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(best_params[thrd][10])){ best_params[thrd][10] = 0.0; }
 	//best_params[thrd][11] = best_params[thrd][10] * sqrt(covar[thrd][4][4]);
 	best_params[thrd][11] = sqrt(covar[thrd][4][4]);
 	best_params[thrd][12] = mid + (amp * (sin(a[thrd][5])));
@@ -871,21 +871,21 @@ template <class T_count, class T_xvals, class T_data>
 	break;
       default:
 	best_params[thrd][2] = exp(a[thrd][1]);
-	if(isinf(best_params[thrd][2])){ best_params[thrd][2] = (best_params[thrd][2] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(best_params[thrd][2])){ best_params[thrd][2] = 0.0; }
+	if(std::isinf(best_params[thrd][2])){ best_params[thrd][2] = (best_params[thrd][2] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(best_params[thrd][2])){ best_params[thrd][2] = 0.0; }
 	best_params[thrd][3] = best_params[thrd][2] * sqrt(covar[thrd][1][1]);
 	best_params[thrd][4] = mid + (amp * (sin(a[thrd][2])));
 	best_params[thrd][5] = amp * fabs(cos(a[thrd][2])) * (sqrt(covar[thrd][2][2]));
 	best_params[thrd][6] = exp(a[thrd][3]);
-	if(isinf(best_params[thrd][6])){ best_params[thrd][6] = (best_params[thrd][6] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(best_params[thrd][6])){ best_params[thrd][6] = 0.0; }
+	if(std::isinf(best_params[thrd][6])){ best_params[thrd][6] = (best_params[thrd][6] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(best_params[thrd][6])){ best_params[thrd][6] = 0.0; }
 	best_params[thrd][7] = best_params[thrd][6] * sqrt(covar[thrd][3][3]);
 	best_params[thrd][8] = mid + (amp * (sin(a[thrd][4])));
 	best_params[thrd][9] = amp * fabs(cos(a[thrd][4])) * (sqrt(covar[thrd][4][4]));
 	//best_params[thrd][10] = exp(a[thrd][5]);
 	best_params[thrd][10] = a[thrd][5];
-	if(isinf(best_params[thrd][10])){ best_params[thrd][10] = (best_params[thrd][10] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(best_params[thrd][10])){ best_params[thrd][10] = 0.0; }
+	if(std::isinf(best_params[thrd][10])){ best_params[thrd][10] = (best_params[thrd][10] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(best_params[thrd][10])){ best_params[thrd][10] = 0.0; }
 	//best_params[thrd][11] = best_params[thrd][10] * sqrt(covar[thrd][5][5]);
 	best_params[thrd][11] = sqrt(covar[thrd][5][5]);
 	best_params[thrd][12] = mid + (amp * (sin(a[thrd][6])));
@@ -1047,10 +1047,10 @@ template <class T_count, class T_xvals, class T_data, class T_result>
   for(i = 0; i < 17; i++){ 
 
     model_params[0][i] = model_params[1][i] = (double) fit_params[i]; 
-    if(isinf(model_params[0][i])){ model_params[0][i] = (model_params[0][i] > 0.0) ? 9E30 : -9E30; }
-    if(isnan(model_params[0][i])){ model_params[0][i] = 0.0; }
-    if(isinf(model_params[1][i])){ model_params[1][i] = (model_params[1][i] > 0.0) ? 9E30 : -9E30; }
-    if(isnan(model_params[1][i])){ model_params[1][i] = 0.0; }
+    if(std::isinf(model_params[0][i])){ model_params[0][i] = (model_params[0][i] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(model_params[0][i])){ model_params[0][i] = 0.0; }
+    if(std::isinf(model_params[1][i])){ model_params[1][i] = (model_params[1][i] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(model_params[1][i])){ model_params[1][i] = 0.0; }
     if(vb_flag >= 0){ std::cout << model_params[0][i] << " " << std::flush; }
     
   }
@@ -1092,8 +1092,8 @@ template <class T_count, class T_xvals, class T_data, class T_result>
     FitBusyFunc_engine(NOvals,x_vals,y_vals,n_vals,model_params[0],-1,NOs,start_vals,mid,amp,temp_covar,iter_max,vb_flag);
   }
   for(i = 0; i < 17; i++){
-    if(isinf(model_params[0][i])){ model_params[0][i] = (model_params[0][i] > 0.0) ? 9E30 : -9E30; }
-    if(isnan(model_params[0][i])){ model_params[0][i] = 0.0; }
+    if(std::isinf(model_params[0][i])){ model_params[0][i] = (model_params[0][i] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(model_params[0][i])){ model_params[0][i] = 0.0; }
     model_params[1][i] = model_params[0][i];
     if(vb_flag >= 0){ std::cout << model_params[1][i] << " " << std::flush; }
   }
@@ -1101,8 +1101,8 @@ template <class T_count, class T_xvals, class T_data, class T_result>
   for(i = 0; i < 8; i++){
     for(j = 0; j < 8; j++){
       fit_covar[i][j] = (T_result) temp_covar[i][j];
-      if(isinf(fit_covar[i][j])){ fit_covar[i][j] = (fit_covar[i][j] > 0.0) ? 9E30 : -9E30; }
-      if(isnan(fit_covar[i][j])){ fit_covar[i][j] = 0.0; }
+      if(std::isinf(fit_covar[i][j])){ fit_covar[i][j] = (fit_covar[i][j] > 0.0) ? 9E30 : -9E30; }
+      if(std::isnan(fit_covar[i][j])){ fit_covar[i][j] = 0.0; }
     }
   }
   best_NOp = 4;
@@ -1113,8 +1113,8 @@ template <class T_count, class T_xvals, class T_data, class T_result>
   if(vb_flag >= 0){ std::cout << "Trying: fit mode -2 . . .  " << std::endl; }
   FitBusyFunc_engine(NOvals,x_vals,y_vals,n_vals,model_params[0],-2,NOs,start_vals,mid,amp,temp_covar,iter_max,vb_flag);
   for(i = 0; i < 17; i++){
-    if(isinf(model_params[0][i])){ model_params[0][i] = (model_params[0][i] > 0.0) ? 9E30 : -9E30; }
-    if(isnan(model_params[0][i])){ model_params[0][i] = 0.0; }
+    if(std::isinf(model_params[0][i])){ model_params[0][i] = (model_params[0][i] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(model_params[0][i])){ model_params[0][i] = 0.0; }
   }
   if((model_params[0][16] + (2 * (5 - best_NOp))) < model_params[1][16]){
     for(i = 0; i < 17; i++){
@@ -1125,8 +1125,8 @@ template <class T_count, class T_xvals, class T_data, class T_result>
     for(i = 0; i < 8; i++){
       for(j = 0; j < 8; j++){
 	fit_covar[i][j] = (T_result) temp_covar[i][j];
-	if(isinf(fit_covar[i][j])){ fit_covar[i][j] = (fit_covar[i][j] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(fit_covar[i][j])){ fit_covar[i][j] = 0.0; }
+	if(std::isinf(fit_covar[i][j])){ fit_covar[i][j] = (fit_covar[i][j] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(fit_covar[i][j])){ fit_covar[i][j] = 0.0; }
       }
     }
     best_NOp = 5;
@@ -1146,8 +1146,8 @@ template <class T_count, class T_xvals, class T_data, class T_result>
   if(vb_flag >= 0){ std::cout << "Trying: fit mode -3 . . .  " << std::endl; }
   FitBusyFunc_engine(NOvals,x_vals,y_vals,n_vals,model_params[0],-3,NOs,start_vals,mid,amp,temp_covar,iter_max,vb_flag);
   for(i = 0; i < 17; i++){
-    if(isinf(model_params[0][i])){ model_params[0][i] = (model_params[0][i] > 0.0) ? 9E30 : -9E30; }
-    if(isnan(model_params[0][i])){ model_params[0][i] = 0.0; }
+    if(std::isinf(model_params[0][i])){ model_params[0][i] = (model_params[0][i] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(model_params[0][i])){ model_params[0][i] = 0.0; }
   }
   if((model_params[0][16] + (2 * (5 - best_NOp))) < model_params[1][16]){
     for(i = 0; i < 17; i++){
@@ -1158,8 +1158,8 @@ template <class T_count, class T_xvals, class T_data, class T_result>
     for(i = 0; i < 8; i++){
       for(j = 0; j < 8; j++){
 	fit_covar[i][j] = (T_result) temp_covar[i][j];
-	if(isinf(fit_covar[i][j])){ fit_covar[i][j] = (fit_covar[i][j] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(fit_covar[i][j])){ fit_covar[i][j] = 0.0; }
+	if(std::isinf(fit_covar[i][j])){ fit_covar[i][j] = (fit_covar[i][j] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(fit_covar[i][j])){ fit_covar[i][j] = 0.0; }
       }
     }
     best_NOp = 5;
@@ -1179,8 +1179,8 @@ template <class T_count, class T_xvals, class T_data, class T_result>
   if(vb_flag >= 0){ std::cout << "Trying: fit mode -4 . . .  " << std::endl; }
   FitBusyFunc_engine(NOvals,x_vals,y_vals,n_vals,model_params[0],-4,NOs,start_vals,mid,amp,temp_covar,iter_max,vb_flag);
   for(i = 0; i < 17; i++){
-    if(isinf(model_params[0][i])){ model_params[0][i] = (model_params[0][i] > 0.0) ? 9E30 : -9E30; }
-    if(isnan(model_params[0][i])){ model_params[0][i] = 0.0; }
+    if(std::isinf(model_params[0][i])){ model_params[0][i] = (model_params[0][i] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(model_params[0][i])){ model_params[0][i] = 0.0; }
   }
   if((model_params[0][16] + (2 * (6 - best_NOp))) < model_params[1][16]){
     for(i = 0; i < 17; i++){
@@ -1191,8 +1191,8 @@ template <class T_count, class T_xvals, class T_data, class T_result>
     for(i = 0; i < 8; i++){
       for(j = 0; j < 8; j++){
 	fit_covar[i][j] = (T_result) temp_covar[i][j];
-	if(isinf(fit_covar[i][j])){ fit_covar[i][j] = (fit_covar[i][j] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(fit_covar[i][j])){ fit_covar[i][j] = 0.0; }
+	if(std::isinf(fit_covar[i][j])){ fit_covar[i][j] = (fit_covar[i][j] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(fit_covar[i][j])){ fit_covar[i][j] = 0.0; }
       }
     }
     best_NOp = 6;
@@ -1212,8 +1212,8 @@ template <class T_count, class T_xvals, class T_data, class T_result>
   if(vb_flag >= 0){ std::cout << "Trying: fit mode -5 . . .  " << std::endl; }
   FitBusyFunc_engine(NOvals,x_vals,y_vals,n_vals,model_params[0],-5,NOs,start_vals,mid,amp,temp_covar,iter_max,vb_flag);
   for(i = 0; i < 17; i++){
-    if(isinf(model_params[0][i])){ model_params[0][i] = (model_params[0][i] > 0.0) ? 9E30 : -9E30; }
-    if(isnan(model_params[0][i])){ model_params[0][i] = 0.0; }
+    if(std::isinf(model_params[0][i])){ model_params[0][i] = (model_params[0][i] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(model_params[0][i])){ model_params[0][i] = 0.0; }
   }
   if((model_params[0][16] + (2 * (7 - best_NOp))) < model_params[1][16]){
     for(i = 0; i < 17; i++){
@@ -1224,8 +1224,8 @@ template <class T_count, class T_xvals, class T_data, class T_result>
     for(i = 0; i < 8; i++){
       for(j = 0; j < 8; j++){
 	fit_covar[i][j] = (T_result) temp_covar[i][j];
-	if(isinf(fit_covar[i][j])){ fit_covar[i][j] = (fit_covar[i][j] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(fit_covar[i][j])){ fit_covar[i][j] = 0.0; }
+	if(std::isinf(fit_covar[i][j])){ fit_covar[i][j] = (fit_covar[i][j] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(fit_covar[i][j])){ fit_covar[i][j] = 0.0; }
       }
     }
     best_NOp = 7;
@@ -1245,8 +1245,8 @@ template <class T_count, class T_xvals, class T_data, class T_result>
   if(vb_flag >= 0){ std::cout << "Trying: fit mode -6 . . .  " << std::endl; }
   FitBusyFunc_engine(NOvals,x_vals,y_vals,n_vals,model_params[0],-6,NOs,start_vals,mid,amp,temp_covar,iter_max,vb_flag);
   for(i = 0; i < 17; i++){
-    if(isinf(model_params[0][i])){ model_params[0][i] = (model_params[0][i] > 0.0) ? 9E30 : -9E30; }
-    if(isnan(model_params[0][i])){ model_params[0][i] = 0.0; }
+    if(std::isinf(model_params[0][i])){ model_params[0][i] = (model_params[0][i] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(model_params[0][i])){ model_params[0][i] = 0.0; }
   }
   if((model_params[0][16] + (2 * (8 - best_NOp))) < model_params[1][16]){
     for(i = 0; i < 17; i++){
@@ -1257,8 +1257,8 @@ template <class T_count, class T_xvals, class T_data, class T_result>
     for(i = 0; i < 8; i++){
       for(j = 0; j < 8; j++){
 	fit_covar[i][j] = (T_result) temp_covar[i][j];
-	if(isinf(fit_covar[i][j])){ fit_covar[i][j] = (fit_covar[i][j] > 0.0) ? 9E30 : -9E30; }
-	if(isnan(fit_covar[i][j])){ fit_covar[i][j] = 0.0; }
+	if(std::isinf(fit_covar[i][j])){ fit_covar[i][j] = (fit_covar[i][j] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(fit_covar[i][j])){ fit_covar[i][j] = 0.0; }
       }
     }
     best_NOp = 8;
@@ -1315,8 +1315,8 @@ template <class T_count, class T_xvals, class T_data, class T_result>
 
   // return best fitting model (incorporating AIC penalties) and the number of model parameters
   for(i = 0; i < 17; i++){
-    if(isinf(model_params[1][i])){ model_params[1][i] = (model_params[1][i] > 0.0) ? 9E30 : -9E30; }
-    if(isnan(model_params[1][i])){ model_params[1][i] = 0.0; }
+    if(std::isinf(model_params[1][i])){ model_params[1][i] = (model_params[1][i] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(model_params[1][i])){ model_params[1][i] = 0.0; }
     fit_params[i] = (T_result) model_params[1][i];
   }
   return best_BFtype;
@@ -1361,24 +1361,24 @@ void CreateRandFits(int NOr, T_obs ** rand_fits, int fit_type, T_fit * BF_fit, T
 
   // calculate temp_cos values --- used in variable mappping
   temp_cos[0] = cos(asin(((double) BF_fit[4] - mid) / amp));
-  if(isnan(temp_cos[0])){ temp_cos[0] = 0.0; }
-  if(isinf(temp_cos[0])){ temp_cos[0] = (temp_cos[0] > 0.0) ? 9E30 : -9E30; }
+  if(std::isnan(temp_cos[0])){ temp_cos[0] = 0.0; }
+  if(std::isinf(temp_cos[0])){ temp_cos[0] = (temp_cos[0] > 0.0) ? 9E30 : -9E30; }
   if(temp_cos[0] > 1.0){ temp_cos[0] = 1.0; }
   if(temp_cos[0] < -1.0){ temp_cos[0] = -1.0; }
   temp_cos[1] = cos(asin(((double) BF_fit[8] - mid) / amp));
-  if(isnan(temp_cos[1])){ temp_cos[1] = 0.0; }
-  if(isinf(temp_cos[1])){ temp_cos[1] = (temp_cos[1] > 0.0) ? 9E30 : -9E30; }
+  if(std::isnan(temp_cos[1])){ temp_cos[1] = 0.0; }
+  if(std::isinf(temp_cos[1])){ temp_cos[1] = (temp_cos[1] > 0.0) ? 9E30 : -9E30; }
   if(temp_cos[1] > 1.0){ temp_cos[1] = 1.0; }
   if(temp_cos[1] < -1.0){ temp_cos[1] = -1.0; }
   temp_cos[2] = cos(asin(((double) BF_fit[12] - mid) / amp));
-  if(isnan(temp_cos[2])){ temp_cos[2] = 0.0; }
-  if(isinf(temp_cos[2])){ temp_cos[2] = (temp_cos[2] > 0.0) ? 9E30 : -9E30; }
+  if(std::isnan(temp_cos[2])){ temp_cos[2] = 0.0; }
+  if(std::isinf(temp_cos[2])){ temp_cos[2] = (temp_cos[2] > 0.0) ? 9E30 : -9E30; }
   if(temp_cos[2] > 1.0){ temp_cos[2] = 1.0; }
   if(temp_cos[2] < -1.0){ temp_cos[2] = -1.0; }
   //temp_cos[3] = cos(asin(((double) BF_fit[14] - 5.0) / 3.0));
   temp_cos[3] = cos(asin(((double) BF_fit[14] - 4.5) / 3.5));
-  if(isnan(temp_cos[3])){ temp_cos[3] = 0.0; }
-  if(isinf(temp_cos[3])){ temp_cos[3] = (temp_cos[3] > 0.0) ? 9E30 : -9E30; }
+  if(std::isnan(temp_cos[3])){ temp_cos[3] = 0.0; }
+  if(std::isinf(temp_cos[3])){ temp_cos[3] = (temp_cos[3] > 0.0) ? 9E30 : -9E30; }
   if(temp_cos[3] > 1.0){ temp_cos[3] = 1.0; }
   if(temp_cos[3] < -1.0){ temp_cos[3] = -1.0; }
 
@@ -1386,15 +1386,15 @@ void CreateRandFits(int NOr, T_obs ** rand_fits, int fit_type, T_fit * BF_fit, T
   for(i = 0; i < 8; i++){
 
     BF_errs[i] = sqrt((double) BF_covar[i][i]);
-    if(isnan(BF_errs[i])){ BF_errs[i] = 0.0; }
-    if(isinf(BF_errs[i])){ BF_errs[i] = (BF_errs[i] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(BF_errs[i])){ BF_errs[i] = 0.0; }
+    if(std::isinf(BF_errs[i])){ BF_errs[i] = (BF_errs[i] > 0.0) ? 9E30 : -9E30; }
 
   }
 
   // calculate minimum and maximum cfd values for each parameter
   if(BF_errs[0] > 0.0){
     cfd_min[0] = 0.5 * (1.0 + erf((double) (-1.0 / (BF_errs[0] * sqrt(2.0)))));
-    if(isnan(cfd_min[0]) || (cfd_min[0] < 0.0)){ cfd_min[0] = 0.0; }
+    if(std::isnan(cfd_min[0]) || (cfd_min[0] < 0.0)){ cfd_min[0] = 0.0; }
     if(cfd_min[0] > 1.0){ cfd_min[0] = 1.0; }
     cfd_max[0] = 1.0;
   } else {
@@ -1403,7 +1403,7 @@ void CreateRandFits(int NOr, T_obs ** rand_fits, int fit_type, T_fit * BF_fit, T
 
   if(BF_errs[1] > 0.0){
     cfd_min[1] = 0.5 * (1.0 + erf((double) (-1.0 / (BF_errs[1] * sqrt(2.0)))));
-    if(isnan(cfd_min[1]) || (cfd_min[1] < 0.0)){ cfd_min[1] = 0.0; }
+    if(std::isnan(cfd_min[1]) || (cfd_min[1] < 0.0)){ cfd_min[1] = 0.0; }
     if(cfd_min[1] > 1.0){ cfd_min[1] = 1.0; }
     cfd_max[1] = 1.0;
   } else {
@@ -1412,10 +1412,10 @@ void CreateRandFits(int NOr, T_obs ** rand_fits, int fit_type, T_fit * BF_fit, T
 
   if(BF_errs[2] > 0.0){
     cfd_min[2] = 0.5 * (1.0 + erf((double) ((x_min - BF_fit[4]) / (amp * BF_errs[2] * temp_cos[0] * sqrt(2.0)))));
-    if(isnan(cfd_min[2]) || (cfd_min[2] < 0.0)){ cfd_min[2] = 0.0; }
+    if(std::isnan(cfd_min[2]) || (cfd_min[2] < 0.0)){ cfd_min[2] = 0.0; }
     if(cfd_min[2] > 1.0){ cfd_min[2] = 1.0; }
     cfd_max[2] = 0.5 * (1.0 + erf((double) ((x_max - BF_fit[4]) / (amp * BF_errs[2] * temp_cos[0] * sqrt(2.0)))));
-    if(isnan(cfd_max[2]) || (cfd_max[2] < 0.0)){ cfd_max[2] = 0.0; }
+    if(std::isnan(cfd_max[2]) || (cfd_max[2] < 0.0)){ cfd_max[2] = 0.0; }
     if(cfd_max[2] > 1.0){ cfd_max[2] = 1.0; }
   } else {
     cfd_min[2] = cfd_max[2] = 0.5;
@@ -1423,7 +1423,7 @@ void CreateRandFits(int NOr, T_obs ** rand_fits, int fit_type, T_fit * BF_fit, T
 
   if(BF_errs[3] > 0.0){
     cfd_min[3] = 0.5 * (1.0 + erf((double) (-1.0 / (BF_errs[3] * sqrt(2.0)))));
-    if((isnan(cfd_min[3])) || (cfd_min[3] < 0.0)){ cfd_min[3] = 0.0; }
+    if((std::isnan(cfd_min[3])) || (cfd_min[3] < 0.0)){ cfd_min[3] = 0.0; }
     if(cfd_min[3] > 1.0){ cfd_min[3] = 1.0; }
     cfd_max[3] = 1.0;
   } else {
@@ -1432,10 +1432,10 @@ void CreateRandFits(int NOr, T_obs ** rand_fits, int fit_type, T_fit * BF_fit, T
 
   if(BF_errs[4] > 0.0){
     cfd_min[4] = 0.5 * (1.0 + erf((double) ((x_min - BF_fit[8]) / (amp * BF_errs[4] * temp_cos[1] * sqrt(2.0)))));
-    if(isnan(cfd_min[4]) || (cfd_min[4] < 0.0)){ cfd_min[4] = 0.0; }
+    if(std::isnan(cfd_min[4]) || (cfd_min[4] < 0.0)){ cfd_min[4] = 0.0; }
     if(cfd_min[4] > 1.0){ cfd_min[4] = 1.0; }
     cfd_max[4] = 0.5 * (1.0 + erf((double) ((x_max - BF_fit[8]) / (amp * BF_errs[4] * temp_cos[1] * sqrt(2.0)))));
-    if(isnan(cfd_max[4]) || (cfd_max[4] < 0.0)){ cfd_max[4] = 0.0; }
+    if(std::isnan(cfd_max[4]) || (cfd_max[4] < 0.0)){ cfd_max[4] = 0.0; }
     if(cfd_max[4] > 1.0){ cfd_max[4] = 1.0; }
   } else {
     cfd_min[4] = cfd_max[4] = 0.5;
@@ -1443,7 +1443,7 @@ void CreateRandFits(int NOr, T_obs ** rand_fits, int fit_type, T_fit * BF_fit, T
 
   if(BF_errs[5] > 0.0){
     //cfd_min[5] = 0.5 * (1.0 + erf((double) (-1.0 / (BF_errs[5] * sqrt(2.0)))));
-    //if((isnan(cfd_min[5])) || (cfd_min[5] < 0.0)){ cfd_min[5] = 0.0; }
+    //if((std::isnan(cfd_min[5])) || (cfd_min[5] < 0.0)){ cfd_min[5] = 0.0; }
     //if(cfd_min[5] > 1.0){ cfd_min[5] = 1.0; }
     cfd_min[5] = 0.0;
     cfd_max[5] = 1.0;
@@ -1453,10 +1453,10 @@ void CreateRandFits(int NOr, T_obs ** rand_fits, int fit_type, T_fit * BF_fit, T
 
   if(BF_errs[6] > 0.0){
     cfd_min[6] = 0.5 * (1.0 + erf((double) ((x_min - BF_fit[12]) / (amp * BF_errs[6] * temp_cos[2] * sqrt(2.0)))));
-    if(isnan(cfd_min[6]) || (cfd_min[6] < 0.0)){ cfd_min[6] = 0.0; }
+    if(std::isnan(cfd_min[6]) || (cfd_min[6] < 0.0)){ cfd_min[6] = 0.0; }
     if(cfd_min[6] > 1.0){ cfd_min[6] = 1.0; }
     cfd_max[6] = 0.5 * (1.0 + erf((double) ((x_max - BF_fit[12]) / (amp * BF_errs[6] * temp_cos[2] * sqrt(2.0)))));
-    if(isnan(cfd_max[6]) || (cfd_max[6] < 0.0)){ cfd_max[6] = 0.0; }
+    if(std::isnan(cfd_max[6]) || (cfd_max[6] < 0.0)){ cfd_max[6] = 0.0; }
     if(cfd_max[6] > 1.0){ cfd_max[6] = 1.0; }
   } else {
     cfd_min[6] = cfd_max[6] = 0.5;
@@ -1465,11 +1465,11 @@ void CreateRandFits(int NOr, T_obs ** rand_fits, int fit_type, T_fit * BF_fit, T
   if(BF_errs[7] > 0.0){
     //cfd_min[7] = 0.5 * (1.0 + erf((double) ((2.0 - BF_fit[14]) / (3.0 * BF_errs[7] * temp_cos[3] * sqrt(2.0)))));
     cfd_min[7] = 0.5 * (1.0 + erf((double) ((1.0 - BF_fit[14]) / (3.5 * BF_errs[7] * temp_cos[3] * sqrt(2.0)))));
-    if(isnan(cfd_min[7]) || (cfd_min[7] < 0.0)){ cfd_min[7] = 0.0; }
+    if(std::isnan(cfd_min[7]) || (cfd_min[7] < 0.0)){ cfd_min[7] = 0.0; }
     if(cfd_min[7] > 1.0){ cfd_min[7] = 1.0; }
     //cfd_max[7] = 0.5 * (1.0 + erf((double) ((8.0 - BF_fit[14]) / (3.0 * BF_errs[7] * temp_cos[3] * sqrt(2.0)))));
     cfd_max[7] = 0.5 * (1.0 + erf((double) ((8.0 - BF_fit[14]) / (3.5 * BF_errs[7] * temp_cos[3] * sqrt(2.0)))));
-    if(isnan(cfd_max[7]) || (cfd_max[7] < 0.0)){ cfd_max[7] = 0.0; }
+    if(std::isnan(cfd_max[7]) || (cfd_max[7] < 0.0)){ cfd_max[7] = 0.0; }
     if(cfd_max[7] > 1.0){ cfd_max[7] = 1.0; }
   } else {
     cfd_min[7] = cfd_max[7] = 0.5;
@@ -1491,8 +1491,8 @@ void CreateRandFits(int NOr, T_obs ** rand_fits, int fit_type, T_fit * BF_fit, T
       } else {
 	if((BF_covar[r][r] > 0.0) && (BF_covar[i][i] > 0.0)){
 	  BF_corr[r][i] = (double) BF_covar[r][i] / (BF_errs[i] * BF_errs[r]);
-	  if(isnan(BF_corr[r][i])){ BF_corr[r][i] = 0.0; }
-	  if(isinf(BF_corr[r][i])){ BF_corr[r][i] = (BF_corr[r][i] > 0.0) ? 9E30 : -9E30; }
+	  if(std::isnan(BF_corr[r][i])){ BF_corr[r][i] = 0.0; }
+	  if(std::isinf(BF_corr[r][i])){ BF_corr[r][i] = (BF_corr[r][i] > 0.0) ? 9E30 : -9E30; }
 	} else { BF_corr[r][i] = 0.0; }
       }
     }
@@ -1601,8 +1601,8 @@ void CreateRandFits(int NOr, T_obs ** rand_fits, int fit_type, T_fit * BF_fit, T
       // with a mean of 0 and a standard deviation of 1
       rand_val = cfd_min[i] + ((cfd_max[i] - cfd_min[i])*rand_val);
       z_val = inverf(((2.0 * (double) rand_val) - 1.0)) * sqrt(2.0);
-      if(isnan(z_val)){ z_val = 0.0; }
-      if(isinf(z_val)){ z_val = (z_val > 0.0) ? 4.5 : -4.5; }
+      if(std::isnan(z_val)){ z_val = 0.0; }
+      if(std::isinf(z_val)){ z_val = (z_val > 0.0) ? 4.5 : -4.5; }
       rand_set[i] = z_val;
 
       // for(i = 0; i < 8; i++)
@@ -1649,47 +1649,47 @@ void CreateRandFits(int NOr, T_obs ** rand_fits, int fit_type, T_fit * BF_fit, T
     // apply random offsets to BF fits to generate random BF variants --- incorporate
     // variable mappings at the same time
     rand_fits[r][0] = (T_obs) (BF_fit[0] * (1.0 + (rand_fits[r][0] * BF_errs[0])));
-    if(isnan((double) rand_fits[r][0])){ rand_fits[r][0] = 0.0; }
-    if(isinf((double) rand_fits[r][0])){ rand_fits[r][0] = (rand_fits[r][0] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan((double) rand_fits[r][0])){ rand_fits[r][0] = 0.0; }
+    if(std::isinf((double) rand_fits[r][0])){ rand_fits[r][0] = (rand_fits[r][0] > 0.0) ? 9E30 : -9E30; }
     if(rand_fits[r][0] < 0.0){ rand_fits[r][0] = 0.0; }
 
     rand_fits[r][1] = (T_obs) (BF_fit[2] * (1.0 + (rand_fits[r][1] * BF_errs[1])));
-    if(isnan((double) rand_fits[r][1])){ rand_fits[r][1] = 0.0; }
-    if(isinf((double) rand_fits[r][1])){ rand_fits[r][1] = (rand_fits[r][1] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan((double) rand_fits[r][1])){ rand_fits[r][1] = 0.0; }
+    if(std::isinf((double) rand_fits[r][1])){ rand_fits[r][1] = (rand_fits[r][1] > 0.0) ? 9E30 : -9E30; }
     if(rand_fits[r][1] < 0.0){ rand_fits[r][1] = 0.0; }
 
     rand_fits[r][2] = (T_obs) (BF_fit[4] + (amp * temp_cos[0] * rand_fits[r][2] * BF_errs[2]));
-    if(isnan((double) rand_fits[r][2])){ rand_fits[r][2] = 0.0; }
-    if(isinf((double) rand_fits[r][2])){ rand_fits[r][2] = (rand_fits[r][2] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan((double) rand_fits[r][2])){ rand_fits[r][2] = 0.0; }
+    if(std::isinf((double) rand_fits[r][2])){ rand_fits[r][2] = (rand_fits[r][2] > 0.0) ? 9E30 : -9E30; }
     if(rand_fits[r][2] < x_min){ rand_fits[r][2] = x_min; }
     if(rand_fits[r][2] > x_max){ rand_fits[r][2] = x_max; }
 
     rand_fits[r][3] = (T_obs) (BF_fit[6] * (1.0 + (rand_fits[r][3] * BF_errs[3])));
-    if(isnan((double) rand_fits[r][3])){ rand_fits[r][3] = 0.0; }
-    if(isinf((double) rand_fits[r][3])){ rand_fits[r][3] = (rand_fits[r][3] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan((double) rand_fits[r][3])){ rand_fits[r][3] = 0.0; }
+    if(std::isinf((double) rand_fits[r][3])){ rand_fits[r][3] = (rand_fits[r][3] > 0.0) ? 9E30 : -9E30; }
     if(rand_fits[r][3] < 0.0){ rand_fits[r][3] = 0.0; }
 
     rand_fits[r][4] = (T_obs) (BF_fit[8] + (amp * temp_cos[1] * rand_fits[r][4] * BF_errs[4]));
-    if(isnan((double) rand_fits[r][4])){ rand_fits[r][4] = 0.0; }
-    if(isinf((double) rand_fits[r][4])){ rand_fits[r][4] = (rand_fits[r][4] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan((double) rand_fits[r][4])){ rand_fits[r][4] = 0.0; }
+    if(std::isinf((double) rand_fits[r][4])){ rand_fits[r][4] = (rand_fits[r][4] > 0.0) ? 9E30 : -9E30; }
     if(rand_fits[r][4] < x_min){ rand_fits[r][4] = x_min; }
     if(rand_fits[r][4] > x_max){ rand_fits[r][4] = x_max; }    
 
     rand_fits[r][5] = (T_obs) (BF_fit[10] * (1.0 + (rand_fits[r][5] * BF_errs[5])));
-    if(isnan((double) rand_fits[r][5])){ rand_fits[r][5] = 0.0; }
-    if(isinf((double) rand_fits[r][5])){ rand_fits[r][5] = (rand_fits[r][5] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan((double) rand_fits[r][5])){ rand_fits[r][5] = 0.0; }
+    if(std::isinf((double) rand_fits[r][5])){ rand_fits[r][5] = (rand_fits[r][5] > 0.0) ? 9E30 : -9E30; }
     //if(rand_fits[r][5] < 0.0){ rand_fits[r][5] = 0.0; }
 
     rand_fits[r][6] = (T_obs) (BF_fit[12] + (amp * temp_cos[2] * rand_fits[r][6] * BF_errs[6]));
-    if(isnan((double) rand_fits[r][6])){ rand_fits[r][6] = 0.0; }
-    if(isinf((double) rand_fits[r][6])){ rand_fits[r][6] = (rand_fits[r][6] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan((double) rand_fits[r][6])){ rand_fits[r][6] = 0.0; }
+    if(std::isinf((double) rand_fits[r][6])){ rand_fits[r][6] = (rand_fits[r][6] > 0.0) ? 9E30 : -9E30; }
     if(rand_fits[r][6] < x_min){ rand_fits[r][6] = x_min; }
     if(rand_fits[r][6] > x_max){ rand_fits[r][6] = x_max; }
 
     //rand_fits[r][7] = (T_obs) (BF_fit[14] + (3.0 * temp_cos[3] * rand_fits[r][7] * BF_errs[7]));    
     rand_fits[r][7] = (T_obs) (BF_fit[14] + (3.5 * temp_cos[3] * rand_fits[r][7] * BF_errs[7]));    
-    if(isnan((double) rand_fits[r][7])){ rand_fits[r][7] = 0.0; }
-    if(isinf((double) rand_fits[r][7])){ rand_fits[r][7] = (rand_fits[r][7] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan((double) rand_fits[r][7])){ rand_fits[r][7] = 0.0; }
+    if(std::isinf((double) rand_fits[r][7])){ rand_fits[r][7] = (rand_fits[r][7] > 0.0) ? 9E30 : -9E30; }
     //if(rand_fits[r][7] < 2.0){ rand_fits[r][7] = 2.0; }
     if(rand_fits[r][7] < 1.0){ rand_fits[r][7] = 1.0; }
     if(rand_fits[r][7] > 8.0){ rand_fits[r][7] = 8.0; }
@@ -1773,17 +1773,17 @@ template <class T_x, class T_obs, class T_calc>
 
       // calculate Busy Function value for this x value
       erf_1 = 1.0 + erf((double) (rand_fits[r][1] * (x_vals[i] - rand_fits[r][2])));
-      if(isnan(erf_1)){ erf_1 = 0.0; }
-      if(isinf(erf_1)){ erf_1 = (erf_1 > 0.0) ? 1.0 : 0.0; }
+      if(std::isnan(erf_1)){ erf_1 = 0.0; }
+      if(std::isinf(erf_1)){ erf_1 = (erf_1 > 0.0) ? 1.0 : 0.0; }
       erf_2 = 1.0 + erf((double) (rand_fits[r][3] * (rand_fits[r][4] - x_vals[i])));
-      if(isnan(erf_2)){ erf_2 = 0.0; }
-      if(isinf(erf_2)){ erf_2 = (erf_2 > 0.0) ? 1.0 : 0.0; }
+      if(std::isnan(erf_2)){ erf_2 = 0.0; }
+      if(std::isinf(erf_2)){ erf_2 = (erf_2 > 0.0) ? 1.0 : 0.0; }
       plaw = 1.0 + (rand_fits[r][5] * pow(abs((rand_fits[r][6] - x_vals[i])),rand_fits[r][7]));
-      if(isnan(plaw)){ plaw = 0.0; } 
-      if(isinf(plaw)){ plaw = (plaw > 0.0) ? 9E30 : -9E30; }
+      if(std::isnan(plaw)){ plaw = 0.0; } 
+      if(std::isinf(plaw)){ plaw = (plaw > 0.0) ? 9E30 : -9E30; }
       BF_val = 0.25 * rand_fits[r][0] * erf_1 * erf_2 * plaw;
-      if(isnan(BF_val)){ BF_val = 0.0; } 
-      if(isinf(BF_val)){ BF_val = (BF_val > 0.0) ? 9E30 : -9E30; }
+      if(std::isnan(BF_val)){ BF_val = 0.0; } 
+      if(std::isinf(BF_val)){ BF_val = (BF_val > 0.0) ? 9E30 : -9E30; }
 
       // store the BF val for this x
       y_vals[r][i] = BF_val;
@@ -1897,8 +1897,8 @@ template <class T_x, class T_obs, class T_calc>
 
     // range test values
     for(i = 0; i < 7; i++){
-      if(isnan(obs_vals[r][i])){ obs_vals[r][i] = 0.0; }
-      if(isinf(obs_vals[r][i])){ obs_vals[r][i] = (obs_vals[r][i] > 0.0) ? 9E30 : -9E30; }
+      if(std::isnan(obs_vals[r][i])){ obs_vals[r][i] = 0.0; }
+      if(std::isinf(obs_vals[r][i])){ obs_vals[r][i] = (obs_vals[r][i] > 0.0) ? 9E30 : -9E30; }
     }
 
     // display progress
@@ -2046,8 +2046,8 @@ void AnalyseObsVals(int NOr, int NOprops, T_obs ** obs_vals, T_obs ** obs_stats,
 
     // range test stats
     for(j = 0; j < 8; j++){
-      if(isnan(obs_stats[p][i])){ obs_stats[p][i] = 0.0; }
-      if(isinf(obs_stats[p][i])){ obs_stats[p][i] = (obs_stats[p][i] > 0.0) ? 9E30 : -9E30; }
+      if(std::isnan(obs_stats[p][i])){ obs_stats[p][i] = 0.0; }
+      if(std::isinf(obs_stats[p][i])){ obs_stats[p][i] = (obs_stats[p][i] > 0.0) ? 9E30 : -9E30; }
     }
 
     // display progress
@@ -2101,8 +2101,8 @@ template <class T_x, class T_obs, class T_approx, class T_range>
   //scaling[7] = amp * cos(asin(((double) fit_params[14] - mid) / amp));
   scaling[7] = 3.5 * cos(asin(((double) fit_params[14] - 4.5) / 3.5));
   for(i = 0; i < 8; i++){
-    if(isnan(scaling[i])){ scaling[i] = 0.0; }
-    if(isinf(scaling[i])){ scaling[i] = (scaling[i] > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(scaling[i])){ scaling[i] = 0.0; }
+    if(std::isinf(scaling[i])){ scaling[i] = (scaling[i] > 0.0) ? 9E30 : -9E30; }
   }
   for(j = 0; j < 8; j++){
     for(i = 0; i < 8; i++){
@@ -2127,8 +2127,8 @@ template <class T_x, class T_obs, class T_approx, class T_range>
     model_vals[5][4]+=(1.0E-5 * fabs((double) fit_params[8]));
     for(j = 0; j < 9; j++){
       for(i = 0; i < 8; i++){ 
-	if(isnan(model_vals[j][i])){ model_vals[j][i] = 0.0; }
-	if(isinf(model_vals[j][i])){ model_vals[j][i] = (model_vals[j][i] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(model_vals[j][i])){ model_vals[j][i] = 0.0; }
+	if(std::isinf(model_vals[j][i])){ model_vals[j][i] = (model_vals[j][i] > 0.0) ? 9E30 : -9E30; }
       }    
     }
     break;
@@ -2143,8 +2143,8 @@ template <class T_x, class T_obs, class T_approx, class T_range>
     model_vals[5][4]+=(1.0E-5 * fabs((double) fit_params[8]));
     for(j = 0; j < 9; j++){
       for(i = 0; i < 8; i++){ 
-	if(isnan(model_vals[j][i])){ model_vals[j][i] = 0.0; }
-	if(isinf(model_vals[j][i])){ model_vals[j][i] = (model_vals[j][i] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(model_vals[j][i])){ model_vals[j][i] = 0.0; }
+	if(std::isinf(model_vals[j][i])){ model_vals[j][i] = (model_vals[j][i] > 0.0) ? 9E30 : -9E30; }
       }    
     }
     break;
@@ -2164,8 +2164,8 @@ template <class T_x, class T_obs, class T_approx, class T_range>
     model_vals[6][5]+=(1.0E-5 * fabs((double) fit_params[10]));
     for(j = 0; j < 9; j++){
       for(i = 0; i < 8; i++){ 
-	if(isnan(model_vals[j][i])){ model_vals[j][i] = 0.0; }
-	if(isinf(model_vals[j][i])){ model_vals[j][i] = (model_vals[j][i] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(model_vals[j][i])){ model_vals[j][i] = 0.0; }
+	if(std::isinf(model_vals[j][i])){ model_vals[j][i] = (model_vals[j][i] > 0.0) ? 9E30 : -9E30; }
       }    
     }
     break;
@@ -2186,8 +2186,8 @@ template <class T_x, class T_obs, class T_approx, class T_range>
     model_vals[8][7]+=(1.0E-5 * fabs((double) fit_params[14]));
     for(j = 0; j < 9; j++){
       for(i = 0; i < 8; i++){ 
-	if(isnan(model_vals[j][i])){ model_vals[j][i] = 0.0; }
-	if(isinf(model_vals[j][i])){ model_vals[j][i] = (model_vals[j][i] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(model_vals[j][i])){ model_vals[j][i] = 0.0; }
+	if(std::isinf(model_vals[j][i])){ model_vals[j][i] = (model_vals[j][i] > 0.0) ? 9E30 : -9E30; }
       }    
     }
     break;
@@ -2207,8 +2207,8 @@ template <class T_x, class T_obs, class T_approx, class T_range>
     model_vals[8][7]+=(1.0E-5 * fabs((double) fit_params[14]));
     for(j = 0; j < 9; j++){
       for(i = 0; i < 8; i++){ 
-	if(isnan(model_vals[j][i])){ model_vals[j][i] = 0.0; }
-	if(isinf(model_vals[j][i])){ model_vals[j][i] = (model_vals[j][i] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(model_vals[j][i])){ model_vals[j][i] = 0.0; }
+	if(std::isinf(model_vals[j][i])){ model_vals[j][i] = (model_vals[j][i] > 0.0) ? 9E30 : -9E30; }
       }    
     }
     break;
@@ -2216,13 +2216,13 @@ template <class T_x, class T_obs, class T_approx, class T_range>
     for(j = 1; j < 9; j++){
       for(i = 0; i < 8; i++){ model_vals[j][i] = (double) fit_params[(2 * i)]; }
       model_vals[j][(j - 1)]+=(1.0E-5 * fabs((double) fit_params[(2 * (j - 1))]));
-      if(isnan(model_vals[j][(j - 1)])){ model_vals[j][(j - 1)] = 0.0; }
-      if(isinf(model_vals[j][(j - 1)])){ model_vals[j][(j - 1)] = (model_vals[j][(j - 1)] > 0.0) ? 9E30 : -9E30; }
+      if(std::isnan(model_vals[j][(j - 1)])){ model_vals[j][(j - 1)] = 0.0; }
+      if(std::isinf(model_vals[j][(j - 1)])){ model_vals[j][(j - 1)] = (model_vals[j][(j - 1)] > 0.0) ? 9E30 : -9E30; }
     }    
     for(j = 0; j < 9; j++){
       for(i = 0; i < 8; i++){ 
-	if(isnan(model_vals[j][i])){ model_vals[j][i] = 0.0; }
-	if(isinf(model_vals[j][i])){ model_vals[j][i] = (model_vals[j][i] > 0.0) ? 9E30 : -9E30; }
+	if(std::isnan(model_vals[j][i])){ model_vals[j][i] = 0.0; }
+	if(std::isinf(model_vals[j][i])){ model_vals[j][i] = (model_vals[j][i] > 0.0) ? 9E30 : -9E30; }
       }    
     }
     break;
@@ -2235,8 +2235,8 @@ template <class T_x, class T_obs, class T_approx, class T_range>
   for(j = 0; j < 8; j++){
     for(i = 0; i < 7; i++){
       jacobian[j][i] = (obs_vals[(j + 1)][i] - obs_vals[0][i])/(1.0E-5 * fabs((double) fit_params[(2 * j)]));
-      if(isnan(jacobian[j][i])){ jacobian[j][i] = 0.0; }
-      if(isinf(jacobian[j][i])){ jacobian[j][i] = (jacobian[j][i] > 0.0) ? 9E30 : -9E30; }
+      if(std::isnan(jacobian[j][i])){ jacobian[j][i] = 0.0; }
+      if(std::isinf(jacobian[j][i])){ jacobian[j][i] = (jacobian[j][i] > 0.0) ? 9E30 : -9E30; }
     }
   }
 
@@ -2274,16 +2274,16 @@ template <class T_x, class T_obs, class T_approx, class T_range>
     for(i = 0; i < 8; i++){
       temp_matrix[j][i] = 0.0;
       for(k = 0; k < 8; k++){ temp_matrix[j][i]+=(jacobian[k][j] * use_fit_covar[k][i]); }
-      if(isnan(temp_matrix[j][i])){ temp_matrix[j][i] = 0.0; }
-      if(isinf(temp_matrix[j][i])){ temp_matrix[j][i] = (temp_matrix[j][i] > 0.0) ? 9E30 : -9E30; }      
+      if(std::isnan(temp_matrix[j][i])){ temp_matrix[j][i] = 0.0; }
+      if(std::isinf(temp_matrix[j][i])){ temp_matrix[j][i] = (temp_matrix[j][i] > 0.0) ? 9E30 : -9E30; }      
     }
   }
   for(j = 0; j < 7; j++){
     for(i = 0; i < 7; i++){
       obs_covar[j][i] = 0.0;
       for(k = 0; k < 8; k++){ obs_covar[j][i]+=(T_approx)(temp_matrix[j][k] * jacobian[k][i]); }
-      if(isnan(obs_covar[j][i])){ obs_covar[j][i] = 0.0; }
-      if(isinf(obs_covar[j][i])){ obs_covar[j][i] = (obs_covar[j][i] > 0.0) ? 9E30 : -9E30; }            
+      if(std::isnan(obs_covar[j][i])){ obs_covar[j][i] = 0.0; }
+      if(std::isinf(obs_covar[j][i])){ obs_covar[j][i] = (obs_covar[j][i] > 0.0) ? 9E30 : -9E30; }            
     }
   }
   

@@ -82,22 +82,22 @@ void BusyFunc(double x, double a[], double *y, double dyda[], int fit_mode, doub
   switch(fit_mode){
   case 1:
     map_1 = exp(a[0]);
-    if(isinf(map_1)){ map_1 = 9E30; }
-    if((isnan(map_1)) || (map_1 < 0.0)){ map_1 = 1E-10; }
+    if(std::isinf(map_1)){ map_1 = 9E30; }
+    if((std::isnan(map_1)) || (map_1 < 0.0)){ map_1 = 1E-10; }
     map_2 = 0.0;
     if(a[2] >= (2.0 * pi)){ a[2]-=(2.0 * pi); }
     if(a[2] <= (-2.0 * pi)){ a[2]+=(2.0 * pi); }
     map_3 = mid + (amp * (sin(a[2])));
-    if(isnan(map_3)){ map_3 = 0.0; }
-    if(isinf(map_3)){ map_3 = (map_3 > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(map_3)){ map_3 = 0.0; }
+    if(std::isinf(map_3)){ map_3 = (map_3 > 0.0) ? 9E30 : -9E30; }
     if(a[3] >= (2.0 * pi)){ a[3]-=(2.0 * pi); }
     if(a[3] <= (-2.0 * pi)){ a[3]+=(2.0 * pi); }
     map_4 = mid + (amp * (sin(a[3])));
-    if(isnan(map_4)){ map_4 = 0.0; }
-    if(isinf(map_4)){ map_4 = (map_4 > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(map_4)){ map_4 = 0.0; }
+    if(std::isinf(map_4)){ map_4 = (map_4 > 0.0) ? 9E30 : -9E30; }
     map_7 = exp(a[1]);
-    if(isinf(map_7)){ map_7 = 9E30; }
-    if((isnan(map_7)) || (map_7 < 0.0)){ map_7 = 1E-10; }
+    if(std::isinf(map_7)){ map_7 = 9E30; }
+    if((std::isnan(map_7)) || (map_7 < 0.0)){ map_7 = 1E-10; }
     erf_1 = 1.0 + (erff((map_7 * (x - map_3))));
     erf_2 = 1.0 + (erff((map_7 * (map_4 - x))));
     power_law = 1.0;
@@ -107,34 +107,34 @@ void BusyFunc(double x, double a[], double *y, double dyda[], int fit_mode, doub
     dyda[2] = amp * (cos(a[2])) * 0.25 * map_1 * erf_2 * power_law * 2.0 * exp((-1.0 * map_7 * map_7 * (x - map_3) * (x - map_3))) * -1.0 * map_7 / (sqrt(pi));
     dyda[3] = amp * (cos(a[3])) * 0.25 * map_1 * erf_1 * power_law * 2.0 * exp((-1.0 * map_7 * map_7 * (map_4 - x) * (map_4 - x))) * map_7 / (sqrt(pi));
     for(i = 0; i < 4; i++){
-      if(isinf(a[i])){ a[i] = (a[i] > 0.0) ? 9E30 : -9E30; } 
-      if(isnan(a[i])){ a[i] = 0.0; }
-      if(isinf(dyda[i])){ dyda[i] = (dyda[i] > 0.0) ? 9E30 : -9E30; } 
-      if(isnan(dyda[i])){ dyda[i] = 0.0; }
+      if(std::isinf(a[i])){ a[i] = (a[i] > 0.0) ? 9E30 : -9E30; } 
+      if(std::isnan(a[i])){ a[i] = 0.0; }
+      if(std::isinf(dyda[i])){ dyda[i] = (dyda[i] > 0.0) ? 9E30 : -9E30; } 
+      if(std::isnan(dyda[i])){ dyda[i] = 0.0; }
     }
     a[4] = a[5] = a[6] = a[7] = 0.0;
     break;
   case 2:
     map_1 = exp(a[0]);
-    if(isinf(map_1)){ map_1 = 9E30; }
-    if((isnan(map_1)) || (map_1 < 0.0)){ map_1 = 1E-10; }
+    if(std::isinf(map_1)){ map_1 = 9E30; }
+    if((std::isnan(map_1)) || (map_1 < 0.0)){ map_1 = 1E-10; }
     map_2 = 0.0;
     if(a[2] >= (2.0 * pi)){ a[2]-=(2.0 * pi); }
     if(a[2] <= (-2.0 * pi)){ a[2]+=(2.0 * pi); }
     map_3 = mid + (amp * (sin(a[2])));
-    if(isnan(map_3)){ map_3 = 0.0; }
-    if(isinf(map_3)){ map_3 = (map_3 > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(map_3)){ map_3 = 0.0; }
+    if(std::isinf(map_3)){ map_3 = (map_3 > 0.0) ? 9E30 : -9E30; }
     if(a[4] >= (2.0 * pi)){ a[4]-=(2.0 * pi); }
     if(a[4] <= (-2.0 * pi)){ a[4]+=(2.0 * pi); }
     map_4 = mid + (amp * (sin(a[4])));
-    if(isnan(map_4)){ map_4 = 0.0; }
-    if(isinf(map_4)){ map_4 = (map_4 > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(map_4)){ map_4 = 0.0; }
+    if(std::isinf(map_4)){ map_4 = (map_4 > 0.0) ? 9E30 : -9E30; }
     map_7 = exp(a[1]);
-    if(isinf(map_7)){ map_7 = 9E30; }
-    if((isnan(map_7)) || (map_7 < 0.0)){ map_7 = 1E-10; }
+    if(std::isinf(map_7)){ map_7 = 9E30; }
+    if((std::isnan(map_7)) || (map_7 < 0.0)){ map_7 = 1E-10; }
     map_8 = exp(a[3]);
-    if(isinf(map_8)){ map_8 = 9E30; }
-    if((isnan(map_8)) || (map_8 < 0.0)){ map_8 = 1E-10; }
+    if(std::isinf(map_8)){ map_8 = 9E30; }
+    if((std::isnan(map_8)) || (map_8 < 0.0)){ map_8 = 1E-10; }
     erf_1 = 1.0 + (erff((map_7 * (x - map_3))));
     erf_2 = 1.0 + (erff((map_8 * (map_4 - x))));
     power_law = 1.0;
@@ -145,39 +145,39 @@ void BusyFunc(double x, double a[], double *y, double dyda[], int fit_mode, doub
     dyda[3] = map_8 * 0.25 * map_1 * erf_1 * power_law * 2.0 * (exp((-1.0 * map_8 * map_8 * (map_4 - x) * (map_4 - x)))) * (map_4 - x) / (sqrt(pi));
     dyda[4] = amp * (cos(a[4])) * 0.25 * map_1 * erf_1 * (power_law * 2.0 * exp((-1.0 * map_8 * map_8 * (map_4 - x) * (map_4 - x))) * map_8 / (sqrt(pi)));
     for(i = 0; i < 5; i++){
-      if(isinf(a[i])){ a[i] = (a[i] > 0.0) ? 9E30 : -9E30; } 
-      if(isnan(a[i])){ a[i] = 0.0; }
-      if(isinf(dyda[i])){ dyda[i] = (dyda[i] > 0.0) ? 9E30 : -9E30; } 
-      if(isnan(dyda[i])){ dyda[i] = 0.0; }
+      if(std::isinf(a[i])){ a[i] = (a[i] > 0.0) ? 9E30 : -9E30; } 
+      if(std::isnan(a[i])){ a[i] = 0.0; }
+      if(std::isinf(dyda[i])){ dyda[i] = (dyda[i] > 0.0) ? 9E30 : -9E30; } 
+      if(std::isnan(dyda[i])){ dyda[i] = 0.0; }
     }
     a[5] = a[6] = a[7] = 0.0;
     break;
   case 3:
     map_1 = exp(a[0]);
-    if(isinf(map_1)){ map_1 = 9E30; }
-    if((isnan(map_1)) || (map_1 < 0.0)){ map_1 = 1E-10; }
+    if(std::isinf(map_1)){ map_1 = 9E30; }
+    if((std::isnan(map_1)) || (map_1 < 0.0)){ map_1 = 1E-10; }
     //map_2 = exp(a[4]);
     map_2 = a[4];
-    if(isinf(map_2)){ map_2 = 9E30; }
-    if((isnan(map_2)) || (map_2 < 0.0)){ map_2 = 1E-10; }    
+    if(std::isinf(map_2)){ map_2 = 9E30; }
+    if((std::isnan(map_2)) || (map_2 < 0.0)){ map_2 = 1E-10; }    
     if(a[2] >= (2.0 * pi)){ a[2]-=(2.0 * pi); }
     if(a[2] <= (-2.0 * pi)){ a[2]+=(2.0 * pi); }
     map_3 = mid + (amp * (sin(a[2])));
-    if(isnan(map_3)){ map_3 = 0.0; }
-    if(isinf(map_3)){ map_3 = (map_3 > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(map_3)){ map_3 = 0.0; }
+    if(std::isinf(map_3)){ map_3 = (map_3 > 0.0) ? 9E30 : -9E30; }
     if(a[3] >= (2.0 * pi)){ a[3]-=(2.0 * pi); }
     if(a[3] <= (-2.0 * pi)){ a[3]+=(2.0 * pi); }
     map_4 = mid + (amp * (sin(a[3])));
-    if(isnan(map_4)){ map_4 = 0.0; }
-    if(isinf(map_4)){ map_4 = (map_4 > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(map_4)){ map_4 = 0.0; }
+    if(std::isinf(map_4)){ map_4 = (map_4 > 0.0) ? 9E30 : -9E30; }
     map_7 = exp(a[1]);
-    if(isinf(map_7)){ map_7 = 9E30; }
-    if((isnan(map_7)) || (map_7 < 0.0)){ map_7 = 1E-10; }
+    if(std::isinf(map_7)){ map_7 = 9E30; }
+    if((std::isnan(map_7)) || (map_7 < 0.0)){ map_7 = 1E-10; }
     erf_1 = 1.0 + (erff((map_7 * (x - map_3))));
     erf_2 = 1.0 + (erff((map_7 * (map_4 - x))));
     power_law = 1.0 + (map_2 * (pow((fabs(x - (0.5 * (map_3 + map_4)))),4.0)));
-    if(isinf(power_law)){ power_law = (power_law > 0.0) ? 9E30 : -9E30; }
-    if((power_law < 0.0) || (isnan(power_law))){ power_law = 0.0; }
+    if(std::isinf(power_law)){ power_law = (power_law > 0.0) ? 9E30 : -9E30; }
+    if((power_law < 0.0) || (std::isnan(power_law))){ power_law = 0.0; }
     *y = 0.25 * map_1 * erf_1 * erf_2 * power_law;
     dyda[0] = map_1 * 0.25 * erf_1 * erf_2 * power_law;
     dyda[1] = map_7 * 0.25 * map_1 * power_law * 2.0 * ((erf_2 * exp((-1.0 * map_7 * map_7 * (x - map_3) * (x - map_3))) * (x - map_3)) + (erf_1 * exp((-1.0 * map_7 * map_7 * (map_4 - x) * (map_4 - x))) * (map_4 - x))) / (sqrt(pi));
@@ -186,45 +186,45 @@ void BusyFunc(double x, double a[], double *y, double dyda[], int fit_mode, doub
     //dyda[4] = map_2 * 0.25 * map_1 * erf_1 * erf_2 * (pow((fabs(x - (0.5 * (map_3 + map_4)))),4.0));
     dyda[4] = 0.25 * map_1 * erf_1 * erf_2 * (pow((fabs(x - (0.5 * (map_3 + map_4)))),4.0));
     for(i = 0; i < 5; i++){
-      if(isinf(a[i])){ a[i] = (a[i] > 0.0) ? 9E30 : -9E30; } 
-      if(isnan(a[i])){ a[i] = 0.0; }
-      if(isinf(dyda[i])){ dyda[i] = (dyda[i] > 0.0) ? 9E30 : -9E30; } 
-      if(isnan(dyda[i])){ dyda[i] = 0.0; }
+      if(std::isinf(a[i])){ a[i] = (a[i] > 0.0) ? 9E30 : -9E30; } 
+      if(std::isnan(a[i])){ a[i] = 0.0; }
+      if(std::isinf(dyda[i])){ dyda[i] = (dyda[i] > 0.0) ? 9E30 : -9E30; } 
+      if(std::isnan(dyda[i])){ dyda[i] = 0.0; }
     }
     a[5] = a[6] = a[7] = 0.0;
     break;
   case 4:
     map_1 = exp(a[0]);
-    if(isinf(map_1)){ map_1 = 9E30; }
-    if((isnan(map_1)) || (map_1 < 0.0)){ map_1 = 1E-10; }
+    if(std::isinf(map_1)){ map_1 = 9E30; }
+    if((std::isnan(map_1)) || (map_1 < 0.0)){ map_1 = 1E-10; }
     //map_2 = exp(a[4]);
     map_2 = a[4];
-    if(isinf(map_2)){ map_2 = 9E30; }
-    if((isnan(map_2)) || (map_2 < 0.0)){ map_2 = 1E-10; }
+    if(std::isinf(map_2)){ map_2 = 9E30; }
+    if((std::isnan(map_2)) || (map_2 < 0.0)){ map_2 = 1E-10; }
     if(a[5] >= (2.0 * pi)){ a[5]-=(2.0 * pi); }
     if(a[5] <= (-2.0 * pi)){ a[5]+=(2.0 * pi); }
     //map_3 = 5.0 + (3.0 * (sin(a[5])));
     map_3 = 4.5 + (3.5 * (sin(a[5])));
-    if(isnan(map_3)){ map_3 = 0.0; }
-    if(isinf(map_3)){ map_3 = (map_3 > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(map_3)){ map_3 = 0.0; }
+    if(std::isinf(map_3)){ map_3 = (map_3 > 0.0) ? 9E30 : -9E30; }
     if(a[2] >= (2.0 * pi)){ a[2]-=(2.0 * pi); }
     if(a[2] <= (-2.0 * pi)){ a[2]+=(2.0 * pi); }
     map_4 = mid + (amp * (sin(a[2])));
-    if(isnan(map_4)){ map_4 = 0.0; }
-    if(isinf(map_4)){ map_4 = (map_4 > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(map_4)){ map_4 = 0.0; }
+    if(std::isinf(map_4)){ map_4 = (map_4 > 0.0) ? 9E30 : -9E30; }
     if(a[3] >= (2.0 * pi)){ a[3]-=(2.0 * pi); }
     if(a[3] <= (-2.0 * pi)){ a[3]+=(2.0 * pi); }
     map_5 = mid + (amp * (sin(a[3])));
-    if(isnan(map_5)){ map_5 = 0.0; }
-    if(isinf(map_5)){ map_5 = (map_5 > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(map_5)){ map_5 = 0.0; }
+    if(std::isinf(map_5)){ map_5 = (map_5 > 0.0) ? 9E30 : -9E30; }
     map_7 = exp(a[1]);
-    if(isinf(map_7)){ map_7 = 9E30; }
-    if((isnan(map_7)) || (map_7 < 0.0)){ map_7 = 1E-10; }
+    if(std::isinf(map_7)){ map_7 = 9E30; }
+    if((std::isnan(map_7)) || (map_7 < 0.0)){ map_7 = 1E-10; }
     erf_1 = 1.0 + (erff((map_7 * (x - map_4))));
     erf_2 = 1.0 + (erff((map_7 * (map_5 - x))));
     power_law = 1.0 + (map_2 * (pow((fabs(x - (0.5 * (map_4 + map_5)))),map_3)));
-    if(isinf(power_law)){ power_law = (power_law > 0.0) ? 9E30 : -9E30; }
-    if((isnan(power_law)) || (power_law < 0.0)){ power_law = 0.0; }
+    if(std::isinf(power_law)){ power_law = (power_law > 0.0) ? 9E30 : -9E30; }
+    if((std::isnan(power_law)) || (power_law < 0.0)){ power_law = 0.0; }
     *y = 0.25 * map_1 * erf_1 * erf_2 * power_law;
     dyda[0] = map_1 * 0.25 * erf_1 * erf_2 * power_law;
     dyda[1] = map_7 * 0.25 * map_1 * power_law * 2.0 * ((erf_2 * exp((-1.0 * map_7 * map_7 * (x - map_4) * (x - map_4))) * (x - map_4)) + (erf_1 * exp((-1.0 * map_7 * map_7 * (map_5 - x) * (map_5 - x))) * (map_5 - x))) / (sqrt(pi));
@@ -235,50 +235,50 @@ void BusyFunc(double x, double a[], double *y, double dyda[], int fit_mode, doub
     //dyda[5] = 4.0 * (cos(a[5])) * 0.25 * map_1 * erf_1 * erf_2 * map_2 * (pow((fabs(x - (0.5 * (map_4 + map_5)))),map_3)) * (log((fabs((x - (0.5 * (map_4 + map_5)))))));
     dyda[5] = 3.5 * (cos(a[5])) * 0.25 * map_1 * erf_1 * erf_2 * map_2 * (pow((fabs(x - (0.5 * (map_4 + map_5)))),map_3)) * (log((fabs((x - (0.5 * (map_4 + map_5)))))));
     for(i = 0; i < 6; i++){
-      if(isinf(a[i])){ a[i] = (a[i] > 0.0) ? 9E30 : -9E30; } 
-      if(isnan(a[i])){ a[i] = 0.0; }
-      if(isinf(dyda[i])){ dyda[i] = (dyda[i] > 0.0) ? 9E30 : -9E30; } 
-      if(isnan(dyda[i])){ dyda[i] = 0.0; }
+      if(std::isinf(a[i])){ a[i] = (a[i] > 0.0) ? 9E30 : -9E30; } 
+      if(std::isnan(a[i])){ a[i] = 0.0; }
+      if(std::isinf(dyda[i])){ dyda[i] = (dyda[i] > 0.0) ? 9E30 : -9E30; } 
+      if(std::isnan(dyda[i])){ dyda[i] = 0.0; }
     }
     a[6] = a[7] = 0.0;
     break;
   case 5:
     map_1 = exp(a[0]);
-    if(isinf(map_1)){ map_1 = 9E30; }
-    if((isnan(map_1)) || (map_1 < 0.0)){ map_1 = 1E-10; }
+    if(std::isinf(map_1)){ map_1 = 9E30; }
+    if((std::isnan(map_1)) || (map_1 < 0.0)){ map_1 = 1E-10; }
     //map_2 = exp(a[4]);
     map_2 = a[4];
-    if(isinf(map_2)){ map_2 = 9E30; }
-    if((isnan(map_2)) || (map_2 < 0.0)){ map_2 = 1E-10; }
+    if(std::isinf(map_2)){ map_2 = 9E30; }
+    if((std::isnan(map_2)) || (map_2 < 0.0)){ map_2 = 1E-10; }
     if(a[6] >= (2.0 * pi)){ a[6]-=(2.0 * pi); }
     if(a[6] <= (-2.0 * pi)){ a[6]+=(2.0 * pi); }
     //map_3 = 5.0 + (3.0 * (sin(a[6])));
     map_3 = 4.5 + (3.5 * (sin(a[6])));
-    if(isnan(map_3)){ map_3 = 0.0; }
-    if(isinf(map_3)){ map_3 = (map_3 > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(map_3)){ map_3 = 0.0; }
+    if(std::isinf(map_3)){ map_3 = (map_3 > 0.0) ? 9E30 : -9E30; }
     if(a[2] >= (2.0 * pi)){ a[2]-=(2.0 * pi); }
     if(a[2] <= (-2.0 * pi)){ a[2]+=(2.0 * pi); }
     map_4 = mid + (amp * (sin(a[2])));
-    if(isnan(map_4)){ map_4 = 0.0; }
-    if(isinf(map_4)){ map_4 = (map_4 > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(map_4)){ map_4 = 0.0; }
+    if(std::isinf(map_4)){ map_4 = (map_4 > 0.0) ? 9E30 : -9E30; }
     if(a[3] >= (2.0 * pi)){ a[3]-=(2.0 * pi); }
     if(a[3] <= (-2.0 * pi)){ a[3]+=(2.0 * pi); }
     map_5 = mid + (amp * (sin(a[3])));
-    if(isnan(map_5)){ map_5 = 0.0; }
-    if(isinf(map_5)){ map_5 = (map_5 > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(map_5)){ map_5 = 0.0; }
+    if(std::isinf(map_5)){ map_5 = (map_5 > 0.0) ? 9E30 : -9E30; }
     if(a[5] >= (2.0 * pi)){ a[5]-=(2.0 * pi); }
     if(a[5] <= (-2.0 * pi)){ a[5]+=(2.0 * pi); }
     map_6 = mid + (amp * (sin(a[5])));
-    if(isnan(map_6)){ map_6 = 0.0; }
-    if(isinf(map_6)){ map_6 = (map_6 > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(map_6)){ map_6 = 0.0; }
+    if(std::isinf(map_6)){ map_6 = (map_6 > 0.0) ? 9E30 : -9E30; }
     map_7 = exp(a[1]);
-    if(isinf(map_7)){ map_7 = 9E30; }
-    if((isnan(map_7)) || (map_7 < 0.0)){ map_7 = 1E-10; }
+    if(std::isinf(map_7)){ map_7 = 9E30; }
+    if((std::isnan(map_7)) || (map_7 < 0.0)){ map_7 = 1E-10; }
     erf_1 = 1.0 + (erff((map_7 * (x - map_4))));
     erf_2 = 1.0 + (erff((map_7 * (map_5 - x))));
     power_law = 1.0 + (map_2 * (pow((fabs(x - map_6)),map_3)));
-    if(isinf(power_law)){ power_law = (power_law > 0.0) ? 9E30 : -9E30; }
-    if((isnan(power_law)) || (power_law < 0.0)){ power_law = 0.0; }
+    if(std::isinf(power_law)){ power_law = (power_law > 0.0) ? 9E30 : -9E30; }
+    if((std::isnan(power_law)) || (power_law < 0.0)){ power_law = 0.0; }
     *y = 0.25 * map_1 * erf_1 * erf_2 * power_law;
     dyda[0] = map_1 * 0.25 * erf_1 * erf_2 * power_law;
     dyda[1] = map_7 * 0.25 * map_1 * power_law * 2.0 * ((erf_2 * exp((-1.0 * map_7 * map_7 * (x - map_4) * (x - map_4))) * (x - map_4)) + (erf_1 * exp((-1.0 * map_7 * map_7 * (map_5 - x) * (map_5 - x))) * (map_5 - x))) / (sqrt(pi));
@@ -290,53 +290,53 @@ void BusyFunc(double x, double a[], double *y, double dyda[], int fit_mode, doub
     //dyda[6] = 4.0 * (cos(a[6])) * 0.25 * map_1 * erf_1 * erf_2 * map_2 * (pow((fabs(x - map_6)),map_3)) * (log((fabs((x - map_6)))));
     dyda[6] = 3.5 * (cos(a[6])) * 0.25 * map_1 * erf_1 * erf_2 * map_2 * (pow((fabs(x - map_6)),map_3)) * (log((fabs((x - map_6)))));
     for(i = 0; i < 7; i++){
-      if(isinf(a[i])){ a[i] = (a[i] > 0.0) ? 9E30 : -9E30; } 
-      if(isnan(a[i])){ a[i] = 0.0; }
-      if(isinf(dyda[i])){ dyda[i] = (dyda[i] > 0.0) ? 9E30 : -9E30; } 
-      if(isnan(dyda[i])){ dyda[i] = 0.0; }
+      if(std::isinf(a[i])){ a[i] = (a[i] > 0.0) ? 9E30 : -9E30; } 
+      if(std::isnan(a[i])){ a[i] = 0.0; }
+      if(std::isinf(dyda[i])){ dyda[i] = (dyda[i] > 0.0) ? 9E30 : -9E30; } 
+      if(std::isnan(dyda[i])){ dyda[i] = 0.0; }
     }
     a[7] = 0.0;
     break;
   default:
     map_1 = exp(a[0]);
-    if(isinf(map_1)){ map_1 = 9E30; }
-    if((isnan(map_1)) || (map_1 < 0.0)){ map_1 = 1E-10; }
+    if(std::isinf(map_1)){ map_1 = 9E30; }
+    if((std::isnan(map_1)) || (map_1 < 0.0)){ map_1 = 1E-10; }
     //map_2 = exp(a[5]);
     map_2 = a[5];
-    if(isinf(map_2)){ map_2 = 9E30; }
-    if((isnan(map_2)) || (map_2 < 0.0)){ map_2 = 1E-10; }
+    if(std::isinf(map_2)){ map_2 = 9E30; }
+    if((std::isnan(map_2)) || (map_2 < 0.0)){ map_2 = 1E-10; }
     if(a[7] >= (2.0 * pi)){ a[7]-=(2.0 * pi); }
     if(a[7] <= (-2.0 * pi)){ a[7]+=(2.0 * pi); }
     //map_3 = 5.0 + (3.0 * (sin(a[7])));
     map_3 = 4.5 + (3.5 * (sin(a[7])));
-    if(isnan(map_3)){ map_3 = 0.0; }
-    if(isinf(map_3)){ map_3 = (map_3 > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(map_3)){ map_3 = 0.0; }
+    if(std::isinf(map_3)){ map_3 = (map_3 > 0.0) ? 9E30 : -9E30; }
     if(a[2] >= (2.0 * pi)){ a[2]-=(2.0 * pi); }
     if(a[2] <= (-2.0 * pi)){ a[2]+=(2.0 * pi); }
     map_4 = mid + (amp * (sin(a[2])));
-    if(isnan(map_4)){ map_4 = 0.0; }
-    if(isinf(map_4)){ map_4 = (map_4 > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(map_4)){ map_4 = 0.0; }
+    if(std::isinf(map_4)){ map_4 = (map_4 > 0.0) ? 9E30 : -9E30; }
     if(a[4] >= (2.0 * pi)){ a[4]-=(2.0 * pi); }
     if(a[4] <= (-2.0 * pi)){ a[4]+=(2.0 * pi); }
     map_5 = mid + (amp * (sinf(a[4])));
-    if(isnan(map_5)){ map_5 = 0.0; }
-    if(isinf(map_5)){ map_5 = (map_5 > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(map_5)){ map_5 = 0.0; }
+    if(std::isinf(map_5)){ map_5 = (map_5 > 0.0) ? 9E30 : -9E30; }
     if(a[6] >= (2.0 * pi)){ a[6]-=(2.0 * pi); }
     if(a[6] <= (-2.0 * pi)){ a[6]+=(2.0 * pi); }
     map_6 = mid + (amp * (sin(a[6])));
-    if(isnan(map_6)){ map_6 = 0.0; }
-    if(isinf(map_6)){ map_6 = (map_6 > 0.0) ? 9E30 : -9E30; }
+    if(std::isnan(map_6)){ map_6 = 0.0; }
+    if(std::isinf(map_6)){ map_6 = (map_6 > 0.0) ? 9E30 : -9E30; }
     map_7 = exp(a[1]);
-    if(isinf(map_7)){ map_7 = 9E30; }
-    if((isnan(map_7)) || (map_7 < 0.0)){ map_7 = 1E-10; }
+    if(std::isinf(map_7)){ map_7 = 9E30; }
+    if((std::isnan(map_7)) || (map_7 < 0.0)){ map_7 = 1E-10; }
     map_8 = exp(a[3]);
-    if(isinf(map_8)){ map_8 = 9E30; }
-    if((isnan(map_8)) || (map_8 < 0.0)){ map_8 = 1E-10; }
+    if(std::isinf(map_8)){ map_8 = 9E30; }
+    if((std::isnan(map_8)) || (map_8 < 0.0)){ map_8 = 1E-10; }
     erf_1 = 1.0 + (erff((map_7 * (x - map_4))));
     erf_2 = 1.0 + (erff((map_8 * (map_5 - x))));
     power_law = 1.0 + (map_2 * (pow((fabs(x - map_6)),map_3)));
-    if(isinf(power_law)){ power_law = (power_law > 0.0) ? 9E30 : -9E30; }
-    if((isnan(power_law)) || (power_law < 0.0)){ power_law = 0.0; }
+    if(std::isinf(power_law)){ power_law = (power_law > 0.0) ? 9E30 : -9E30; }
+    if((std::isnan(power_law)) || (power_law < 0.0)){ power_law = 0.0; }
     *y = 0.25 * map_1 * erf_1 * erf_2 * power_law;
     dyda[0] = map_1 * 0.25 * erf_1 * erf_2 * power_law;
     dyda[1] = map_7 * 0.25 * map_1 * erf_2 * power_law * 2.0 * (exp((-1.0 * map_7 * map_7 * (x - map_4) * (x - map_4)))) * (x - map_4) / (sqrt(pi));
@@ -349,17 +349,17 @@ void BusyFunc(double x, double a[], double *y, double dyda[], int fit_mode, doub
     //dyda[7] = 4.0 * (cos(a[7])) * 0.25 * map_1 * erf_1 * erf_2 * map_2 * (log(fabs((x - map_6)))) * (pow((fabs(x - map_6)),map_3));
     dyda[7] = 3.5 * (cos(a[7])) * 0.25 * map_1 * erf_1 * erf_2 * map_2 * (log(fabs((x - map_6)))) * (pow((fabs(x - map_6)),map_3));
     for(i = 0; i < 8; i++){
-      if(isinf(a[i])){ a[i] = (a[i] > 0.0) ? 9E30 : -9E30; } 
-      if(isnan(a[i])){ a[i] = 0.0; }
-      if(isinf(dyda[i])){ dyda[i] = (dyda[i] > 0.0) ? 9E30 : -9E30; } 
-      if(isnan(dyda[i])){ dyda[i] = 0.0; }
+      if(std::isinf(a[i])){ a[i] = (a[i] > 0.0) ? 9E30 : -9E30; } 
+      if(std::isnan(a[i])){ a[i] = 0.0; }
+      if(std::isinf(dyda[i])){ dyda[i] = (dyda[i] > 0.0) ? 9E30 : -9E30; } 
+      if(std::isnan(dyda[i])){ dyda[i] = 0.0; }
     }
     break;
   }
 
   // test range of values
-  if(isinf(*y)){ *y = (*y > 0.0) ? 9E30 : -9E30; }
-  if(isnan(*y)){ *y = 0.0; }
+  if(std::isinf(*y)){ *y = (*y > 0.0) ? 9E30 : -9E30; }
+  if(std::isnan(*y)){ *y = 0.0; }
 
 }
 
@@ -695,8 +695,8 @@ void choldc(double ** a, int n){
   // range test resultant matrix
   for(j = 0; j < n; j++){
     for(i = 0; i < n; i++){
-      if(isnan(a[j][i])){ a[j][i] = 0.0; }
-      if(isinf(a[j][i])){ a[j][i] = (a[j][i] > 0.0) ? 9E30 : -9E30; } 
+      if(std::isnan(a[j][i])){ a[j][i] = 0.0; }
+      if(std::isinf(a[j][i])){ a[j][i] = (a[j][i] > 0.0) ? 9E30 : -9E30; } 
     }
   }
 
