@@ -37,8 +37,10 @@
 #include <QtGui/QImage>
 #include <QtGui/QPixmap>
 #include <QtGui/QMouseEvent>
+#include <QtGui/QClipboard>
 
 #if QT_VERSION < 0x050000
+	#include <QtGui/QApplication>
 	#include <QtGui/QWidget>
 	#include <QtGui/QLabel>
 	#include <QtGui/QVBoxLayout>
@@ -48,6 +50,7 @@
 	#include <QtGui/QSlider>
 	#include <QtGui/QMenu>
 #else
+	#include <QtWidgets/QApplication>
 	#include <QtWidgets/QWidget>
 	#include <QtWidgets/QLabel>
 	#include <QtWidgets/QVBoxLayout>
@@ -87,6 +90,7 @@ private slots:
 	void selectLutGreyscale();
 	void selectLutRainbow();
 	void selectLutRandom();
+    void copy();
 
 private:
 	Fips   *fips;
@@ -111,6 +115,7 @@ private:
 	QIcon iconGoLastView;
 	QIcon iconFillColor;
 	QIcon iconDialogClose;
+	QIcon iconEditCopy;
 	
 	QToolButton *buttonFirst;
 	QToolButton *buttonLast;

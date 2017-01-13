@@ -341,6 +341,10 @@ void WidgetDataViewer::setUpInterface()
 	iconDialogClose.addFile(QString(":/icons/16/dialog-close.png"), QSize(16, 16));
 	iconDialogClose = QIcon::fromTheme("dialog-close", iconDialogClose);
 	
+	iconEditCopy.addFile(QString(":/icons/22/edit-copy.png"), QSize(22, 22));
+	iconEditCopy.addFile(QString(":/icons/16/edit-copy.png"), QSize(16, 16));
+	iconEditCopy = QIcon::fromTheme("edit-copy", iconEditCopy);
+	
 	controls = new QWidget(this);
 	buttonFirst  = new QToolButton(controls);
 	buttonFirst->setToolButtonStyle(Qt::ToolButtonIconOnly);
@@ -542,35 +546,39 @@ void WidgetDataViewer::showContextMenu(const QPoint &where)
 	QMenu menuLut("Colour Scale", this);
 	
 	QAction actionLutGreyscale("Greyscale", this);
-	QAction actionLutRainbow("Rainbow", this);
-	QAction actionLutRandom("Random", this);
-	/*QAction actionFirstChannel("First channel", this);
-	QAction actionLastChannel("Last channel", this);
-	QAction actionPrevChannel("Prev. channel", this);
-	QAction actionNextChannel("Next channel", this);*/
-	
 	connect(&actionLutGreyscale, SIGNAL(triggered()), this, SLOT(selectLutGreyscale()));
+	QAction actionLutRainbow("Rainbow", this);
 	connect(&actionLutRainbow, SIGNAL(triggered()), this, SLOT(selectLutRainbow()));
+	QAction actionLutRandom("Random", this);
 	connect(&actionLutRandom, SIGNAL(triggered()), this, SLOT(selectLutRandom()));
-	
-	/*connect(&actionFirstChannel, SIGNAL(triggered()), this, SLOT(showFirstChannel()));
-	connect(&actionLastChannel, SIGNAL(triggered()), this, SLOT(showLastChannel()));
-	connect(&actionPrevChannel, SIGNAL(triggered()), this, SLOT(showPrevChannel()));
-	connect(&actionNextChannel, SIGNAL(triggered()), this, SLOT(showNextChannel()));*/
 	
 	menuLut.addAction(&actionLutGreyscale);
 	menuLut.addAction(&actionLutRainbow);
 	menuLut.addAction(&actionLutRandom);
 	menuLut.setIcon(iconFillColor);
 	
-	/*contextMenu.addAction(&actionPrevChannel);
-	contextMenu.addAction(&actionNextChannel);
-	contextMenu.addAction(&actionFirstChannel);
-	contextMenu.addAction(&actionLastChannel);
-	contextMenu.addSeparator();*/
+	QAction actionCopy("Copy", this);
+	actionCopy.setIcon(iconEditCopy);
+	connect(&actionCopy, SIGNAL(triggered()), this, SLOT(copy()));
+	
+	contextMenu.addAction(&actionCopy);
+	contextMenu.addSeparator();
 	contextMenu.addMenu(&menuLut);
 	
 	contextMenu.exec(mapToGlobal(where));
+	
+	return;
+}
+
+
+
+void WidgetDataViewer::copy()
+{
+    if(image and not image->isNull())
+	{
+		QClipboard *clipboard = QApplication::clipboard();
+		clipboard->setImage(*image);
+	}
 	
 	return;
 }
