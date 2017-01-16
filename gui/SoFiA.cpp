@@ -1393,7 +1393,7 @@ void SoFiA::pipelineProcessReadStd()
 	
 	outputStd.remove(QChar('\r'));       // Get rid of carriage returns in the output
 	
-	unsigned int progress = outputProgress->value();
+	/*unsigned int progress = outputProgress->value();
 	
 	if(outputStd.contains(QString("--- SoFiA: Reading default parameters ---")))                progress = 0;
 	if(outputStd.contains(QString("--- SoFiA: Reading user parameters ---")))                   progress = 5;
@@ -1413,7 +1413,7 @@ void SoFiA::pipelineProcessReadStd()
 	if(outputStd.contains(QString("--- SoFiA: Writing output catalogue ---")))                  progress = 95;
 	if(outputStd.contains(QString("--- SoFiA: Pipeline finished ---")))                         progress = 100;
 	
-	outputProgress->setValue(progress);
+	outputProgress->setValue(progress);*/
 	
 	if(not outputStd.isEmpty())
 	{
@@ -1462,7 +1462,8 @@ void SoFiA::pipelineProcessStarted()
 	QString statusText = tr("Pipeline started.");
 	showMessage(MESSAGE_INFO, messageText, statusText);
 	
-	outputProgress->setValue(0);
+	//outputProgress->setValue(0);
+	outputProgress->setMaximum(0);
 	
 	updateActions();
 	
@@ -1490,6 +1491,8 @@ void SoFiA::pipelineProcessFinished(int exitCode, QProcess::ExitStatus exitStatu
 			outputText->insertPlainText(QString("Pipeline finished with exit code %1.\n").arg(exitCode));
 			outputText->verticalScrollBar()->setValue(outputText->verticalScrollBar()->maximum());
 			
+			outputProgress->setValue(100);
+			
 			if(not spreadsheet->isHidden()) showCatalogue();  // Reload catalogue if currently visible.
 		}
 		else
@@ -1498,6 +1501,8 @@ void SoFiA::pipelineProcessFinished(int exitCode, QProcess::ExitStatus exitStatu
 			QString messageText("");
 			QString statusText = tr("Pipeline failed.");
 			showMessage(MESSAGE_INFO, messageText, statusText);
+			
+			outputProgress->setValue(0);
 			
 			outputText->setTextColor(Qt::red);
 			outputText->insertPlainText(QString("Pipeline failed with exit code %1.\n").arg(exitCode));
@@ -1511,11 +1516,14 @@ void SoFiA::pipelineProcessFinished(int exitCode, QProcess::ExitStatus exitStatu
 		QString statusText = tr("Pipeline aborted.");
 		showMessage(MESSAGE_ERROR, messageText, statusText);
 		
+		outputProgress->setValue(0);
+		
 		outputText->setTextColor(Qt::red);
 		outputText->insertPlainText(QString("Pipeline aborted with exit code %1.\n").arg(exitCode));
 		outputText->verticalScrollBar()->setValue(outputText->verticalScrollBar()->maximum());
 	}
 	
+	outputProgress->setMaximum(100);
 	updateActions();
 	
 	return;
