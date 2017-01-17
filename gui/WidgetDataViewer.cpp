@@ -46,8 +46,6 @@ WidgetDataViewer::WidgetDataViewer(const std::string &url, QWidget *parent) : QW
 	this->setWindowTitle("SoFiA - Image Viewer");
 	this->setAttribute(Qt::WA_DeleteOnClose);
 	
-	setUpInterface();
-	
 	scale  = 2.0;
 	offset = 0.0;
 	dataMin = 0.0;
@@ -55,7 +53,13 @@ WidgetDataViewer::WidgetDataViewer(const std::string &url, QWidget *parent) : QW
 	plotMin = 0.0;
 	plotMax = 1.0;
 	
+	revert = 0x00;
+	invert = 0x00;
+	currentLut = RAINBOW;
+	transferFunction = LIN;  // linear by default
 	currentChannel = 0;
+	
+	setUpInterface();
 	fieldChannel->setText(QString::number(currentChannel));
 	
 	fips = new Fips;
@@ -66,6 +70,9 @@ WidgetDataViewer::WidgetDataViewer(const std::string &url, QWidget *parent) : QW
 		plotMax = dataMax;
 		plotChannelMap(currentChannel);
 	}
+	
+	fieldLevelMin->setText(QString::number(plotMin));
+	fieldLevelMax->setText(QString::number(plotMax));
 	
 	return;
 }
@@ -172,7 +179,8 @@ int WidgetDataViewer::plotChannelMap(size_t z)
 				size_t position[3] = {static_cast<size_t>(x), static_cast<size_t>(y), z};
 				double value = fips->data(position);
 				unsigned int index = flux2grey(value);
-				image->setPixel(a, b, index);
+				
+				image->setPixel(a, b, index xor revert);
 			}
 			else
 			{
@@ -281,14 +289,19 @@ void WidgetDataViewer::sliderChange(int value)
 
 unsigned int WidgetDataViewer::flux2grey(double value)
 {
-	if(std::isnan(value)) return 0;
+	if(std::isnan(value) or value < plotMin) return 0;
+	else if(value > plotMax) return 255;
 	
-	long grey = static_cast<int>(255.0 * (value - plotMin) / (plotMax - plotMin));
+	switch(transferFunction)
+	{
+		case SQRT:
+			return static_cast<unsigned int>(255.0 * sqrt((value - plotMin) / (plotMax - plotMin)));
+		case LOG:
+			return static_cast<unsigned int>(255.0 * log10(9.0 * (value - plotMin) / (plotMax - plotMin) + 1.0));
+	}
 	
-	if(grey < 0) grey = 0;
-	else if(grey > 255) grey = 255;
-	
-	return static_cast<unsigned int>(grey);
+	// Default for linear transfer function
+	return static_cast<unsigned int>(255.0 * (value - plotMin) / (plotMax - plotMin));
 }
 
 
@@ -299,24 +312,7 @@ unsigned int WidgetDataViewer::flux2grey(double value)
 
 void WidgetDataViewer::setUpInterface()
 {
-	image = new QImage(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, QImage::Format_Indexed8);
-	setUpLut(RAINBOW);
-	image->setColorTable(lut);
-	image->fill(0);
-	
-	viewport = new QLabel(this);
-	viewport->setPixmap(QPixmap::fromImage(*image));
-	viewport->setMaximumWidth(VIEWPORT_WIDTH);
-	viewport->setMinimumWidth(VIEWPORT_WIDTH);
-	viewport->setMaximumHeight(VIEWPORT_HEIGHT);
-	viewport->setMinimumHeight(VIEWPORT_HEIGHT);
-	viewport->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	viewport->setContextMenuPolicy(Qt::CustomContextMenu);
-	connect(viewport, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu(const QPoint &)));
-	
-	status = new QLabel(this);
-	status->setText("Status information");
-	
+	// Set up icons
 	iconGoPreviousView.addFile(QString(":/icons/22/go-previous-view.png"), QSize(22, 22));
 	iconGoPreviousView.addFile(QString(":/icons/16/go-previous-view.png"), QSize(16, 16));
 	iconGoPreviousView  = QIcon::fromTheme("go-previous-view", iconGoPreviousView);
@@ -345,6 +341,76 @@ void WidgetDataViewer::setUpInterface()
 	iconEditCopy.addFile(QString(":/icons/16/edit-copy.png"), QSize(16, 16));
 	iconEditCopy = QIcon::fromTheme("edit-copy", iconEditCopy);
 	
+	// Set up data display image
+	image = new QImage(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, QImage::Format_Indexed8);
+	setUpLut(RAINBOW);
+	image->setColorTable(lut);
+	image->fill(0);
+	
+	// Set up image viewport:
+	viewport = new QLabel(this);
+	viewport->setPixmap(QPixmap::fromImage(*image));
+	viewport->setMaximumWidth(VIEWPORT_WIDTH);
+	viewport->setMinimumWidth(VIEWPORT_WIDTH);
+	viewport->setMaximumHeight(VIEWPORT_HEIGHT);
+	viewport->setMinimumHeight(VIEWPORT_HEIGHT);
+	viewport->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	viewport->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(viewport, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu(const QPoint &)));
+	
+	// Set up settings widget
+	settings = new QWidget(this);
+	labelLevelMin = new QLabel(settings);
+	labelLevelMin->setText("Min:");
+	labelLevelMin->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+	labelLevelMax = new QLabel(settings);
+	labelLevelMax->setText("Max:");
+	labelLevelMax->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+	fieldLevelMin = new QLineEdit(settings);
+	//fieldLevelMin->setMaximumWidth(50);
+	fieldLevelMin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	fieldLevelMin->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+	connect(fieldLevelMin, SIGNAL(editingFinished()), this, SLOT(setLevelMin()));
+	fieldLevelMax = new QLineEdit(settings);
+	//fieldLevelMax->setMaximumWidth(50);
+	fieldLevelMax->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	fieldLevelMax->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+	connect(fieldLevelMax, SIGNAL(editingFinished()), this, SLOT(setLevelMax()));
+	checkRev = new QCheckBox("rev", settings);
+	connect(checkRev, SIGNAL(stateChanged(int)), this, SLOT(toggleRev(int)));
+	checkInv = new QCheckBox("inv", settings);
+	connect(checkInv, SIGNAL(stateChanged(int)), this, SLOT(toggleInv(int)));
+	fieldTransFunc = new QComboBox(settings);
+	fieldTransFunc->insertItem(LIN,  "linear");
+	fieldTransFunc->insertItem(SQRT, "sqrt");
+	fieldTransFunc->insertItem(LOG,  "log");
+	connect(fieldTransFunc, SIGNAL(currentIndexChanged(int)), this, SLOT(setTransferFunction(int)));
+	buttonReset = new QToolButton(settings);
+	buttonReset->setToolButtonStyle(Qt::ToolButtonTextOnly);
+	buttonReset->setText("Reset");
+	buttonReset->setToolTip("Reset display settings");
+	//buttonFirst->setIcon(iconGoFirstView);
+	buttonReset->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+	connect(buttonReset, SIGNAL(clicked()), this, SLOT(resetDisplaySettings()));
+	
+	layoutSettings = new QHBoxLayout;
+	layoutSettings->addWidget(labelLevelMin);
+	layoutSettings->addWidget(fieldLevelMin);
+	layoutSettings->addWidget(labelLevelMax);
+	layoutSettings->addWidget(fieldLevelMax);
+	layoutSettings->addWidget(checkRev);
+	layoutSettings->addWidget(checkInv);
+	layoutSettings->addWidget(fieldTransFunc);
+	layoutSettings->addWidget(buttonReset);
+	layoutSettings->setContentsMargins(0, 0, 0, 0);
+	layoutSettings->setSpacing(5);
+	settings->setLayout(layoutSettings);
+	
+	// Set up status widget
+	status = new QLabel(this);
+	status->setText("Status information");
+	
+	// Set up control widget
 	controls = new QWidget(this);
 	buttonFirst  = new QToolButton(controls);
 	buttonFirst->setToolButtonStyle(Qt::ToolButtonIconOnly);
@@ -412,7 +478,9 @@ void WidgetDataViewer::setUpInterface()
 	layoutControls->setSpacing(5);
 	controls->setLayout(layoutControls);
 	
+	// Assemble main window layout
 	mainLayout = new QVBoxLayout;
+	mainLayout->addWidget(settings);
 	mainLayout->addWidget(viewport);
 	mainLayout->addWidget(controls);
 	mainLayout->addWidget(status);
@@ -420,6 +488,7 @@ void WidgetDataViewer::setUpInterface()
 	mainLayout->setSpacing(5);
 	this->setLayout(mainLayout);
 	
+	// Set up event filters
 	viewport->setMouseTracking(true);
 	viewport->installEventFilter(this);
 	
@@ -446,10 +515,10 @@ void WidgetDataViewer::setUpLut(int type)
 		{
 			case 1:
 				// RAINBOW
-				if (i <  50) lut.append(qRgb(0, static_cast<unsigned int>(255.0 * (static_cast<double>(i) - 0.0) / 50.0), 255));
-				else if(i < 125) lut.append(qRgb(0, 255, static_cast<unsigned int>(255.0 * (125.0 - static_cast<double>(i)) / 75.0)));
-				else if(i < 180) lut.append(qRgb(static_cast<unsigned int>(255 * (static_cast<double>(i) - 125) / 55), 255 ,0));
-				else lut.append(qRgb(255, static_cast<unsigned int>(255 * (255 - static_cast<double>(i)) / 75), 0));
+				if (i <  50) lut.append(qRgb(0 xor invert, static_cast<unsigned int>(255.0 * (static_cast<double>(i) - 0.0) / 50.0) xor invert, 255 xor invert));
+				else if(i < 125) lut.append(qRgb(0 xor invert, 255 xor invert, static_cast<unsigned int>(255.0 * (125.0 - static_cast<double>(i)) / 75.0) xor invert));
+				else if(i < 180) lut.append(qRgb(static_cast<unsigned int>(255 * (static_cast<double>(i) - 125) / 55) xor invert, 255 xor invert ,0 xor invert));
+				else lut.append(qRgb(255 xor invert, static_cast<unsigned int>(255 * (255 - static_cast<double>(i)) / 75) xor invert, 0 xor invert));
 				break;
 			
 			case 2:
@@ -457,12 +526,12 @@ void WidgetDataViewer::setUpLut(int type)
 				valueR = static_cast<unsigned int>(255.0 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
 				valueG = static_cast<unsigned int>(255.0 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
 				valueB = static_cast<unsigned int>(255.0 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
-				lut.append(qRgb(valueR, valueG, valueB));
+				lut.append(qRgb(valueR xor invert, valueG xor invert, valueB xor invert));
 				break;
 			
 			default:
 				// GREYSCALE
-				lut.append(qRgb(i, i, i));
+				lut.append(qRgb(i xor invert, i xor invert, i xor invert));
 		}
 	}
 	
@@ -478,21 +547,24 @@ void WidgetDataViewer::setUpLut(int type)
 
 void WidgetDataViewer::selectLutGreyscale()
 {
-	setUpLut(GREYSCALE);
+	currentLut = GREYSCALE;
+	setUpLut(currentLut);
 	plotChannelMap(currentChannel);
 	return;
 }
 
 void WidgetDataViewer::selectLutRainbow()
 {
-	setUpLut(RAINBOW);
+	currentLut = RAINBOW;
+	setUpLut(currentLut);
 	plotChannelMap(currentChannel);
 	return;
 }
 
 void WidgetDataViewer::selectLutRandom()
 {
-	setUpLut(RANDOM);
+	currentLut = RANDOM;
+	setUpLut(currentLut);
 	plotChannelMap(currentChannel);
 	return;
 }
@@ -579,6 +651,128 @@ void WidgetDataViewer::showContextMenu(const QPoint &where)
 }
 
 
+
+// ------------------------- //
+// SLOT to set minimum level //
+// ------------------------- //
+
+void WidgetDataViewer::setLevelMin()
+{
+	bool ok;
+	double value = (fieldLevelMin->text()).toDouble(&ok);
+	
+	if(ok and value < plotMax)
+	{
+		plotMin = value;
+		plotChannelMap(currentChannel);
+	}
+	else
+	{
+		fieldLevelMin->setText(QString::number(plotMin));
+	}
+	
+	return;
+}
+
+
+
+// ------------------------- //
+// SLOT to set maximum level //
+// ------------------------- //
+
+void WidgetDataViewer::setLevelMax()
+{
+	bool ok;
+	double value = (fieldLevelMax->text()).toDouble(&ok);
+	
+	if(ok and value > plotMin)
+	{
+		plotMax = value;
+		plotChannelMap(currentChannel);
+	}
+	else
+	{
+		fieldLevelMax->setText(QString::number(plotMax));
+	}
+	
+	return;
+}
+
+
+
+// -------------------------------- //
+// SLOT to change transfer function //
+// -------------------------------- //
+
+void WidgetDataViewer::setTransferFunction(int which)
+{
+	transferFunction = which;
+	plotChannelMap(currentChannel);
+	
+	return;
+}
+
+
+
+// ------------------------------- //
+// SLOT to toggle reverted colours //
+// ------------------------------- //
+
+void WidgetDataViewer::toggleRev(int state)
+{
+	revert = (state == Qt::Checked) ? 0xFF : 0x00;
+	plotChannelMap(currentChannel);
+	
+	return;
+}
+
+
+
+// ------------------------------- //
+// SLOT to toggle inverted colours //
+// ------------------------------- //
+
+void WidgetDataViewer::toggleInv(int state)
+{
+	invert = (state == Qt::Checked) ? 0xFF : 0x00;
+	setUpLut(currentLut);
+	plotChannelMap(currentChannel);
+	
+	return;
+}
+
+
+
+// ------------------------------ //
+// SLOT to reset display settings //
+// ------------------------------ //
+
+void WidgetDataViewer::resetDisplaySettings()
+{
+	plotMin = dataMin;
+	plotMax = dataMax;
+	revert = 0x00;
+	invert = 0x00;
+	currentLut = RAINBOW;
+	transferFunction = LIN;
+	
+	fieldLevelMin->setText(QString::number(plotMin));
+	fieldLevelMax->setText(QString::number(plotMax));
+	checkRev->setCheckState(Qt::Unchecked);
+	checkInv->setCheckState(Qt::Unchecked);
+	fieldTransFunc->setCurrentIndex(transferFunction);
+	
+	setUpLut(currentLut);
+	plotChannelMap(currentChannel);
+	
+	return;
+}
+
+
+
+// ----------------------------------- //
+// FUNCTION to copy image to clipboard //
+// ----------------------------------- //
 
 void WidgetDataViewer::copy()
 {

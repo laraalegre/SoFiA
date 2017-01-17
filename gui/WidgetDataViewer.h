@@ -48,6 +48,8 @@
 	#include <QtGui/QToolButton>
 	#include <QtGui/QLineEdit>
 	#include <QtGui/QSlider>
+	#include <QtGui/QCheckBox>
+	#include <QtGui/QComboBox>
 	#include <QtGui/QMenu>
 #else
 	#include <QtWidgets/QApplication>
@@ -58,6 +60,8 @@
 	#include <QtWidgets/QToolButton>
 	#include <QtWidgets/QLineEdit>
 	#include <QtWidgets/QSlider>
+	#include <QtWidgets/QCheckBox>
+	#include <QtWidgets/QComboBox>
 	#include <QtWidgets/QMenu>
 #endif
 
@@ -71,6 +75,10 @@
 #define GREYSCALE 0
 #define RAINBOW   1
 #define RANDOM    2
+
+#define LIN  0
+#define SQRT 1
+#define LOG  2
 
 class WidgetDataViewer : public QWidget
 {
@@ -86,10 +94,16 @@ private slots:
 	void showFirstChannel();
 	void showLastChannel();
 	void sliderChange(int value);
+	void setLevelMin();
+	void setLevelMax();
+	void toggleRev(int state);
+	void toggleInv(int state);
+	void setTransferFunction(int which);
 	void showContextMenu(const QPoint &where);
 	void selectLutGreyscale();
 	void selectLutRainbow();
 	void selectLutRandom();
+	void resetDisplaySettings();
     void copy();
 
 private:
@@ -99,15 +113,21 @@ private:
 	double  offset;
 	double dataMin, dataMax;
 	double plotMin, plotMax;
+	unsigned int revert;
+	unsigned int invert;
+	int transferFunction;
+	int currentLut;
 	QVector<QRgb> lut;
 	size_t currentChannel;
 	
 	QVBoxLayout *mainLayout;
 	QHBoxLayout *layoutControls;
+	QHBoxLayout *layoutSettings;
 	
 	QLabel *viewport;
 	QLabel *status;
 	QWidget *controls;
+	QWidget *settings;
 	
 	QIcon iconGoPreviousView;
 	QIcon iconGoNextView;
@@ -124,6 +144,15 @@ private:
 	QToolButton *buttonClose;
 	QLineEdit   *fieldChannel;
 	QSlider     *slider;
+	
+	QLabel *labelLevelMin;
+	QLabel *labelLevelMax;
+	QLineEdit *fieldLevelMin;
+	QLineEdit *fieldLevelMax;
+	QCheckBox *checkRev;
+	QCheckBox *checkInv;
+	QComboBox *fieldTransFunc;
+	QToolButton *buttonReset;
 	
 	void setUpInterface();
 	void setUpLut(int type = GREYSCALE);
