@@ -23,6 +23,7 @@
         <file>icons/16/edit-select-all.png</file>
         <file>icons/16/edit-clear.png</file>
         <file>icons/16/edit-clear-list.png</file>
+        <file>icons/16/edit-reset.png</file>
         <file>icons/16/view-fullscreen.png</file>
         <file>icons/16/help-contents.png</file>
         <file>icons/16/view-refresh.png</file>
@@ -51,6 +52,7 @@
         <file>icons/22/edit-select-all.png</file>
         <file>icons/22/edit-clear.png</file>
         <file>icons/22/edit-clear-list.png</file>
+        <file>icons/22/edit-reset.png</file>
         <file>icons/22/view-fullscreen.png</file>
         <file>icons/22/help-contents.png</file>
         <file>icons/22/view-refresh.png</file>
