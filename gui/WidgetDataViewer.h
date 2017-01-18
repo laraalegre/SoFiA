@@ -51,6 +51,8 @@
 	#include <QtGui/QCheckBox>
 	#include <QtGui/QComboBox>
 	#include <QtGui/QMenu>
+	#include <QtGui/QActionGroup>
+	#include <QtGui/QAction>
 #else
 	#include <QtWidgets/QApplication>
 	#include <QtWidgets/QWidget>
@@ -63,6 +65,8 @@
 	#include <QtWidgets/QCheckBox>
 	#include <QtWidgets/QComboBox>
 	#include <QtWidgets/QMenu>
+	#include <QtWidgets/QActionGroup>
+	#include <QtWidgets/QAction>
 #endif
 
 #include <string>
@@ -74,11 +78,12 @@
 
 #define GREYSCALE 0
 #define RAINBOW   1
-#define RANDOM    2
+#define RGB       2
+#define RANDOM    3
 
-#define LIN  0
-#define SQRT 1
-#define LOG  2
+#define LINEAR 0
+#define SQRT   1
+#define LOG    2
 
 class WidgetDataViewer : public QWidget
 {
@@ -96,12 +101,13 @@ private slots:
 	void sliderChange(int value);
 	void setLevelMin();
 	void setLevelMax();
-	void toggleRev(int state);
-	void toggleInv(int state);
+	void toggleRev();
+	void toggleInv();
 	void setTransferFunction(int which);
 	void showContextMenu(const QPoint &where);
 	void selectLutGreyscale();
 	void selectLutRainbow();
+	void selectLutRgb();
 	void selectLutRandom();
 	void resetDisplaySettings();
     void copy();
@@ -136,6 +142,20 @@ private:
 	QIcon iconFillColor;
 	QIcon iconDialogClose;
 	QIcon iconEditCopy;
+	QIcon iconEditReset;
+	
+	QActionGroup *actionGroupColourScheme;
+	QAction *actionLutGreyscale;
+	QAction *actionLutRainbow;
+	QAction *actionLutRgb;
+	QAction *actionLutRandom;
+	QAction *actionCopy;
+	QAction *actionRevert;
+	QAction *actionInvert;
+	QAction *actionFirst;
+	QAction *actionLast;
+	QAction *actionPrev;
+	QAction *actionNext;
 	
 	QToolButton *buttonFirst;
 	QToolButton *buttonLast;
@@ -149,8 +169,6 @@ private:
 	QLabel *labelLevelMax;
 	QLineEdit *fieldLevelMin;
 	QLineEdit *fieldLevelMax;
-	QCheckBox *checkRev;
-	QCheckBox *checkInv;
 	QComboBox *fieldTransFunc;
 	QToolButton *buttonReset;
 	

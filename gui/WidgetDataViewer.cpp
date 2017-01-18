@@ -56,7 +56,7 @@ WidgetDataViewer::WidgetDataViewer(const std::string &url, QWidget *parent) : QW
 	revert = 0x00;
 	invert = 0x00;
 	currentLut = RAINBOW;
-	transferFunction = LIN;  // linear by default
+	transferFunction = LINEAR;
 	currentChannel = 0;
 	
 	setUpInterface();
@@ -341,6 +341,78 @@ void WidgetDataViewer::setUpInterface()
 	iconEditCopy.addFile(QString(":/icons/16/edit-copy.png"), QSize(16, 16));
 	iconEditCopy = QIcon::fromTheme("edit-copy", iconEditCopy);
 	
+	iconEditReset.addFile(QString(":/icons/22/edit-reset.png"), QSize(22, 22));
+	iconEditReset.addFile(QString(":/icons/16/edit-reset.png"), QSize(16, 16));
+	//iconEditReset = QIcon::fromTheme("edit-reset", iconEditReset);
+	
+	// Set up actions
+	actionGroupColourScheme = new QActionGroup(this);
+	actionGroupColourScheme->setExclusive(true);
+	actionLutGreyscale = new QAction("Greyscale", actionGroupColourScheme);
+	actionLutGreyscale->setCheckable(true);
+	actionLutGreyscale->setShortcut(Qt::Key_1);
+	connect(actionLutGreyscale, SIGNAL(triggered()), this, SLOT(selectLutGreyscale()));
+	actionLutRainbow = new QAction("Rainbow", actionGroupColourScheme);
+	actionLutRainbow->setCheckable(true);
+	actionLutRainbow->setChecked(true);
+	actionLutRainbow->setShortcut(Qt::Key_2);
+	connect(actionLutRainbow, SIGNAL(triggered()), this, SLOT(selectLutRainbow()));
+	actionLutRgb = new QAction("Velocity", actionGroupColourScheme);
+	actionLutRgb->setCheckable(true);
+	actionLutRgb->setShortcut(Qt::Key_3);
+	connect(actionLutRgb, SIGNAL(triggered()), this, SLOT(selectLutRgb()));
+	actionLutRandom = new QAction("Random", actionGroupColourScheme);
+	actionLutRandom->setCheckable(true);
+	actionLutRandom->setShortcut(Qt::Key_4);
+	connect(actionLutRandom, SIGNAL(triggered()), this, SLOT(selectLutRandom()));
+	
+	actionRevert = new QAction("Revert", this);
+	actionRevert->setToolTip("Revert colour scheme");
+	actionRevert->setCheckable(true);
+	actionRevert->setShortcut(Qt::Key_R);
+	connect(actionRevert, SIGNAL(triggered()), this, SLOT(toggleRev()));
+	actionInvert = new QAction("Invert", this);
+	actionInvert->setToolTip("Invert colour scheme");
+	actionInvert->setCheckable(true);
+	actionInvert->setShortcut(Qt::Key_I);
+	connect(actionInvert, SIGNAL(triggered()), this, SLOT(toggleInv()));
+	
+	actionFirst = new QAction("First", this);
+	actionFirst->setToolTip("First channel");
+	actionFirst->setIcon(iconGoFirstView);
+	actionFirst->setShortcut(Qt::Key_Home);
+	connect(actionFirst, SIGNAL(triggered()), this, SLOT(showFirstChannel()));
+	actionPrev = new QAction("Previous", this);
+	actionPrev->setToolTip("Previous channel");
+	actionPrev->setIcon(iconGoPreviousView);
+	actionPrev->setShortcut(Qt::Key_PageUp);
+	connect(actionPrev, SIGNAL(triggered()), this, SLOT(showPrevChannel()));
+	actionNext = new QAction("Next", this);
+	actionNext->setToolTip("Next channel");
+	actionNext->setIcon(iconGoNextView);
+	actionNext->setShortcut(Qt::Key_PageDown);
+	connect(actionNext, SIGNAL(triggered()), this, SLOT(showNextChannel()));
+	actionLast = new QAction("Last", this);
+	actionLast->setToolTip("Last channel");
+	actionLast->setIcon(iconGoLastView);
+	actionLast->setShortcut(Qt::Key_End);
+	connect(actionLast, SIGNAL(triggered()), this, SLOT(showLastChannel()));
+	
+	actionCopy = new QAction("Copy", this);
+	actionCopy->setIcon(iconEditCopy);
+	actionCopy->setShortcut(QKeySequence::Copy);
+	connect(actionCopy, SIGNAL(triggered()), this, SLOT(copy()));
+	
+	// The following is necessary to activate
+	// the action's shortcut key bindings:
+	this->addAction(actionCopy);
+	this->addAction(actionLutGreyscale);
+	this->addAction(actionLutRainbow);
+	this->addAction(actionLutRgb);
+	this->addAction(actionLutRandom);
+	this->addAction(actionRevert);
+	this->addAction(actionInvert);
+	
 	// Set up data display image
 	image = new QImage(VIEWPORT_WIDTH, VIEWPORT_HEIGHT, QImage::Format_Indexed8);
 	setUpLut(RAINBOW);
@@ -349,6 +421,7 @@ void WidgetDataViewer::setUpInterface()
 	
 	// Set up image viewport:
 	viewport = new QLabel(this);
+	viewport->setFocusPolicy(Qt::StrongFocus);
 	viewport->setPixmap(QPixmap::fromImage(*image));
 	viewport->setMaximumWidth(VIEWPORT_WIDTH);
 	viewport->setMinimumWidth(VIEWPORT_WIDTH);
@@ -370,26 +443,25 @@ void WidgetDataViewer::setUpInterface()
 	//fieldLevelMin->setMaximumWidth(50);
 	fieldLevelMin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	fieldLevelMin->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+	fieldLevelMin->setToolTip("Lower intensity threshold");
 	connect(fieldLevelMin, SIGNAL(editingFinished()), this, SLOT(setLevelMin()));
 	fieldLevelMax = new QLineEdit(settings);
 	//fieldLevelMax->setMaximumWidth(50);
 	fieldLevelMax->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	fieldLevelMax->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+	fieldLevelMax->setToolTip("Upper intensity threshold");
 	connect(fieldLevelMax, SIGNAL(editingFinished()), this, SLOT(setLevelMax()));
-	checkRev = new QCheckBox("rev", settings);
-	connect(checkRev, SIGNAL(stateChanged(int)), this, SLOT(toggleRev(int)));
-	checkInv = new QCheckBox("inv", settings);
-	connect(checkInv, SIGNAL(stateChanged(int)), this, SLOT(toggleInv(int)));
 	fieldTransFunc = new QComboBox(settings);
-	fieldTransFunc->insertItem(LIN,  "linear");
-	fieldTransFunc->insertItem(SQRT, "sqrt");
-	fieldTransFunc->insertItem(LOG,  "log");
+	fieldTransFunc->insertItem(LINEAR, "linear");
+	fieldTransFunc->insertItem(SQRT, "square root");
+	fieldTransFunc->insertItem(LOG, "logarithm");
+	fieldTransFunc->setToolTip("Transfer function");
 	connect(fieldTransFunc, SIGNAL(currentIndexChanged(int)), this, SLOT(setTransferFunction(int)));
 	buttonReset = new QToolButton(settings);
-	buttonReset->setToolButtonStyle(Qt::ToolButtonTextOnly);
+	buttonReset->setToolButtonStyle(Qt::ToolButtonIconOnly);
 	buttonReset->setText("Reset");
-	buttonReset->setToolTip("Reset display settings");
-	//buttonFirst->setIcon(iconGoFirstView);
+	buttonReset->setToolTip("Reset display");
+	buttonReset->setIcon(iconEditReset);
 	buttonReset->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	connect(buttonReset, SIGNAL(clicked()), this, SLOT(resetDisplaySettings()));
 	
@@ -398,9 +470,8 @@ void WidgetDataViewer::setUpInterface()
 	layoutSettings->addWidget(fieldLevelMin);
 	layoutSettings->addWidget(labelLevelMax);
 	layoutSettings->addWidget(fieldLevelMax);
-	layoutSettings->addWidget(checkRev);
-	layoutSettings->addWidget(checkInv);
 	layoutSettings->addWidget(fieldTransFunc);
+	layoutSettings->addStretch();
 	layoutSettings->addWidget(buttonReset);
 	layoutSettings->setContentsMargins(0, 0, 0, 0);
 	layoutSettings->setSpacing(5);
@@ -412,44 +483,32 @@ void WidgetDataViewer::setUpInterface()
 	
 	// Set up control widget
 	controls = new QWidget(this);
-	buttonFirst  = new QToolButton(controls);
+	buttonFirst = new QToolButton(controls);
 	buttonFirst->setToolButtonStyle(Qt::ToolButtonIconOnly);
 	buttonFirst->setEnabled(false);
-	buttonFirst->setText("First");
-	buttonFirst->setToolTip("First channel");
-	buttonFirst->setIcon(iconGoFirstView);
+	buttonFirst->setDefaultAction(actionFirst);
 	buttonFirst->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-	connect(buttonFirst, SIGNAL(clicked()), this, SLOT(showFirstChannel()));
-	buttonLast   = new QToolButton(controls);
-	buttonLast->setToolButtonStyle(Qt::ToolButtonIconOnly);
-	buttonLast->setEnabled(false);
-	buttonLast->setText("Last");
-	buttonLast->setToolTip("Last channel");
-	buttonLast->setIcon(iconGoLastView);
-	buttonLast->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-	connect(buttonLast, SIGNAL(clicked()), this, SLOT(showLastChannel()));
-	buttonPrev   = new QToolButton(controls);
+	buttonPrev = new QToolButton(controls);
 	buttonPrev->setToolButtonStyle(Qt::ToolButtonIconOnly);
 	buttonPrev->setEnabled(false);
-	buttonPrev->setText("Prev.");
-	buttonPrev->setToolTip("Previous channel");
-	buttonPrev->setIcon(iconGoPreviousView);
+	buttonPrev->setDefaultAction(actionPrev);
 	buttonPrev->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-	connect(buttonPrev, SIGNAL(clicked()), this, SLOT(showPrevChannel()));
-	buttonNext   = new QToolButton(controls);
-	buttonNext->setToolButtonStyle(Qt::ToolButtonIconOnly);
-	buttonNext->setEnabled(false);
-	buttonNext->setText("Next");
-	buttonNext->setToolTip("Next channel");
-	buttonNext->setIcon(iconGoNextView);
-	buttonNext->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-	connect(buttonNext, SIGNAL(clicked()), this, SLOT(showNextChannel()));
 	fieldChannel = new QLineEdit(controls);
 	fieldChannel->setMaximumWidth(50);
 	fieldChannel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	fieldChannel->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 	fieldChannel->setReadOnly(true);
-	slider       = new QSlider(Qt::Horizontal, controls);
+	buttonNext = new QToolButton(controls);
+	buttonNext->setToolButtonStyle(Qt::ToolButtonIconOnly);
+	buttonNext->setEnabled(false);
+	buttonNext->setDefaultAction(actionNext);
+	buttonNext->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+	buttonLast = new QToolButton(controls);
+	buttonLast->setToolButtonStyle(Qt::ToolButtonIconOnly);
+	buttonLast->setEnabled(false);
+	buttonLast->setDefaultAction(actionLast);
+	buttonLast->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+	slider = new QSlider(Qt::Horizontal, controls);
 	slider->setEnabled(false);
 	slider->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	slider->setMinimum(0);
@@ -457,7 +516,7 @@ void WidgetDataViewer::setUpInterface()
 	slider->setSingleStep(1);
 	slider->setPageStep(10);
 	connect(slider, SIGNAL(valueChanged(int)), this, SLOT(sliderChange(int)));
-	buttonClose  = new QToolButton(controls);
+	buttonClose = new QToolButton(controls);
 	buttonClose->setToolButtonStyle(Qt::ToolButtonIconOnly);
 	buttonClose->setEnabled(true);
 	buttonClose->setText("Close");
@@ -481,11 +540,14 @@ void WidgetDataViewer::setUpInterface()
 	// Assemble main window layout
 	mainLayout = new QVBoxLayout;
 	mainLayout->addWidget(settings);
+	mainLayout->addStretch();
 	mainLayout->addWidget(viewport);
+	mainLayout->addStretch();
 	mainLayout->addWidget(controls);
 	mainLayout->addWidget(status);
 	mainLayout->setContentsMargins(5, 5, 5, 5);
 	mainLayout->setSpacing(5);
+	mainLayout->setAlignment(viewport, Qt::AlignHCenter);
 	this->setLayout(mainLayout);
 	
 	// Set up event filters
@@ -513,16 +575,42 @@ void WidgetDataViewer::setUpLut(int type)
 	{
 		switch(type)
 		{
-			case 1:
-				// RAINBOW
-				if (i <  50) lut.append(qRgb(0 xor invert, static_cast<unsigned int>(255.0 * (static_cast<double>(i) - 0.0) / 50.0) xor invert, 255 xor invert));
-				else if(i < 125) lut.append(qRgb(0 xor invert, 255 xor invert, static_cast<unsigned int>(255.0 * (125.0 - static_cast<double>(i)) / 75.0) xor invert));
-				else if(i < 180) lut.append(qRgb(static_cast<unsigned int>(255 * (static_cast<double>(i) - 125) / 55) xor invert, 255 xor invert ,0 xor invert));
-				else lut.append(qRgb(255 xor invert, static_cast<unsigned int>(255 * (255 - static_cast<double>(i)) / 75) xor invert, 0 xor invert));
+			case RAINBOW:
+				if (i <  50)
+				{
+					valueR = 0;
+					valueG = static_cast<unsigned int>(255.0 * (static_cast<double>(i) - 0.0) / 50.0);
+					valueB = 255;
+				}
+				else if(i < 125)
+				{
+					valueR = 0;
+					valueG = 255;
+					valueB = static_cast<unsigned int>(255.0 * (125.0 - static_cast<double>(i)) / 75.0);
+				}
+				else if(i < 180)
+				{
+					valueR = static_cast<unsigned int>(255 * (static_cast<double>(i) - 125) / 55);
+					valueG = 255;
+					valueB = 0;
+				}
+				else
+				{
+					valueR = 255;
+					valueG = static_cast<unsigned int>(255 * (255 - static_cast<double>(i)) / 75);
+					valueB = 0;
+				}
+				lut.append(qRgb(valueR xor invert, valueG xor invert, valueB xor invert));
 				break;
 			
-			case 2:
-				// RANDOM
+			case RGB:
+				valueR = i;
+				valueG = 255 - static_cast<unsigned int>(abs(2 * static_cast<int>(i) - 255));
+				valueB = 255 - i;
+				lut.append(qRgb(valueR xor invert, valueG xor invert, valueB xor invert));
+				break;
+			
+			case RANDOM:
 				valueR = static_cast<unsigned int>(255.0 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
 				valueG = static_cast<unsigned int>(255.0 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
 				valueB = static_cast<unsigned int>(255.0 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
@@ -556,6 +644,14 @@ void WidgetDataViewer::selectLutGreyscale()
 void WidgetDataViewer::selectLutRainbow()
 {
 	currentLut = RAINBOW;
+	setUpLut(currentLut);
+	plotChannelMap(currentChannel);
+	return;
+}
+
+void WidgetDataViewer::selectLutRgb()
+{
+	currentLut = RGB;
 	setUpLut(currentLut);
 	plotChannelMap(currentChannel);
 	return;
@@ -623,29 +719,29 @@ bool WidgetDataViewer::eventFilter(QObject *obj, QEvent *event)
 void WidgetDataViewer::showContextMenu(const QPoint &where)
 {
 	QMenu contextMenu("Context Menu", this);
-	QMenu menuLut("Colour Scale", this);
 	
-	QAction actionLutGreyscale("Greyscale", this);
-	connect(&actionLutGreyscale, SIGNAL(triggered()), this, SLOT(selectLutGreyscale()));
-	QAction actionLutRainbow("Rainbow", this);
-	connect(&actionLutRainbow, SIGNAL(triggered()), this, SLOT(selectLutRainbow()));
-	QAction actionLutRandom("Random", this);
-	connect(&actionLutRandom, SIGNAL(triggered()), this, SLOT(selectLutRandom()));
-	
-	menuLut.addAction(&actionLutGreyscale);
-	menuLut.addAction(&actionLutRainbow);
-	menuLut.addAction(&actionLutRandom);
+	QMenu menuLut("Colour Scheme", this);
 	menuLut.setIcon(iconFillColor);
 	
-	QAction actionCopy("Copy", this);
-	actionCopy.setIcon(iconEditCopy);
-	connect(&actionCopy, SIGNAL(triggered()), this, SLOT(copy()));
+	menuLut.addAction(actionLutGreyscale);
+	menuLut.addAction(actionLutRainbow);
+	menuLut.addAction(actionLutRgb);
+	menuLut.addAction(actionLutRandom);
+	menuLut.addSeparator();
+	menuLut.addAction(actionRevert);
+	menuLut.addAction(actionInvert);
 	
-	contextMenu.addAction(&actionCopy);
+	contextMenu.addAction(actionCopy);
 	contextMenu.addSeparator();
 	contextMenu.addMenu(&menuLut);
+	//contextMenu.addSeparator();
+	//contextMenu.addAction(actionPrev);
+	//contextMenu.addAction(actionNext);
+	//contextMenu.addSeparator();
+	//contextMenu.addAction(actionFirst);
+	//contextMenu.addAction(actionLast);
 	
-	contextMenu.exec(mapToGlobal(where));
+	contextMenu.exec(viewport->mapToGlobal(where));
 	
 	return;
 }
@@ -718,9 +814,9 @@ void WidgetDataViewer::setTransferFunction(int which)
 // SLOT to toggle reverted colours //
 // ------------------------------- //
 
-void WidgetDataViewer::toggleRev(int state)
+void WidgetDataViewer::toggleRev()
 {
-	revert = (state == Qt::Checked) ? 0xFF : 0x00;
+	revert = actionRevert->isChecked() ? 0xFF : 0x00;
 	plotChannelMap(currentChannel);
 	
 	return;
@@ -732,9 +828,9 @@ void WidgetDataViewer::toggleRev(int state)
 // SLOT to toggle inverted colours //
 // ------------------------------- //
 
-void WidgetDataViewer::toggleInv(int state)
+void WidgetDataViewer::toggleInv()
 {
-	invert = (state == Qt::Checked) ? 0xFF : 0x00;
+	invert = actionInvert->isChecked() ? 0xFF : 0x00;
 	setUpLut(currentLut);
 	plotChannelMap(currentChannel);
 	
@@ -751,19 +847,14 @@ void WidgetDataViewer::resetDisplaySettings()
 {
 	plotMin = dataMin;
 	plotMax = dataMax;
-	revert = 0x00;
-	invert = 0x00;
-	currentLut = RAINBOW;
-	transferFunction = LIN;
+	if(actionRevert->isChecked()) actionRevert->trigger();
+	if(actionInvert->isChecked()) actionInvert->trigger();
+	actionLutRainbow->trigger();
+	transferFunction = LINEAR;
 	
 	fieldLevelMin->setText(QString::number(plotMin));
 	fieldLevelMax->setText(QString::number(plotMax));
-	checkRev->setCheckState(Qt::Unchecked);
-	checkInv->setCheckState(Qt::Unchecked);
 	fieldTransFunc->setCurrentIndex(transferFunction);
-	
-	setUpLut(currentLut);
-	plotChannelMap(currentChannel);
 	
 	return;
 }
