@@ -31,6 +31,9 @@
         <file>icons/16/task-complete.png</file>
         <file>icons/16/task-reject.png</file>
         <file>icons/16/folder-image.png</file>
+        <file>icons/16/zoom-in.png</file>
+        <file>icons/16/zoom-out.png</file>
+        <file>icons/16/zoom-fit-best.png</file>
         <file>icons/22/document-new.png</file>
         <file>icons/22/document-open.png</file>
         <file>icons/22/document-preview.png</file>
@@ -60,6 +63,9 @@
         <file>icons/22/task-complete.png</file>
         <file>icons/22/task-reject.png</file>
         <file>icons/22/folder-image.png</file>
+        <file>icons/22/zoom-in.png</file>
+        <file>icons/22/zoom-out.png</file>
+        <file>icons/22/zoom-fit-best.png</file>
         <file>icons/16/SoFiA.png</file>
         <file>icons/22/SoFiA.png</file>
         <file>icons/32/SoFiA.png</file>

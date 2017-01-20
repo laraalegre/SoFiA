@@ -37,6 +37,7 @@
 #include <QtGui/QImage>
 #include <QtGui/QPixmap>
 #include <QtGui/QMouseEvent>
+#include <QtGui/QWheelEvent>
 #include <QtGui/QClipboard>
 
 #if QT_VERSION < 0x050000
@@ -70,7 +71,6 @@
 #endif
 
 #include <string>
-
 #include "Fips.hpp"
 
 #define VIEWPORT_WIDTH  480
@@ -84,6 +84,11 @@
 #define LINEAR 0
 #define SQRT   1
 #define LOG    2
+
+#define SCALE_MAX    16.0
+#define SCALE_FACTOR  1.5
+
+
 
 class WidgetDataViewer : public QWidget
 {
@@ -110,13 +115,16 @@ private slots:
 	void selectLutRgb();
 	void selectLutRandom();
 	void resetDisplaySettings();
+	void zoomIn();
+	void zoomOut();
+	void zoomToFit();
     void copy();
 
 private:
-	Fips   *fips;
+	Fips *fips;
 	QImage *image;
-	double  scale;
-	double  offset;
+	double scale;
+	double offsetX, offsetY;
 	double dataMin, dataMax;
 	double plotMin, plotMax;
 	unsigned int revert;
@@ -143,6 +151,9 @@ private:
 	QIcon iconDialogClose;
 	QIcon iconEditCopy;
 	QIcon iconEditReset;
+	QIcon iconZoomIn;
+	QIcon iconZoomOut;
+	QIcon iconZoomFitBest;
 	
 	QActionGroup *actionGroupColourScheme;
 	QAction *actionLutGreyscale;
@@ -156,6 +167,9 @@ private:
 	QAction *actionLast;
 	QAction *actionPrev;
 	QAction *actionNext;
+	QAction *actionZoomIn;
+	QAction *actionZoomOut;
+	QAction *actionZoomToFit;
 	
 	QToolButton *buttonFirst;
 	QToolButton *buttonLast;
@@ -172,6 +186,10 @@ private:
 	QComboBox *fieldTransFunc;
 	QToolButton *buttonReset;
 	
+	QToolButton *buttonZoomIn;
+	QToolButton *buttonZoomOut;
+	QToolButton *buttonZoomToFit;
+	
 	void setUpInterface();
 	void setUpLut(int type = GREYSCALE);
 	int openFitsFile(const std::string &url);
@@ -180,7 +198,10 @@ private:
 
 protected:
 	bool eventFilter(QObject *obj, QEvent *event);
+	virtual void wheelEvent(QWheelEvent *event);
+	virtual void mousePressEvent(QMouseEvent *event);
 	virtual void closeEvent(QCloseEvent *event);
+	
 };
 
 #endif

@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <limits>
 #include <cstdlib>
+#include <ctime>
 #include "WidgetDataViewer.h"
 
 // ----------- //
@@ -46,8 +47,12 @@ WidgetDataViewer::WidgetDataViewer(const std::string &url, QWidget *parent) : QW
 	this->setWindowTitle("SoFiA - Image Viewer");
 	this->setAttribute(Qt::WA_DeleteOnClose);
 	
-	scale  = 2.0;
-	offset = 0.0;
+	// Initialise random number generator
+	srand(time(0));
+	
+	scale   = 2.0;
+	offsetX = 0.0;
+	offsetY = 0.0;
 	dataMin = 0.0;
 	dataMax = 1.0;
 	plotMin = 0.0;
@@ -100,7 +105,7 @@ int WidgetDataViewer::openFitsFile(const std::string &url)
 	if(fips->readFile(url)) return 1;
 	
 	// Redefine settings
-	scale = std::max(static_cast<double>(viewport->width()) / static_cast<double>(fips->dimension(1)), static_cast<double>(viewport->height()) / static_cast<double>(fips->dimension(2)));
+	zoomToFit();
 	
 	if(std::isnan(fips->minimum()) or std::isnan(fips->maximum()) or fips->minimum() >= fips->maximum())
 	{
@@ -171,8 +176,8 @@ int WidgetDataViewer::plotChannelMap(size_t z)
 	{
 		for(size_t a = 0; a < VIEWPORT_WIDTH; ++a)
 		{
-			long x = floor(static_cast<double>(a) / scale - offset);
-			long y = floor(static_cast<double>(viewport->height() - b - 1) / scale - offset);
+			long x = floor(static_cast<double>(a) / scale - offsetX);
+			long y = floor(static_cast<double>(viewport->height() - b - 1) / scale - offsetY);
 			
 			if(x >= 0 and static_cast<size_t>(x) < fips->dimension(1) and y >= 0 and static_cast<size_t>(y) < fips->dimension(2))
 			{
@@ -345,6 +350,18 @@ void WidgetDataViewer::setUpInterface()
 	iconEditReset.addFile(QString(":/icons/16/edit-reset.png"), QSize(16, 16));
 	//iconEditReset = QIcon::fromTheme("edit-reset", iconEditReset);
 	
+	iconZoomIn.addFile(QString(":/icons/22/zoom-in.png"), QSize(22, 22));
+	iconZoomIn.addFile(QString(":/icons/16/zoom-in.png"), QSize(16, 16));
+	iconZoomIn = QIcon::fromTheme("zoom-in", iconEditCopy);
+	
+	iconZoomOut.addFile(QString(":/icons/22/zoom-out.png"), QSize(22, 22));
+	iconZoomOut.addFile(QString(":/icons/16/zoom-out.png"), QSize(16, 16));
+	iconZoomOut = QIcon::fromTheme("zoom-out", iconEditCopy);
+	
+	iconZoomFitBest.addFile(QString(":/icons/22/zoom-fit-best.png"), QSize(22, 22));
+	iconZoomFitBest.addFile(QString(":/icons/16/zoom-fit-best.png"), QSize(16, 16));
+	iconZoomFitBest = QIcon::fromTheme("zoom-fit-best", iconEditCopy);
+	
 	// Set up actions
 	actionGroupColourScheme = new QActionGroup(this);
 	actionGroupColourScheme->setExclusive(true);
@@ -398,6 +415,23 @@ void WidgetDataViewer::setUpInterface()
 	actionLast->setShortcut(Qt::Key_End);
 	connect(actionLast, SIGNAL(triggered()), this, SLOT(showLastChannel()));
 	
+	actionZoomIn = new QAction("Zoom In", this);
+	actionZoomIn->setToolTip("Zoom in");
+	actionZoomIn->setIcon(iconZoomIn);
+	actionZoomIn->setShortcut(Qt::Key_Plus);
+	connect(actionZoomIn, SIGNAL(triggered()), this, SLOT(zoomIn()));
+	actionZoomOut = new QAction("Zoom Out", this);
+	actionZoomOut->setToolTip("Zoom out");
+	actionZoomOut->setIcon(iconZoomOut);
+	actionZoomOut->setShortcut(Qt::Key_Minus);
+	connect(actionZoomOut, SIGNAL(triggered()), this, SLOT(zoomOut()));
+	actionZoomToFit = new QAction("Zoom To Fit", this);
+	actionZoomToFit->setToolTip("Zoom to fit");
+	actionZoomToFit->setIcon(iconZoomFitBest);
+	actionZoomToFit->setShortcut(Qt::Key_F);
+	connect(actionZoomToFit, SIGNAL(triggered()), this, SLOT(zoomToFit()));
+	
+	
 	actionCopy = new QAction("Copy", this);
 	actionCopy->setIcon(iconEditCopy);
 	actionCopy->setShortcut(QKeySequence::Copy);
@@ -429,34 +463,50 @@ void WidgetDataViewer::setUpInterface()
 	viewport->setMinimumHeight(VIEWPORT_HEIGHT);
 	viewport->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	viewport->setContextMenuPolicy(Qt::CustomContextMenu);
+	viewport->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+	viewport->setLineWidth(1);
 	connect(viewport, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu(const QPoint &)));
 	
 	// Set up settings widget
 	settings = new QWidget(this);
 	labelLevelMin = new QLabel(settings);
-	labelLevelMin->setText("Min:");
+	labelLevelMin->setText("Range:");
 	labelLevelMin->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	labelLevelMax = new QLabel(settings);
-	labelLevelMax->setText("Max:");
+	labelLevelMax->setText(QChar(0x2013));
 	labelLevelMax->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	fieldLevelMin = new QLineEdit(settings);
-	//fieldLevelMin->setMaximumWidth(50);
+	fieldLevelMin->setMaximumWidth(200);
 	fieldLevelMin->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	fieldLevelMin->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 	fieldLevelMin->setToolTip("Lower intensity threshold");
 	connect(fieldLevelMin, SIGNAL(editingFinished()), this, SLOT(setLevelMin()));
 	fieldLevelMax = new QLineEdit(settings);
-	//fieldLevelMax->setMaximumWidth(50);
+	fieldLevelMax->setMaximumWidth(200);
 	fieldLevelMax->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	fieldLevelMax->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
 	fieldLevelMax->setToolTip("Upper intensity threshold");
 	connect(fieldLevelMax, SIGNAL(editingFinished()), this, SLOT(setLevelMax()));
 	fieldTransFunc = new QComboBox(settings);
 	fieldTransFunc->insertItem(LINEAR, "linear");
-	fieldTransFunc->insertItem(SQRT, "square root");
-	fieldTransFunc->insertItem(LOG, "logarithm");
+	fieldTransFunc->insertItem(SQRT, "sqrt");
+	fieldTransFunc->insertItem(LOG, "log");
 	fieldTransFunc->setToolTip("Transfer function");
 	connect(fieldTransFunc, SIGNAL(currentIndexChanged(int)), this, SLOT(setTransferFunction(int)));
+	
+	buttonZoomIn = new QToolButton(settings);
+	buttonZoomIn->setToolButtonStyle(Qt::ToolButtonIconOnly);
+	buttonZoomIn->setDefaultAction(actionZoomIn);
+	buttonZoomIn->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+	buttonZoomToFit = new QToolButton(settings);
+	buttonZoomToFit->setToolButtonStyle(Qt::ToolButtonIconOnly);
+	buttonZoomToFit->setDefaultAction(actionZoomToFit);
+	buttonZoomToFit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+	buttonZoomOut = new QToolButton(settings);
+	buttonZoomOut->setToolButtonStyle(Qt::ToolButtonIconOnly);
+	buttonZoomOut->setDefaultAction(actionZoomOut);
+	buttonZoomOut->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+	
 	buttonReset = new QToolButton(settings);
 	buttonReset->setToolButtonStyle(Qt::ToolButtonIconOnly);
 	buttonReset->setText("Reset");
@@ -471,6 +521,10 @@ void WidgetDataViewer::setUpInterface()
 	layoutSettings->addWidget(labelLevelMax);
 	layoutSettings->addWidget(fieldLevelMax);
 	layoutSettings->addWidget(fieldTransFunc);
+	layoutSettings->addStretch();
+	layoutSettings->addWidget(buttonZoomIn);
+	layoutSettings->addWidget(buttonZoomToFit);
+	layoutSettings->addWidget(buttonZoomOut);
 	layoutSettings->addStretch();
 	layoutSettings->addWidget(buttonReset);
 	layoutSettings->setContentsMargins(0, 0, 0, 0);
@@ -568,7 +622,6 @@ void WidgetDataViewer::setUpInterface()
 void WidgetDataViewer::setUpLut(int type)
 {
 	lut.clear();
-	srand(10);
 	unsigned int valueR, valueG, valueB;
 	
 	for(unsigned int i = 0; i < 256; ++i)
@@ -680,8 +733,8 @@ bool WidgetDataViewer::eventFilter(QObject *obj, QEvent *event)
 		int a = mouseEvent->pos().x();
 		int b = mouseEvent->pos().y();
 		
-		long x = floor(static_cast<double>(a) / scale - offset);
-		long y = floor(static_cast<double>(viewport->height() - b - 1) / scale - offset);
+		long x = floor(static_cast<double>(a) / scale - offsetX);
+		long y = floor(static_cast<double>(viewport->height() - b - 1) / scale - offsetY);
 		
 		QString text("Undefined");
 		
@@ -718,6 +771,8 @@ bool WidgetDataViewer::eventFilter(QObject *obj, QEvent *event)
 
 void WidgetDataViewer::showContextMenu(const QPoint &where)
 {
+	if(not fips->dimension()) return;
+	
 	QMenu contextMenu("Context Menu", this);
 	
 	QMenu menuLut("Colour Scheme", this);
@@ -732,6 +787,10 @@ void WidgetDataViewer::showContextMenu(const QPoint &where)
 	menuLut.addAction(actionInvert);
 	
 	contextMenu.addAction(actionCopy);
+	contextMenu.addSeparator();
+	contextMenu.addAction(actionZoomIn);
+	contextMenu.addAction(actionZoomOut);
+	contextMenu.addAction(actionZoomToFit);
 	contextMenu.addSeparator();
 	contextMenu.addMenu(&menuLut);
 	//contextMenu.addSeparator();
@@ -839,18 +898,88 @@ void WidgetDataViewer::toggleInv()
 
 
 
+// --------------- //
+// SLOT to zoom in //
+// --------------- //
+
+void WidgetDataViewer::zoomIn()
+{
+	if(scale < SCALE_MAX and fips->dimension())
+	{
+		double posX = static_cast<double>(viewport->width()) / (2.0 * scale) - offsetX;
+		double posY = static_cast<double>(viewport->height()) / (2.0 * scale) - offsetY;
+		
+		scale *= SCALE_FACTOR;
+		
+		offsetX = static_cast<double>(viewport->width()) / (2.0 * scale) - posX;
+		offsetY = static_cast<double>(viewport->height()) / (2.0 * scale) - posY;
+		
+		plotChannelMap(currentChannel);
+	}
+	
+	return;
+}
+
+
+
+// ---------------- //
+// SLOT to zoom out //
+// ---------------- //
+
+void WidgetDataViewer::zoomOut()
+{
+	if(scale > 1.0 / SCALE_MAX and fips->dimension())
+	{
+		double posX = static_cast<double>(viewport->width()) / (2.0 * scale) - offsetX;
+		double posY = static_cast<double>(viewport->height()) / (2.0 * scale) - offsetY;
+		
+		scale /= SCALE_FACTOR;
+		
+		offsetX = static_cast<double>(viewport->width()) / (2.0 * scale) - posX;
+		offsetY = static_cast<double>(viewport->height()) / (2.0 * scale) - posY;
+		
+		plotChannelMap(currentChannel);
+	}
+	
+	return;
+}
+
+
+
+// ------------------- //
+// SLOT to zoom to fit //
+// ------------------- //
+
+void WidgetDataViewer::zoomToFit()
+{
+	if(not fips->dimension()) return;
+	
+	scale = std::min(static_cast<double>(viewport->width()) / static_cast<double>(fips->dimension(1)), static_cast<double>(viewport->height()) / static_cast<double>(fips->dimension(2)));
+	offsetX = 0.0;
+	offsetY = 0.0;
+	
+	plotChannelMap(currentChannel);
+	
+	return;
+}
+
+
+
 // ------------------------------ //
 // SLOT to reset display settings //
 // ------------------------------ //
 
 void WidgetDataViewer::resetDisplaySettings()
 {
+	if(not fips->dimension()) return;
+	
 	plotMin = dataMin;
 	plotMax = dataMax;
 	if(actionRevert->isChecked()) actionRevert->trigger();
 	if(actionInvert->isChecked()) actionInvert->trigger();
 	actionLutRainbow->trigger();
 	transferFunction = LINEAR;
+	zoomToFit();
 	
 	fieldLevelMin->setText(QString::number(plotMin));
 	fieldLevelMax->setText(QString::number(plotMax));
@@ -871,6 +1000,76 @@ void WidgetDataViewer::copy()
 	{
 		QClipboard *clipboard = QApplication::clipboard();
 		clipboard->setImage(*image);
+	}
+	
+	return;
+}
+
+
+
+// ----------------- //
+// Mouse wheel event //
+// ----------------- //
+
+void WidgetDataViewer::wheelEvent(QWheelEvent *event)
+{
+	if(not fips->dimension()) return;
+	
+	int angle = event->delta();
+	int vpX = event->x() - viewport->x();
+	int vpY = viewport->height() - event->y() + viewport->y();
+	
+	if(vpX >= 0 and vpX < viewport->width() and vpY >= 0 and vpY < viewport->height())
+	{
+		double posX = static_cast<double>(vpX) / scale - offsetX;
+		double posY = static_cast<double>(vpY) / scale - offsetY;
+		
+		if(angle < 0 and scale < SCALE_MAX) scale *= SCALE_FACTOR;
+		else if(angle > 0 and scale > 1.0 / SCALE_MAX) scale /= SCALE_FACTOR;
+		
+		offsetX = static_cast<double>(vpX) / scale - posX;
+		offsetY = static_cast<double>(vpY) / scale - posY;
+		
+		plotChannelMap(currentChannel);
+		
+		event->accept();
+	}
+	else
+	{
+		event->ignore();
+	}
+	
+	return;
+}
+
+
+
+// ----------------- //
+// Mouse press event //
+// ----------------- //
+
+void WidgetDataViewer::mousePressEvent(QMouseEvent *event)
+{
+	if(not fips->dimension()) return;
+	
+	if(event->button() == Qt::LeftButton)
+	{
+		int vpX = event->x() - viewport->x();
+		int vpY = viewport->height() - event->y() + viewport->y();
+		
+		double posX = static_cast<double>(vpX) / scale - offsetX;
+		double posY = static_cast<double>(vpY) / scale - offsetY;
+		
+		offsetX = static_cast<double>(viewport->width()) / (2.0 * scale) - posX;
+		offsetY = static_cast<double>(viewport->height()) / (2.0 * scale) - posY;
+		
+		plotChannelMap(currentChannel);
+		
+		event->accept();
+	}
+	else
+	{
+		event->ignore();
 	}
 	
 	return;
