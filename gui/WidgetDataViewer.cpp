@@ -177,7 +177,7 @@ int WidgetDataViewer::plotChannelMap(size_t z)
 		for(size_t a = 0; a < VIEWPORT_WIDTH; ++a)
 		{
 			long x = floor(static_cast<double>(a) / scale - offsetX);
-			long y = floor(static_cast<double>(viewport->height() - b - 1) / scale - offsetY);
+			long y = floor(static_cast<double>(VIEWPORT_HEIGHT - b - 1) / scale - offsetY);
 			
 			if(x >= 0 and static_cast<size_t>(x) < fips->dimension(1) and y >= 0 and static_cast<size_t>(y) < fips->dimension(2))
 			{
@@ -189,7 +189,7 @@ int WidgetDataViewer::plotChannelMap(size_t z)
 			}
 			else
 			{
-				image->setPixel(a, b, 0);
+				image->setPixel(a, b, (((a + b) % 2) * 30) xor revert);
 			}
 		}
 	}
@@ -653,27 +653,29 @@ void WidgetDataViewer::setUpLut(int type)
 					valueG = static_cast<unsigned int>(255 * (255 - static_cast<double>(i)) / 75);
 					valueB = 0;
 				}
-				lut.append(qRgb(valueR xor invert, valueG xor invert, valueB xor invert));
 				break;
 			
 			case RGB:
 				valueR = i;
 				valueG = 255 - static_cast<unsigned int>(abs(2 * static_cast<int>(i) - 255));
 				valueB = 255 - i;
-				lut.append(qRgb(valueR xor invert, valueG xor invert, valueB xor invert));
 				break;
 			
 			case RANDOM:
 				valueR = static_cast<unsigned int>(255.0 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
 				valueG = static_cast<unsigned int>(255.0 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
 				valueB = static_cast<unsigned int>(255.0 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
-				lut.append(qRgb(valueR xor invert, valueG xor invert, valueB xor invert));
 				break;
 			
 			default:
 				// GREYSCALE
-				lut.append(qRgb(i xor invert, i xor invert, i xor invert));
+				valueR = i;
+				valueG = i;
+				valueB = i;
 		}
+		
+		if(i < 255) lut.append(qRgb(valueR xor invert, valueG xor invert, valueB xor invert));
+		else lut.append(qRgb(valueR xor invert, valueG xor invert, valueB xor invert));
 	}
 	
 	image->setColorTable(lut);
@@ -734,7 +736,7 @@ bool WidgetDataViewer::eventFilter(QObject *obj, QEvent *event)
 		int b = mouseEvent->pos().y();
 		
 		long x = floor(static_cast<double>(a) / scale - offsetX);
-		long y = floor(static_cast<double>(viewport->height() - b - 1) / scale - offsetY);
+		long y = floor(static_cast<double>(VIEWPORT_HEIGHT - b - 1) / scale - offsetY);
 		
 		QString text("Undefined");
 		
@@ -906,13 +908,13 @@ void WidgetDataViewer::zoomIn()
 {
 	if(scale < SCALE_MAX and fips->dimension())
 	{
-		double posX = static_cast<double>(viewport->width()) / (2.0 * scale) - offsetX;
-		double posY = static_cast<double>(viewport->height()) / (2.0 * scale) - offsetY;
+		double posX = static_cast<double>(VIEWPORT_WIDTH) / (2.0 * scale) - offsetX;
+		double posY = static_cast<double>(VIEWPORT_HEIGHT) / (2.0 * scale) - offsetY;
 		
 		scale *= SCALE_FACTOR;
 		
-		offsetX = static_cast<double>(viewport->width()) / (2.0 * scale) - posX;
-		offsetY = static_cast<double>(viewport->height()) / (2.0 * scale) - posY;
+		offsetX = static_cast<double>(VIEWPORT_WIDTH) / (2.0 * scale) - posX;
+		offsetY = static_cast<double>(VIEWPORT_HEIGHT) / (2.0 * scale) - posY;
 		
 		plotChannelMap(currentChannel);
 	}
@@ -930,13 +932,13 @@ void WidgetDataViewer::zoomOut()
 {
 	if(scale > 1.0 / SCALE_MAX and fips->dimension())
 	{
-		double posX = static_cast<double>(viewport->width()) / (2.0 * scale) - offsetX;
-		double posY = static_cast<double>(viewport->height()) / (2.0 * scale) - offsetY;
+		double posX = static_cast<double>(VIEWPORT_WIDTH) / (2.0 * scale) - offsetX;
+		double posY = static_cast<double>(VIEWPORT_HEIGHT) / (2.0 * scale) - offsetY;
 		
 		scale /= SCALE_FACTOR;
 		
-		offsetX = static_cast<double>(viewport->width()) / (2.0 * scale) - posX;
-		offsetY = static_cast<double>(viewport->height()) / (2.0 * scale) - posY;
+		offsetX = static_cast<double>(VIEWPORT_WIDTH) / (2.0 * scale) - posX;
+		offsetY = static_cast<double>(VIEWPORT_HEIGHT) / (2.0 * scale) - posY;
 		
 		plotChannelMap(currentChannel);
 	}
@@ -954,7 +956,7 @@ void WidgetDataViewer::zoomToFit()
 {
 	if(not fips->dimension()) return;
 	
-	scale = std::min(static_cast<double>(viewport->width()) / static_cast<double>(fips->dimension(1)), static_cast<double>(viewport->height()) / static_cast<double>(fips->dimension(2)));
+	scale = std::min(static_cast<double>(VIEWPORT_WIDTH) / static_cast<double>(fips->dimension(1)), static_cast<double>(VIEWPORT_HEIGHT) / static_cast<double>(fips->dimension(2)));
 	offsetX = 0.0;
 	offsetY = 0.0;
 	
@@ -1017,9 +1019,9 @@ void WidgetDataViewer::wheelEvent(QWheelEvent *event)
 	
 	int angle = event->delta();
 	int vpX = event->x() - viewport->x();
-	int vpY = viewport->height() - event->y() + viewport->y();
+	int vpY = VIEWPORT_HEIGHT - event->y() + viewport->y();
 	
-	if(vpX >= 0 and vpX < viewport->width() and vpY >= 0 and vpY < viewport->height())
+	if(vpX >= 0 and vpX < VIEWPORT_WIDTH and vpY >= 0 and vpY < VIEWPORT_HEIGHT)
 	{
 		double posX = static_cast<double>(vpX) / scale - offsetX;
 		double posY = static_cast<double>(vpY) / scale - offsetY;
@@ -1055,13 +1057,13 @@ void WidgetDataViewer::mousePressEvent(QMouseEvent *event)
 	if(event->button() == Qt::LeftButton)
 	{
 		int vpX = event->x() - viewport->x();
-		int vpY = viewport->height() - event->y() + viewport->y();
+		int vpY = VIEWPORT_HEIGHT - event->y() + viewport->y();
 		
 		double posX = static_cast<double>(vpX) / scale - offsetX;
 		double posY = static_cast<double>(vpY) / scale - offsetY;
 		
-		offsetX = static_cast<double>(viewport->width()) / (2.0 * scale) - posX;
-		offsetY = static_cast<double>(viewport->height()) / (2.0 * scale) - posY;
+		offsetX = static_cast<double>(VIEWPORT_WIDTH) / (2.0 * scale) - posX;
+		offsetY = static_cast<double>(VIEWPORT_HEIGHT) / (2.0 * scale) - posY;
 		
 		plotChannelMap(currentChannel);
 		

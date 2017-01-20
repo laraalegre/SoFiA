@@ -85,8 +85,8 @@
 #define SQRT   1
 #define LOG    2
 
-#define SCALE_MAX    16.0
-#define SCALE_FACTOR  1.5
+#define SCALE_MAX    32.0
+#define SCALE_FACTOR  1.414213562373095
 
 
 
