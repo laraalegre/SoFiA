@@ -1036,10 +1036,7 @@ void WidgetDataViewer::wheelEvent(QWheelEvent *event)
 		
 		event->accept();
 	}
-	else
-	{
-		event->ignore();
-	}
+	else event->ignore();
 	
 	return;
 }
@@ -1059,20 +1056,21 @@ void WidgetDataViewer::mousePressEvent(QMouseEvent *event)
 		int vpX = event->x() - viewport->x();
 		int vpY = VIEWPORT_HEIGHT - event->y() + viewport->y();
 		
-		double posX = static_cast<double>(vpX) / scale - offsetX;
-		double posY = static_cast<double>(vpY) / scale - offsetY;
-		
-		offsetX = static_cast<double>(VIEWPORT_WIDTH) / (2.0 * scale) - posX;
-		offsetY = static_cast<double>(VIEWPORT_HEIGHT) / (2.0 * scale) - posY;
-		
-		plotChannelMap(currentChannel);
-		
-		event->accept();
+		if(vpX >= 0 and vpX < VIEWPORT_WIDTH and vpY >= 0 and vpY < VIEWPORT_HEIGHT)
+		{
+			double posX = static_cast<double>(vpX) / scale - offsetX;
+			double posY = static_cast<double>(vpY) / scale - offsetY;
+			
+			offsetX = static_cast<double>(VIEWPORT_WIDTH) / (2.0 * scale) - posX;
+			offsetY = static_cast<double>(VIEWPORT_HEIGHT) / (2.0 * scale) - posY;
+			
+			plotChannelMap(currentChannel);
+			
+			event->accept();
+		}
+		else event->ignore();
 	}
-	else
-	{
-		event->ignore();
-	}
+	else event->ignore();
 	
 	return;
 }
