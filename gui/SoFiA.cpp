@@ -3428,7 +3428,7 @@ void SoFiA::createInterface()
 	
 	outputProgress = new QProgressBar(widgetOutput);
 	//outputProgress->setToolTip(tr("Pipeline progress"));
-	outputProgress->setWhatsThis(tr("<h3>Progress Bar</h3><p>Indicator of the progress made by the SoFiA pipeline. Note that the value (displayed in percent) is not necessarily indicative of the elapsed time.</p>"));
+	outputProgress->setWhatsThis(tr("<h3>Progress Bar</h3><p>Indicates activity and success of the SoFiA pipeline. Will be moving while the pipeline is running and display 100% in the case of success or 0% in the case of failure once the pipeline run terminates.</p>"));
 	outputProgress->setMinimum(0);
 	outputProgress->setMaximum(100);
 	outputProgress->setValue(0);
