@@ -328,15 +328,15 @@ void WidgetDataViewer::setUpInterface()
 	
 	iconGoFirstView.addFile(QString(":/icons/22/go-first-view.png"), QSize(22, 22));
 	iconGoFirstView.addFile(QString(":/icons/16/go-first-view.png"), QSize(16, 16));
-	iconGoFirstView     = QIcon::fromTheme("go-first-view", iconGoNextView);
+	iconGoFirstView     = QIcon::fromTheme("go-first-view", iconGoFirstView);
 	
 	iconGoLastView.addFile(QString(":/icons/22/go-last-view.png"), QSize(22, 22));
 	iconGoLastView.addFile(QString(":/icons/16/go-last-view.png"), QSize(16, 16));
-	iconGoLastView      = QIcon::fromTheme("go-last-view", iconGoNextView);
+	iconGoLastView      = QIcon::fromTheme("go-last-view", iconGoLastView);
 	
 	iconFillColor.addFile(QString(":/icons/22/fill-color.png"), QSize(22, 22));
 	iconFillColor.addFile(QString(":/icons/16/fill-color.png"), QSize(16, 16));
-	iconFillColor       = QIcon::fromTheme("fill-color", iconGoNextView);
+	iconFillColor       = QIcon::fromTheme("fill-color", iconFillColor);
 	
 	iconDialogClose.addFile(QString(":/icons/22/dialog-close.png"), QSize(22, 22));
 	iconDialogClose.addFile(QString(":/icons/16/dialog-close.png"), QSize(16, 16));
@@ -352,15 +352,15 @@ void WidgetDataViewer::setUpInterface()
 	
 	iconZoomIn.addFile(QString(":/icons/22/zoom-in.png"), QSize(22, 22));
 	iconZoomIn.addFile(QString(":/icons/16/zoom-in.png"), QSize(16, 16));
-	iconZoomIn = QIcon::fromTheme("zoom-in", iconEditCopy);
+	iconZoomIn = QIcon::fromTheme("zoom-in", iconZoomIn);
 	
 	iconZoomOut.addFile(QString(":/icons/22/zoom-out.png"), QSize(22, 22));
 	iconZoomOut.addFile(QString(":/icons/16/zoom-out.png"), QSize(16, 16));
-	iconZoomOut = QIcon::fromTheme("zoom-out", iconEditCopy);
+	iconZoomOut = QIcon::fromTheme("zoom-out", iconZoomOut);
 	
 	iconZoomFitBest.addFile(QString(":/icons/22/zoom-fit-best.png"), QSize(22, 22));
 	iconZoomFitBest.addFile(QString(":/icons/16/zoom-fit-best.png"), QSize(16, 16));
-	iconZoomFitBest = QIcon::fromTheme("zoom-fit-best", iconEditCopy);
+	iconZoomFitBest = QIcon::fromTheme("zoom-fit-best", iconZoomFitBest);
 	
 	// Set up actions
 	actionGroupColourScheme = new QActionGroup(this);
