@@ -87,19 +87,41 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
   if domom0 or domom1:
     m0 = mom0(datacubeCopy)
   if domom0:
-    print 'Writing moment-0' # in units of header['bunit']*km/s
+    print 'Writing moment-0' # in units of header['bunit']*header['cdelt3']
+    # units of moment images
+    # velocity
     if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
-      if not 'cunit3' in header or header['cunit3'].lower()=='m/s': dkms=abs(header['cdelt3'])/1e+3 # assuming m/s
-      elif header['cunit3'].lower()=='km/s': dkms=abs(header['cdelt3'])
-      bunitExt = '.km/s'
+			if not 'cunit3' in header or header['cunit3'].lower()=='m/s':
+				# converting (assumed) m/s to km/s
+				dkms=abs(header['cdelt3'])/1e+3
+				scalemom12=1./1e+3
+				bunitExt='.km/s'
+			elif header['cunit3'].lower()=='km/s':
+				# working in km/s
+				dkms=abs(header['cdelt3'])
+				scalemom12=1.
+				bunitExt='.km/s'
+			else:
+				# working with whatever units the cube has
+				dkms=abs(header['cdelt3'])
+				scalemom12=1.
+        bunitExt='.'+header['cunit3']
     elif 'freq' in header['ctype3'].lower():
-      #if not 'cunit3' in header or header['cunit3'].lower()=='hz': dkms=abs(header['cdelt3'])/1.42040575177e+9*2.99792458e+5 # assuming Hz
-      #elif header['cunit3'].lower()=='khz': dkms=abs(header['cdelt3'])/1.42040575177e+6*2.99792458e+5
-      if not 'cunit3' in header or ('cunit3' in header and header['cunit3'].lower()=='hz'):
-        bunitExt = '.Hz'
-      else: 
-        bunitExt = '.'+header['cunit3']
-      dkms=1. # no scaling, avoids crashing
+			if not 'cunit3' in header or header['cunit3'].lower()=='hz':
+        # using (or assuming) Hz
+				dkms=abs(header['cdelt3'])
+				scalemom12=1.
+				bunitExt='.Hz'
+			elif header['cunit3'].lower()=='khz':
+				# converting kHz to Hz
+				dkms=abs(header['cdelt3'])*1e+3
+				scalemom12=1e+3
+				bunitExt='.Hz'
+			else:
+				# working with whatever frequency units the cube has
+				dkms=abs(header['cdelt3'])
+				scalemom12=1.
+        bunitExt='.'+header['cunit3']
     hdu = pyfits.PrimaryHDU(data=m0*dkms,header=header)
     hdu.header['bunit']+=bunitExt
     hdu.header['datamin']=(m0*dkms).min()
