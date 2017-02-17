@@ -473,7 +473,8 @@ void WidgetDataViewer::setUpInterface()
 	labelLevelMin->setText("Range:");
 	labelLevelMin->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	labelLevelMax = new QLabel(settings);
-	labelLevelMax->setText(QChar(0x2013));
+	//labelLevelMax->setText(QChar(0x2013));
+	labelLevelMax->setText(":");
 	labelLevelMax->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	fieldLevelMin = new QLineEdit(settings);
 	fieldLevelMin->setMaximumWidth(200);
