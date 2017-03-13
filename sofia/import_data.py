@@ -33,13 +33,13 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			print 'Calculating subcube boundaries from input WCS centre and radius'
 			wcsin = wcs.WCS(header)
 			# calculate cos(Dec) correction for RA range
-			if wcsin.wcs.cunit[0] == 'deg' and wcsin.wcs.cunit[1] == 'deg':
+			if wcsin.wcs.CUNIT[0] == 'deg' and wcsin.wcs.CUNIT[1] == 'deg':
 				corrfact = cos(subcube[1] / 180 * pi)
-			if header['naxis'] == 4:
+			if header['NAXIS'] == 4:
 				subcube = wcsin.wcs_world2pix(array([[subcube[0] -subcube[3] / corrfact, subcube[1] - subcube[4], subcube[2] - subcube[5], 0], [subcube[0] + subcube[3] / corrfact, subcube[1] + subcube[4], subcube[2] + subcube[5], 0]]), 0)[:,:3]
-			elif header['naxis'] == 3:
+			elif header['NAXIS'] == 3:
 				subcube = wcsin.wcs_world2pix(array([[subcube[0] - subcube[3] / corrfact, subcube[1] - subcube[4], subcube[2] - subcube[5]], [subcube[0] + subcube[3] / corrfact, subcube[1] + subcube[4], subcube[2] + subcube[5]]]), 0)
-			elif header['naxis'] == 2:
+			elif header['NAXIS'] == 2:
 				subcube = wcsin.wcs_world2pix(array([[subcube[0] - subcube[2] / corrfact, subcube[1] - subcube[3]], [subcube[0] + subcube[2] / corrfact, subcube[1] + subcube[3]]]), 0)
 			subcube = ravel(subcube, order='F')
 			# make sure min pix coord is < max pix coord for all axes
@@ -53,13 +53,13 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 				if subcube[4] > subcube[5]:
 					subcube[4], subcube[5] = subcube[5], subcube[4]
 			# constrain subcube to be within the cube boundaries; if this is not possible then exit
-			for ss in range(min(3, header['naxis'])):
-				if ceil(subcube[1 + 2 * ss]) < 0 or floor(subcube[2 * ss]) >= header['naxis%i' % (ss + 1)]:
+			for ss in range(min(3, header['NAXIS'])):
+				if ceil(subcube[1 + 2 * ss]) < 0 or floor(subcube[2 * ss]) >= header['NAXIS%i' % (ss + 1)]:
 					sys.stderr.write("ERROR: The requested subcube is outside the input cube along axis %i \n" % (ss))
 					raise SystemExit(1)
 				else:
 					subcube[2 * ss] = max(0, floor(subcube[2 * ss]))
-					subcube[1 + 2 * ss] = min(header['naxis%i' % (ss + 1)] - 1, ceil(subcube[1 + 2 * ss])) + 1
+					subcube[1 + 2 * ss] = min(header['NAXIS%i' % (ss + 1)] - 1, ceil(subcube[1 + 2 * ss])) + 1
 			subcube = list(subcube.astype(int))
 		elif (len(subcube) == 6 or len(subcube) == 4) and subcubeMode == 'pixel':
 			# make sure pixel coordinates are integers
@@ -69,10 +69,10 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 					sys.stderr.write("       The %i-th coordinate has the wrong type.\n" % subcube.index(ss))
 					raise SystemExit(1)
 			# make sure to be within the cube boundaries
-			for ss in range(min(3, header['naxis'])):
+			for ss in range(min(3, header['NAXIS'])):
 				subcube[2 * ss] = max(0, subcube[2 * ss])
-			for ss in range(min(3, header['naxis'])):
-				subcube[1 + 2 * ss] = min(header['naxis%i' % (ss + 1)], subcube[1 + 2 * ss])
+			for ss in range(min(3, header['NAXIS'])):
+				subcube[1 + 2 * ss] = min(header['NAXIS%i' % (ss + 1)], subcube[1 + 2 * ss])
 		elif len(subcube):
 			sys.stderr.write("ERROR: import.subcubeMode can only be \'pixel\' or \'world\', and import.subcube must have 4 or 6 entries.\n")
 			raise SystemExit(1)
@@ -97,12 +97,12 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 		fullshape = [dict_Header['NAXIS3'], dict_Header['NAXIS2'], dict_Header['NAXIS1']]
 		if len(subcube) == 6:
 			np_Cube = f[0].section[subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
-			dict_Header['crpix1'] -= subcube[0]
-			dict_Header['crpix2'] -= subcube[2]
-			dict_Header['crpix3'] -= subcube[4]
-			dict_Header['naxis1'] = subcube[1] - subcube[0]
-			dict_Header['naxis2'] = subcube[3] - subcube[2]
-			dict_Header['naxis3'] = subcube[5] - subcube[4]
+			dict_Header['CRPIX1'] -= subcube[0]
+			dict_Header['CRPIX2'] -= subcube[2]
+			dict_Header['CRPIX3'] -= subcube[4]
+			dict_Header['NAXIS1'] = subcube[1] - subcube[0]
+			dict_Header['NAXIS2'] = subcube[3] - subcube[2]
+			dict_Header['NAXIS3'] = subcube[5] - subcube[4]
 		elif not len(subcube):
 			np_Cube = f[0].data
 		else:
@@ -118,19 +118,19 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			fullshape = [dict_Header['NAXIS3'], dict_Header['NAXIS2'], dict_Header['NAXIS1']]
 			if len(subcube) == 6:
 				np_Cube = f[0].section[0, subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
-				dict_Header['crpix1'] -= subcube[0]
-				dict_Header['crpix2'] -= subcube[2]
-				dict_Header['crpix3'] -= subcube[4]
-			        dict_Header['naxis1'] = subcube[1] - subcube[0]
-			        dict_Header['naxis2'] = subcube[3] - subcube[2]
-			        dict_Header['naxis3'] = subcube[5] - subcube[4]
+				dict_Header['CRPIX1'] -= subcube[0]
+				dict_Header['CRPIX2'] -= subcube[2]
+				dict_Header['CRPIX3'] -= subcube[4]
+			        dict_Header['NAXIS1'] = subcube[1] - subcube[0]
+			        dict_Header['NAXIS2'] = subcube[3] - subcube[2]
+			        dict_Header['NAXIS3'] = subcube[5] - subcube[4]
 			elif not len(subcube):
 				np_Cube = f[0].section[0]
 			else:
 				sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given). Ignore 4th axis.\n" % len(subcube))
 				raise SystemExit(1)
-			#dict_Header['naxis'] = 3
-			#for key in ['ctype4', 'crpix4', 'crval4', 'cdelt4', 'cunit4', 'naxis4']:
+			#dict_Header['NAXIS'] = 3
+			#for key in ['CTYPE4', 'CRPIX4', 'CRVAL4', 'CDELT4', 'CUNIT4', 'NAXIS4']:
 			#	if key in dict_Header:
 			#		del(dict_Header[key])
 	elif dict_Header['NAXIS'] == 2:
@@ -140,10 +140,10 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 		fullshape = [dict_Header['NAXIS2'], dict_Header['NAXIS1']]
 		if len(subcube) == 4:
 			np_Cube = array([f[0].section[subcube[2]:subcube[3], subcube[0]:subcube[1]]])
-			dict_Header['crpix1'] -= subcube[0]
-			dict_Header['crpix2'] -= subcube[2]
-			dict_Header['naxis1'] = subcube[1] - subcube[0]
-			dict_Header['naxis2'] = subcube[3] - subcube[2]
+			dict_Header['CRPIX1'] -= subcube[0]
+			dict_Header['CRPIX2'] -= subcube[2]
+			dict_Header['NAXIS1'] = subcube[1] - subcube[0]
+			dict_Header['NAXIS2'] = subcube[3] - subcube[2]
 		elif not len(subcube):
 			np_Cube = array([f[0].data])
 		else:
@@ -159,15 +159,15 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 		raise SystemExit(1)
 	f.close()
 
-	if 'bscale' in dict_Header and 'bzero' in dict_Header:
-		np_Cube = dict_Header['bscale'] * np_Cube
-		np_Cube = dict_Header['bzero'] + np_Cube
+	if 'BSCALE' in dict_Header and 'BZERO' in dict_Header:
+		np_Cube = dict_Header['BSCALE'] * np_Cube
+		np_Cube = dict_Header['BZERO'] + np_Cube
 		# NOTE: the above lines are more memory efficient than
-		#np_Cube=np_Cube*dict_Header['bscale']+dict_Header['bzero']
+		#np_Cube=np_Cube*dict_Header['BSCALE']+dict_Header['BZERO']
 
 
 	# check whether the axis are in the expected order:
-	#if dict_Header['ctype1'][0:2] != 'RA' or dict_Header['ctype2'][0:3] != 'DEC':
+	#if dict_Header['CTYPE1'][0:2] != 'RA' or dict_Header['CTYPE2'][0:3] != 'DEC':
 	#	sys.stderr.write("WARNING: The dimensions are not in the expected order.\n")
 
 	# the data cube has been loaded

@@ -23,7 +23,7 @@ def recursion(dictionary, optionsList, optionsDepth, counter=0):
 
 
 def writeMask(cube, header, dictionary, filename, compress, flagOverwrite):
-	header.add_history('SOURCE FINDING')
+	header.add_history('SoFiA source finding')
 	optionsList = []
 	optionsDepth = []
 	dictionary = removeOptions(dictionary)
@@ -45,9 +45,9 @@ def writeMask(cube, header, dictionary, filename, compress, flagOverwrite):
 	if cube.max() < 32767:
 		cube=cube.astype('int16')
 	hdu = pyfits.PrimaryHDU(data=cube, header=header)
-	hdu.header['bunit'] = 'source_ID'
-	hdu.header['datamin'] = cube.min()
-	hdu.header['datamax'] = cube.max()
+	hdu.header['BUNIT'] = 'source_ID'
+	hdu.header['DATAMIN'] = cube.min()
+	hdu.header['DATAMAX'] = cube.max()
 	#hdulist = pyfits.HDUList([hdu])
 	#name = os.path.splitext(filename)[0] + '_mask.fits'
 	name = filename
