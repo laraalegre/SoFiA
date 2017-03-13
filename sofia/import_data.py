@@ -29,7 +29,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 				header = hdulist[0].header
 				hdulist.close()
 
-		if (len(subcube)==6 or len(subcube)==4) and subcubeMode=='world':
+		if (len(subcube) == 6 or len(subcube) == 4) and subcubeMode == 'world':
 			print 'Calculating subcube boundaries from input WCS centre and radius'
 			wcsin = wcs.WCS(header)
 			# calculate cos(Dec) correction for RA range
@@ -163,10 +163,10 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 		np_Cube = dict_Header['BSCALE'] * np_Cube
 		np_Cube = dict_Header['BZERO'] + np_Cube
 		# NOTE: the above lines are more memory efficient than
-		#np_Cube=np_Cube*dict_Header['BSCALE']+dict_Header['BZERO']
+		# np_Cube = np_Cube * dict_Header['BSCALE'] + dict_Header['BZERO']
 
 
-	# check whether the axis are in the expected order:
+	# check whether the axes are in the expected order:
 	#if dict_Header['CTYPE1'][0:2] != 'RA' or dict_Header['CTYPE2'][0:3] != 'DEC':
 	#	sys.stderr.write("WARNING: The dimensions are not in the expected order.\n")
 
