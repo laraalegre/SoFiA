@@ -77,8 +77,10 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			sys.stderr.write("ERROR: import.subcubeMode can only be \'pixel\' or \'world\', and import.subcube must have 4 or 6 entries.\n")
 			raise SystemExit(1)
 
-		if len(subcube) == 4: print 'Loading subcube of %s defined by [x1 x2 y1 y2] =' % inFile, subcube
-		elif len(subcube) == 6: print 'Loading subcube of %s defined by [x1 x2 y1 y2 z1 z2] =' % inFile, subcube
+		if len(subcube) == 4:
+			print 'Loading subcube of %s defined by [x1 x2 y1 y2] =' % inFile, subcube
+		elif len(subcube) == 6:
+			print 'Loading subcube of %s defined by [x1 x2 y1 y2 z1 z2] =' % inFile, subcube
 	else: 
 		print 'Loading cube: ', inFile
 		subcube = []
@@ -101,7 +103,8 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			dict_Header['naxis1'] = subcube[1] - subcube[0]
 			dict_Header['naxis2'] = subcube[3] - subcube[2]
 			dict_Header['naxis3'] = subcube[5] - subcube[4]
-		elif not len(subcube): np_Cube = f[0].data
+		elif not len(subcube):
+			np_Cube = f[0].data
 		else:
 			sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given).\n" % len(subcube))
 			raise SystemExit(1)
@@ -121,7 +124,8 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			        dict_Header['naxis1'] = subcube[1] - subcube[0]
 			        dict_Header['naxis2'] = subcube[3] - subcube[2]
 			        dict_Header['naxis3'] = subcube[5] - subcube[4]
-			elif not len(subcube): np_Cube = f[0].section[0]
+			elif not len(subcube):
+				np_Cube = f[0].section[0]
 			else:
 				sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given). Ignore 4th axis.\n" % len(subcube))
 				raise SystemExit(1)
@@ -140,7 +144,8 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			dict_Header['crpix2'] -= subcube[2]
 			dict_Header['naxis1'] = subcube[1] - subcube[0]
 			dict_Header['naxis2'] = subcube[3] - subcube[2]
-		elif not len(subcube): np_Cube = array([f[0].data])
+		elif not len(subcube):
+			np_Cube = array([f[0].data])
 		else:
 			sys.stderr.write("ERROR: The subcube list must have 4 entries (%i given).\n" % len(subcube))
 			raise SystemExit(1)
@@ -184,8 +189,10 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			f = fits.open(weightsFile, memmap=False)
 			dict_Weights_header = f[0].header
 			if dict_Weights_header['NAXIS'] == 3:
-				if len(subcube) == 6: np_Cube *= f[0].section[subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
-				else: np_Cube *= f[0].data
+				if len(subcube) == 6:
+					np_Cube *= f[0].section[subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
+				else:
+					np_Cube *= f[0].data
 			elif dict_Weights_header['NAXIS'] == 4:
 				if dict_Weights_header['NAXIS4'] != 1:
 					sys.stderr.write("ERROR: The 4th dimension has more than 1 value.\n")
