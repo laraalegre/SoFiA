@@ -129,10 +129,10 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			else:
 				sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given). Ignore 4th axis.\n" % len(subcube))
 				raise SystemExit(1)
-			dict_Header['naxis'] = 3
-			for key in ['ctype4', 'crpix4', 'crval4', 'cdelt4', 'cunit4', 'naxis4']:
-				if key in dict_Header:
-					del(dict_Header[key])
+			#dict_Header['naxis'] = 3
+			#for key in ['ctype4', 'crpix4', 'crval4', 'cdelt4', 'cunit4', 'naxis4']:
+			#	if key in dict_Header:
+			#		del(dict_Header[key])
 	elif dict_Header['NAXIS'] == 2:
 		sys.stderr.write("WARNING: The input cube has 2 axes, third axis added.\n")
 		print 'type: ', dict_Header['CTYPE1'], dict_Header['CTYPE2']
@@ -150,12 +150,12 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			sys.stderr.write("ERROR: The subcube list must have 4 entries (%i given).\n" % len(subcube))
 			raise SystemExit(1)
 	elif dict_Header['NAXIS'] == 1:
-		sys.stderr.write("ERROR: The input has 1 axis, this is probably a spectrum instead of an 2D/3D image.\n")
+		sys.stderr.write("ERROR: The input has 1 axis, this is probably a spectrum instead of a 2D/3D image.\n")
 		sys.stderr.write("       Type: " + str(dict_Header['CTYPE1']) + "\n")
 		sys.stderr.write("       Dimensions: " + str(dict_Header['NAXIS1']) + "\n")
 		raise SystemExit(1)
 	else:
-		sys.stderr.write("ERROR: The file has less than 1 or more than 4 dimensions.\n")
+		sys.stderr.write("ERROR: The file has fewer than 1 or more than 4 dimensions.\n")
 		raise SystemExit(1)
 	f.close()
 
