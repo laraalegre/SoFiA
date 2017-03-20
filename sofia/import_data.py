@@ -33,7 +33,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			print 'Calculating subcube boundaries from input WCS centre and radius'
 			wcsin = wcs.WCS(header)
 			# calculate cos(Dec) correction for RA range
-			if wcsin.wcs.CUNIT[0] == 'deg' and wcsin.wcs.CUNIT[1] == 'deg':
+			if wcsin.wcs.cunit[0] == 'deg' and wcsin.wcs.cunit[1] == 'deg':
 				corrfact = cos(subcube[1] / 180 * pi)
 			if header['NAXIS'] == 4:
 				subcube = wcsin.wcs_world2pix(array([[subcube[0] -subcube[3] / corrfact, subcube[1] - subcube[4], subcube[2] - subcube[5], 0], [subcube[0] + subcube[3] / corrfact, subcube[1] + subcube[4], subcube[2] + subcube[5], 0]]), 0)[:,:3]
