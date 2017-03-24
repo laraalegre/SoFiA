@@ -114,6 +114,7 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "merge.minSizeX": "int", \
                  "merge.minSizeY": "int", \
                  "merge.minSizeZ": "int", \
+                 "merge.positivity": "bool", \
                  "reliability.parSpace": "array", \
                  "reliability.logPars": "array", \
                  "reliability.autoKernel": "bool", \

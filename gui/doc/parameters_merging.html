@@ -37,6 +37,10 @@
       Merging of pixels into sources is controlled by two sets of parameters. The first set defines the maximum separation that two detected pixels are allowed to have in order to be considered as part of the same source. This maximum separation is controlled independently for each dimension, using the <code>merge.radiusX</code>, <code>merge.radiusY</code> and <code>merge.radiusZ</code> parameters. Once all pixels have been merged into sources, the size of each source is checked (again independently in each dimension), and sources falling below the size thresholds (specified with <code>merge.minSizeX</code>, <code>merge.minSizeX</code> and <code>merge.minSizeX</code>) are discarded. This allows many spurious detections, such as bright noise peaks, to be eliminated based on their small size.
     </p>
     
+    <p>
+      By default, SoFiA will merge positive and negative signals into the same source under the assumption that all negative signals are due to noise. In doing so, SoFiA avoids the positive flux bias that would otherwise result from adding only positive noise peaks to detections. There are, however, situations where this behaviour is undesirable, e.g. in data cubes with strong negative artefacts such as sidelobes or interference. In such cases, the <code>merge.positivity</code> option can be set to <code>true</code> to have SoFiA merge positive signals only and discard all negative signals. Please be aware, though, that enabling positivity could lead to a small positive bias in the integrated fluxes measured by SoFiA.
+    </p>
+    
     <table id="steps.doMerge">
         <tr>
             <td class="head">Parameter:</td><td class="body2">steps.doMerge</td>
@@ -160,6 +164,24 @@
         </tr>
         <tr>
             <td class="head">Description:</td><td class="body">Minimum required extent in third dimension of genuine sources after merging. Sources below this size will be discarded.</td>
+        </tr>
+    </table>
+    
+    <table id="merge.positivity">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">merge.positivity</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, only positive signals will be merged into detections, and all negative signals will be discarded. This is useful for data sets with significant negative artefacts, such as sidelobes. The default is <code>false</code>.</td>
         </tr>
     </table>
     

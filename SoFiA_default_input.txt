@@ -112,6 +112,7 @@ merge.radiusZ                   =       3
 merge.minSizeX                  =       3
 merge.minSizeY                  =       3
 merge.minSizeZ                  =       2
+merge.positivity                =       false
 
 
 # Parametrisation module

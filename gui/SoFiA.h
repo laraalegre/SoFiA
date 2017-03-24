@@ -410,6 +410,7 @@ private:
 	QSpinBox     *tabMergingFieldMinSizeX;
 	QSpinBox     *tabMergingFieldMinSizeY;
 	QSpinBox     *tabMergingFieldMinSizeZ;
+	QCheckBox    *tabMergingButtonPositivity;
 	
 	QHBoxLayout  *tabMergingLayoutControls;
 	QWidget      *tabMergingWidgetControls;
