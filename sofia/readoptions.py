@@ -152,6 +152,10 @@ def readPipelineOptions(filename = "pipeline.options"):
             sys.stderr.write("FATAL ERROR: Parameter name missing in line %i of parameter file %s:\n%s\n"%(linenr+1,filename,line))
             sys.exit(1)
         
+        # WARNING: merge.positivity temporarily disable!
+        # Needs to be enabled again when implemented.
+        if parameter.strip() == "merge.positivity": continue
+        
         subtasks = tasks
             
         while True:
