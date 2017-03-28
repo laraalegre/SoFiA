@@ -204,7 +204,7 @@ print "\n--- %.3f seconds since start"%(time()-t0)
 print "\n--- SoFiA: Reading data cube(s) ---"
 sys.stdout.flush()
 
-np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters['steps']['doSubcube'],**Parameters['import'])
+np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters['steps']['doSubcube'], **Parameters['import'])
 
 
 # -------------------------
@@ -262,15 +262,12 @@ print "\n--- %.3f seconds since start"%(time()-t0)
 print "\n--- SoFiA: Running source finder ---"
 sys.stdout.flush()
 
-# apply the different filters that each create a mask.
-# create an empty mask, the size of the cube:
-
+# Apply the different filters that each create a mask.
 
 # --- PYFIND ---
 if Parameters['steps']['doSCfind']:
 	print 'Running S+C filter'
-	pyfind_mask = pyfind.SCfinder_mem(np_Cube, dict_Header, t0, **Parameters['SCfind'])
-	mask = mask + pyfind_mask
+	mask |= pyfind.SCfinder_mem(np_Cube, dict_Header, t0, **Parameters['SCfind'])
 
 # --- CNHI ---	
 if Parameters['steps']['doCNHI']:
@@ -280,7 +277,6 @@ if Parameters['steps']['doCNHI']:
 # --- THRESHOLD ---	
 if Parameters['steps']['doThreshold']:
 	print 'Running threshold filter'
-	#mask+=threshold_filter.filter(np_Cube, dict_Header, **Parameters['threshold'])
 	threshold_filter.filter(mask, np_Cube, dict_Header, **Parameters['threshold'])
 
 print 'Source finding complete.'
@@ -289,7 +285,7 @@ print
 # Check whether any voxel is detected
 NRdet = (mask > 0).sum()
 if not NRdet:
-	sys.stderr.write("WARNING: No voxels detected and included in the mask yet! EXITING pipeline.\n")
+	sys.stderr.write("WARNING: No voxels detected and included in the mask yet! Exiting pipeline.\n")
 	print 
 	sys.exit()
 

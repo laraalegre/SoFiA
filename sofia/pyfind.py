@@ -49,7 +49,7 @@ def SortKernels(kernels):
 
 def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, 'b'],], threshold=3.5, sizeFilter=0, maskScaleXY=2.0, maskScaleZ=2.0, kernelUnit='pixel', edgeMode='constant', rmsMode='negative', verbose=0):
 	# Create binary mask array
-	msk = np.zeros(cube.shape, 'bool')
+	msk = np.zeros(cube.shape, np.uint8)
 	found_nan = np.isnan(cube).sum()
 	
 	# Set sampling sampleRms for rms measurement
@@ -58,34 +58,54 @@ def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, 'b'],], threshold=3.5, siz
 	
 	# Measure noise in original cube with sampling "sampleRms"
 	rms = GetRMS(cube, rmsMode=rmsMode, zoomx=1, zoomy=1, zoomz=1, verbose=verbose, sample=sampleRms)
-	#rms_sample = GetRMS(cube, rmsMode=rmsMode, zoomx=10, zoomy=10, zoomz=10, verbose=verbose)
+	
 	# Loop over all kernels
 	for jj in kernels:
 		[kx, ky, kz, kt] = jj
 		if verbose:
-			print "\n--- %.3f seconds since start" % (time() - t0)
+			print '\n--- %.3f seconds since start' % (time() - t0)
 			print '    Filter %s %s %s %s ...' % (kx, ky, kz, kt)
 		if kernelUnit == 'world' or kernelUnit == 'w':
 			if verbose: print '    Converting filter size to pixels ...'
-			kx = abs(float(kx) / header['cdelt1'])
-			ky = abs(float(ky) / header['cdelt2'])
-			kz = abs(float(kz) / header['cdelt3'])
+			kx = abs(float(kx) / header['CDELT1'])
+			ky = abs(float(ky) / header['CDELT2'])
+			kz = abs(float(kz) / header['CDELT3'])
 		if kt == 'b':
 			if kz != int(mt.ceil(kz)) and verbose: print '    WARNING: Rounding width of boxcar z kernel to next integer'
 			kz = int(mt.ceil(kz))
 		sys.stdout.flush()
+		
+		# Create a copy of the original cube:
 		smoothedcube = cube * 1.0
-		if found_nan: smoothedcube=np.nan_to_num(smoothedcube)
-		smoothedcube[(smoothedcube > 0) * msk] = +maskScaleXY * rms
-		smoothedcube[(smoothedcube < 0) * msk] = -maskScaleXY * rms
+		
+		# Replace all NaNs with zero (and INFs with a finite number):
+		if found_nan: smoothedcube = np.nan_to_num(smoothedcube)
+		
+		smoothedcube[(smoothedcube > 0) & (msk > 0)] = +maskScaleXY * rms
+		smoothedcube[(smoothedcube < 0) & (msk > 0)] = -maskScaleXY * rms
+		
+		# Spatial smoothing:
 		if kx + ky: smoothedcube = nd.filters.gaussian_filter(smoothedcube, [0, ky / 2.355, kx / 2.355], mode=edgeMode)
+		
+		# Spectral smoothing:
 		if kz:
 			if kt == 'b': smoothedcube = nd.filters.uniform_filter1d(smoothedcube, kz, axis=0, mode=edgeMode)
 			elif kt == 'g': smoothedcube = nd.filters.gaussian_filter1d(smoothedcube, kz / 2.355, axis=0, mode=edgeMode)
+		
+		# Re-insert the NaNs (but not the INFs) taken out earlier:
 		if found_nan: smoothedcube[np.isnan(cube)] = np.nan
-		#smoothedrms = GetRMS(smoothedcube, rmsMode=rmsMode, zoomx=10, zoomy=10, zoomz=10, verbose=verbose) / rms_sample * rms
+		
+		# Calculate the RMS of the smoothed cube:
 		smoothedrms = GetRMS(smoothedcube, rmsMode=rmsMode, zoomx=1, zoomy=1, zoomz=1, verbose=verbose, sample=sampleRms)
+		
+		# Get rid of the NaNs a second time:
 		if found_nan: smoothedcube = np.nan_to_num(smoothedcube)
-		msk = msk + (smoothedcube >= threshold * smoothedrms) + (smoothedcube <= -threshold * smoothedrms)
+		
+		# Add pixels above threshold to mask, setting bits 1 or 2 for positive or negative pixels:
+		msk = msk | (smoothedcube >=  threshold * smoothedrms) | (smoothedcube <= -threshold * smoothedrms) * 0x02
+		#np.bitwise_or(msk, np.greater_equal(smoothedcube, threshold * smoothedrms), msk)
+		#np.bitwise_or(msk, np.less_equal(smoothedcube, -threshold * smoothedrms) * 0x02, msk)
+		
+		# Delete smoothed cube again:
 		del(smoothedcube)
 	return msk
