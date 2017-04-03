@@ -495,18 +495,18 @@ void WidgetDataViewer::setUpInterface()
 	fieldTransFunc->setToolTip("Transfer function");
 	connect(fieldTransFunc, SIGNAL(currentIndexChanged(int)), this, SLOT(setTransferFunction(int)));
 	
-	buttonZoomIn = new QToolButton(settings);
-	buttonZoomIn->setToolButtonStyle(Qt::ToolButtonIconOnly);
-	buttonZoomIn->setDefaultAction(actionZoomIn);
-	buttonZoomIn->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
-	buttonZoomToFit = new QToolButton(settings);
-	buttonZoomToFit->setToolButtonStyle(Qt::ToolButtonIconOnly);
-	buttonZoomToFit->setDefaultAction(actionZoomToFit);
-	buttonZoomToFit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	buttonZoomOut = new QToolButton(settings);
 	buttonZoomOut->setToolButtonStyle(Qt::ToolButtonIconOnly);
 	buttonZoomOut->setDefaultAction(actionZoomOut);
 	buttonZoomOut->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+	buttonZoomToFit = new QToolButton(settings);
+	buttonZoomToFit->setToolButtonStyle(Qt::ToolButtonIconOnly);
+	buttonZoomToFit->setDefaultAction(actionZoomToFit);
+	buttonZoomToFit->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
+	buttonZoomIn = new QToolButton(settings);
+	buttonZoomIn->setToolButtonStyle(Qt::ToolButtonIconOnly);
+	buttonZoomIn->setDefaultAction(actionZoomIn);
+	buttonZoomIn->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	
 	buttonReset = new QToolButton(settings);
 	buttonReset->setToolButtonStyle(Qt::ToolButtonIconOnly);
@@ -523,9 +523,9 @@ void WidgetDataViewer::setUpInterface()
 	layoutSettings->addWidget(fieldLevelMax);
 	layoutSettings->addWidget(fieldTransFunc);
 	layoutSettings->addStretch();
-	layoutSettings->addWidget(buttonZoomIn);
-	layoutSettings->addWidget(buttonZoomToFit);
 	layoutSettings->addWidget(buttonZoomOut);
+	layoutSettings->addWidget(buttonZoomToFit);
+	layoutSettings->addWidget(buttonZoomIn);
 	layoutSettings->addStretch();
 	layoutSettings->addWidget(buttonReset);
 	layoutSettings->setContentsMargins(0, 0, 0, 0);
