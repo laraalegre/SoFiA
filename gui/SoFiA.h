@@ -167,6 +167,7 @@ private slots:
 	void togglePipeline(bool state);
 	void toggleSaveOnExit();
 	void toggleFullScreen();
+	void printPositivityWarning(bool checked);
 	
 private:
 	QString currentFileName;

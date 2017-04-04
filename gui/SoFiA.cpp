@@ -1838,6 +1838,24 @@ void SoFiA::toggleSaveOnExit()
 
 
 
+// ------------------------------------------------------
+// Slot to create pop-up warning message about positivity
+// ------------------------------------------------------
+
+void SoFiA::printPositivityWarning(bool checked)
+{
+	if(checked)
+	{
+		QString messageText = tr("<p>Enabling the positivity parameter is <strong>dangerous</strong> and will render some of SoFiA&rsquo;s most powerful algorithms useless, including mask optimisation and reliability calculation.</p><p>Only use this option if you are fully aware of the risks and consequences!</p>");
+		QString statusText  = QString("");
+		showMessage(MESSAGE_WARNING, messageText, statusText);
+	}
+	
+	return;
+}
+
+
+
 // ------------------------------------
 // Function to update window title text
 // ------------------------------------
@@ -2607,11 +2625,12 @@ void SoFiA::createInterface()
 	tabMergingFieldMinSizeZ->setMinimum(1);
 	tabMergingFieldMinSizeZ->setMaximum(50);
 	connect(tabMergingFieldMinSizeZ, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
-	tabMergingButtonPositivity = new QCheckBox(tr("Enable "), tabMergingGroupBox1);
+	tabMergingButtonPositivity = new QCheckBox(tr("Enable (not recommended)"), tabMergingGroupBox1);
 	tabMergingButtonPositivity->setObjectName("merge.positivity");
 	tabMergingButtonPositivity->setEnabled(true);
 	tabMergingButtonPositivity->setChecked(false);
 	connect(tabMergingButtonPositivity, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	connect(tabMergingButtonPositivity, SIGNAL(clicked(bool)), this, SLOT(printPositivityWarning(bool)));
 	
 	tabMergingForm1->addRow(tr("Radius X:"), tabMergingFieldRadiusX);
 	tabMergingForm1->addRow(tr("Radius Y:"), tabMergingFieldRadiusY);
@@ -3702,7 +3721,7 @@ void SoFiA::createWhatsThis()
 	tabMergingFieldRadiusX->setWhatsThis(tr("<h3>merge.radiusX</h3><p>Merging radius in first dimension in pixels.</p>"));
 	tabMergingFieldRadiusY->setWhatsThis(tr("<h3>merge.radiusY</h3><p>Merging radius in second dimension in pixels.</p>"));
 	tabMergingFieldRadiusZ->setWhatsThis(tr("<h3>merge.radiusZ</h3><p>Merging radius in third dimension in pixels.</p>"));
-	tabMergingButtonPositivity->setWhatsThis(tr("<h3>merge.positivity</h3><p>Discard all negative signals and only merge positive signals into detections.</p>"));
+	tabMergingButtonPositivity->setWhatsThis(tr("<h3>merge.positivity</h3><p>Discard all negative signals and only merge positive signals into detections.</p><p><strong>Warning:</strong> Enabling positivity is dangerous and will render some of SoFiA&rsquo;s most powerful algorithms useless, including mask optimisation and reliability calculation.</p><p>Only use this feature if you are fully aware if its risks and consequences!</p>"));
 	tabInputFieldCatalog->setWhatsThis(tr("<h3>optical.sourceCatalogue</h3><p>This defines the full path and file name of the input catalogue required for catalogue-based source finding (see parameter <b>steps.doOptical</b>). There is no default.</p><p>Catalogues must be comma-separated and contain at least four columns containing a unique ID number, right ascension, declination and frequency/velocity of the positions to be searched. All parameters must be specified in the native WCS units of the cube. In addition, a header line must be provided, with the four parameter columns above listed as <code>id</code>, <code>ra</code>, <code>dec</code> and <code>z</code>.</p>"));
 	tabInputFieldSpatialSize->setWhatsThis(tr("<h3>optical.spatSize</h3><p>This defines the <b>spatial</b> size of the sub-cube to be searched around each catalogue position. The size must be specified in the <b>native units</b> of the data cube, e.g. in degrees.</p>"));
 	tabInputFieldSpectralSize->setWhatsThis(tr("<h3>optical.specSize</h3><p>This defines the <b>spectral</b> size of the sub-cube to be searched around each catalogue position. The size must be specified in the <b>native units</b> of the data cube, e.g. in km/s or Hz.</p>"));

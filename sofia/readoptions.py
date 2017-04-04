@@ -4,13 +4,6 @@ import sys
 import traceback
 import ast
 
-def is_number(s):
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False
-
 
 def str2bool(s):
     if s in ['True', 'true', 'TRUE', 'Yes', 'yes', 'YES']:
@@ -152,27 +145,23 @@ def readPipelineOptions(filename = "pipeline.options"):
             sys.stderr.write("FATAL ERROR: Parameter name missing in line %i of parameter file %s:\n%s\n"%(linenr+1,filename,line))
             sys.exit(1)
         
-        # WARNING: merge.positivity temporarily disable!
-        # Needs to be enabled again when implemented.
-        if parameter.strip() == "merge.positivity": continue
-        
         subtasks = tasks
-            
+        
         while True:
             module = parameter.split(".")[0]
             module = module.strip()
-                
+            
             if len(module) < 1:
                 sys.stderr.write("FATAL ERROR: (Sub)key name too short in line %i of parameter file %s:\n%s\n"%(linenr+1,filename,line))
                 sys.exit(1)
-                
+            
             parameter = str(".").join(parameter.split(".")[1:])
             parameter = parameter.strip()
-                
+            
             if not subtasks.has_key(module):
                 subtasks[module] = {}
             subtasks = subtasks[module]
-                
+            
             if parameter.count(".") == 0:
                 if subtasks.has_key(parameter):
                     sys.stderr.write("WARNING: Parameter already present in line %i of parameter file %s:\n%s\n"%(linenr+1,filename,line))
@@ -181,11 +170,11 @@ def readPipelineOptions(filename = "pipeline.options"):
                 try:
                     value = value.split('#')[0].strip()
                     searchKey = module + "." + parameter
-                        
+                    
                     if searchKey in datatypes:
-                        if datatypes[searchKey] == "bool": subtasks[parameter] = str2bool(value)
+                        if datatypes[searchKey]   == "bool":  subtasks[parameter] = str2bool(value)
                         elif datatypes[searchKey] == "float": subtasks[parameter] = float(value)
-                        elif datatypes[searchKey] == "int": subtasks[parameter] = int(value)
+                        elif datatypes[searchKey] == "int":   subtasks[parameter] = int(value)
                         elif datatypes[searchKey] == "array": subtasks[parameter] = ast.literal_eval(value)
                         else: subtasks[parameter] = str(value)
                     else:

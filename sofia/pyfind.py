@@ -49,7 +49,7 @@ def SortKernels(kernels):
 
 def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, 'b'],], threshold=3.5, sizeFilter=0, maskScaleXY=2.0, maskScaleZ=2.0, kernelUnit='pixel', edgeMode='constant', rmsMode='negative', verbose=0):
 	# Create binary mask array
-	msk = np.zeros(cube.shape, np.uint8)
+	msk = np.zeros(cube.shape, np.bool)
 	found_nan = np.isnan(cube).sum()
 	
 	# Set sampling sampleRms for rms measurement
@@ -101,10 +101,8 @@ def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, 'b'],], threshold=3.5, siz
 		# Get rid of the NaNs a second time:
 		if found_nan: smoothedcube = np.nan_to_num(smoothedcube)
 		
-		# Add pixels above threshold to mask, setting bits 1 or 2 for positive or negative pixels:
-		msk = msk | (smoothedcube >=  threshold * smoothedrms) | (smoothedcube <= -threshold * smoothedrms) * 0x02
-		#np.bitwise_or(msk, np.greater_equal(smoothedcube, threshold * smoothedrms), msk)
-		#np.bitwise_or(msk, np.less_equal(smoothedcube, -threshold * smoothedrms) * 0x02, msk)
+		# Add pixels above threshold to mask by setting bit 1:
+		msk = np.bitwise_or(msk, np.greater_equal(np.absolute(smoothedcube), threshold * smoothedrms), msk)
 		
 		# Delete smoothed cube again:
 		del(smoothedcube)

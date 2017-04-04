@@ -358,12 +358,11 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			mask[mask > 0] = 1
 			g.close()
 			print 'Mask cube loaded.'
-		# In all cases, convert mask to 8-bit unsigned integer with masked pixels set to 1.
-		# WARNING: In doing so, all pixels are implicitly assumed to be positive!
-		mask = (mask > 0).astype(uint8)
+		# In all cases, convert mask to Boolean with masked pixels set to 1.
+		mask = (mask > 0).astype(bool)
 	else:
 		# Create an empty mask if none is provided.
-		mask = zeros(np_Cube.shape, dtype=uint8)
+		mask = zeros(np_Cube.shape, dtype=bool)
 
 	# The original data are replaced with the weighted cube!
 	# If weighting is being used, the data should be read in again during parameterisation.

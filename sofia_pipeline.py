@@ -282,6 +282,14 @@ if Parameters['steps']['doThreshold']:
 print 'Source finding complete.'
 print
 
+# Check whether positivity flag is set; if so, remove negative pixels from mask:
+if Parameters['merge']['positivity']:
+	sys.stderr.write("WARNING: Enabling mask.positivity is dangerous and will render some of SoFiA's\n")
+	sys.stderr.write("         most powerful algorithms useless, including mask optimisation and\n")
+	sys.stderr.write("         reliability calculation. Only use this option if you are fully aware\n")
+	sys.stderr.write("         of its risks and consequences!\n")
+	mask = np.bitwise_and(np.greater(mask, 0), np.greater(np_Cube, 0))
+
 # Check whether any voxel is detected
 NRdet = (mask > 0).sum()
 if not NRdet:
@@ -300,7 +308,7 @@ if Parameters['steps']['doMerge'] and NRdet:
 	print "\n--- SoFiA: Merging detections ---"
 	sys.stdout.flush()
 	objects = []
-	objects, mask = linker.link_objects(np_Cube, objects, mask, **Parameters['merge'])
+	objects, mask = linker.link_objects(np_Cube, objects, mask, Parameters['merge']['radiusX'], Parameters['merge']['radiusY'], Parameters['merge']['radiusZ'], Parameters['merge']['minSizeX'], Parameters['merge']['minSizeY'], Parameters['merge']['minSizeZ'])
 	if not objects:
 		sys.stderr.write("WARNING: No objects remain after merging. Exiting pipeline.\n")
 		sys.exit()
