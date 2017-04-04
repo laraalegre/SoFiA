@@ -1119,6 +1119,8 @@ void SoFiA::updateFields()
 	
 	if(tabMergingGroupBox1->isChecked())         toolBoxME->setItemIcon(0, iconTaskComplete);
 	else                                         toolBoxME->setItemIcon(0, iconTaskReject);
+	if(tabMergingButtonPositivity->isChecked())  toolBoxME->setItemIcon(1, iconTaskComplete);
+	else                                         toolBoxME->setItemIcon(1, iconTaskReject);
 	
 	if(tabParametrisationGroupBox1->isChecked()) toolBoxPA->setItemIcon(0, iconTaskComplete);
 	else                                         toolBoxPA->setItemIcon(0, iconTaskReject);
@@ -2445,6 +2447,7 @@ void SoFiA::createInterface()
 	
 	tabSourceFindingForm1Layout->addWidget(tabSourceFindingWidget1Left);
 	tabSourceFindingForm1Layout->addWidget(tabSourceFindingWidget1Right);
+	tabSourceFindingForm1Layout->setContentsMargins(0, 0, 0, 0);
 	
 	tabSourceFindingGroupBox1->setLayout(tabSourceFindingForm1Layout);
 	
@@ -2587,59 +2590,83 @@ void SoFiA::createInterface()
 	tabMergingGroupBox1->setChecked(true);
 	connect(tabMergingGroupBox1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabMergingGroupBox1, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabMergingForm1 = new QFormLayout();
+	tabMergingForm1Layout = new QHBoxLayout();
+	tabMergingForm1Left = new QFormLayout();
+	tabMergingForm1Right = new QFormLayout();
+	tabMergingWidget1Left = new QWidget(tabMergingGroupBox1);
+	tabMergingWidget1Right = new QWidget(tabMergingGroupBox1);
 	
-	tabMergingFieldRadiusX = new QSpinBox(tabMergingGroupBox1);
+	tabMergingFieldRadiusX = new QSpinBox(tabMergingWidget1Left);
 	tabMergingFieldRadiusX->setObjectName("merge.radiusX");
 	tabMergingFieldRadiusX->setMaximumWidth(100);
 	tabMergingFieldRadiusX->setMinimum(0);
 	tabMergingFieldRadiusX->setMaximum(50);
 	connect(tabMergingFieldRadiusX, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
-	tabMergingFieldRadiusY = new QSpinBox(tabMergingGroupBox1);
+	tabMergingFieldRadiusY = new QSpinBox(tabMergingWidget1Left);
 	tabMergingFieldRadiusY->setObjectName("merge.radiusY");
 	tabMergingFieldRadiusY->setMaximumWidth(100);
 	tabMergingFieldRadiusY->setMinimum(0);
 	tabMergingFieldRadiusY->setMaximum(50);
 	connect(tabMergingFieldRadiusY, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
-	tabMergingFieldRadiusZ = new QSpinBox(tabMergingGroupBox1);
+	tabMergingFieldRadiusZ = new QSpinBox(tabMergingWidget1Left);
 	tabMergingFieldRadiusZ->setObjectName("merge.radiusZ");
 	tabMergingFieldRadiusZ->setMaximumWidth(100);
 	tabMergingFieldRadiusZ->setMinimum(0);
 	tabMergingFieldRadiusZ->setMaximum(50);
 	connect(tabMergingFieldRadiusZ, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
-	tabMergingFieldMinSizeX = new QSpinBox(tabMergingGroupBox1);
+	tabMergingFieldMinSizeX = new QSpinBox(tabMergingWidget1Right);
 	tabMergingFieldMinSizeX->setObjectName("merge.minSizeX");
 	tabMergingFieldMinSizeX->setMaximumWidth(100);
 	tabMergingFieldMinSizeX->setMinimum(1);
 	tabMergingFieldMinSizeX->setMaximum(50);
 	connect(tabMergingFieldMinSizeX, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
-	tabMergingFieldMinSizeY = new QSpinBox(tabMergingGroupBox1);
+	tabMergingFieldMinSizeY = new QSpinBox(tabMergingWidget1Right);
 	tabMergingFieldMinSizeY->setObjectName("merge.minSizeY");
 	tabMergingFieldMinSizeY->setMaximumWidth(100);
 	tabMergingFieldMinSizeY->setMinimum(1);
 	tabMergingFieldMinSizeY->setMaximum(50);
 	connect(tabMergingFieldMinSizeY, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
-	tabMergingFieldMinSizeZ = new QSpinBox(tabMergingGroupBox1);
+	tabMergingFieldMinSizeZ = new QSpinBox(tabMergingWidget1Right);
 	tabMergingFieldMinSizeZ->setObjectName("merge.minSizeZ");
 	tabMergingFieldMinSizeZ->setMaximumWidth(100);
 	tabMergingFieldMinSizeZ->setMinimum(1);
 	tabMergingFieldMinSizeZ->setMaximum(50);
 	connect(tabMergingFieldMinSizeZ, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
-	tabMergingButtonPositivity = new QCheckBox(tr("Enable (not recommended)"), tabMergingGroupBox1);
+	
+	tabMergingForm1Left->addRow(tr("Radius X:"), tabMergingFieldRadiusX);
+	tabMergingForm1Left->addRow(tr("Radius Y:"), tabMergingFieldRadiusY);
+	tabMergingForm1Left->addRow(tr("Radius Z:"), tabMergingFieldRadiusZ);
+	tabMergingForm1Right->addRow(tr("Min. size X:"), tabMergingFieldMinSizeX);
+	tabMergingForm1Right->addRow(tr("Min. size Y:"), tabMergingFieldMinSizeY);
+	tabMergingForm1Right->addRow(tr("Min. size Z:"), tabMergingFieldMinSizeZ);
+	tabMergingWidget1Left->setLayout(tabMergingForm1Left);
+	tabMergingWidget1Right->setLayout(tabMergingForm1Right);
+	
+	tabMergingForm1Layout->addWidget(tabMergingWidget1Left);
+	tabMergingForm1Layout->addWidget(tabMergingWidget1Right);
+	tabMergingForm1Layout->setContentsMargins(0, 0, 0, 0);
+	tabMergingGroupBox1->setLayout(tabMergingForm1Layout);
+	
+	
+	tabMergingGroupBox2 = new QGroupBox(toolBoxME);
+	tabMergingForm2 = new QFormLayout();
+	
+	tabMergingButtonPositivity = new QCheckBox(tr("Enable "), tabMergingGroupBox2);
 	tabMergingButtonPositivity->setObjectName("merge.positivity");
 	tabMergingButtonPositivity->setEnabled(true);
 	tabMergingButtonPositivity->setChecked(false);
 	connect(tabMergingButtonPositivity, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	connect(tabMergingButtonPositivity, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabMergingButtonPositivity, SIGNAL(clicked(bool)), this, SLOT(printPositivityWarning(bool)));
 	
-	tabMergingForm1->addRow(tr("Radius X:"), tabMergingFieldRadiusX);
-	tabMergingForm1->addRow(tr("Radius Y:"), tabMergingFieldRadiusY);
-	tabMergingForm1->addRow(tr("Radius Z:"), tabMergingFieldRadiusZ);
-	tabMergingForm1->addRow(tr("Min. size X:"), tabMergingFieldMinSizeX);
-	tabMergingForm1->addRow(tr("Min. size Y:"), tabMergingFieldMinSizeY);
-	tabMergingForm1->addRow(tr("Min. size Z:"), tabMergingFieldMinSizeZ);
-	tabMergingForm1->addRow(tr("Positivity:"), tabMergingButtonPositivity);
-	tabMergingGroupBox1->setLayout(tabMergingForm1);
+	tabMergingLabelWarning = new QLabel(tabMergingGroupBox2);
+	tabMergingLabelWarning->setText(tr("<p><strong>Warning:</strong> Enabling positivity is dangerous and will render some of SoFiA&rsquo;s most powerful algorithms useless, including mask optimisation and reliability calculation. It can also create biases in certain source parameters measured by SoFiA.</p><p>This option should only be activated by expert users who are fully aware of the risks and consequences of discarding negative signals.</p>"));
+	tabMergingLabelWarning->setWordWrap(true);
+	
+	tabMergingForm2->addRow(tr("Positivity:"), tabMergingButtonPositivity);
+	tabMergingForm2->addRow(tabMergingLabelWarning);
+	tabMergingGroupBox2->setLayout(tabMergingForm2);
+	
 	
 	tabMergingButtonPrev = new QPushButton(tr("Previous"), tabMerging);
 	tabMergingButtonPrev->setIcon(iconGoPreviousView);
@@ -2657,6 +2684,7 @@ void SoFiA::createInterface()
 	tabMergingWidgetControls->setLayout(tabMergingLayoutControls);
 	
 	toolBoxME->addItem(tabMergingGroupBox1, iconTaskReject, tr("Merging of Detections"));
+	toolBoxME->addItem(tabMergingGroupBox2, iconTaskReject, tr("Additional Options"));
 	
 	tabMergingLayout->addWidget(toolBoxME);
 	tabMergingLayout->addStretch();
@@ -3316,7 +3344,7 @@ void SoFiA::createInterface()
 	tabOutputLayoutParameters = new QGridLayout();
 	tabOutputLayoutParameters->setContentsMargins(0, 0, 0, 0);
 	tabOutputLayoutParameters->setHorizontalSpacing(20);
-	tabOutputLayoutParameters->setVerticalSpacing(5);
+	tabOutputLayoutParameters->setVerticalSpacing(2);
 	// NOTE: The following lines will ensure that all columns have the same width
 	//       and expand equally whenever the width of the main window is increased.
 	tabOutputLayoutParameters->setColumnStretch(0, 1);
@@ -3721,7 +3749,7 @@ void SoFiA::createWhatsThis()
 	tabMergingFieldRadiusX->setWhatsThis(tr("<h3>merge.radiusX</h3><p>Merging radius in first dimension in pixels.</p>"));
 	tabMergingFieldRadiusY->setWhatsThis(tr("<h3>merge.radiusY</h3><p>Merging radius in second dimension in pixels.</p>"));
 	tabMergingFieldRadiusZ->setWhatsThis(tr("<h3>merge.radiusZ</h3><p>Merging radius in third dimension in pixels.</p>"));
-	tabMergingButtonPositivity->setWhatsThis(tr("<h3>merge.positivity</h3><p>Discard all negative signals and only merge positive signals into detections.</p><p><strong>Warning:</strong> Enabling positivity is dangerous and will render some of SoFiA&rsquo;s most powerful algorithms useless, including mask optimisation and reliability calculation.</p><p>Only use this feature if you are fully aware if its risks and consequences!</p>"));
+	tabMergingButtonPositivity->setWhatsThis(tr("<h3>merge.positivity</h3><p>Discard all negative signals and only merge positive signals into detections.</p>"));
 	tabInputFieldCatalog->setWhatsThis(tr("<h3>optical.sourceCatalogue</h3><p>This defines the full path and file name of the input catalogue required for catalogue-based source finding (see parameter <b>steps.doOptical</b>). There is no default.</p><p>Catalogues must be comma-separated and contain at least four columns containing a unique ID number, right ascension, declination and frequency/velocity of the positions to be searched. All parameters must be specified in the native WCS units of the cube. In addition, a header line must be provided, with the four parameter columns above listed as <code>id</code>, <code>ra</code>, <code>dec</code> and <code>z</code>.</p>"));
 	tabInputFieldSpatialSize->setWhatsThis(tr("<h3>optical.spatSize</h3><p>This defines the <b>spatial</b> size of the sub-cube to be searched around each catalogue position. The size must be specified in the <b>native units</b> of the data cube, e.g. in degrees.</p>"));
 	tabInputFieldSpectralSize->setWhatsThis(tr("<h3>optical.specSize</h3><p>This defines the <b>spectral</b> size of the sub-cube to be searched around each catalogue position. The size must be specified in the <b>native units</b> of the data cube, e.g. in km/s or Hz.</p>"));
