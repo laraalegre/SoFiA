@@ -13,6 +13,12 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+
+
+// ----------- //
+// Constructor //
+// ----------- //
+
 Parametrization::Parametrization()
 {
 	// Initialisation of data:
@@ -58,6 +64,12 @@ Parametrization::Parametrization()
 	
 	return;
 }
+
+
+
+// -------------------------------------------------- //
+// Interface function to call parameterisation module //
+// -------------------------------------------------- //
 
 int Parametrization::parametrize(DataCube<float> *d, DataCube<short> *m, Source *s, bool doBF)
 {
@@ -116,6 +128,12 @@ int Parametrization::parametrize(DataCube<float> *d, DataCube<short> *m, Source 
 	
 	return 0;
 }
+
+
+
+// ----------------------------------------------- //
+// Function to load data and determine local noise //
+// ----------------------------------------------- //
 
 int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 {
@@ -210,11 +228,11 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 	noiseSubCube   = 0.0;
 	std::vector<double> rmsMad;
 	
-	for(long x = subRegionX1; x <= subRegionX2; x++)
+	for(long x = subRegionX1; x <= subRegionX2; ++x)
 	{
-		for(long y = subRegionY1; y <= subRegionY2; y++)
+		for(long y = subRegionY1; y <= subRegionY2; ++y)
 		{
-			for(long z = subRegionZ1; z <= subRegionZ2; z++)
+			for(long z = subRegionZ1; z <= subRegionZ2; ++z)
 			{
 				// Add only those pixels that are masked as being part of the source:
 				float tmpFlux = dataCube->getData(x, y, z);
@@ -227,9 +245,6 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 					dataPoint.y = y;
 					dataPoint.z = z;
 					dataPoint.value = tmpFlux;
-					// WARNING: A std::bad_alloc exception occurs later on when dataPoint.value is set to a constant of 1.0! No idea why...
-					// NOTE:    This may not be the case any longer according to a quick test on 2 April 2015.
-					
 					data.push_back(dataPoint);
 				}
 				else if(maskCube->getData(x, y, z) == 0 and not std::isnan(tmpFlux))
@@ -254,7 +269,7 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 	{
 		// Calculate the rms via the median absolute deviation (MAD):
 		double m = median(rmsMad);
-		for(size_t i = 0; i < rmsMad.size(); i++) rmsMad[i] = fabs(rmsMad[i] - m);
+		for(size_t i = 0; i < rmsMad.size(); ++i) rmsMad[i] = fabs(rmsMad[i] - m);
 		noiseSubCube = 1.4826 * median(rmsMad);
 		// NOTE: The factor of 1.4826 above is the approximate theoretical conversion factor
 		//       between the MAD and the standard deviation under the assumption that the 
@@ -266,7 +281,9 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 
 
 
-// Measure centroid:
+// ---------------- //
+// Measure centroid //
+// ---------------- //
 
 int Parametrization::measureCentroid()
 {
@@ -281,7 +298,7 @@ int Parametrization::measureCentroid()
 	centroidY  = 0.0;
 	centroidZ  = 0.0;
 	
-	for(size_t i = 0; i < data.size(); i++)
+	for(size_t i = 0; i < data.size(); ++i)
 	{
 		if(data[i].value > 0.0)        // NOTE: Only positive pixels considered here!
 		{
@@ -301,7 +318,9 @@ int Parametrization::measureCentroid()
 
 
 
-// Measure peak flux, integrated flux and integrated S/N:
+// ----------------------------------------------------- //
+// Measure peak flux, integrated flux and integrated S/N //
+// ----------------------------------------------------- //
 
 int Parametrization::measureFlux()
 {
@@ -315,7 +334,7 @@ int Parametrization::measureFlux()
 	peakFlux  = -std::numeric_limits<double>::max();
 	
 	// Sum over all pixels (including negative ones):
-	for(size_t i = 0; i < data.size(); i++)
+	for(size_t i = 0; i < data.size(); ++i)
 	{
 		totalFlux  += static_cast<double>(data[i].value);
 		if(peakFlux < static_cast<double>(data[i].value)) peakFlux = static_cast<double>(data[i].value);
@@ -333,11 +352,14 @@ int Parametrization::measureFlux()
 
 
 
-// Fit ellipse to source:
+// --------------------- //
+// Fit ellipse to source //
+// --------------------- //
 
 int Parametrization::fitEllipse()
 {
-	// Fitting ellipse to intensity-weighted image:
+	// (1) Fitting ellipse to intensity-weighted image:
+	
 	if(data.empty())
 	{
 		std::cerr << "Error (Parametrization): No data loaded.\n";
@@ -355,11 +377,11 @@ int Parametrization::fitEllipse()
 	double momXY = 0.0;
 	double sum   = 0.0;
 	
-	for(size_t i = 0; i < data.size(); i++)
+	for(size_t i = 0; i < data.size(); ++i)
 	{
 		double fluxValue = static_cast<double>(data[i].value);
 		
-		if(fluxValue > 0.0)           // NOTE: Only positive pixels considered here!
+		if(fluxValue > 0.0)            // NOTE: Only positive pixels considered here!
 		{
 			momX  += static_cast<double>((data[i].x - source->getParameter("x")) * (data[i].x - source->getParameter("x"))) * fluxValue;
 			momY  += static_cast<double>((data[i].y - source->getParameter("y")) * (data[i].y - source->getParameter("y"))) * fluxValue;
@@ -387,7 +409,9 @@ int Parametrization::fitEllipse()
 	//          Note that the PA is relative to the pixel grid, not the coordinate system!
 	
 	
-	// Fitting ellipse to moment map of uniformly weighted pixels above 3 sigma:
+	
+	// (2) Fitting ellipse to moment map of uniformly weighted pixels above 3 sigma:
+	
 	size_t sizeX = subRegionX2 - subRegionX1 + 1;
 	size_t sizeY = subRegionY2 - subRegionY1 + 1;
 	
@@ -405,21 +429,21 @@ int Parametrization::fitEllipse()
 		return 1;
 	}
 	
-	for(size_t i = 0; i < sizeX * sizeY; i++)
+	for(size_t i = 0; i < sizeX * sizeY; ++i)
 	{
 		momentMap[i] = 0.0;
 		maskMap[i] = 0;
 	}
 	
-	for(size_t i = 0; i < data.size(); i++)
+	for(size_t i = 0; i < data.size(); ++i)
 	{
 		momentMap[data[i].x - subRegionX1 + sizeX * (data[i].y - subRegionY1)] += static_cast<double>(data[i].value);
 		maskMap[data[i].x - subRegionX1 + sizeX * (data[i].y - subRegionY1)]   += 1;
 	}
 	
-	for(size_t x = 0; x < sizeX; x++)
+	for(size_t x = 0; x < sizeX; ++x)
 	{
-		for(size_t y = 0; y < sizeY; y++)
+		for(size_t y = 0; y < sizeY; ++y)
 		{
 			// Mask all valid pixels above 3 × RMS:
 			if(maskMap[x + sizeX * y] > 0)
@@ -439,9 +463,9 @@ int Parametrization::fitEllipse()
 	
 	// Determine ellipse parameters on mask (where all pixels > 3 sigma have been
 	// set to 1, all other pixels to 0):
-	for(size_t x = 0; x < sizeX; x++)
+	for(size_t x = 0; x < sizeX; ++x)
 	{
-		for(size_t y = 0; y < sizeY; y++)
+		for(size_t y = 0; y < sizeY; ++y)
 		{
 			momX  += static_cast<double>((x - source->getParameter("x") + subRegionX1) * (x - source->getParameter("x") + subRegionX1) * maskMap[x + sizeX * y]);
 			momY  += static_cast<double>((y - source->getParameter("y") + subRegionY1) * (y - source->getParameter("y") + subRegionY1) * maskMap[x + sizeX * y]);
@@ -475,7 +499,10 @@ int Parametrization::fitEllipse()
 
 
 
-// Measure kinematic major axis:
+// ---------------------------- //
+// Measure kinematic major axis //
+// ---------------------------- //
+
 int Parametrization::kinematicMajorAxis()
 {
 	if(data.empty())
@@ -492,7 +519,7 @@ int Parametrization::kinematicMajorAxis()
 	size_t firstPoint = size;
 	size_t lastPoint  = 0;
 	
-	for(size_t i = 0; i < data.size(); i++)
+	for(size_t i = 0; i < data.size(); ++i)
 	{
 		// NOTE: Only values > 3 sigma considered here!
 		if(data[i].value > 3.0 * noiseSubCube)
@@ -505,13 +532,13 @@ int Parametrization::kinematicMajorAxis()
 	
 	unsigned int counter = 0;
 	
-	for(size_t i = 0; i < size; i++)
+	for(size_t i = 0; i < size; ++i)
 	{
 		if(sum[i] > 0.0)
 		{
 			cenX[i] /= sum[i];
 			cenY[i] /= sum[i];
-			counter++;
+			++counter;
 			
 			if(i < firstPoint) firstPoint = i;
 			if(i > lastPoint)  lastPoint  = i;
@@ -540,7 +567,7 @@ int Parametrization::kinematicMajorAxis()
 	double weight = 1.0;
 	
 	// Using linear regression:
-	/*for(size_t i = 0; i < size; i++)
+	/*for(size_t i = 0; i < size; ++i)
 	{
 		if(sum[i] > 0.0)
 		{
@@ -559,7 +586,7 @@ int Parametrization::kinematicMajorAxis()
 	//double inter = (sumXX * sumY - sumX * sumXY) / (sum * sumXX - sumX * sumX);*/
 	
 	// Using Deming (orthogonal) regression:
-	for(size_t i = 0; i < size; i++)
+	for(size_t i = 0; i < size; ++i)
 	{
 		if(sum[i] > 0.0)
 		{
@@ -575,7 +602,7 @@ int Parametrization::kinematicMajorAxis()
 	sumX /= sumW;
 	sumY /= sumW;
 	
-	for(size_t i = 0; i < size; i++)
+	for(size_t i = 0; i < size; ++i)
 	{
 		if(sum[i] > 0.0)
 		{
@@ -597,7 +624,7 @@ int Parametrization::kinematicMajorAxis()
 	// Check orientation of approaching/receding side of disc:
 	double fullAngle = atan2(cenY[lastPoint] - cenY[firstPoint], cenX[lastPoint] - cenX[firstPoint]);
 	
-	// Correct for full angle and astronomer's favourite definition of PA:
+	// Correct for full angle and astronomers' favourite definition of PA:
 	double difference = fabs(atan2(sin(fullAngle) * cos(kinematicPA) - cos(fullAngle) * sin(kinematicPA), cos(fullAngle) * cos(kinematicPA) + sin(fullAngle) * sin(kinematicPA)));
 	if(difference > M_PI / 2.0)
 	{
@@ -619,7 +646,9 @@ int Parametrization::kinematicMajorAxis()
 
 
 
-// Create integrated spectrum:
+// -------------------------- //
+// Create integrated spectrum //
+// -------------------------- //
 
 int Parametrization::createIntegratedSpectrum()
 {
@@ -632,7 +661,7 @@ int Parametrization::createIntegratedSpectrum()
 	spectrum.clear();
 	noiseSpectrum.clear();
 	
-	for(long i = 0; i <= subRegionZ2 - subRegionZ1; i++)
+	for(long i = 0; i <= subRegionZ2 - subRegionZ1; ++i)
 	{
 		spectrum.push_back(0.0);
 		noiseSpectrum.push_back(0.0);
@@ -652,8 +681,8 @@ int Parametrization::createIntegratedSpectrum()
 	// WARNING: channel as the uncertainty? Or would one rather use the S/N? If the rms
 	// WARNING: is zero (because there are no data) the BF fitting will just produce NaNs.
 	// WARNING: Even worse: the noise will not scale with sqrt(N), because pixels are
-	// WARNING: spatially correlated!!!
-	for(size_t i = 0; i < noiseSpectrum.size(); i++)
+	// WARNING: spatially correlated!
+	for(size_t i = 0; i < noiseSpectrum.size(); ++i)
 	{
 		if(counter[i] > 0) noiseSpectrum[i] = sqrt(static_cast<double>(counter[i])) * noiseSubCube;
 		else noiseSpectrum[i] = std::numeric_limits<double>::infinity();
@@ -664,7 +693,9 @@ int Parametrization::createIntegratedSpectrum()
 
 
 
-// Measure line width:
+// ------------------ //
+// Measure line width //
+// ------------------ //
 
 int Parametrization::measureLineWidth()
 {
@@ -677,15 +708,18 @@ int Parametrization::measureLineWidth()
 	// Determine maximum:
 	double specMax = 0.0;    // WARNING: This assumes that sources are always positive!
 	
-	for(size_t i = 0; i < spectrum.size(); i++)
+	for(size_t i = 0; i < spectrum.size(); ++i)
 	{
 		if(spectrum[i] > specMax) specMax = spectrum[i];
 	}
 	
-	//Determine w₅₀:
+	
+	
+	// (1) Determine w50:
+	
 	size_t i = 0;
 	
-	while(i < spectrum.size() and spectrum[i] < specMax / 2.0) i++;
+	while(i < spectrum.size() and spectrum[i] < specMax / 2.0) ++i;
 	
 	if(i >= spectrum.size())
 	{
@@ -699,7 +733,7 @@ int Parametrization::measureLineWidth()
 	
 	i = spectrum.size() - 1;
 	
-	while(i >= 0 and spectrum[i] < specMax / 2.0) i--;
+	while(i >= 0 and spectrum[i] < specMax / 2.0) --i;
 	
 	if(i < 0)
 	{
@@ -718,10 +752,13 @@ int Parametrization::measureLineWidth()
 		return 1;
 	}
 	
-	//Determine w₂₀:
+	
+	
+	// (2) Determine w20:
+	
 	i = 0;
 	
-	while(i < spectrum.size() and spectrum[i] < specMax / 5.0) i++;
+	while(i < spectrum.size() and spectrum[i] < specMax / 5.0) ++i;
 	
 	if(i >= spectrum.size())
 	{
@@ -735,7 +772,7 @@ int Parametrization::measureLineWidth()
 	
 	i = spectrum.size() - 1;
 	
-	while(i >= 0 and spectrum[i] < specMax / 5.0) i--;
+	while(i >= 0 and spectrum[i] < specMax / 5.0) --i;
 	
 	if(i < 0)
 	{
@@ -754,7 +791,10 @@ int Parametrization::measureLineWidth()
 		return 1;
 	}
 	
-	//Determine Wₘ₅₀:
+	
+	
+	// (3) Determine Wm50:
+	
 	double sum = 0.0;
 	double bound90l = 0.0;
 	double bound90r = 0.0;
@@ -765,7 +805,7 @@ int Parametrization::measureLineWidth()
 	while(sum < 0.05 * totalFlux and i < spectrum.size())
 	{
 		sum += spectrum[i];
-		i++;
+		++i;
 	}
 	
 	if(i >= spectrum.size())
@@ -785,7 +825,7 @@ int Parametrization::measureLineWidth()
 	while(sum < 0.05 * totalFlux and i >= 0)
 	{
 		sum += spectrum[i];
-		i--;
+		--i;
 	}
 	
 	if(i < 0)
@@ -794,7 +834,7 @@ int Parametrization::measureLineWidth()
 		return 1;
 	}
 	
-	i++;
+	++i;
 	
 	bound90r = static_cast<double>(i);
 	if(i < spectrum.size() - 1) bound90r += (spectrum[i] - 0.05 * totalFlux) / (spectrum[i] - spectrum[i + 1]);   // Interpolate if not at edge.
@@ -810,7 +850,7 @@ int Parametrization::measureLineWidth()
 	
 	i = 0;
 	
-	while(spectrum[i] < 0.5 * meanFluxWm50 and i < spectrum.size()) i++;
+	while(spectrum[i] < 0.5 * meanFluxWm50 and i < spectrum.size()) ++i;
 	
 	if(i >= spectrum.size())
 	{
@@ -824,7 +864,7 @@ int Parametrization::measureLineWidth()
 	
 	i = spectrum.size() - 1;
 	
-	while(spectrum[i] < 0.5 * meanFluxWm50 and i >= 0) i--;
+	while(spectrum[i] < 0.5 * meanFluxWm50 and i >= 0) --i;
 	
 	if(i < 0)
 	{
@@ -850,7 +890,9 @@ int Parametrization::measureLineWidth()
 
 
 
-// Fit Busy Function:
+// ----------------- //
+// Fit Busy Function //
+// ----------------- //
 
 int Parametrization::fitBusyFunction()
 {
@@ -933,7 +975,9 @@ int Parametrization::fitBusyFunction()
 
 
 
-// Assign results to source:
+// ------------------------ //
+// Assign results to source //
+// ------------------------ //
 
 int Parametrization::writeParameters()
 {
