@@ -355,7 +355,7 @@ elif Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and
 
 	# ---- MEASURE GLOBAL SIGMA AND NORMALISE PARAMETERS----
 	print "\n--- %.3f seconds since start"%(time()-t0)
-	print "\n--- SoFiA: Measuring cube noise ---"
+	print "\n--- SoFiA: Measuring cube noise to divide flux parameters by global rms ---"
 	sys.stdout.flush()
 	maxNrVox=1e+6 # maximum nr of voxels over which to calculate the global RMS. Sampling below is set accordingly.
 	sampleRms=max(1,int((float(np.array(np_Cube.shape).prod())/maxNrVox)**(1./min(3,len(np_Cube.shape)))))
@@ -364,7 +364,6 @@ elif Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and
 
 	# normalise flux parameters to global rms
 	# (this is done also if weights were applied, in case they are prop. to 1/sigma but not exactly = 1/sigma)
-	print 'Dividing flux parameters by global cube rms'
 	objects=np.array(objects)
 	objects[:,catParNames.index('snr_min')]/=globalrms
 	objects[:,catParNames.index('snr_max')]/=globalrms
