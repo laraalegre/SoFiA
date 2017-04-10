@@ -117,6 +117,14 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
                 # set the kernel shape to that of the variance or covariance matrix
                 kernel=np.cov(pars[:,neg])
                 kernelType='covariance'
+                if np.isnan(kernel).sum():
+			sys.stderr.write("ERROR: The reliability cannot be calculated because the smoothing kernel\n")
+			sys.stderr.write("       derived from %i negative sources contains NaNs.\n"%pars[:,neg].shape[1])
+                        sys.stderr.write("       A good kernel is required to calculate the density field of positive\n")
+                        sys.stderr.write("       and negative sources in parameter space.\n")
+                        sys.stderr.write("       Try increase the number of negative sources by changing the source.\n")
+                        sys.stderr.write("       finding and/or filtering settings.\n")
+			raise SystemExit(1)
                 if not usecov:
                         kernel=np.diag(np.diag(kernel))
                         kernelType='variance'
@@ -130,14 +138,14 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
                         kernel*=scaleKernel**2
 	                print '# Using a kernel with the shape of the %s and size scaled by a factor %.2f.'%(kernelType,scaleKernel)
                         print '# The sqrt(kernel) size is:'
-                        print np.sqrt(kernel)
+                        print np.sqrt(np.abs(kernel))
                 else:
                         # scale kernel size to start the kernel-growing loop
                         # the scale factor for sqrt(kernel) is elevated to the power of 1./len(parCol)
                         kernel*=((negPerBin+kernelIter)/Nneg)**(2./len(parCol))
 	                print '# Will find the best kernel as a scaled version of the %s:'%kernelType
                         print '# Starting from the kernel with sqrt(kernel) size:'
-                        print np.sqrt(kernel)
+                        print np.sqrt(np.abs(kernel))
                         print '# Growing kernel...'
                         sys.stdout.flush()
 
@@ -208,7 +216,7 @@ def EstimateRel(data,pdfoutname,parNames,parSpace=['snr_sum','snr_max','n_pix'],
 		        elif deltmed/deltstd>skellamTol or negPerBin+kernelIter>=Nneg:
                                 grow_kernel=0
 	                        print '# Found good kernel after %i kernel growth iterations. The sqrt(kernel) size is:'%kernelIter
-                                print np.sqrt(kernel)
+                                print np.sqrt(np.abs(kernel))
                                 sys.stdout.flush()
                         elif deltmed/deltstd<5*skellamTol:
                 	        kernel*=(float(negPerBin+kernelIter+20)/(negPerBin+kernelIter))**(2./len(parCol)) 
