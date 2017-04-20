@@ -31,6 +31,15 @@ from sofia import flag_cube
 from sofia import CNHI
 
 
+# -----------------------------------------------
+# ---- Check if parameter file name provided ----
+# -----------------------------------------------
+
+if len(sys.argv) != 2:
+	sys.stderr.write("\n\033[1;4mUsage:\033[24m sofia_pipeline.py \033[3m<filename>\033[0m\n\nThe filename of a valid SoFiA parameter file must be specified. Please\nadd the full path if the file is not located in the current directory.\n\n")
+	sys.exit(1)
+
+
 
 # --------------------------------------
 # ---- FUNCTION TO CHECK OVERWRITES ----
@@ -92,6 +101,9 @@ print 'Parameters extracted from: ', parameter_file
 print
 sys.stdout.flush()
 User_Parameters = readoptions.readPipelineOptions(parameter_file)
+if not User_Parameters:
+	sys.stderr.write("ERROR: No valid parameter settings found in parameter file.\n\n")
+	sys.exit(1)
 
 # Overwrite default parameters with user parameters (if exist):
 for task in User_Parameters.iterkeys():

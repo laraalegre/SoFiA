@@ -12,7 +12,13 @@ def str2bool(s):
 
 
 def readPipelineOptions(filename = "pipeline.options"):
-    f = open(filename, 'r')
+    try:
+        f = open(filename, 'r')
+    except IOError as e:
+        sys.stderr.write("ERROR: Failed to read parameter file.\n")
+        print e + '\n'
+        sys.exit(1);
+    
     lines = f.readlines()
     f.close()
     
