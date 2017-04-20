@@ -316,6 +316,7 @@ if Parameters['steps']['doMerge'] and NRdet:
 	print 'Merging complete'
 	print
 	NRdet = len(objects)
+        NRdetNeg = (np.array(objects)[:,16] < 0).sum()
 	# set catalog header	
 	if 'bunit' in dict_Header: dunits=dict_Header['bunit']
 	else: dunits='-'
@@ -337,11 +338,24 @@ if Parameters['steps']['doDebug'] and NRdet:
 # ---- ESTIMATE RELIABILITY FROM NEGATIVE SOURCES ----
 # ----------------------------------------------------
 
-if Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and NRdet:
+if Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and NRdet and not NRdetNeg:
+	print "\n--- %.3f seconds since start"%(time()-t0)
+	sys.stderr.write("ERROR: You asked SoFiA to calculate the reliability of the detected sources.\n")
+        sys.stderr.write("       Unfortunately, this calculation cannot be done because there are no\n")
+        sys.stderr.write("       negative sources in the catalogue of detections. This may occur because\n")
+        sys.stderr.write("       of your source-finding and/or filtering settings.\n")
+        sys.stderr.write("       Negative sources are strictly necessary to calculate the reliability.\n")
+        sys.stderr.write("       You can do one of the following:\n")
+        sys.stderr.write("       1) switch off the reliability calculation.\n")
+        sys.stderr.write("       2) modify the source-finding and/or filtering settings in order to detect\n")
+        sys.stderr.write("          negative sources.\n")
+	sys.exit(1)
+
+elif Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and NRdet and NRdetNeg:
 
 	# ---- MEASURE GLOBAL SIGMA AND NORMALISE PARAMETERS----
 	print "\n--- %.3f seconds since start"%(time()-t0)
-	print "\n--- SoFiA: Measuring cube noise ---"
+	print "\n--- SoFiA: Measuring cube noise to divide flux parameters by global rms ---"
 	sys.stdout.flush()
 	maxNrVox=1e+6 # maximum nr of voxels over which to calculate the global RMS. Sampling below is set accordingly.
 	sampleRms=max(1,int((float(np.array(np_Cube.shape).prod())/maxNrVox)**(1./min(3,len(np_Cube.shape)))))
@@ -350,7 +364,6 @@ if Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and N
 
 	# normalise flux parameters to global rms
 	# (this is done also if weights were applied, in case they are prop. to 1/sigma but not exactly = 1/sigma)
-	print 'Dividing flux parameters by global cube rms'
 	objects=np.array(objects)
 	objects[:,catParNames.index('snr_min')]/=globalrms
 	objects[:,catParNames.index('snr_max')]/=globalrms
@@ -369,10 +382,13 @@ if Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and N
 	catParFormt = tuple(list(catParFormt) + ['%12.3e', '%12.3e', '%12.6f'])
 
 elif Parameters['steps']['doMerge'] and NRdet:
+	print "\n--- %.3f seconds since start"%(time()-t0)
 	reliable = list(np.array(objects)[np.array(objects)[:,16] > 0,0].astype(int)) # select all positive sources
 	print 'The following sources have been detected:', reliable
 
-else: reliable=[1,] # if not merging, all detected voxels have ID = 1 and here they are set to be reliable
+else:
+	print "\n--- %.3f seconds since start"%(time()-t0)
+	reliable=[1,] # if not merging, all detected voxels have ID = 1 and here they are set to be reliable
 
 
 
