@@ -213,19 +213,18 @@ if compile_gui:
 print '\n'
 print '-------------------------------------------------------------------------'
 print '\n'
-print 'Installation done.'
-print '\n'
-print 'Please add the following lines to your shell configuration file:'
-print '  for bash (~/.bashrc)'
-print '      export SOFIA_MODULE_PATH=' + sofiaModulesPath
-print '      export SOFIA_PIPELINE_PATH="' + cwd + '/sofia_pipeline.py"'
-if compile_gui: print '      export PATH=$PATH:' + cwd + ':' + sofiaApplicationPath
-else:           print '      export PATH=$PATH:' + cwd
-print '  for (t)csh (~/.cshrc)'
-print '      setenv SOFIA_MODULE_PATH ' + sofiaModulesPath
-print '      setenv SOFIA_PIPELINE_PATH "' + cwd + '/sofia_pipeline.py"'
-if compile_gui:  print '      setenv PATH {$PATH}:' + cwd + ':' + sofiaApplicationPath
-else:            print '      setenv PATH {$PATH}:' + cwd
+print '\033[1;32mInstallation complete.\033[0m\n'
+print '\033[1mPlease add the following lines to your shell configuration file:\033[0m\n'
+print '\033[3;4mFor BASH (~/.bashrc):\033[0m'
+print '    export SOFIA_MODULE_PATH="' + sofiaModulesPath + '"'
+print '    export SOFIA_PIPELINE_PATH="' + cwd + '/sofia_pipeline.py"'
+if compile_gui: print '    export PATH="$PATH:' + cwd + ':' + sofiaApplicationPath + '"\n'
+else:           print '    export PATH="$PATH:' + cwd + '"\n'
+print '\033[3;4mFor (T)CSH (~/.cshrc):\033[0m'
+print '    setenv SOFIA_MODULE_PATH ' + sofiaModulesPath
+print '    setenv SOFIA_PIPELINE_PATH ' + cwd + '/sofia_pipeline.py'
+if compile_gui:  print '    setenv PATH {$PATH}:' + cwd + ':' + sofiaApplicationPath
+else:            print '    setenv PATH {$PATH}:' + cwd
 print '\n'
 
 ## test sofia installation
