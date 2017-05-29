@@ -29,7 +29,7 @@ SoFiA:
   * Linux or Unix (e.g. Ubuntu, Mac OS, etc.)
   * Terminal with `bash` or `tcsh` (other shells should work as well)
 * Packages (Python):
-  * `Python` (= 2.7)
+  * `Python` (= 2.7; including dev package)
   * `NumPy` (≥ 1.8)
   * `SciPy` (≥ 0.7)
   * `Astropy` (≥ 0.2.5)
