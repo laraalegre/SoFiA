@@ -915,14 +915,28 @@ int Parametrization::fitBusyFunction()
 	int bestNoP = 8;
 	int nSeeds  = 1000;
 	int iterMax = 30;
-	//int iterRef = 3000;
 	int verbose = 0;
 	
 	// Carry out the fitting:
 	busyFitSuccess = FitBusyFunc(spectrum.size(), &channels[0], &spectrum[0], &noiseSpectrum[0], &busyFitParameters[0], fitCov, bestNoP, nSeeds, iterMax, verbose);
 	
 	// Repeat to refine fit:
-	//busyFitSuccess = FitBusyFunc(spectrum.size(), &channels[0], &spectrum[0], &noiseSpectrum[0], &busyFitParameters[0], fitCov, bestNoP, -1, iterRef, verbose);
+	busyFitSuccess = FitBusyFunc(spectrum.size(), &channels[0], &spectrum[0], &noiseSpectrum[0], &busyFitParameters[0], fitCov, bestNoP, -1, iterMax, verbose);
+	
+	// Determine observational parameters:
+	double **tmpPar = new double *[1];
+	double **tmpObsVals = new double *[1];
+	tmpPar[0] = new double[8];
+	tmpObsVals[0] = new double[7];
+	for(size_t i = 0; i < 8; ++i) tmpPar[0][i] = busyFitParameters[i];
+	CalcObsParams(1, tmpPar, spectrum.size(), &channels[0], tmpObsVals, verbose);
+	// ALERT: To do: Figure out which parameter is stored at which index position!
+	
+	// Delete temporary variables again:
+	delete[] tmpPar[0];
+	delete[] tmpObsVals[0];
+	delete[] tmpPar;
+	delete[] tmpObsVals;
 	
 	// Delete the covariance matrix again
 	// (we don't really need it anyway):
