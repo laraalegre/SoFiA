@@ -930,7 +930,11 @@ int Parametrization::fitBusyFunction()
 	tmpObsVals[0] = new double[7];
 	for(size_t i = 0; i < 8; ++i) tmpPar[0][i] = busyFitParameters[i];
 	CalcObsParams(1, tmpPar, spectrum.size(), &channels[0], tmpObsVals, verbose);
-	// ALERT: To do: Figure out which parameter is stored at which index position!
+	busyFunctionFint     = tmpObsVals[0][0];
+	busyFunctionFpeak    = tmpObsVals[0][1];
+	busyFunctionW50      = tmpObsVals[0][3];
+	busyFunctionW20      = tmpObsVals[0][5];
+	busyFunctionCentroid = 0.0; // ALERT: Russell's code does not calculate centroid!
 	
 	// Delete temporary variables again:
 	delete[] tmpPar[0];
