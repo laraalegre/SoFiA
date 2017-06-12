@@ -35,7 +35,8 @@ SoFiA:
   * `Astropy` (≥ 0.2.5)
   * `matplotlib` (≥ 1.1; optional, needed for reliability plots)
 * Packages (C++):
-  * `GCC` (≥ 4.8; including `g++`)
+  * `GCC` (≥ 4.8; including `g++`) or `Clang` (≥ 3.3; under MacOS: Xcode
+    version ≥ 5.0.0 (clang-500.2.75))
   * `zlib` (≥ 1.2.8; including dev package)
   * `Qt` (≥ 4.7; including dev package and `qmake`; optional, needed for GUI)
 
