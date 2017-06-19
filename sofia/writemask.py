@@ -44,6 +44,10 @@ def writeMask(cube, header, dictionary, filename, compress, flagOverwrite):
 		header.add_history(option)
 	if cube.max() < 32767:
 		cube=cube.astype('int16')
+
+	# add axes required to make the shape of the mask cube equal to the shape of the input datacube
+        while header['naxis']>len(cube.shape): cube.resize(tuple([1,]+list(cube.shape)))
+
 	hdu = pyfits.PrimaryHDU(data=cube, header=header)
 	hdu.header['BUNIT'] = 'source_ID'
 	hdu.header['DATAMIN'] = cube.min()

@@ -643,6 +643,12 @@ if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge'] and NRde
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Writing output catalogue ---"
 	sys.stdout.flush()
+
+	if 'rms' in catParNames:
+                catParFormt=list(catParFormt)
+                catParFormt[list(catParNames).index('rms')]='%12.4e'
+                catParFormt=tuple(catParFormt)
+
 	if Parameters['writeCat']['writeXML'] and Parameters['steps']['doMerge'] and NRdet:
 		store_xml.make_xml_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatXml, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
 		#store_xml.make_xml(results, outroot + '_cat.xml', Parameters['writeCat']['overwrite'])
