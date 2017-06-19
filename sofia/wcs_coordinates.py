@@ -138,10 +138,10 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 				header = fix_gipsy_header(header)
 				wcsin = Wcsprm(str(header))
 				wcsin.sptr('VOPT-F2W')
-				if header['naxis'] == 4:
-					objects = np.concatenate((objects, wcsin.p2s(np.concatenate((objects[:, catParNames.index('x'):catParNames.index('x')+3], np.zeros((objects.shape[0], 1))), axis=1),0)['world'][:,:-1]), axis=1)
-				else:
-					objects = np.concatenate((objects, wcsin.p2s(objects[:, catParNames.index('x'):catParNames.index('x')+3], 0)['world']), axis=1)
+				#if header['naxis'] == 4:
+				#	objects = np.concatenate((objects, wcsin.p2s(np.concatenate((objects[:, catParNames.index('x'):catParNames.index('x')+3], np.zeros((objects.shape[0], 1))), axis=1),0)['world'][:,:-1]), axis=1)
+				#else:
+				#	objects = np.concatenate((objects, wcsin.p2s(objects[:, catParNames.index('x'):catParNames.index('x')+3], 0)['world']), axis=1)
 				catParUnits = tuple(list(catParUnits) + [str(cc).replace(' ','') for cc in wcsin.cunit])
 				catParNames = tuple(list(catParNames) + [(cc.split('--')[0]).lower() for cc in wcsin.ctype])
 				catParFormt = tuple(list(catParFormt) + ['%15.7e', '%15.7e', '%15.7e'])
@@ -161,8 +161,9 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 						sys.stderr.write("WARNING: subtracting 360 deg from RA reference value.\n")
 						header['crval%i'%(kk + 1)] -= 360
 
-				if header['naxis'] == 4: wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL,wcs.WCSSUB_STOKES])
-				else: wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL])
+				#if header['naxis'] == 4: wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL,wcs.WCSSUB_STOKES])
+				#else: wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL])
+				wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL])
 				xyz = objects[:,catParNames.index('x'):catParNames.index('x')+3].astype(float)
 				if 'cellscal' in header and header['cellscal'] == '1/F':
 					print 'WARNING: CELLSCAL keyword with value 1/F found.'
@@ -177,14 +178,14 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 						pixscale = 1.
 					xyz[:,0] = (xyz[:,0] - x0) * pixscale + x0
 					xyz[:,1] = (xyz[:,1] - y0) * pixscale + y0
-				if header['naxis'] == 4: objects = np.concatenate((objects, wcsin.wcs_pix2world(np.concatenate((xyz, np.zeros((objects.shape[0], 1))), axis=1), 0)[:,:-1]), axis=1)
-				else: objects = np.concatenate((objects, wcsin.wcs_pix2world(xyz, 0)), axis=1)
+				#if header['naxis'] == 4: objects = np.concatenate((objects, wcsin.wcs_pix2world(np.concatenate((xyz, np.zeros((objects.shape[0], 1))), axis=1), 0)[:,:-1]), axis=1)
+				#else: objects = np.concatenate((objects, wcsin.wcs_pix2world(xyz, 0)), axis=1)
 				catParUnits = tuple(list(catParUnits) + [str(cc).replace(' ','') for cc in wcsin.wcs.cunit])
 				catParNames = tuple(list(catParNames) + [(cc.split('--')[0]).lower() for cc in wcsin.wcs.ctype])
 				catParFormt = tuple(list(catParFormt) + ['%15.7e', '%15.7e', '%15.7e'])
-			if header['naxis'] == 4:
-				catParUnits = catParUnits[:-1]
-				catParNames= catParNames[:-1]
+			#if header['naxis'] == 4:
+			#	catParUnits = catParUnits[:-1]
+			#	catParNames= catParNames[:-1]
 			print "WCS coordinates added to the catalogue."
 
 			# Create IAU-compliant source name:
