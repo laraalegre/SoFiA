@@ -181,6 +181,7 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 					xyz[:,1] = (xyz[:,1] - y0) * pixscale + y0
 				#if header['naxis'] == 4: objects = np.concatenate((objects, wcsin.wcs_pix2world(np.concatenate((xyz, np.zeros((objects.shape[0], 1))), axis=1), 0)[:,:-1]), axis=1)
 				#else: objects = np.concatenate((objects, wcsin.wcs_pix2world(xyz, 0)), axis=1)
+				objects = np.concatenate((objects, wcsin.wcs_pix2world(xyz, 0)), axis=1)
 				catParUnits = tuple(list(catParUnits) + [str(cc).replace(' ','') for cc in wcsin.wcs.cunit])
 				catParNames = tuple(list(catParNames) + [(cc.split('--')[0]).lower() for cc in wcsin.wcs.ctype])
 				catParFormt = tuple(list(catParFormt) + ['%15.7e', '%15.7e', '%15.7e'])
