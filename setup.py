@@ -77,9 +77,8 @@ try:
 except KeyError:
     pass
 
-if sys.platform == 'darwin':
-    # Remove "bin" directories to avoid problems with clang
-    ext_include_dirs = [ext_include_dir for ext_include_dir in ext_include_dirs if not 'bin'
+# Remove "bin" directories to avoid problems with compiler
+ext_include_dirs = [ext_include_dir for ext_include_dir in ext_include_dirs if not 'bin'
                         in ext_include_dir]
 
 # C/C++ source code files
