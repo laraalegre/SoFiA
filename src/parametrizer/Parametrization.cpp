@@ -31,6 +31,9 @@ Parametrization::Parametrization()
 	centroidX            = 0.0;
 	centroidY            = 0.0;
 	centroidZ            = 0.0;
+	errCentroidX         = 0.0;
+	errCentroidY         = 0.0;
+	errCentroidZ         = 0.0;
 	lineWidthW20         = 0.0;
 	lineWidthW50         = 0.0;
 	lineWidthWm50        = 0.0;
@@ -293,11 +296,15 @@ int Parametrization::measureCentroid()
 		return 1;
 	}
 	
-	double sum = 0.0;
-	centroidX  = 0.0;
-	centroidY  = 0.0;
-	centroidZ  = 0.0;
+	double sum   = 0.0;
+	centroidX    = 0.0;
+	centroidY    = 0.0;
+	centroidZ    = 0.0;
+	errCentroidX = 0.0;
+	errCentroidY = 0.0;
+	errCentroidZ = 0.0;
 	
+	// Centroid:
 	for(size_t i = 0; i < data.size(); ++i)
 	{
 		if(data[i].value > 0.0)        // NOTE: Only positive pixels considered here!
@@ -312,6 +319,23 @@ int Parametrization::measureCentroid()
 	centroidX /= sum;
 	centroidY /= sum;
 	centroidZ /= sum;
+	
+	// Uncertainties:
+	for(size_t i = 0; i < data.size(); ++i)
+	{
+		if(data[i].value > 0.0)        // NOTE: Only positive pixels considered here!
+		{
+			errCentroidX += (static_cast<double>(data[i].x) - centroidX) * (static_cast<double>(data[i].x) - centroidX);
+			errCentroidY += (static_cast<double>(data[i].y) - centroidY) * (static_cast<double>(data[i].y) - centroidY);
+			errCentroidZ += (static_cast<double>(data[i].z) - centroidZ) * (static_cast<double>(data[i].z) - centroidZ);
+		}
+	}
+	
+	errCentroidX = sqrt(noiseSubCube * errCentroidX) / sum;
+	errCentroidY = sqrt(noiseSubCube * errCentroidY) / sum;
+	errCentroidZ = sqrt(noiseSubCube * errCentroidZ) / sum;
+	
+	// ALERT: These will still need to be added to the catalogue at the end!
 	
 	return 0;
 }
@@ -1003,6 +1027,9 @@ int Parametrization::writeParameters()
 	source->setParameter("x",         centroidX);
 	source->setParameter("y",         centroidY);
 	source->setParameter("z",         centroidZ);
+	source->setParameter("err_x",     errCentroidX);
+	source->setParameter("err_y",     errCentroidY);
+	source->setParameter("err_z",     errCentroidZ);
 	source->setParameter("w50",       lineWidthW50);
 	source->setParameter("w20",       lineWidthW20);
 	source->setParameter("wm50",      lineWidthWm50);

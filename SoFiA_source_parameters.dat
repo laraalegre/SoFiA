@@ -3,6 +3,9 @@ name		meta.id
 x			pos.cartesian.x
 y			pos.cartesian.y
 z			pos.cartesian.z
+err_x		stat.error
+err_y		stat.error
+err_z		stat.error
 x_geo		pos.cartesian.x
 y_geo		pos.cartesian.x
 z_geo		pos.cartesian.x

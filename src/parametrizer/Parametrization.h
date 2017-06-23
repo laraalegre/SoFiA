@@ -64,6 +64,9 @@ private:
 	double centroidX;
 	double centroidY;
 	double centroidZ;
+	double errCentroidX;
+	double errCentroidY;
+	double errCentroidZ;
 	double lineWidthW20;
 	double lineWidthW50;
 	double lineWidthWm50;
