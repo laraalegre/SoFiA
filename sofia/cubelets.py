@@ -50,21 +50,24 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 	# check if output directory exists and create it if not
 	if os.path.exists(outputDir)==False:
 		os.system('mkdir '+outputDir)
+	
+	# copy of header for manipulation
+	headerCubelets = header.copy()
 
 	# read all important information (central pixels & values, increments) from the header
-	dX    = header['CDELT1']
-	dY    = header['CDELT2']
-	dZ    = header['CDELT3']
-	cValX = header['CRVAL1']
-	cValY = header['CRVAL2']
-	cValZ = header['CRVAL3']
-	cPixX = header['CRPIX1']-1
-	cPixY = header['CRPIX2']-1
-	cPixZ = header['CRPIX3']-1
-	#specTypeX = header['CTYPE3']
-	#specTypeY = header['CTYPE3']
-	#specUnitY = header['BUNIT']
-	#specUnitX = header['CUNIT3']
+	dX    = headerCubelets['CDELT1']
+	dY    = headerCubelets['CDELT2']
+	dZ    = headerCubelets['CDELT3']
+	cValX = headerCubelets['CRVAL1']
+	cValY = headerCubelets['CRVAL2']
+	cValZ = headerCubelets['CRVAL3']
+	cPixX = headerCubelets['CRPIX1']-1
+	cPixY = headerCubelets['CRPIX2']-1
+	cPixZ = headerCubelets['CRPIX3']-1
+	#specTypeX = headerCubelets['CTYPE3']
+	#specTypeY = headerCubelets['CTYPE3']
+	#specUnitY = headerCubelets['BUNIT']
+	#specUnitX = headerCubelets['CUNIT3']
 	cubeDim = cube.shape
 
 	for obj in objects:
@@ -114,21 +117,21 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		cPixZCut = cPixZ - ZminNew
 
 		# update header keywords:
-		header['CRPIX1'] = cPixXCut+1
-		header['CRPIX2'] = cPixYCut+1
-		header['CRPIX3'] = cPixZCut+1
+		headerCubelets['CRPIX1'] = cPixXCut+1
+		headerCubelets['CRPIX2'] = cPixYCut+1
+		headerCubelets['CRPIX3'] = cPixZCut+1
 	
 		# extract the cubelet
 		[ZminNew,ZmaxNew,YminNew,YmaxNew,XminNew,XmaxNew]=map(int,[ZminNew,ZmaxNew,YminNew,YmaxNew,XminNew,XmaxNew])
 		subcube = cube[ZminNew:ZmaxNew+1,YminNew:YmaxNew+1,XminNew:XmaxNew+1]
 
 		# update header keywords:
-		header['NAXIS1'] = subcube.shape[2]
-		header['NAXIS2'] = subcube.shape[1]
-		header['NAXIS3'] = subcube.shape[0]
+		headerCubelets['NAXIS1'] = subcube.shape[2]
+		headerCubelets['NAXIS2'] = subcube.shape[1]
+		headerCubelets['NAXIS3'] = subcube.shape[0]
 
 		# write the cubelet
-		hdu = pyfits.PrimaryHDU(data=subcube,header=header)
+		hdu = pyfits.PrimaryHDU(data=subcube,header=headerCubelets)
 		hdulist = pyfits.HDUList([hdu])
 		name = outputDir + cubename + '_' + str(int(obj[0])) + '.fits'
 		if compress:
@@ -160,7 +163,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 				plane=np.array([ii[:plane[-1].shape[0]] for ii in plane])
 				pv_array.append(plane.mean(axis=0))
 			pv_array=np.array(pv_array)
-			hdu = pyfits.PrimaryHDU(data=pv_array,header=header)
+			hdu = pyfits.PrimaryHDU(data=pv_array,header=headerCubelets)
 			hdulist = pyfits.HDUList([hdu])
 			hdulist[0].header['CTYPE1']='PV--DIST'
 			hdulist[0].header['CDELT1']=hdulist[0].header['CDELT2']
@@ -189,7 +192,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		submask[submask==obj[0]] = 1
 
 		# write mask
-		hdu = pyfits.PrimaryHDU(data=submask.astype('int16'),header=header)
+		hdu = pyfits.PrimaryHDU(data=submask.astype('int16'),header=headerCubelets)
 		hdu.header['bunit']='source_ID'
 		hdu.header['datamin']=submask.min()
 		hdu.header['datamax']=submask.max()
@@ -207,55 +210,55 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 	
 		# units of moment images
 		# velocity
-		if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
-			if not 'cunit3' in header or header['cunit3'].lower()=='m/s':
+		if 'vopt' in headerCubelets['ctype3'].lower() or 'vrad' in headerCubelets['ctype3'].lower() or 'velo' in headerCubelets['ctype3'].lower() or 'felo' in headerCubelets['ctype3'].lower():
+			if not 'cunit3' in headerCubelets or headerCubelets['cunit3'].lower()=='m/s':
 				# converting m/s to km/s
-				dkms=abs(header['cdelt3'])/1e+3
+				dkms=abs(headerCubelets['cdelt3'])/1e+3
 				scalemom12=1./1e+3
 				bunitExt='.km/s'
-			elif header['cunit3'].lower()=='km/s':
-				dkms=abs(header['cdelt3'])
+			elif headerCubelets['cunit3'].lower()=='km/s':
+				dkms=abs(headerCubelets['cdelt3'])
 				scalemom12=1.
 				bunitExt='.km/s'
 			else:
 				# working with whatever units the cube has
-				dkms=abs(header['cdelt3'])
+				dkms=abs(headerCubelets['cdelt3'])
 				scalemom12=1.
-				bunitExt='.'+header['cunit3']
+				bunitExt='.'+headerCubelets['cunit3']
 		# frequency
-		elif 'freq' in header['ctype3'].lower():
-			if not 'cunit3' in header or header['cunit3'].lower()=='hz':
-				dkms=abs(header['cdelt3'])
+		elif 'freq' in headerCubelets['ctype3'].lower():
+			if not 'cunit3' in headerCubelets or headerCubelets['cunit3'].lower()=='hz':
+				dkms=abs(headerCubelets['cdelt3'])
 				scalemom12=1.
 				bunitExt='.Hz'
-			elif header['cunit3'].lower()=='khz':
+			elif headerCubelets['cunit3'].lower()=='khz':
 				# converting kHz to Hz
-				dkms=abs(header['cdelt3'])*1e+3
+				dkms=abs(headerCubelets['cdelt3'])*1e+3
 				scalemom12=1e+3
 				bunitExt='.Hz'
 			else:
 				# working with whatever units the cube has
-				dkms=abs(header['cdelt3'])
+				dkms=abs(headerCubelets['cdelt3'])
 				scalemom12=1.
-				bunitExt='.'+header['cunit3']
+				bunitExt='.'+headerCubelets['cunit3']
 		# other
 		else:
 			# working with whatever units the cube has
-			dkms=abs(header['cdelt3'])
+			dkms=abs(headerCubelets['cdelt3'])
 			scalemom12=1.
-			if not 'cunit3' in header: bunitExt='.std_unit_'+header['ctype3']
-			else: bunitExt='.'+header['cunit3']
+			if not 'cunit3' in headerCubelets: bunitExt='.std_unit_'+headerCubelets['ctype3']
+			else: bunitExt='.'+headerCubelets['cunit3']
 
 		# make copy of subcube and regrid
 		subcubeCopy = subcube.copy()
 		subcubeCopy[submask==0] = 0
-		if 'cellscal' in header:
-			if header['cellscal'] == '1/F': subcubeCopy = regridMaskedChannels(subcubeCopy,submask,header)
+		if 'cellscal' in headerCubelets:
+			if headerCubelets['cellscal'] == '1/F': subcubeCopy = regridMaskedChannels(subcubeCopy,submask,headerCubelets)
 
 		# moment 0
 		m0=np.nan_to_num(subcubeCopy).sum(axis=0)
 		m0*=dkms
-		hdu = pyfits.PrimaryHDU(data=m0,header=header)
+		hdu = pyfits.PrimaryHDU(data=m0,header=headerCubelets)
 		hdu.header['bunit']+=bunitExt
 		hdu.header['datamin']=np.nanmin(m0)
 		hdu.header['datamax']=np.nanmax(m0)
@@ -279,9 +282,9 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		m0/=dkms
 
 		# moment 1
-		m1=((np.arange(subcubeCopy.shape[0]).reshape((subcubeCopy.shape[0],1,1))*np.ones(subcubeCopy.shape)-header['crpix3']+1)*header['cdelt3']+header['crval3'])*scalemom12
+		m1=((np.arange(subcubeCopy.shape[0]).reshape((subcubeCopy.shape[0],1,1))*np.ones(subcubeCopy.shape)-headerCubelets['crpix3']+1)*headerCubelets['cdelt3']+headerCubelets['crval3'])*scalemom12
 		m1=np.divide(np.array(np.nan_to_num(m1*subcubeCopy).sum(axis=0)),m0)
-		hdu = pyfits.PrimaryHDU(data=m1,header=header)
+		hdu = pyfits.PrimaryHDU(data=m1,header=headerCubelets)
 		hdu.header['bunit']=bunitExt[1:]
 		hdu.header['datamin']=np.nanmin(m1)
 		hdu.header['datamax']=np.nanmax(m1)
@@ -302,11 +305,11 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 	
 	
 		# moment 2
-		m2=((np.arange(subcubeCopy.shape[0]).reshape((subcubeCopy.shape[0],1,1))*np.ones(subcubeCopy.shape)-header['crpix3']+1)*header['cdelt3']+header['crval3'])*scalemom12
+		m2=((np.arange(subcubeCopy.shape[0]).reshape((subcubeCopy.shape[0],1,1))*np.ones(subcubeCopy.shape)-headerCubelets['crpix3']+1)*headerCubelets['cdelt3']+headerCubelets['crval3'])*scalemom12
 		m2 = (m2-m1)**2
 		m2=np.divide(np.array(np.nan_to_num(m2*subcubeCopy).sum(axis=0)),m0)
 		m2=np.sqrt(m2)
-		hdu = pyfits.PrimaryHDU(data=m2,header=header)
+		hdu = pyfits.PrimaryHDU(data=m2,header=headerCubelets)
 		hdu.header['bunit']=bunitExt[1:]
 		hdu.header['datamin']=np.nanmin(m2)
 		hdu.header['datamax']=np.nanmax(m2)
@@ -347,3 +350,4 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 				f.write('%9.0f %15.6e %15.6e\n'%(i+float(ZminNew),xspec,spec[i]))
 		
 			f.close()
+
