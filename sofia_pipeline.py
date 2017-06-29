@@ -558,32 +558,7 @@ if Parameters['steps']['doWriteMask'] and NRdet:
 	writemask.writeMask(mask, dict_Header, Parameters, outputMaskCube, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
 
 
-
-# ----------------------------
-# ---- MAKE MOM0 and MOM1 ----
-# ----------------------------
-
-if (Parameters['steps']['doMom0'] or Parameters['steps']['doMom1']) and NRdet:
-	print "\n--- %.3f seconds since start"%(time()-t0)
-	print "\n--- SoFiA: Writing moment maps ---"
-	sys.stdout.flush()
-	debug = 0
-	writemoment2.writeMoments(np_Cube, mask, outroot, debug, dict_Header,Parameters['writeCat']['compress'], Parameters['steps']['doMom0'], Parameters['steps']['doMom1'], Parameters['writeCat']['overwrite'])
-
-
-# --------------------
-# ---- MAKE MOM1  ----
-# --------------------
-#
-#if Parameters['steps']['doMom1'] and NRdet:
-#	print "\n--- %.3f seconds since start"%(time()-t0)
-#	print "\n--- SoFiA: Writing moment-1 map ---"
-#	sys.stdout.flush()
-#	debug = 0
-#	writemoment2.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image,Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
-
-
-
+	
 # ------------------------
 # ---- STORE CUBELETS ----
 # ------------------------
@@ -596,6 +571,21 @@ if Parameters['steps']['doCubelets'] and Parameters['steps']['doMerge'] and NRde
 	cathead = np.array(catParNames)
 	cubelets.writeSubcube(np_Cube, dict_Header, mask, objects, cathead, outroot, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
 
+
+# ----------------------------
+# ---- MAKE MOM0 and MOM1 ----
+# ----------------------------
+
+if (Parameters['steps']['doMom0'] or Parameters['steps']['doMom1']) and NRdet:
+	print "\n--- %.3f seconds since start"%(time()-t0)
+	print "\n--- SoFiA: Writing moment maps ---"
+	sys.stdout.flush()
+	debug = 0
+	writemoment2.writeMoments(np_Cube, mask, outroot, debug, dict_Header,Parameters['writeCat']['compress'], Parameters['steps']['doMom0'], Parameters['steps']['doMom1'], Parameters['writeCat']['overwrite'])
+
+	## read the original data cube again if it is needed for further steps
+	#print "\n--- SoFiA: Reloading original data cube ---"
+	#np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters['steps']['doSubcube'], **Parameters['import'])
 
 
 # ----------------------------------------------------
