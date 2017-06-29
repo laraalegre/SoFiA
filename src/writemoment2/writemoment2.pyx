@@ -76,52 +76,53 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
     sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
   else:
     hdu.writeto(name, output_verify = 'warn', clobber = True)
-  datacubeCopy = datacube.copy()
-  datacubeCopy[maskcube==0]=0
+  print 'WARNING: The generation of moment maps will alter (mask) the original data cube.'
+  print '         If you wish to use the original data cube after this point, please reload it.'
+  datacube[maskcube==0]=0
   if 'cellscal' in header:
     if header['cellscal'] == '1/F':
       print 'WARNING: CELLSCAL keyword with value 1/F found.'
       print 'Will regrid masked cube before making moment images.'
-      datacubeCopy=regridMaskedChannels(datacubeCopy,maskcube,header)
-  datacubeCopy = np.array(datacubeCopy, dtype=np.single)
+      datacube=regridMaskedChannels(datacube,maskcube,header)
+  datacube = np.array(datacube, dtype=np.single)
   if domom0 or domom1:
-    m0 = mom0(datacubeCopy)
+    m0 = mom0(datacube)
   if domom0:
     print 'Writing moment-0' # in units of header['bunit']*header['cdelt3']
     # units of moment images
     # velocity
     if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
-			if not 'cunit3' in header or header['cunit3'].lower()=='m/s':
-				# converting (assumed) m/s to km/s
-				dkms=abs(header['cdelt3'])/1e+3
-				scalemom12=1./1e+3
-				bunitExt='.km/s'
-			elif header['cunit3'].lower()=='km/s':
-				# working in km/s
-				dkms=abs(header['cdelt3'])
-				scalemom12=1.
-				bunitExt='.km/s'
-			else:
-				# working with whatever units the cube has
-				dkms=abs(header['cdelt3'])
-				scalemom12=1.
-        bunitExt='.'+header['cunit3']
+            if not 'cunit3' in header or header['cunit3'].lower()=='m/s':
+                # converting (assumed) m/s to km/s
+                dkms=abs(header['cdelt3'])/1e+3
+                scalemom12=1./1e+3
+                bunitExt='.km/s'
+            elif header['cunit3'].lower()=='km/s':
+                # working in km/s
+                dkms=abs(header['cdelt3'])
+                scalemom12=1.
+                bunitExt='.km/s'
+            else:
+                # working with whatever units the cube has
+                dkms=abs(header['cdelt3'])
+                scalemom12=1.
+                bunitExt='.'+header['cunit3']
     elif 'freq' in header['ctype3'].lower():
-			if not 'cunit3' in header or header['cunit3'].lower()=='hz':
+            if not 'cunit3' in header or header['cunit3'].lower()=='hz':
         # using (or assuming) Hz
-				dkms=abs(header['cdelt3'])
-				scalemom12=1.
-				bunitExt='.Hz'
-			elif header['cunit3'].lower()=='khz':
-				# converting kHz to Hz
-				dkms=abs(header['cdelt3'])*1e+3
-				scalemom12=1e+3
-				bunitExt='.Hz'
-			else:
-				# working with whatever frequency units the cube has
-				dkms=abs(header['cdelt3'])
-				scalemom12=1.
-        bunitExt='.'+header['cunit3']
+                dkms=abs(header['cdelt3'])
+                scalemom12=1.
+                bunitExt='.Hz'
+            elif header['cunit3'].lower()=='khz':
+                # converting kHz to Hz
+                dkms=abs(header['cdelt3'])*1e+3
+                scalemom12=1e+3
+                bunitExt='.Hz'
+            else:
+                # working with whatever frequency units the cube has
+                dkms=abs(header['cdelt3'])
+                scalemom12=1.
+                bunitExt='.'+header['cunit3']
     hdu = pyfits.PrimaryHDU(data=m0*dkms,header=header)
     hdu.header['bunit']+=bunitExt
     hdu.header['datamin']=(m0*dkms).min()
@@ -144,7 +145,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
         hdu.writeto(name,output_verify='warn',clobber=True)
   if domom1:
     print 'Writing moment-1'
-    m1 = mom1(datacubeCopy,m0,header['crpix3'],header['crval3'],header['cdelt3'])
+    m1 = mom1(datacube,m0,header['crpix3'],header['crval3'],header['cdelt3'])
     # convert it to km/s (using radio velocity definition to go from Hz to km/s)
     if 'vopt' in header['ctype3'].lower() or 'vrad' in header['ctype3'].lower() or 'velo' in header['ctype3'].lower() or 'felo' in header['ctype3'].lower():
       if not 'cunit3' in header:
