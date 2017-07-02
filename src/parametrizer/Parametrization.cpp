@@ -952,7 +952,7 @@ int Parametrization::fitBusyFunction()
 	double **tmpObsVals = new double *[1];
 	tmpPar[0] = new double[8];
 	tmpObsVals[0] = new double[7];
-	for(size_t i = 0; i < 8; ++i) tmpPar[0][i] = busyFitParameters[i];
+	for(size_t i = 0; i < 8; ++i) tmpPar[0][i] = busyFitParameters[2*i];
 	CalcObsParams(1, tmpPar, spectrum.size(), &channels[0], tmpObsVals, verbose);
 	busyFunctionFint     = tmpObsVals[0][0];
 	busyFunctionFpeak    = tmpObsVals[0][1];
