@@ -1,17 +1,7 @@
 #! /usr/bin/env python
 
-from __future__ import division  # make all division floating point. Otherwise is integer division
-import string                    # for split, strip string functions
-import os                        # for unix/linux system calls (eg 'ls')
-import math                      # for maths commands (fabs)
 import sys                       # system (sys.exit)
-import re                        # for regular expressions
-import random                    # for random numbers
-import astropy.io.fits as pyfits
-import scipy
 import numpy
-import ast
-
 from numpy import *
 from scipy import ndimage
 
