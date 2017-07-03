@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 import numpy as np
-import astropy.io.fits as pyfits
+from astropy.io import fits
 import os
 import sys
 from sofia import writemoment
@@ -131,8 +131,8 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		headerCubelets['NAXIS3'] = subcube.shape[0]
 
 		# write the cubelet
-		hdu = pyfits.PrimaryHDU(data=subcube,header=headerCubelets)
-		hdulist = pyfits.HDUList([hdu])
+		hdu = fits.PrimaryHDU(data=subcube,header=headerCubelets)
+		hdulist = fits.HDUList([hdu])
 		name = outputDir + cubename + '_' + str(int(obj[0])) + '.fits'
 		if compress:
 			name += '.gz'
@@ -163,8 +163,8 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 				plane=np.array([ii[:plane[-1].shape[0]] for ii in plane])
 				pv_array.append(plane.mean(axis=0))
 			pv_array=np.array(pv_array)
-			hdu = pyfits.PrimaryHDU(data=pv_array,header=headerCubelets)
-			hdulist = pyfits.HDUList([hdu])
+			hdu = fits.PrimaryHDU(data=pv_array,header=headerCubelets)
+			hdulist = fits.HDUList([hdu])
 			hdulist[0].header['CTYPE1']='PV--DIST'
 			hdulist[0].header['CDELT1']=hdulist[0].header['CDELT2']
 			hdulist[0].header['CRVAL1']=0
@@ -192,11 +192,11 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		submask[submask==obj[0]] = 1
 
 		# write mask
-		hdu = pyfits.PrimaryHDU(data=submask.astype('int16'),header=headerCubelets)
+		hdu = fits.PrimaryHDU(data=submask.astype('int16'),header=headerCubelets)
 		hdu.header['bunit']='source_ID'
 		hdu.header['datamin']=submask.min()
 		hdu.header['datamax']=submask.max()
-		hdulist = pyfits.HDUList([hdu])
+		hdulist = fits.HDUList([hdu])
 		name = outputDir+cubename+'_'+str(int(obj[0]))+'_mask.fits'
 		if compress:
 			name += '.gz'
@@ -258,7 +258,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		# moment 0
 		m0=np.nan_to_num(subcubeCopy).sum(axis=0)
 		m0*=dkms
-		hdu = pyfits.PrimaryHDU(data=m0,header=headerCubelets)
+		hdu = fits.PrimaryHDU(data=m0,header=headerCubelets)
 		hdu.header['bunit']+=bunitExt
 		hdu.header['datamin']=np.nanmin(m0)
 		hdu.header['datamax']=np.nanmax(m0)
@@ -284,7 +284,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		# moment 1
 		m1=((np.arange(subcubeCopy.shape[0]).reshape((subcubeCopy.shape[0],1,1))*np.ones(subcubeCopy.shape)-headerCubelets['crpix3']+1)*headerCubelets['cdelt3']+headerCubelets['crval3'])*scalemom12
 		m1=np.divide(np.array(np.nan_to_num(m1*subcubeCopy).sum(axis=0)),m0)
-		hdu = pyfits.PrimaryHDU(data=m1,header=headerCubelets)
+		hdu = fits.PrimaryHDU(data=m1,header=headerCubelets)
 		hdu.header['bunit']=bunitExt[1:]
 		hdu.header['datamin']=np.nanmin(m1)
 		hdu.header['datamax']=np.nanmax(m1)
@@ -309,7 +309,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		m2 = (m2-m1)**2
 		m2=np.divide(np.array(np.nan_to_num(m2*subcubeCopy).sum(axis=0)),m0)
 		m2=np.sqrt(m2)
-		hdu = pyfits.PrimaryHDU(data=m2,header=headerCubelets)
+		hdu = fits.PrimaryHDU(data=m2,header=headerCubelets)
 		hdu.header['bunit']=bunitExt[1:]
 		hdu.header['datamin']=np.nanmin(m2)
 		hdu.header['datamax']=np.nanmax(m2)
