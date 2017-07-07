@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import astropy.io.fits as pyfits
+from astropy.io import fits
 import os
 import sys
 
@@ -48,11 +48,11 @@ def writeMask(cube, header, dictionary, filename, compress, flagOverwrite):
 	# add axes required to make the shape of the mask cube equal to the shape of the input datacube
         while header['naxis']>len(cube.shape): cube.resize(tuple([1,]+list(cube.shape)))
 
-	hdu = pyfits.PrimaryHDU(data=cube, header=header)
+	hdu = fits.PrimaryHDU(data=cube, header=header)
 	hdu.header['BUNIT'] = 'source_ID'
 	hdu.header['DATAMIN'] = cube.min()
 	hdu.header['DATAMAX'] = cube.max()
-	#hdulist = pyfits.HDUList([hdu])
+	#hdulist = fits.HDUList([hdu])
 	#name = os.path.splitext(filename)[0] + '_mask.fits'
 	name = filename
 	if compress:

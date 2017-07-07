@@ -19,15 +19,10 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			raise SystemExit(1)
 
 		if len(subcube):
-			try:
-			    imp.find_module('astropy')
-			    found = True
-			except ImportError: found = False
-			if found:
-				from astropy import wcs
-				hdulist = fits.open(inFile, memmap=False)
-				header = hdulist[0].header
-				hdulist.close()
+			from astropy import wcs
+			hdulist = fits.open(inFile, memmap=False)
+			header = hdulist[0].header
+			hdulist.close()
 
 		if (len(subcube) == 6 or len(subcube) == 4) and subcubeMode == 'world':
 			print 'Calculating subcube boundaries from input WCS centre and radius'

@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import astropy.io.fits as pyfits
+from astropy.io import fits
 import os
 
 def removeOptions(dictionary):
@@ -52,10 +52,10 @@ def writeFilteredCube(cube, header, dictionary, filename, compress):
         header.add_history(option)
     #}
     #if cube.max() < 65535: cube = cube.astype('int16')
-    hdu = pyfits.PrimaryHDU(data = cube, header = header)
+    hdu = fits.PrimaryHDU(data = cube, header = header)
     hdu.header['datamin'] = cube.min()
     hdu.header['datamax'] = cube.max()
-    #hdulist = pyfits.HDUList([hdu])
+    #hdulist = fits.HDUList([hdu])
     #name = os.path.splitext(filename)[0] + '_mask.fits'
     
     if compress:
