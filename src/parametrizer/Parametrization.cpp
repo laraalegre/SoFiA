@@ -331,11 +331,9 @@ int Parametrization::measureCentroid()
 		}
 	}
 	
-	errCentroidX = sqrt(noiseSubCube * errCentroidX) / sum;
-	errCentroidY = sqrt(noiseSubCube * errCentroidY) / sum;
-	errCentroidZ = sqrt(noiseSubCube * errCentroidZ) / sum;
-	
-	// ALERT: These will still need to be added to the catalogue at the end!
+	errCentroidX = sqrt(errCentroidX) * noiseSubCube / sum;
+	errCentroidY = sqrt(errCentroidY) * noiseSubCube / sum;
+	errCentroidZ = sqrt(errCentroidZ) * noiseSubCube / sum;
 	
 	return 0;
 }
