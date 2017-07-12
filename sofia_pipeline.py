@@ -292,7 +292,6 @@ if Parameters['steps']['doThreshold']:
 	threshold_filter.filter(mask, np_Cube, dict_Header, **Parameters['threshold'])
 
 print 'Source finding complete.'
-print
 
 # Check whether positivity flag is set; if so, remove negative pixels from mask:
 if Parameters['merge']['positivity']:
@@ -308,6 +307,9 @@ if not NRdet:
 	sys.stderr.write("WARNING: No voxels detected and included in the mask yet! Exiting pipeline.\n")
 	print 
 	sys.exit()
+else:
+	print '',NRdet,'of',np.array(mask.shape).prod(),'pixels detected --',float(NRdet)/np.array(mask.shape).prod(),'percent'
+	print
 
 
 
@@ -326,9 +328,10 @@ if Parameters['steps']['doMerge'] and NRdet:
 		sys.exit()
 	objects=np.array(objects)
 	print 'Merging complete'
-	print
 	NRdet = len(objects)
         NRdetNeg = (np.array(objects)[:,16] < 0).sum()
+	print '',NRdet,'sources detected:',NRdet-NRdetNeg,'positive,',NRdetNeg,'negative.'
+	print
 	# set catalog header	
 	if 'bunit' in dict_Header: dunits=dict_Header['bunit']
 	else: dunits='-'
