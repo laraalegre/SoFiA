@@ -76,7 +76,7 @@ folder where the downloaded file was saved. Then follow the steps below.
 
    > python setup.py build --force
    
-   (add `--no-gui=True` if you do not wish to install the graphical user interface)
+   (add `--no-gui=True` to install SoFiA *without* graphical user interface)
 
 4. Set up environment variables
 
