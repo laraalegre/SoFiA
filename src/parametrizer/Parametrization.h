@@ -69,6 +69,8 @@ private:
 	double errCentroidZ;
 	double lineWidthW20;
 	double lineWidthW50;
+	double errlineWidthW20;
+	double errlineWidthW50;
 	double lineWidthWm50;
 	double meanFluxWm50;
 	double peakFlux;

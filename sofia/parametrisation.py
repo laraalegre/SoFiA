@@ -164,6 +164,8 @@ def parametrise(
         'z_max': 'chan',
         'w50': 'chan',
         'w20': 'chan',
+        'err_w50': 'chan',
+        'err_w20': 'chan',
         'wm50': 'chan',
         'f_wm50': dunits,
         'ell_maj': 'pix',

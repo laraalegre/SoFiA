@@ -47,6 +47,8 @@ snr_int		stat.snr
 rms			instr.det.noise
 w20			spect.line.width
 w50			spect.line.width
+err_w20		stat.error
+err_w50		stat.error
 wm50		spect.line.width
 ra			pos.eq.ra
 dec			pos.eq.dec

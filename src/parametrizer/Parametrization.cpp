@@ -36,6 +36,8 @@ Parametrization::Parametrization()
 	errCentroidZ         = 0.0;
 	lineWidthW20         = 0.0;
 	lineWidthW50         = 0.0;
+	errlineWidthW20      = 0.0;
+	errlineWidthW50      = 0.0;
 	lineWidthWm50        = 0.0;
 	meanFluxWm50         = 0.0;
 	peakFlux             = 0.0;
@@ -774,6 +776,14 @@ int Parametrization::measureLineWidth()
 		return 1;
 	}
 	
+	// Uncertainty
+	errlineWidthW50 = sqrt(lineWidthW50) * noiseSubCube * lineWidthW50 / peakFlux;
+	// WARNING: There are an awful lot of assumptions going into this uncertainty estimate,
+	//          including the assumptions of a Gaussian line profile and a constant RMS
+	//          across the spectrum! Furthermore, the RMS is estimated as sqrt(w50) times 
+	//          the local RMS in the cube. Therefore, this should only be considered as a 
+	//          rough estimate of the uncertainty (the same holds for w20)!
+	
 	
 	
 	// (2) Determine w20:
@@ -812,6 +822,10 @@ int Parametrization::measureLineWidth()
 		lineWidthW20 = 0.0;
 		return 1;
 	}
+	
+	// Uncertainty
+	errlineWidthW20 = sqrt(lineWidthW50) * noiseSubCube * lineWidthW20 / peakFlux;
+	// WARNING: See warnings in w50 section above.
 	
 	
 	
@@ -1030,12 +1044,13 @@ int Parametrization::writeParameters()
 	source->setParameter("err_z",     errCentroidZ);
 	source->setParameter("w50",       lineWidthW50);
 	source->setParameter("w20",       lineWidthW20);
+	source->setParameter("err_w50",   errlineWidthW50);
+	source->setParameter("err_w20",   errlineWidthW20);
 	source->setParameter("wm50",      lineWidthWm50);
 	source->setParameter("f_wm50",    meanFluxWm50);
 	source->setParameter("f_peak",    peakFlux);
 	source->setParameter("f_int",     totalFlux);
 	source->setParameter("snr_int",   intSNR);
-	
 	source->setParameter("ell_maj",   ellMaj);
 	source->setParameter("ell_min",   ellMin);
 	source->setParameter("ell_pa",    ellPA);
