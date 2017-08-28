@@ -28,6 +28,7 @@ Parametrization::Parametrization()
 	
 	// Initialisation of all parameters:
 	noiseSubCube         = 0.0;
+	noiseSpectrumMax     = 0.0;
 	centroidX            = 0.0;
 	centroidY            = 0.0;
 	centroidZ            = 0.0;
@@ -41,6 +42,7 @@ Parametrization::Parametrization()
 	lineWidthWm50        = 0.0;
 	meanFluxWm50         = 0.0;
 	peakFlux             = 0.0;
+	peakFluxSpec         = 0.0;
 	totalFlux            = 0.0;
 	intSNR               = 0.0;
 	ellMaj               = 0.0;
@@ -706,10 +708,16 @@ int Parametrization::createIntegratedSpectrum()
 	// WARNING: is zero (because there are no data) the BF fitting will just produce NaNs.
 	// WARNING: Even worse: the noise will not scale with sqrt(N), because pixels are
 	// WARNING: spatially correlated!
+	peakFluxSpec = 0.0;
+	noiseSpectrumMax = 0.0;
 	for(size_t i = 0; i < noiseSpectrum.size(); ++i)
 	{
 		if(counter[i] > 0) noiseSpectrum[i] = sqrt(static_cast<double>(counter[i])) * noiseSubCube;
 		else noiseSpectrum[i] = std::numeric_limits<double>::infinity();
+		
+		// Record peak flux density and maximum noise level:
+		if(std::isfinite(spectrum[i]) and peakFluxSpec < spectrum[i]) peakFluxSpec = spectrum[i];
+		if(std::isfinite(noiseSpectrum[i]) and noiseSpectrumMax < noiseSpectrum[i]) noiseSpectrumMax = noiseSpectrum[i];
 	}
 	
 	return 0;
@@ -777,10 +785,10 @@ int Parametrization::measureLineWidth()
 	}
 	
 	// Uncertainty
-	errlineWidthW50 = sqrt(lineWidthW50) * noiseSubCube * lineWidthW50 / peakFlux;
+	errlineWidthW50 = noiseSpectrumMax * lineWidthW50 / peakFluxSpec;
 	// WARNING: There are an awful lot of assumptions going into this uncertainty estimate,
 	//          including the assumptions of a Gaussian line profile and a constant RMS
-	//          across the spectrum! Furthermore, the RMS is estimated as sqrt(w50) times 
+	//          across the spectrum! Furthermore, the RMS is estimated as sqrt(N) times 
 	//          the local RMS in the cube. Therefore, this should only be considered as a 
 	//          rough estimate of the uncertainty (the same holds for w20)!
 	
@@ -824,7 +832,7 @@ int Parametrization::measureLineWidth()
 	}
 	
 	// Uncertainty
-	errlineWidthW20 = sqrt(lineWidthW50) * noiseSubCube * lineWidthW20 / peakFlux;
+	errlineWidthW20 = noiseSpectrumMax * lineWidthW20 / peakFluxSpec;
 	// WARNING: See warnings in w50 section above.
 	
 	

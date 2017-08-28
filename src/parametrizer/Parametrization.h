@@ -60,6 +60,7 @@ private:
 	
 	std::vector<double> spectrum;
 	std::vector<double> noiseSpectrum;
+	double noiseSpectrumMax;
 	
 	double centroidX;
 	double centroidY;
@@ -74,6 +75,7 @@ private:
 	double lineWidthWm50;
 	double meanFluxWm50;
 	double peakFlux;
+	double peakFluxSpec;
 	double totalFlux;
 	double intSNR;
 	double ell3sMaj;
