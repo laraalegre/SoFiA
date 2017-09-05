@@ -538,6 +538,19 @@ if Parameters['steps']['doParameterise'] and Parameters['steps']['doMerge'] and 
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Parameterising sources ---"
 	sys.stdout.flush()
+	
+	# Print warning message about statistical uncertainties
+	if Parameters['parameters']['getUncertainties']:
+		print "------------------------------------------------------------"
+		print "WARNING:     You have requested statistical uncertainties of"
+		print "         some source parameters.  Please  be aware  that the"
+		print "         calculation of statistical uncertainties depends on"
+		print "         a number of assumptions that may not be met. Hence,"
+		print "         the resulting numbers  may not be representative of"
+		print "         the true uncertainties of those parameters, in par-"
+		print "         ticular in the presence of systematic errors."
+		print "------------------------------------------------------------"
+	
 #	np_Cube, dict_Header, mask, objects, catParNames, catParFormt = parametrisation.parametrise(np_Cube, dict_Header, mask, objects, catParNames, catParFormt, Parameters)
 	if Parameters['parameters']['dilateMask']: mask = parametrisation.dilate(np_Cube,mask,objects,catParNames,Parameters)
 	np_Cube, mask, objects, catParNames, catParFormt, catParUnits = parametrisation.parametrise(np_Cube, mask, objects, catParNames, catParFormt, catParUnits, Parameters, dunits)
@@ -646,7 +659,7 @@ if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge'] and NRde
 		store_xml.make_xml_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatXml, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
 		#store_xml.make_xml(results, outroot + '_cat.xml', Parameters['writeCat']['overwrite'])
 	if Parameters['writeCat']['writeASCII'] and Parameters['steps']['doMerge'] and NRdet:
-		store_ascii.make_ascii_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatAscii, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
+		store_ascii.make_ascii_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatAscii, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'], Parameters['parameters']['getUncertainties'])
 		#store_ascii.make_ascii(results, Parameters['writeCat']['parameters'], outroot + '_cat.ascii', Parameters['writeCat']['overwrite'])
 	if Parameters['writeCat']['writeSQL'] and Parameters['steps']['doMerge'] and NRdet:
 		store_sql.make_sql_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatSQL, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])

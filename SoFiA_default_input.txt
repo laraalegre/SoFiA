@@ -117,6 +117,7 @@ merge.positivity                =       false
 
 # Parametrisation module
 
+parameters.getUncertainties     =       false
 parameters.fitBusyFunction      =       false
 parameters.optimiseMask         =       false
 parameters.dilateMask           =       false

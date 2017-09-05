@@ -125,6 +125,7 @@ def readPipelineOptions(filename = "pipeline.options"):
                  "reliability.fMin": "float", \
                  "reliability.threshold": "float", \
                  "reliability.makePlot": "bool", \
+                 "parameters.getUncertainties": "bool", \
                  "parameters.fitBusyFunction": "bool", \
                  "parameters.optimiseMask": "bool", \
                  "parameters.dilateMask": "bool", \
