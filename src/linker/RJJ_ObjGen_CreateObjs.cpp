@@ -19,9 +19,9 @@ int CreateObjects(float * data_vals, int * flag_vals, int size_x, int size_y, in
   --merge_x;
   --merge_y;
   --merge_z;
-  if(merge_x < 0){ merge_x = 0; }
-  if(merge_y < 0){ merge_y = 0; }
-  if(merge_z < 0){ merge_z = 0; }
+  if(merge_x < -1){ merge_x = -1; }
+  if(merge_y < -1){ merge_y = -1; }
+  if(merge_z < -1){ merge_z = -1; }
 
   // reorder the datacube and subcube limits to be in x,y,z order
   temp_x[0] = chunk_x_start;
@@ -1379,9 +1379,9 @@ long int CreateObjects(float * data_vals, long int * flag_vals, int size_x, int 
   --merge_x;
   --merge_y;
   --merge_z;
-  if(merge_x < 0){ merge_x = 0; }
-  if(merge_y < 0){ merge_y = 0; }
-  if(merge_z < 0){ merge_z = 0; }
+  if(merge_x < -1){ merge_x = -1; }
+  if(merge_y < -1){ merge_y = -1; }
+  if(merge_z < -1){ merge_z = -1; }
 
   // reorder the datacube and subcube limits to be in x,y,z order
   temp_x[0] = chunk_x_start;
@@ -2739,9 +2739,9 @@ int CreateObjects(double * data_vals, int * flag_vals, int size_x, int size_y, i
   --merge_x;
   --merge_y;
   --merge_z;
-  if(merge_x < 0){ merge_x = 0; }
-  if(merge_y < 0){ merge_y = 0; }
-  if(merge_z < 0){ merge_z = 0; }
+  if(merge_x < -1){ merge_x = -1; }
+  if(merge_y < -1){ merge_y = -1; }
+  if(merge_z < -1){ merge_z = -1; }
 
   // reorder the datacube and subcube limits to be in x,y,z order
   temp_x[0] = chunk_x_start;
@@ -4099,9 +4099,9 @@ long int CreateObjects(double * data_vals, long int * flag_vals, int size_x, int
   --merge_x;
   --merge_y;
   --merge_z;
-  if(merge_x < 0){ merge_x = 0; }
-  if(merge_y < 0){ merge_y = 0; }
-  if(merge_z < 0){ merge_z = 0; }
+  if(merge_x < -1){ merge_x = -1; }
+  if(merge_y < -1){ merge_y = -1; }
+  if(merge_z < -1){ merge_z = -1; }
 
   // reorder the datacube and subcube limits to be in x,y,z order
   temp_x[0] = chunk_x_start;
