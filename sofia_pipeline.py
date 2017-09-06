@@ -539,15 +539,15 @@ if Parameters['steps']['doParameterise'] and Parameters['steps']['doMerge'] and 
 	
 	# Print warning message about statistical uncertainties
 	if Parameters['parameters']['getUncertainties']:
-		print "------------------------------------------------------------"
-		print "WARNING:     You have requested statistical uncertainties of"
-		print "         some source parameters.  Please  be aware  that the"
-		print "         calculation of statistical uncertainties depends on"
-		print "         a number of assumptions that may not be met. Hence,"
-		print "         the resulting numbers  may not be representative of"
-		print "         the true uncertainties of those parameters, in par-"
-		print "         ticular in the presence of systematic errors."
-		print "------------------------------------------------------------"
+		sys.stderr.write("------------------------------------------------------------\n")
+		sys.stderr.write("WARNING:     You have requested statistical uncertainties of\n")
+		sys.stderr.write("         some source parameters.  Please  be aware  that the\n")
+		sys.stderr.write("         calculation of statistical uncertainties depends on\n")
+		sys.stderr.write("         a number of assumptions that may not be met. Hence,\n")
+		sys.stderr.write("         the resulting numbers  may not be representative of\n")
+		sys.stderr.write("         the true uncertainties of those parameters, in par-\n")
+		sys.stderr.write("         ticular in the presence of systematic errors.\n")
+		sys.stderr.write("------------------------------------------------------------\n")
 	
 #	np_Cube, dict_Header, mask, objects, catParNames, catParFormt = parametrisation.parametrise(np_Cube, dict_Header, mask, objects, catParNames, catParFormt, Parameters)
 	if Parameters['parameters']['dilateMask']: mask = parametrisation.dilate(np_Cube,mask,objects,catParNames,Parameters)
