@@ -76,8 +76,9 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
     sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
   else:
     hdu.writeto(name, output_verify = 'warn', clobber = True)
-  print 'WARNING: The generation of moment maps will alter (mask) the original data cube.'
-  print '         If you wish to use the original data cube after this point, please reload it.'
+  print 'WARNING: The generation of moment maps will mask the copy of the data cube held'
+  print '         in memory by SoFiA. If you wish to use the original data cube after'
+  print '         this point, please reload it first.'
   datacube[maskcube==0]=0
   if 'cellscal' in header:
     if header['cellscal'] == '1/F':

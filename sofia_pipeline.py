@@ -20,6 +20,7 @@ from sofia import smooth_cube
 from sofia import write_filtered_cube
 from sofia import writemask
 from sofia import writemoment2
+from sofia import write_catalog
 from sofia import linker
 from sofia import store_xml
 from sofia import store_ascii
@@ -415,7 +416,7 @@ if Parameters['steps']['doDebug']:
 	print "\n--- %.3f seconds since start"%(time()-t0)
 	print "\n--- SoFiA: Writing all-source debugging catalogue including all parameters relevant for the reliability calculation ---"
 	#sys.stdout.flush()
-	store_ascii.make_ascii_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatAsciiDebug,Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
+	write_catalog.write_catalog_from_array('ASCII', objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatAsciiDebug, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'], Parameters['parameters']['getUncertainties'])
 
 
 
@@ -656,13 +657,13 @@ if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge'] and NRde
                 catParFormt=tuple(catParFormt)
 
 	if Parameters['writeCat']['writeXML'] and Parameters['steps']['doMerge'] and NRdet:
-		store_xml.make_xml_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatXml, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
+		write_catalog.write_catalog_from_array('XML', objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatXml, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'], Parameters['parameters']['getUncertainties'])
 		#store_xml.make_xml(results, outroot + '_cat.xml', Parameters['writeCat']['overwrite'])
 	if Parameters['writeCat']['writeASCII'] and Parameters['steps']['doMerge'] and NRdet:
-		store_ascii.make_ascii_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatAscii, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'], Parameters['parameters']['getUncertainties'])
+		write_catalog.write_catalog_from_array('ASCII', objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatAscii, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'], Parameters['parameters']['getUncertainties'])
 		#store_ascii.make_ascii(results, Parameters['writeCat']['parameters'], outroot + '_cat.ascii', Parameters['writeCat']['overwrite'])
 	if Parameters['writeCat']['writeSQL'] and Parameters['steps']['doMerge'] and NRdet:
-		store_sql.make_sql_from_array(objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatSQL, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
+		write_catalog.write_catalog_from_array('SQL', objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatSQL, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'], Parameters['parameters']['getUncertainties'])
 
 
 
