@@ -22,9 +22,6 @@ from sofia import writemask
 from sofia import writemoment2
 from sofia import write_catalog
 from sofia import linker
-from sofia import store_xml
-from sofia import store_ascii
-from sofia import store_sql
 from sofia import cubelets
 from sofia import parametrisation
 from sofia import wcs_coordinates
