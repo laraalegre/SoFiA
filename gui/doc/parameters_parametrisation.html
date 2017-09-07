@@ -59,6 +59,24 @@
         </tr>
     </table>
     
+    <table id="parameters.fitBusyFunction">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">parameters.fitBusyFunction</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Fit the Busy Function (<a href="http://adsabs.harvard.edu/abs/2014MNRAS.438.1176W">Westmeier et al. 2014</a>) to the integrated spectrum of each source for more accurate parameterisation.</td>
+        </tr>
+    </table>
+    
     <table id="parameters.optimiseMask">
         <tr>
             <td class="head">Parameter:</td><td class="body2">parameters.optimiseMask</td>
@@ -149,21 +167,21 @@
         </tr>
     </table>
     
-    <table id="parameters.fitBusyFunction">
+    <table id="parameters.getUncertainties">
         <tr>
-            <td class="head">Parameter:</td><td class="body2">parameters.fitBusyFunction</td>
+            <td class="head2">Parameter:</td><td class="body3">parameters.getUncertainties</td>
         </tr>
         <tr>
-            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+            <td class="head2">Type:</td><td class="body"><code>bool</code></td>
         </tr>
         <tr>
-            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+            <td class="head2">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
         </tr>
         <tr>
-            <td class="head">Default:</td><td class="body"><code>false</code></td>
+            <td class="head2">Default:</td><td class="body"><code>false</code></td>
         </tr>
         <tr>
-            <td class="head">Description:</td><td class="body">Fit the Busy Function (<a href="http://adsabs.harvard.edu/abs/2014MNRAS.438.1176W">Westmeier et al. 2014</a>) to the integrated spectrum of each source for more accurate parameterisation.</td>
+            <td class="head2">Description:</td><td class="body">If set to <code>true</code>, statistical uncertainties of several source parameters, including centroids and line widths, will be estimated. Please use this feature with great caution, as statistical uncertainties are not likely to be representative of the true uncertainties, in particular when systematic errors are present. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
         </tr>
     </table>
     
