@@ -167,8 +167,8 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 				wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL])
 				xyz = objects[:,catParNames.index('x'):catParNames.index('x')+3].astype(float)
 				if 'cellscal' in header and header['cellscal'] == '1/F':
-					print 'NOTE: CELLSCAL keyword with value 1/F found.'
-					print 'Will take into account varying pixel scale when calculating wcs coordinates.'
+					sys.stderr.write('WARNING: CELLSCAL keyword with value 1/F found.\n')
+					sys.stderr.write('         Will account for varying pixel scale in WCS coordinate calculation.\n')
 					x0, y0 = header['crpix1'] - 1, header['crpix2'] - 1
 					# Will calculate the pixscale factor of each channel as:
 					# pixscale = ref_frequency / frequency
