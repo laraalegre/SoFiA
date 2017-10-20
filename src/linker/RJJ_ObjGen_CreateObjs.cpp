@@ -176,17 +176,6 @@ int CreateObjects(float * data_vals, int * flag_vals, int size_x, int size_y, in
 	  // of available obj_ids
 	  if((((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmax() - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmin() + 1) < min_x_size) || ((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetDECmax() - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetDECmin() + 1) < min_y_size) || ((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetFREQmax() - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetFREQmin() + 1) < min_z_size) || (detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ShowVoxels() < min_v_size)) && (((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmin() - chunk_x_start) > merge_x) || (chunk_x_start == 0)) && ((((chunk_x_start + size_x - 1 - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmax()) > merge_x) || ((chunk_x_start + size_x) >= max_x_val)) && (((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetDECmin() - chunk_y_start) > merge_y) || (chunk_y_start == 0)) && (((chunk_y_start + size_y - 1 - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetDECmax()) > merge_y) || ((chunk_y_start + size_y) >= max_y_val)) && (((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetFREQmin() - chunk_z_start) > merge_z) || (chunk_z_start == 0)) && (((chunk_z_start + size_z - 1 - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetFREQmax()) > merge_z) || ((chunk_z_start + size_z) >= max_z_val)))){
 	    
-	    // re-initialise object
-	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit();
-	    if((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Get_srep_update() != 0) && (detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Get_srep_size(0) >= 0)){
-	      
-	      detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_srep();
-	      detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_mini();
-
-	    }
-	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_size();
-	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Set_srep_update(0);
-
 	    // flag the `object' values within the bounding box and remove it from the flag_vals array
 	    sx_start = detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmin() - chunk_x_start;
 	    if(sx_start < 0){ sx_start = 0; }
@@ -211,6 +200,17 @@ int CreateObjects(float * data_vals, int * flag_vals, int size_x, int size_y, in
 	      // for(sz = z_start[(match_init[i] - (obj_batch_2 * obj_limit))]; sz <= z_finish[(match_init[i] - (obj_batch_2 * obj_limit))]; ++sz)
 	    }
 	    
+	    // re-initialise object
+	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit();
+	    if((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Get_srep_update() != 0) && (detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Get_srep_size(0) >= 0)){
+	      
+	      detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_srep();
+	      detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_mini();
+
+	    }
+	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_size();
+	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Set_srep_update(0);
+
 	    // add object id to list of available ids
 	    j = -1;
 	    for(g = 0; g < NO_obj_ids; ++g){ if(obj_ids[g] == check_obj_ids[i]){ j = 1; break; } }
@@ -1536,17 +1536,6 @@ long int CreateObjects(float * data_vals, long int * flag_vals, int size_x, int 
 	  // of available obj_ids
 	  if((((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmax() - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmin() + 1) < min_x_size) || ((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetDECmax() - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetDECmin() + 1) < min_y_size) || ((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetFREQmax() - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetFREQmin() + 1) < min_z_size) || (detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ShowVoxels() < min_v_size)) && (((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmin() - chunk_x_start) > merge_x) || (chunk_x_start == 0)) && ((((chunk_x_start + size_x - 1 - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmax()) > merge_x) || ((chunk_x_start + size_x) >= max_x_val)) && (((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetDECmin() - chunk_y_start) > merge_y) || (chunk_y_start == 0)) && (((chunk_y_start + size_y - 1 - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetDECmax()) > merge_y) || ((chunk_y_start + size_y) >= max_y_val)) && (((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetFREQmin() - chunk_z_start) > merge_z) || (chunk_z_start == 0)) && (((chunk_z_start + size_z - 1 - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetFREQmax()) > merge_z) || ((chunk_z_start + size_z) >= max_z_val)))){
 	    
-	    // re-initialise object
-	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit();
-	    if((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Get_srep_update() != 0) && (detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Get_srep_size(0) >= 0)){
-	      
-	      detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_srep();
-	      detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_mini();
-
-	    }
-	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_size();
-	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Set_srep_update(0);
-
 	    // flag the `object' values within the bounding box and remove it from the flag_vals array
 	    sx_start = detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmin() - chunk_x_start;
 	    if(sx_start < 0){ sx_start = 0; }
@@ -1571,6 +1560,17 @@ long int CreateObjects(float * data_vals, long int * flag_vals, int size_x, int 
 	      // for(sz = z_start[(match_init[i] - (obj_batch_2 * obj_limit))]; sz <= z_finish[(match_init[i] - (obj_batch_2 * obj_limit))]; ++sz)
 	    }
 	    
+	    // re-initialise object
+	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit();
+	    if((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Get_srep_update() != 0) && (detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Get_srep_size(0) >= 0)){
+	      
+	      detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_srep();
+	      detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_mini();
+
+	    }
+	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_size();
+	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Set_srep_update(0);
+
 	    // add object id to list of available ids
 	    j = -1;
 	    for(g = 0; g < NO_obj_ids; ++g){ if(obj_ids[g] == check_obj_ids[i]){ j = 1; break; } }
@@ -2896,17 +2896,6 @@ int CreateObjects(double * data_vals, int * flag_vals, int size_x, int size_y, i
 	  // of available obj_ids
 	  if((((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmax() - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmin() + 1) < min_x_size) || ((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetDECmax() - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetDECmin() + 1) < min_y_size) || ((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetFREQmax() - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetFREQmin() + 1) < min_z_size) || (detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ShowVoxels() < min_v_size)) && (((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmin() - chunk_x_start) > merge_x) || (chunk_x_start == 0)) && ((((chunk_x_start + size_x - 1 - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmax()) > merge_x) || ((chunk_x_start + size_x) >= max_x_val)) && (((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetDECmin() - chunk_y_start) > merge_y) || (chunk_y_start == 0)) && (((chunk_y_start + size_y - 1 - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetDECmax()) > merge_y) || ((chunk_y_start + size_y) >= max_y_val)) && (((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetFREQmin() - chunk_z_start) > merge_z) || (chunk_z_start == 0)) && (((chunk_z_start + size_z - 1 - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetFREQmax()) > merge_z) || ((chunk_z_start + size_z) >= max_z_val)))){
 	    
-	    // re-initialise object
-	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit();
-	    if((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Get_srep_update() != 0) && (detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Get_srep_size(0) >= 0)){
-	      
-	      detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_srep();
-	      detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_mini();
-
-	    }
-	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_size();
-	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Set_srep_update(0);
-
 	    // flag the `object' values within the bounding box and remove it from the flag_vals array
 	    sx_start = detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmin() - chunk_x_start;
 	    if(sx_start < 0){ sx_start = 0; }
@@ -2931,6 +2920,17 @@ int CreateObjects(double * data_vals, int * flag_vals, int size_x, int size_y, i
 	      // for(sz = z_start[(match_init[i] - (obj_batch_2 * obj_limit))]; sz <= z_finish[(match_init[i] - (obj_batch_2 * obj_limit))]; ++sz)
 	    }
 	    
+	    // re-initialise object
+	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit();
+	    if((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Get_srep_update() != 0) && (detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Get_srep_size(0) >= 0)){
+	      
+	      detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_srep();
+	      detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_mini();
+
+	    }
+	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_size();
+	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Set_srep_update(0);
+
 	    // add object id to list of available ids
 	    j = -1;
 	    for(g = 0; g < NO_obj_ids; ++g){ if(obj_ids[g] == check_obj_ids[i]){ j = 1; break; } }
@@ -4256,17 +4256,6 @@ long int CreateObjects(double * data_vals, long int * flag_vals, int size_x, int
 	  // of available obj_ids
 	  if((((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmax() - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmin() + 1) < min_x_size) || ((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetDECmax() - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetDECmin() + 1) < min_y_size) || ((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetFREQmax() - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetFREQmin() + 1) < min_z_size) || (detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ShowVoxels() < min_v_size)) && (((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmin() - chunk_x_start) > merge_x) || (chunk_x_start == 0)) && ((((chunk_x_start + size_x - 1 - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmax()) > merge_x) || ((chunk_x_start + size_x) >= max_x_val)) && (((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetDECmin() - chunk_y_start) > merge_y) || (chunk_y_start == 0)) && (((chunk_y_start + size_y - 1 - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetDECmax()) > merge_y) || ((chunk_y_start + size_y) >= max_y_val)) && (((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetFREQmin() - chunk_z_start) > merge_z) || (chunk_z_start == 0)) && (((chunk_z_start + size_z - 1 - detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetFREQmax()) > merge_z) || ((chunk_z_start + size_z) >= max_z_val)))){
 	    
-	    // re-initialise object
-	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit();
-	    if((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Get_srep_update() != 0) && (detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Get_srep_size(0) >= 0)){
-	      
-	      detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_srep();
-	      detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_mini();
-
-	    }
-	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_size();
-	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Set_srep_update(0);
-
 	    // flag the `object' values within the bounding box and remove it from the flag_vals array
 	    sx_start = detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].GetRAmin() - chunk_x_start;
 	    if(sx_start < 0){ sx_start = 0; }
@@ -4291,6 +4280,17 @@ long int CreateObjects(double * data_vals, long int * flag_vals, int size_x, int
 	      // for(sz = z_start[(match_init[i] - (obj_batch_2 * obj_limit))]; sz <= z_finish[(match_init[i] - (obj_batch_2 * obj_limit))]; ++sz)
 	    }
 	    
+	    // re-initialise object
+	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit();
+	    if((detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Get_srep_update() != 0) && (detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Get_srep_size(0) >= 0)){
+	      
+	      detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_srep();
+	      detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_mini();
+
+	    }
+	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].ReInit_size();
+	    detections[obj_batch][(check_obj_ids[i] - (obj_batch * obj_limit))].Set_srep_update(0);
+
 	    // add object id to list of available ids
 	    j = -1;
 	    for(g = 0; g < NO_obj_ids; ++g){ if(obj_ids[g] == check_obj_ids[i]){ j = 1; break; } }
