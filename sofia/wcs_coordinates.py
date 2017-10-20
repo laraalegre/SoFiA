@@ -127,7 +127,7 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 			# Fix headers where "per second" is written "/S" instead of "/s"
 			# (assuming they mean "per second" and not "per Siemens").
 			if 'cunit3' in header and '/S' in header['cunit3']:
-				sys.stderr.write('WARNING: Converting "/S" to "/s" in CUNIT3.')
+				sys.stderr.write('WARNING: Converting "/S" to "/s" in CUNIT3.\n')
 				header['cunit3']=header['cunit3'].replace('/S','/s')
 			
 			## check if there is a Nmap/GIPSY FITS header keyword value present

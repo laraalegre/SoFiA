@@ -71,7 +71,7 @@ def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, 'b'],], threshold=3.5, siz
 			ky = abs(float(ky) / header['CDELT2'])
 			kz = abs(float(kz) / header['CDELT3'])
 		if kt == 'b':
-			if kz != int(mt.ceil(kz)) and verbose: sys.stderr.write('    WARNING: Rounding width of boxcar z kernel to next integer')
+			if kz != int(mt.ceil(kz)) and verbose: sys.stderr.write('    WARNING: Rounding width of boxcar z kernel to next integer.\n')
 			kz = int(mt.ceil(kz))
 		sys.stdout.flush()
 		
