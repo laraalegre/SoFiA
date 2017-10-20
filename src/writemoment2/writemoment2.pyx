@@ -76,14 +76,14 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
     sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
   else:
     hdu.writeto(name, output_verify = 'warn', clobber = True)
-  print 'WARNING: The generation of moment maps will mask the copy of the data cube held'
-  print '         in memory by SoFiA. If you wish to use the original data cube after'
-  print '         this point, please reload it first.'
+  sys.stderr.write('WARNING: The generation of moment maps will mask the copy of the data cube held')
+  sys.stderr.write('         in memory by SoFiA. If you wish to use the original data cube after')
+  sys.stderr.write('         this point, please reload it first.')
   datacube[maskcube==0]=0
   if 'cellscal' in header:
     if header['cellscal'] == '1/F':
-      print 'WARNING: CELLSCAL keyword with value 1/F found.'
-      print 'Will regrid masked cube before making moment images.'
+      sys.stderr.write('WARNING: CELLSCAL keyword with value 1/F found.')
+      sys.stderr.write('Will regrid masked cube before making moment images.')
       datacube=regridMaskedChannels(datacube,maskcube,header)
   datacube = np.array(datacube, dtype=np.single)
   if domom0 or domom1:

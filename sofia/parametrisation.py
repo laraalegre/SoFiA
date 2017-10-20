@@ -40,7 +40,7 @@ def dilate(cube, mask, objects, cathead, Parameters):
         otherobjs = (allmask > 0) * (allmask != mm)
         if (otherobjs).sum():
             # Ensure that objects!=mm within dilatePixMax, dilateChan are not included in the flux growth calculation
-            print 'WARNING: object %i has possible overlapping objects within %i pix, %i chan' % (mm, dilatePixMax, dilateChan)
+            sys.stderr.write('WARNING: object %i has possible overlapping objects within %i pix, %i chan' % (mm, dilatePixMax, dilateChan))
             objcube[(allmask > 0) * (allmask != mm)] = 0
         fluxes = []
         for dil in range(dilatePixMax + 1):
