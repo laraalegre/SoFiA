@@ -115,6 +115,13 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 		# set the kernel shape to that of the variance or covariance matrix
 		kernel = np.cov(pars[:,neg])
 		kernelType = 'covariance'
+		# check if kernel matrix can be inverted
+		try:
+                        np.linalg.inv(kernel)
+                        singularMatrix = False
+                except:
+                        singularMatrix = True
+
 		if np.isnan(kernel).sum():
 			sys.stderr.write("ERROR: The reliability cannot be calculated because the smoothing kernel\n")
 			sys.stderr.write("       derived from %i negative sources contains NaNs.\n"%pars[:,neg].shape[1])
@@ -123,6 +130,13 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 			sys.stderr.write("       Try increase the number of negative sources by changing the source.\n")
 			sys.stderr.write("       finding and/or filtering settings.\n")
 			raise SystemExit(1)
+		if singularMatrix:
+                        sys.stderr.write("ERROR: The reliability cannot be calculated because the smoothing kernel\n")
+                        sys.stderr.write("       derived from %i negative sources cannot be inverted.\n"%pars[:,neg].shape[1])
+                        sys.stderr.write("       This is likely due to an insufficient number of negative sources.\n")
+                        sys.stderr.write("       Try to increase the number of negative sources by changing the source.\n")
+                        sys.stderr.write("       finding and/or filtering settings.\n")
+                        raise SystemExit(1)
 		if not usecov:
 			kernel = np.diag(np.diag(kernel))
 			kernelType = 'variance'
