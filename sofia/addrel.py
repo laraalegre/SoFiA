@@ -117,29 +117,32 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 		kernelType = 'covariance'
 		# check if kernel matrix can be inverted
 		try:
-                        np.linalg.inv(kernel)
-                        singularMatrix = False
-                except:
-                        singularMatrix = True
-
-		if np.isnan(kernel).sum():
+			np.linalg.inv(kernel)
+		except:
+			sys.stderr.write("----------------------------------------------------------------------------\n")
 			sys.stderr.write("ERROR: The reliability cannot be calculated because the smoothing kernel\n")
-			sys.stderr.write("       derived from %i negative sources contains NaNs.\n"%pars[:,neg].shape[1])
+			sys.stderr.write("       derived from %i negative sources cannot be inverted.\n" % pars[:,neg].shape[1])
+			sys.stderr.write("       This is likely due to an insufficient number of negative sources.\n")
+			sys.stderr.write("       Try to increase the number of negative sources by changing the source\n")
+			sys.stderr.write("       finding and/or filtering settings.\n")
+			sys.stderr.write("----------------------------------------------------------------------------\n")
+			raise SystemExit(1)
+		
+		if np.isnan(kernel).sum():
+			sys.stderr.write("----------------------------------------------------------------------------\n")
+			sys.stderr.write("ERROR: The reliability cannot be calculated because the smoothing kernel\n")
+			sys.stderr.write("       derived from %i negative sources contains NaNs.\n" % pars[:,neg].shape[1])
 			sys.stderr.write("       A good kernel is required to calculate the density field of positive\n")
 			sys.stderr.write("       and negative sources in parameter space.\n")
-			sys.stderr.write("       Try increase the number of negative sources by changing the source.\n")
+			sys.stderr.write("       Try to increase the number of negative sources by changing the source\n")
 			sys.stderr.write("       finding and/or filtering settings.\n")
+			sys.stderr.write("----------------------------------------------------------------------------\n")
 			raise SystemExit(1)
-		if singularMatrix:
-                        sys.stderr.write("ERROR: The reliability cannot be calculated because the smoothing kernel\n")
-                        sys.stderr.write("       derived from %i negative sources cannot be inverted.\n"%pars[:,neg].shape[1])
-                        sys.stderr.write("       This is likely due to an insufficient number of negative sources.\n")
-                        sys.stderr.write("       Try to increase the number of negative sources by changing the source.\n")
-                        sys.stderr.write("       finding and/or filtering settings.\n")
-                        raise SystemExit(1)
+		
 		if not usecov:
 			kernel = np.diag(np.diag(kernel))
 			kernelType = 'variance'
+		
 		kernelIter = 0.0
 		deltplot = []
 		
