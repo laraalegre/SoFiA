@@ -324,8 +324,17 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 			
 			# derive Np and Nn density fields on the current projection
 			setcov = kernel[p1:p2+1:p2-p1,p1:p2+1:p2-p1]
-			Np = gaussian_kde_set_covariance(parsp[:,pos], setcov)
-			Nn = gaussian_kde_set_covariance(parsp[:,neg], setcov)
+			try:
+				Np = gaussian_kde_set_covariance(parsp[:,pos], setcov)
+				Nn = gaussian_kde_set_covariance(parsp[:,neg], setcov)
+			except:
+				sys.stderr.write("----------------------------------------------------------------------------\n")
+				sys.stderr.write("ERROR: Reliability determination failed because of issues with the smoothing\n")
+				sys.stderr.write("       kernel.  This is likely due to an insufficient number of negative de-\n")
+				sys.stderr.write("       tections. Please review your filtering and source finding settings to\n")
+				sys.stderr.write("       ensure that a sufficient number of negative detections is found.\n")
+				sys.stderr.write("----------------------------------------------------------------------------\n")
+				raise SystemExit(1)
 			
 			# evaluate density  fields on grid on current projection
 			g = np.transpose(np.transpose(np.mgrid[slice(g1[0], g1[1], g1[2]), slice(g2[0], g2[1], g2[2])]).reshape(-1, 2))
