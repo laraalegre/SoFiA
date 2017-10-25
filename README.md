@@ -120,7 +120,7 @@ Version history
 ---------------
 
 * SoFiA 1.1.0
-  * Released 19/10/2017
+  * Released 25/10/2017
   * Adds several new features, including better handling of reliability
     calculation, the option to discard negative signals, and a new image
     viewer built into the GUI that allows output data products from SoFiA
