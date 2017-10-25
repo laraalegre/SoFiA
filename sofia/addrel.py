@@ -252,7 +252,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 	### SKELLAM PLOT ###
 	####################
 	
-	if autoKernel and doskellam and makePlot:
+	if deltmed / deltstd > -100 and autoKernel and doskellam and makePlot:
 		plt.plot(np.arange(-10, 10, 0.01), stats.norm().cdf(np.arange(-10, 10, 0.01)), 'k-')
 		plt.plot(np.arange(-10, 10, 0.01), stats.norm(scale=0.4).cdf(np.arange(-10, 10, 0.01)), 'k:')
 		plt.legend(('Gaussian (sigma=1)', 'Gaussian (sigma=0.4)'), loc='lower right', prop={'size':13})
