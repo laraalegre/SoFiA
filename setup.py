@@ -209,9 +209,7 @@ if compile_gui:
         sofiaApplicationPath = cwd + '/gui'
     os.chdir('../')
 
-print '\n'
-print '-------------------------------------------------------------------------'
-print '\n'
+print '\n-------------------------------------------------------------------------\n'
 print '\033[1;32mInstallation complete.\033[0m\n'
 print '\033[1mPlease add the following lines to your shell configuration file:\033[0m\n'
 print '\033[3;4mFor BASH (~/.bashrc):\033[0m'
@@ -222,9 +220,10 @@ else:           print '    export PATH="$PATH:' + cwd + '"\n'
 print '\033[3;4mFor (T)CSH (~/.cshrc):\033[0m'
 print '    setenv SOFIA_MODULE_PATH "' + sofiaModulesPath + '"'
 print '    setenv SOFIA_PIPELINE_PATH "' + cwd + '/sofia_pipeline.py"'
-if compile_gui:  print '    setenv PATH {$PATH}:"' + cwd + ':' + sofiaApplicationPath + '"'
-else:            print '    setenv PATH {$PATH}:"' + cwd + '"'
-print '\n'
+if compile_gui:  print '    setenv PATH {$PATH}:"' + cwd + ':' + sofiaApplicationPath + '"\n'
+else:            print '    setenv PATH {$PATH}:"' + cwd + '"\n'
+print 'You may send an e-mail to \033[94msofia-request@atnf.csiro.au\033[0m with the word \033[3msubscribe\033[0m'
+print 'in the \033[3me-mail body\033[0m (no subject required) to sign up to the \033[3mSoFiA mailing list\033[0m.\n'
 
 ## test sofia installation
 # print 'If you want to test your SoFiA installation, please open a new terminal and type:'
