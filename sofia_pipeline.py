@@ -6,6 +6,9 @@ import sys, os
 import string
 from time import time
 
+from scipy import __version__ as scipy_version
+from astropy import __version__ as astropy_version
+
 # import source finding modules
 sys.path.insert(0, os.environ['SOFIA_MODULE_PATH'])
 from sofia import functions
@@ -83,6 +86,18 @@ def printProgressTime():
 if len(sys.argv) != 2:
 	sys.stderr.write("\n\033[1;4mUsage:\033[24m sofia_pipeline.py \033[3m<filename>\033[0m\n\nThe filename of a valid SoFiA parameter file must be specified. Please\nadd the full path if the file is not located in the current directory.\n\n")
 	sys.exit(1)
+
+
+
+# -----------------------------------------------
+# ---- Print some initial status information ----
+# -----------------------------------------------
+
+print "\nRunning the SoFiA pipeline"
+print "Using  Python  " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + "." + str(sys.version_info[2]) + " (" + sys.version_info[3] + ")"
+print "       NumPy  ", np.__version__
+print "       SciPy  ", scipy_version
+print "       Astropy", astropy_version
 
 
 
