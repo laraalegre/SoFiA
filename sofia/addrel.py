@@ -53,10 +53,10 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 	
 	# get array of relevant source parameters (and take log of them is requested)
 	ids = data[:,idCOL]
-	print '# Working in parameter space [',
+	sys.stdout.write('# Working in parameter space [')
 	pars = np.empty((data.shape[0], 0))
 	for ii in range(len(parSpace)):
-		print parSpace[ii],
+		sys.stdout.write(' ' + str(parSpace[ii]) + ' ')
 		if parSpace[ii] == 'snr_max':
 			parsTmp = data[:,fmaxCOL] * pos - data[:,fminCOL] * neg
 			if logPars[ii]: parsTmp = np.log10(parsTmp)
@@ -70,7 +70,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 			if logPars[ii]: parsTmp = np.log10(parsTmp)
 			pars = np.concatenate((pars, parsTmp), axis=1)
 	
-	print ']'
+	sys.stdout.write(']\n')
 	pars = np.transpose(pars)
 	
 	
@@ -151,24 +151,24 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 			# scale kernel size as requested by the user
 			# note that the scale factor is squared because users are asked to give a factor to apply to sqrt(kernel)  
 			kernel *= scaleKernel**2
-			print '# Using a kernel with the shape of the %s and size scaled by a factor %.2f.' % (kernelType, scaleKernel)
-			print '# The sqrt(kernel) size is:'
-			print np.sqrt(np.abs(kernel))
+			print ('# Using a kernel with the shape of the %s and size scaled by a factor %.2f.' % (kernelType, scaleKernel))
+			print ('# The sqrt(kernel) size is:')
+			print (np.sqrt(np.abs(kernel)))
 		else:
 			# scale kernel size to start the kernel-growing loop
 			# the scale factor for sqrt(kernel) is elevated to the power of 1./len(parCol)
 			kernel *= ((negPerBin + kernelIter) / Nneg)**(2.0 / len(parCol))
-			print '# Will find the best kernel as a scaled version of the %s:' % kernelType
-			print '# Starting from the kernel with sqrt(kernel) size:'
-			print np.sqrt(np.abs(kernel))
-			print '# Growing kernel...'
+			print ('# Will find the best kernel as a scaled version of the %s:' % kernelType)
+			print ('# Starting from the kernel with sqrt(kernel) size:')
+			print (np.sqrt(np.abs(kernel)))
+			print ('# Growing kernel...')
 			sys.stdout.flush()
 		
 		#deltOLD=-1e+9 # used to stop kernel growth if P-N stops moving closer to zero [NOT USED CURRENTLY]
 		if doskellam and makePlot: fig0 = plt.figure()
 	else:
-		print '# Using user-defined variance kernel with sqrt(kernel) size:' # Note that the user must give sigma, which then gets squared
-		print np.array(kernel)
+		print ('# Using user-defined variance kernel with sqrt(kernel) size:') # Note that the user must give sigma, which then gets squared
+		print (np.array(kernel))
 		sys.stdout.flush()
 		kernel = np.identity(len(kernel)) * np.array(kernel)**2
 	
@@ -180,7 +180,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 		### EVALUATE N-d RELIABILITY ###
 		################################
 		
-		if verb: print '#  estimate normalised positive and negative density fields ...'
+		if verb: print ('#  estimate normalised positive and negative density fields ...')
 		
 		Np = gaussian_kde_set_covariance(pars[:,pos], kernel)
 		Nn = gaussian_kde_set_covariance(pars[:,neg], kernel)
@@ -223,14 +223,14 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 				plt.hist(delt / deltstd, bins=np.arange(deltmin / deltstd, max(5.1, deltmax / deltstd), 0.01), cumulative=True, histtype='step', color=(min(1, float(negPerBin + kernelIter) / Nneg), 0,0), normed=True)
 				deltplot.append([((negPerBin + kernelIter) / Nneg)**(1.0 / len(parCol)), deltmed / deltstd])
 			
-			print ' iteration, median, width, median/width = %3i, %9.2e, %9.2e, %9.2e' % (kernelIter, deltmed, deltstd, deltmed / deltstd)
+			print (' iteration, median, width, median/width = %3i, %9.2e, %9.2e, %9.2e' % (kernelIter, deltmed, deltstd, deltmed / deltstd))
 			sys.stdout.flush()
 			
 			if scaleKernel: grow_kernel = 0
 			elif deltmed / deltstd > skellamTol or negPerBin + kernelIter >= Nneg:
 				grow_kernel = 0
-				print '# Found good kernel after %i kernel growth iterations. The sqrt(kernel) size is:' % kernelIter
-				print np.sqrt(np.abs(kernel))
+				print ('# Found good kernel after %i kernel growth iterations. The sqrt(kernel) size is:' % kernelIter)
+				print (np.sqrt(np.abs(kernel)))
 				sys.stdout.flush()
 			elif deltmed / deltstd < 5 * skellamTol:
 				kernel *= (float(negPerBin + kernelIter + 20) / (negPerBin + kernelIter))**(2.0 / len(parCol)) 
@@ -281,13 +281,13 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 	specialids = []
 	
 	if doscatter and makePlot:
-		if verb: print '  plotting sources ...'
+		if verb: print ('  plotting sources ...')
 		fig1 = plt.figure(figsize=(18, 4.5 * nr))
 		plt.subplots_adjust(left=0.06, bottom=0.15/nr, right = 0.97, top=1-0.08/nr, wspace=0.35, hspace=0.25)
 		
 		n_p = 0
 		for jj in projections:
-			if verb: print '    projection %i/%i' % (projections.index(jj) + 1, len(projections))
+			if verb: print ('    projection %i/%i' % (projections.index(jj) + 1, len(projections)))
 			n_p, p1, p2 = n_p + 1, jj[0], jj[1]
 			plt.subplot(nr, nc, n_p)
 			plt.scatter(pars[p1,pos], pars[p2,pos], marker='o', c='b', s=10, edgecolor='face', alpha=0.5)
@@ -307,12 +307,12 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 	if docontour and makePlot:
 		levs = 10**np.arange(-1.5, 2, 0.5)
 		
-		if verb: print '  plotting contours ...'
+		if verb: print ('  plotting contours ...')
 		fig2 = plt.figure(figsize=(18, 4.5 * nr))
 		plt.subplots_adjust(left=0.06, bottom=0.15/nr, right=0.97, top=1-0.08/nr, wspace=0.35, hspace=0.25)
 		n_p = 0
 		for jj in projections:
-			if verb: print '    projection %i/%i' % (projections.index(jj) + 1, len(projections))
+			if verb: print ('    projection %i/%i' % (projections.index(jj) + 1, len(projections)))
 			n_p, p1, p2 = n_p + 1, jj[0], jj[1]
 			g1, g2 = grid[p1], grid[p2]
 			x1 = np.arange(g1[0], g1[1], g1[2])
