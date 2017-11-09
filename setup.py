@@ -19,18 +19,18 @@ compile_gui = True
 dependencies = [['numpy', '1.8'], ['scipy', '0.7'], ['astropy', '0.2.5']]
 unmetDependencies = False
 
-#for (pkg, required_version) in dependencies:
-	#try:
-		#m = __import__(pkg)
-		#available_version = m.__version__
-		#if StrictVersion(available_version) < StrictVersion(required_version): raise ValueError
-	#except ImportError:
-		#print ('ERROR: Package \'' + pkg + '\' not found, but required by SoFiA.')
-		#unmetDependencies = True
-	#except ValueError:
-		#print ('ERROR: Package \'' + pkg + '\' has version number ' + available_version + ",")
-		#print ('       but SoFiA requires version ' + required_version + ' or higher.')
-		#unmetDependencies = True
+for (pkg, required_version) in dependencies:
+	try:
+		m = __import__(pkg)
+		available_version = m.__version__
+		if StrictVersion(available_version) < StrictVersion(required_version): raise ValueError
+	except ImportError:
+		print ('ERROR: Package \'' + pkg + '\' not found, but required by SoFiA.')
+		unmetDependencies = True
+	except ValueError:
+		print ('ERROR: Package \'' + pkg + '\' has version number ' + available_version + ",")
+		print ('       but SoFiA requires version ' + required_version + ' or higher.')
+		unmetDependencies = True
 
 # Exit if unmet dependencies were found
 if unmetDependencies: sys.exit(1)
