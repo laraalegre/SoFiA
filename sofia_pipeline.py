@@ -61,8 +61,8 @@ def checkOverwrite(outputFile, isFile=True, isDir=False):
 # --------------------------------------------
 
 def printProgressMessage(message):
-	print "\n--- %.3f seconds since start" % (time() - t0)
-	print "--- SoFiA: " + message
+	print ("\n--- %.3f seconds since start" % (time() - t0))
+	print ("--- SoFiA: " + message)
 	sys.stdout.flush()
 	return
 
@@ -73,7 +73,7 @@ def printProgressMessage(message):
 # --------------------------------------
 
 def printProgressTime():
-	print "\n--- %.3f seconds since start" % (time() - t0)
+	print ("\n--- %.3f seconds since start" % (time() - t0))
 	sys.stdout.flush()
 	return
 
@@ -93,11 +93,11 @@ if len(sys.argv) != 2:
 # ---- Print some initial status information ----
 # -----------------------------------------------
 
-print "\nRunning the SoFiA pipeline"
-print "Using  Python  " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + "." + str(sys.version_info[2]) + " (" + sys.version_info[3] + ")"
-print "       NumPy  ", np.__version__
-print "       SciPy  ", scipy_version
-print "       Astropy", astropy_version
+print ("\nRunning the SoFiA pipeline")
+print ("Using  Python  " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + "." + str(sys.version_info[2]) + " (" + sys.version_info[3] + ")")
+print ("       NumPy   " + np.__version__)
+print ("       SciPy   " + scipy_version)
+print ("       Astropy " + astropy_version)
 
 
 
@@ -127,7 +127,7 @@ printProgressMessage("Reading user parameters")
 
 # This reads in a file with parameters and creates a dictionary:
 parameter_file = sys.argv[1]
-print 'Parameters extracted from: ', parameter_file
+print ('Parameters extracted from: ' + parameter_file)
 print
 sys.stdout.flush()
 User_Parameters = readoptions.readPipelineOptions(parameter_file)
@@ -269,7 +269,7 @@ if Parameters['steps']['doScaleNoise']:
 
 # --- WAVELET ---
 if Parameters['steps']['doWavelet']:
-	print 'Running wavelet filter'
+	print ('Running wavelet filter')
 	# WARNING: There is a lot of time and memory overhead from transposing the cube forth and back!
 	# WARNING: This will need to be addressed in the future.
 	np_Cube = np.transpose(np_Cube, axes=[2, 1, 0])
@@ -280,11 +280,11 @@ if Parameters['steps']['doWavelet']:
 
 # --- WRITE FILTERED CUBE ---
 if Parameters['steps']['doWriteFilteredCube'] and (Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']):
-	print "SoFiA: Writing filtered cube"
+	print ('SoFiA: Writing filtered cube')
 	write_filtered_cube.writeFilteredCube(np_Cube, dict_Header, Parameters, outputFilteredCube, Parameters['writeCat']['compress'])
 
 if Parameters['steps']['doFlag'] or Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']:
-	print "Filtering complete"
+	print ("Filtering complete")
 
 
 
@@ -298,20 +298,20 @@ printProgressMessage("Running source finder")
 
 # --- PYFIND ---
 if Parameters['steps']['doSCfind']:
-	print 'Running S+C filter'
+	print ('Running S+C filter')
 	mask |= pyfind.SCfinder_mem(np_Cube, dict_Header, t0, **Parameters['SCfind'])
 
 # --- CNHI ---	
 if Parameters['steps']['doCNHI']:
-	print 'Running CNHI filter'
+	print ('Running CNHI filter')
 	mask = mask + CNHI.find_sources(np_Cube, mask, **Parameters['CNHI'])
  
 # --- THRESHOLD ---	
 if Parameters['steps']['doThreshold']:
-	print 'Running threshold filter'
+	print ('Running threshold filter')
 	threshold_filter.filter(mask, np_Cube, dict_Header, **Parameters['threshold'])
 
-print 'Source finding complete.'
+print ('Source finding complete.')
 
 # Check whether positivity flag is set; if so, remove negative pixels from mask:
 if Parameters['merge']['positivity']:
@@ -329,7 +329,7 @@ if not NRdet:
 	sys.stderr.write("WARNING: No voxels detected and included in the mask yet! Exiting pipeline.\n")
 	sys.exit()
 else:
-	print str(NRdet) +  ' of ' + str(np.array(mask.shape).prod()) + ' pixels detected (' + str(100.0 * float(NRdet) / float(np.array(mask.shape).prod())) + "%)"
+	print (str(NRdet) +  ' of ' + str(np.array(mask.shape).prod()) + ' pixels detected (' + str(100.0 * float(NRdet) / float(np.array(mask.shape).prod())) + "%)")
 
 
 
@@ -345,10 +345,10 @@ if Parameters['steps']['doMerge'] and NRdet:
 		sys.stderr.write("WARNING: No objects remain after merging. Exiting pipeline.\n")
 		sys.exit()
 	objects = np.array(objects)
-	print 'Merging complete'
+	print ('Merging complete')
 	NRdet = len(objects)
 	NRdetNeg = (np.array(objects)[:,16] < 0).sum()
-	print str(NRdet) + ' sources detected: ' + str(NRdet - NRdetNeg) + ' positive, ' + str(NRdetNeg) + ' negative.'
+	print (str(NRdet) + ' sources detected: ' + str(NRdet - NRdetNeg) + ' positive, ' + str(NRdetNeg) + ' negative.')
 	# Set catalogue header
 	if 'bunit' in dict_Header: dunits = dict_Header['bunit']
 	else: dunits = '-'
@@ -402,7 +402,7 @@ elif Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and
 	# ---- CALCULATE RELIABILITY ----
 	printProgressMessage("Determining reliability")
 	objects, reliable = addrel.EstimateRel(np.array(objects), outroot, catParNames, **Parameters['reliability'])
-	print 'The following sources have been detected:', reliable
+	print ('The following sources have been detected: ' + str(reliable))
 	catParNames = tuple(list(catParNames) + ['n_pos',  'n_neg',  'rel'])
 	catParUnits = tuple(list(catParUnits) + ['-',      '-',      '-'])
 	catParFormt = tuple(list(catParFormt) + ['%12.3e', '%12.3e', '%12.6f'])
@@ -410,7 +410,7 @@ elif Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and
 elif Parameters['steps']['doMerge'] and NRdet:
 	printProgressTime()
 	reliable = list(np.array(objects)[np.array(objects)[:,16] > 0,0].astype(int)) # select all positive sources
-	print 'The following sources have been detected:', reliable
+	print ('The following sources have been detected: ' + str(reliable))
 
 else:
 	printProgressTime()
@@ -557,7 +557,7 @@ if Parameters['steps']['doParameterise'] and Parameters['steps']['doMerge'] and 
 	catParUnits = tuple(catParUnits)
 	catParFormt = tuple(catParFormt)
 
-	print 'Parameterisation complete'
+	print ('Parameterisation complete')
 
 
 

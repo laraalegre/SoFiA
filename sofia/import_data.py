@@ -17,15 +17,15 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			sys.stderr.write("ERROR: The specified data cube does not exist.\n")
 			sys.stderr.write("       Cannot find: " + inFile + "\n")
 			raise SystemExit(1)
-
+		
 		if len(subcube):
 			from astropy import wcs
 			hdulist = fits.open(inFile, memmap=False)
 			header = hdulist[0].header
 			hdulist.close()
-
+		
 		if (len(subcube) == 6 or len(subcube) == 4) and subcubeMode == 'world':
-			print 'Calculating subcube boundaries from input WCS centre and radius'
+			print ('Calculating subcube boundaries from input WCS centre and radius')
 			wcsin = wcs.WCS(header)
 			# calculate cos(Dec) correction for RA range
 			if wcsin.wcs.cunit[0] == 'deg' and wcsin.wcs.cunit[1] == 'deg':
@@ -71,24 +71,23 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 		elif len(subcube):
 			sys.stderr.write("ERROR: import.subcubeMode can only be \'pixel\' or \'world\', and import.subcube must have 4 or 6 entries.\n")
 			raise SystemExit(1)
-
+		
 		if len(subcube) == 4:
-			print 'Loading subcube of %s defined by [x1 x2 y1 y2] =' % inFile, subcube
+			print ('Loading subcube of %s defined by [x1 x2 y1 y2] =' % inFile, subcube)
 		elif len(subcube) == 6:
-			print 'Loading subcube of %s defined by [x1 x2 y1 y2 z1 z2] =' % inFile, subcube
+			print ('Loading subcube of %s defined by [x1 x2 y1 y2 z1 z2] =' % inFile, subcube)
 	else: 
-		print 'Loading cube: ', inFile
+		print ('Loading cube: ' + inFile)
 		subcube = []
 	f = fits.open(inFile, memmap=False, do_not_scale_image_data=True)
 	dict_Header = f[0].header
-
+	
 	# check whether the number of dimensions is acceptable and read data accordingly
-	print
 	# the default is three axis
 	if dict_Header['NAXIS'] == 3:
-		print 'The input cube has 3 axes:'
-		print 'type: ', dict_Header['CTYPE1'], dict_Header['CTYPE2'], dict_Header['CTYPE3'] 
-		print 'dimensions: ', dict_Header['NAXIS1'], dict_Header['NAXIS2'], dict_Header['NAXIS3']
+		print ('The input cube has 3 axes:')
+		print ('type: ' + str(dict_Header['CTYPE1']) + ' ' + str(dict_Header['CTYPE2']) + ' ' + str(dict_Header['CTYPE3']))
+		print ('dimensions: ' + str(dict_Header['NAXIS1']) + ' ' + str(dict_Header['NAXIS2']) + ' ' + str(dict_Header['NAXIS3']))
 		fullshape = [dict_Header['NAXIS3'], dict_Header['NAXIS2'], dict_Header['NAXIS1']]
 		if len(subcube) == 6:
 			np_Cube = f[0].section[subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
@@ -105,8 +104,8 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			raise SystemExit(1)
 	elif dict_Header['NAXIS'] == 4:
 		if dict_Header['NAXIS4'] != 1:
-			print 'type: ', dict_Header['CTYPE1'], dict_Header['CTYPE2'], dict_Header['CTYPE3'], dict_Header['CTYPE4']  
-			print 'dimensions: ', dict_Header['NAXIS1'], dict_Header['NAXIS2'], dict_Header['NAXIS3'], dict_Header['NAXIS4']  
+			print ('type: ' + str(dict_Header['CTYPE1']) + ' ' + str(dict_Header['CTYPE2']) + ' ' + str(dict_Header['CTYPE3']) + ' ' + str(dict_Header['CTYPE4']))
+			print ('dimensions: ' + str(dict_Header['NAXIS1']) + ' ' + str(dict_Header['NAXIS2']) + ' ' + str(dict_Header['NAXIS3']) + ' ' + str(dict_Header['NAXIS4']))
 			sys.stderr.write("ERROR: The size of the 4th dimension is > 1.\n")
 			raise SystemExit(1)
 		else:
@@ -116,9 +115,9 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 				dict_Header['CRPIX1'] -= subcube[0]
 				dict_Header['CRPIX2'] -= subcube[2]
 				dict_Header['CRPIX3'] -= subcube[4]
-			        dict_Header['NAXIS1'] = subcube[1] - subcube[0]
-			        dict_Header['NAXIS2'] = subcube[3] - subcube[2]
-			        dict_Header['NAXIS3'] = subcube[5] - subcube[4]
+				dict_Header['NAXIS1'] = subcube[1] - subcube[0]
+				dict_Header['NAXIS2'] = subcube[3] - subcube[2]
+				dict_Header['NAXIS3'] = subcube[5] - subcube[4]
 			elif not len(subcube):
 				np_Cube = f[0].section[0]
 			else:
@@ -130,8 +129,8 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			#		del(dict_Header[key])
 	elif dict_Header['NAXIS'] == 2:
 		sys.stderr.write("WARNING: The input cube has 2 axes, third axis added.\n")
-		print 'type: ', dict_Header['CTYPE1'], dict_Header['CTYPE2']
-		print 'dimensions: ', dict_Header['NAXIS1'], dict_Header['NAXIS2']
+		print ('type: ' + str(dict_Header['CTYPE1']) + ' ' + str(dict_Header['CTYPE2']))
+		print ('dimensions: ' + str(dict_Header['NAXIS1']) + ' ' + str(dict_Header['NAXIS2']))
 		fullshape = [dict_Header['NAXIS2'], dict_Header['NAXIS1']]
 		if len(subcube) == 4:
 			np_Cube = array([f[0].section[subcube[2]:subcube[3], subcube[0]:subcube[1]]])
@@ -153,21 +152,21 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 		sys.stderr.write("ERROR: The file has fewer than 1 or more than 4 dimensions.\n")
 		raise SystemExit(1)
 	f.close()
-
+	
 	if 'BSCALE' in dict_Header and 'BZERO' in dict_Header:
 		np_Cube = dict_Header['BSCALE'] * np_Cube
 		np_Cube = dict_Header['BZERO'] + np_Cube
 		# NOTE: the above lines are more memory efficient than
 		# np_Cube = np_Cube * dict_Header['BSCALE'] + dict_Header['BZERO']
-
-
+	
+	
 	# check whether the axes are in the expected order:
 	#if dict_Header['CTYPE1'][0:2] != 'RA' or dict_Header['CTYPE2'][0:3] != 'DEC':
 	#	sys.stderr.write("WARNING: The dimensions are not in the expected order.\n")
-
+	
 	# the data cube has been loaded
-	print 'The data cube has been loaded'
-
+	print ('The data cube has been loaded.')
+	
 	# apply weights if a weights file exists:
 	if weightsFile:
 		# check whether the weights cube exists:
@@ -175,12 +174,12 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			sys.stderr.write("ERROR: The defined weights cube does not exist.\n")
 			sys.stderr.write("       Cannot find: " + weightsFile + "\n")
 			raise SystemExit(1)
-
+		
 		else:
 			# Scale the input cube with a weights cube
 			# load the weights cube and convert it into a 3D array to be applied to the data 3D array
 			# (note that the data has been converted into a 3D array above)
-			print 'Loading and applying weights cube:', weightsFile
+			print ('Loading and applying weights cube: ' + weightsFile)
 			f = fits.open(weightsFile, memmap=False)
 			dict_Weights_header = f[0].header
 			if dict_Weights_header['NAXIS'] == 3:
@@ -210,23 +209,23 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			else:
 				sys.stderr.write("ERROR: The weights cube has fewer than 1 or more than 4 dimensions.\n")
 				raise SystemExit(1)
-
+			
 			f.close()
-			print 'Weights cube loaded and applied.'
-
+			print ('Weights cube loaded and applied.')
+	
 	elif weightsFunction:
 		# WARNING: I'm not sure if there is a safe way to properly implement multiplication of a data array 
 		# WARNING: with a user-specified function in Python without the need for a whitelist, nested loops, 
 		# WARNING: or the creation of multiple copies of the cube.
-		print "Evaluating function: %s" % weightsFunction
-
+		print ("Evaluating function: %s" % weightsFunction)
+		
 		# Define whitelist of allowed character sequences:
 		whitelist = ["x", "y", "z", "e", "E", "sin", "cos", "tan", "arcsin", "arccos", "arctan", "arctan2", "sinh", "cosh", "tanh", "arcsinh", "arccosh", "arctanh", "exp", "log", "sqrt", "square", "power", "absolute", "fabs", "sign"]
-
+		
 		# Search for all keywords consisting of consecutive sequences of alphabetical characters:
 		# NOTE: Explicit conversion to string is required unless readoptions.py is modified!
 		keywordsFound = filter(None, re.split("[^a-zA-Z]+", str(weightsFunction)))
-
+		
 		# Check for non-whitelisted sequences:
 		for keyword in keywordsFound:
 			if keyword not in whitelist:
@@ -234,7 +233,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 				sys.stderr.write("         %s\n" % weightsFunction)
 				sys.stderr.write("       Please check your input.\n")
 				raise SystemExit(1)
-
+		
 		# hardcoded number of weights chunks
 		Nz = 50
 		# check that the number of weights z-chunks is at most equal to the total nr of chans
@@ -243,7 +242,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 		Lz = int(round(float(np_Cube.shape[0]) / Nz))
 		# calculate number of chunks really needed given above rounding
 		Nz = int(ceil(float(np_Cube.shape[0]) / Lz))
-		print "Evaluating and applying weights function in %i chunks along the Z axis" % Nz
+		print ("Evaluating and applying weights function in %i chunks along the Z axis" % Nz)
 		for zz in range(Nz):
 			# last chunk may have different length than the others
 			if zz == Nz - 1: z, y, x = indices((np_Cube.shape[0] - Lz * zz, np_Cube.shape[1], np_Cube.shape[2]))
@@ -261,32 +260,32 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 				sys.stderr.write("         %s\n" % weightsFunction)
 				sys.stderr.write("       Please check your input.\n")
 				raise SystemExit(1)
-		print "Function-weighted cube created.\n"
-
+		print ("Function-weighted cube created.\n")
+	
 	if maskFile:
 		# check whether the mask cube exists:
 		if os.path.isfile(maskFile) == False:
 			sys.stderr.write("ERROR: The specified mask cube does not exist.\n")
 			sys.stderr.write("       Cannot find: " + maskFile + "\n")
-			#print 'WARNING: Program continues, without using input mask'
+			#print ('WARNING: Program continues, without using input mask')
 			#mask=zeros(np_Cube.shape)
 			raise SystemExit(1)
-
+		
 		else:
-			print 'Loading mask cube: ', maskFile
+			print ('Loading mask cube: ' + maskFile)
 			g = fits.open(maskFile, memmap=False)
 			dict_Mask_header = g[0].header
 			if dict_Mask_header['NAXIS'] == 3:
 				if dict_Mask_header['CRVAL1'] != dict_Header['CRVAL1'] or dict_Mask_header['CRVAL2'] != dict_Header['CRVAL2'] or dict_Mask_header['CRVAL3'] != dict_Header['CRVAL3']:
 					sys.stderr.write("ERROR: Input cube and mask are not on the same WCS grid.\n")
-					print dict_Mask_header['CRVAL1'], dict_Header['CRVAL1'], dict_Mask_header['CRVAL2'], dict_Header['CRVAL2'], dict_Mask_header['CRVAL3'], dict_Header['CRVAL3']
+					sys.stderr.write(str(dict_Mask_header['CRVAL1']) + ' ' + str(dict_Header['CRVAL1']) + ' ' + str(dict_Mask_header['CRVAL2']) + ' ' + str(dict_Header['CRVAL2']) + ' ' + str(dict_Mask_header['CRVAL3']) + ' ' + str(dict_Header['CRVAL3']))
 					raise SystemExit(1)
 				elif len(subcube) == 6:
 					if dict_Mask_header['NAXIS1'] == np_Cube.shape[2] and dict_Mask_header['NAXIS2'] == np_Cube.shape[1] and dict_Mask_header['NAXIS3'] == np_Cube.shape[0]:
-						print 'Subcube selection NOT applied to input mask. The full input mask cube matches size and WCS of the selected data subcube.'
+						print ('Subcube selection NOT applied to input mask. The full input mask cube matches size and WCS of the selected data subcube.')
 						mask = g[0].data
 					elif dict_Mask_header['NAXIS1'] == fullshape[2] and dict_Mask_header['NAXIS2'] == fullshape[1] and dict_Mask_header['NAXIS3'] == fullshape[0]:
-						print 'Subcube selection applied also to input mask. The mask subcube matches size and WCS of the selected data subcube.'
+						print ('Subcube selection applied also to input mask. The mask subcube matches size and WCS of the selected data subcube.')
 						mask = g[0].section[subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
 					else:
 						sys.stderr.write("ERROR: Neither the full mask nor the subcube of the mask match size and WCS of the selected data subcube.\n")
@@ -302,10 +301,10 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 				elif len(subcube) == 6:
 					sys.stderr.write("WARNING: The mask cube has 4 axes; first axis ignored.\n")
 					if dict_Mask_header['NAXIS1'] == np_Cube.shape[2] and dict_Mask_header['NAXIS2'] == np_Cube.shape[1] and dict_Mask_header['NAXIS3'] == np_Cube.shape[0]:
-						print 'Subcube selection NOT applied to input mask. The full input mask cube matches size and WCS of the selected data subcube.'
+						print ('Subcube selection NOT applied to input mask. The full input mask cube matches size and WCS of the selected data subcube.')
 						mask = g[0].section[0]
 					elif dict_Mask_header['NAXIS1'] == fullshape[2] and dict_Mask_header['NAXIS2'] == fullshape[1] and dict_Mask_header['NAXIS3'] == fullshape[0]:
-						print 'Subcube selection applied also to input mask. The mask subcube matches size and WCS of the selected data subcube.'
+						print ('Subcube selection applied also to input mask. The mask subcube matches size and WCS of the selected data subcube.')
 						mask = g[0].section[0, subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
 					else:
 						sys.stderr.write("ERROR: Neither the full mask nor the subcube of the mask match size and WCS of the selected data subcube.\n")
@@ -318,10 +317,10 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 				sys.stderr.write("WARNING: The mask cube has 2 axes; third axis added.\n")
 				if len(subcube) == 6 or len(subcube) == 4:
 					if dict_Mask_header['NAXIS1'] == np_Cube.shape[2] and dict_Mask_header['NAXIS2'] == np_Cube.shape[1]:
-						print 'Subcube selection NOT applied to input mask. The full input mask cube matches size and WCS of the selected data subcube.'
+						print ('Subcube selection NOT applied to input mask. The full input mask cube matches size and WCS of the selected data subcube.')
 						mask = array([g[0].data])
 					elif dict_Mask_header['NAXIS1'] == fullshape[2] and dict_Mask_header['NAXIS2'] == fullshape[1]:
-						print 'Subcube selection applied also to input mask. The mask subcube matches size and WCS of the selected data subcube.'
+						print ('Subcube selection applied also to input mask. The mask subcube matches size and WCS of the selected data subcube.')
 						mask = array([g[0].section[subcube[2]:subcube[3], subcube[0]:subcube[1]]])
 					else:
 						sys.stderr.write("ERROR: Neither the full mask nor the subcube of the mask match size and WCS of the selected data subcube.\n")
@@ -334,10 +333,10 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 					raise SystemExit(1)
 				if len(subcube) == 6:
 					if dict_Mask_header['NAXIS1'] == np_Cube.shape[0]:
-						print 'Subcube selection NOT applied to input mask. The full input mask cube matches size and WCS of the selected data subcube.'
+						print ('Subcube selection NOT applied to input mask. The full input mask cube matches size and WCS of the selected data subcube.')
 						mask = reshape(g[0].data, (-1, 1, 1))
 					elif dict_Mask_header['NAXIS1'] == fullshape[0]:
-						print 'Subcube selection applied also to input mask. The mask subcube matches size and WCS of the selected data subcube.'
+						print ('Subcube selection applied also to input mask. The mask subcube matches size and WCS of the selected data subcube.')
 						mask = reshape(g[0].section[subcube[4]:subcube[5]], (-1, 1, 1))
 					else:
 						sys.stderr.write("ERROR: Neither the full mask nor the subcube of the mask match size and WCS of the selected data subcube.\n")
@@ -352,13 +351,13 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 				raise SystemExit(1)
 			mask[mask > 0] = 1
 			g.close()
-			print 'Mask cube loaded.'
+			print ('Mask cube loaded.')
 		# In all cases, convert mask to Boolean with masked pixels set to 1.
 		mask = (mask > 0).astype(bool)
 	else:
 		# Create an empty mask if none is provided.
 		mask = zeros(np_Cube.shape, dtype=bool)
-
+	
 	# The original data are replaced with the weighted cube!
 	# If weighting is being used, the data should be read in again during parameterisation.
 	return np_Cube, dict_Header, mask, subcube

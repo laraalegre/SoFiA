@@ -10,7 +10,7 @@ from sys import argv
 import string
 from os import path
 import sys
-from functions import *
+from .functions import *
 from time import time
 
 
@@ -63,10 +63,10 @@ def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, 'b'],], threshold=3.5, siz
 	for jj in kernels:
 		[kx, ky, kz, kt] = jj
 		if verbose:
-			print '\n--- %.3f seconds since start' % (time() - t0)
-			print '    Filter %s %s %s %s ...' % (kx, ky, kz, kt)
+			print ('\n--- %.3f seconds since start' % (time() - t0))
+			print ('    Filter %s %s %s %s ...' % (kx, ky, kz, kt))
 		if kernelUnit == 'world' or kernelUnit == 'w':
-			if verbose: print '    Converting filter size to pixels ...'
+			if verbose: print ('    Converting filter size to pixels ...')
 			kx = abs(float(kx) / header['CDELT1'])
 			ky = abs(float(ky) / header['CDELT2'])
 			kz = abs(float(kz) / header['CDELT3'])

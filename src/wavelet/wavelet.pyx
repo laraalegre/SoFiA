@@ -16,21 +16,19 @@ import numpy as np
 from cpython cimport bool
 
 cdef inline int index_reflect(int index, int size) nogil:
-    
     while index < 0 or index >= size:
-        
+
         if index < 0:
             index = index * -1
         if index >= size:
             index = 2 * (size - 1) - index
-            
+
     return index
 
 #cdef inline bool in_bounds(int index, int size) nogil:
 #    return index >= 0 and index < size
 
 cdef void convolve_with_stepsize(float[:] source, float[:] target, float[:] kernel, int stepsize = 1):
-    
     cdef:
         int size = source.shape[0]
         int kernelsize = kernel.shape[0]
@@ -52,14 +50,13 @@ cdef void convolve_with_stepsize(float[:] source, float[:] target, float[:] kern
         target[i] = <float>a
 
 cdef void convolve_x_with_stepsize(float[:,:,:] source, float[:,:,:] target, float[:] kernel, int stepsize = 1) nogil:
-    
     cdef:
         int zsize = source.shape[0]
         int ysize = source.shape[1]
         int xsize = source.shape[2]
         int kernelsize = kernel.shape[0]
         int index, z, y, x, j
-    
+
     #for z in prange(zsize, num_threads=NTHREADS):
     for z in range(zsize):
         for y in range(ysize):
@@ -78,14 +75,13 @@ cdef void convolve_x_with_stepsize(float[:,:,:] source, float[:,:,:] target, flo
 
 
 cdef void convolve_y_with_stepsize(float[:,:,:] source, float[:,:,:] target, float[:] kernel, int stepsize = 1) nogil:
-    
     cdef:
         int zsize = source.shape[0]
         int ysize = source.shape[1]
         int xsize = source.shape[2]
         int kernelsize = kernel.shape[0]
         int index, z, y, x, j
-    
+
     #for z in prange(zsize, num_threads=NTHREADS):
     for z in range(zsize):
         for y in range(ysize):
@@ -104,14 +100,13 @@ cdef void convolve_y_with_stepsize(float[:,:,:] source, float[:,:,:] target, flo
 
 
 cdef void convolve_z_with_stepsize(float[:,:,:] source, float[:,:,:] target, float[:] kernel, int stepsize = 1) nogil:
-    
     cdef:
         int zsize = source.shape[0]
         int ysize = source.shape[1]
         int xsize = source.shape[2]
         int kernelsize = kernel.shape[0]
         int index, z, y, x, j
-    
+
     #for z in prange(zsize, num_threads=NTHREADS):
     for z in range(zsize):
         for y in range(ysize):
@@ -621,7 +616,6 @@ cdef class Denoise2D1DSoft(Denoise2D1DHard):
 
 
 cdef class WaveletDecomposition1D:
-    
     cdef:
         np.ndarray _work, _data
         int _scales
@@ -696,7 +690,6 @@ cdef class WaveletDecomposition1D:
 
 
 cdef class Denoise1DHardMRS(WaveletDecomposition1D):
-    
     cdef:
         np.ndarray _mrs
         np.ndarray _reconstruction
@@ -768,7 +761,6 @@ cdef class Denoise1DHardMRS(WaveletDecomposition1D):
 
 
 cdef class WaveletDecomposition3D:
-
     cdef:
         np.ndarray _work, _data
         int _scales

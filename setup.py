@@ -11,25 +11,26 @@ import warnings
 
 from sofia import __version__ as version
 
-# compile the gui?
+# Compile the GUI?
+# (Will be reset later from command line option.)
 compile_gui = True
 
 # Dependency checking
 dependencies = [['numpy', '1.8'], ['scipy', '0.7'], ['astropy', '0.2.5']]
 unmetDependencies = False
 
-for (pkg, required_version) in dependencies:
-	try:
-		m = __import__(pkg)
-		available_version = m.__version__
-		if StrictVersion(available_version) < StrictVersion(required_version): raise ValueError
-	except ImportError:
-		print 'ERROR: Package \'' + pkg + '\' not found, but required by SoFiA.'
-		unmetDependencies = True
-	except ValueError:
-		print 'ERROR: Package \'' + pkg + '\' has version number ' + available_version + ","
-		print '       but SoFiA requires version ' + required_version + ' or higher.'
-		unmetDependencies = True
+#for (pkg, required_version) in dependencies:
+	#try:
+		#m = __import__(pkg)
+		#available_version = m.__version__
+		#if StrictVersion(available_version) < StrictVersion(required_version): raise ValueError
+	#except ImportError:
+		#print ('ERROR: Package \'' + pkg + '\' not found, but required by SoFiA.')
+		#unmetDependencies = True
+	#except ValueError:
+		#print ('ERROR: Package \'' + pkg + '\' has version number ' + available_version + ",")
+		#print ('       but SoFiA requires version ' + required_version + ' or higher.')
+		#unmetDependencies = True
 
 # Exit if unmet dependencies were found
 if unmetDependencies: sys.exit(1)
@@ -64,7 +65,7 @@ ext_library_dirs = []
 try:
 	ext_include_dirs += os.environ['PATH'].split(os.pathsep)
 except:
-	print 'Could not parse PATH'
+	print ('Failed to parse PATH')
 	sys.exit(1)
 
 # Get external library paths from LD_LIBRARY_PATH, if it exists
@@ -103,7 +104,7 @@ CNHI_src_files = [
 	]
 CNHI_src = [CNHI_src_base + f for f in CNHI_src_files]
 
-# moment output module
+# Moment output module
 writemoment2_src_base = 'src/writemoment2/'
 writemoment2_src_files = [
 	'writemoment2.c'
@@ -169,23 +170,22 @@ setup(
 	},
 	)
 
-# make sofia_pipeline.py executable
+# Make sofia_pipeline.py executable
 os.chmod('sofia_pipeline.py', os.stat('sofia_pipeline.py').st_mode | stat.S_IXUSR)
 
-# path to the sofia modules
+# Path to SoFiA modules
 cwd = os.getcwd()
 for ll in os.listdir(cwd + '/build'):
 	if 'lib.' in ll:
 		sofiaModulesPath = cwd + '/build/' + ll
 
-# set system variable
+# Set system variable
 os.environ['SOFIA_PIPELINE_PATH'] = cwd + '/sofia_pipeline.py'
-print cwd + '/sofia_pipeline.py'
-print os.environ['SOFIA_PIPELINE_PATH']
+print (cwd + '/sofia_pipeline.py')
+print (os.environ['SOFIA_PIPELINE_PATH'])
 
-# compile the SoFiA gui
-if nogui=='True': compile_gui = False
-else: compile_gui = True
+# Compile SoFiA GUI
+compile_gui = (nogui != 'True')
 
 if compile_gui:
 	os.chdir('gui')
@@ -204,24 +204,24 @@ if compile_gui:
 		sofiaApplicationPath = cwd + '/gui'
 	os.chdir('../')
 
-print '\n-------------------------------------------------------------------------\n'
-print '\033[1;32mInstallation complete.\033[0m\n'
-print '\033[1mPlease add the following lines to your shell configuration file:\033[0m\n'
-print '\033[3;4mFor BASH (~/.bashrc):\033[0m'
-print '    export SOFIA_MODULE_PATH="' + sofiaModulesPath + '"'
-print '    export SOFIA_PIPELINE_PATH="' + cwd + '/sofia_pipeline.py"'
-if compile_gui: print '    export PATH="$PATH:' + cwd + ':' + sofiaApplicationPath + '"\n'
-else:           print '    export PATH="$PATH:' + cwd + '"\n'
-print '\033[3;4mFor (T)CSH (~/.cshrc):\033[0m'
-print '    setenv SOFIA_MODULE_PATH "' + sofiaModulesPath + '"'
-print '    setenv SOFIA_PIPELINE_PATH "' + cwd + '/sofia_pipeline.py"'
-if compile_gui:  print '    setenv PATH {$PATH}:"' + cwd + ':' + sofiaApplicationPath + '"\n'
-else:            print '    setenv PATH {$PATH}:"' + cwd + '"\n'
-print 'You may send an e-mail to \033[94msofia-request@atnf.csiro.au\033[0m with the word \033[3msubscribe\033[0m'
-print 'in the \033[3me-mail body\033[0m (no subject required) to sign up to the \033[3mSoFiA mailing list\033[0m.\n'
+print ('\n-------------------------------------------------------------------------\n')
+print ('\033[1;32mInstallation complete.\033[0m\n')
+print ('\033[1mPlease add the following lines to your shell configuration file:\033[0m\n')
+print ('\033[3;4mFor BASH (~/.bashrc):\033[0m')
+print ('    export SOFIA_MODULE_PATH="' + sofiaModulesPath + '"')
+print ('    export SOFIA_PIPELINE_PATH="' + cwd + '/sofia_pipeline.py"')
+if compile_gui: print ('    export PATH="$PATH:' + cwd + ':' + sofiaApplicationPath + '"\n')
+else:           print ('    export PATH="$PATH:' + cwd + '"\n')
+print ('\033[3;4mFor (T)CSH (~/.cshrc):\033[0m')
+print ('    setenv SOFIA_MODULE_PATH "' + sofiaModulesPath + '"')
+print ('    setenv SOFIA_PIPELINE_PATH "' + cwd + '/sofia_pipeline.py"')
+if compile_gui:  print ('    setenv PATH {$PATH}:"' + cwd + ':' + sofiaApplicationPath + '"\n')
+else:            print ('    setenv PATH {$PATH}:"' + cwd + '"\n')
+print ('You may send an e-mail to \033[94msofia-request@atnf.csiro.au\033[0m with the word \033[3msubscribe\033[0m')
+print ('in the \033[3me-mail body\033[0m (no subject required) to sign up to the \033[3mSoFiA mailing list\033[0m.\n')
 
 ## test sofia installation
-# print 'If you want to test your SoFiA installation, please open a new terminal and type:'
-# print '  cd ' + cwd + '/test_data; sofia_pipeline.py parameters.txt'
-# print '\n'
+# print ('If you want to test your SoFiA installation, please open a new terminal and type:')
+# print ('  cd ' + cwd + '/test_data; sofia_pipeline.py parameters.txt')
+# print ('\n')
 
