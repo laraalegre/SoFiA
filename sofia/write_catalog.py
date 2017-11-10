@@ -61,7 +61,7 @@ def write_catalog_from_array(mode, objects, catHeader, catUnits, catFormat, parL
 	modeIndex = availableModes.index(mode);
 	
 	if flagCompress: outName += ".gz";
-	print "Writing " + availableModes[modeIndex] + " catalogue: " + outName;
+	sys.stdout.write("Writing " + availableModes[modeIndex] + " catalogue: " + outName + "\n");
 	
 	# Exit if file exists and overwrite flag is set to false
 	if not flagOverwrite and os.path.exists(outName):
@@ -134,7 +134,7 @@ def write_catalog_from_array(mode, objects, catHeader, catUnits, catFormat, parL
 		# Create data table entries
 		data = SubElement(table, "DATA");
 		tabledata = SubElement(data, "TABLEDATA");
-
+		
 		for obj in objects:
 			tr = SubElement(tabledata, "TR");
 			for par in parList:

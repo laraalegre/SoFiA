@@ -98,7 +98,7 @@ def fix_gipsy_header(header_orig):
 			for key in header:
 				if 'CUNIT' in key and header[key] == 'DEGREE':
 					header[key] = 'deg'
-			print 'Header repaired successfully.'
+			print ('Header repaired successfully.')
 			
 			return header
 
@@ -123,7 +123,7 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 			hdulist = fits.open(Parameters['import']['inFile'])
 			header = hdulist[0].header
 			hdulist.close()
-
+			
 			# Fix headers where "per second" is written "/S" instead of "/s"
 			# (assuming they mean "per second" and not "per Siemens").
 			if 'cunit3' in header and '/S' in header['cunit3']:
@@ -146,7 +146,7 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 				catParUnits = tuple(list(catParUnits) + [str(cc).replace(' ','') for cc in wcsin.cunit])
 				catParNames = tuple(list(catParNames) + [(cc.split('--')[0]).lower() for cc in wcsin.ctype])
 				catParFormt = tuple(list(catParFormt) + ['%15.7e', '%15.7e', '%15.7e'])
-
+			
 			else:
 				# constrain the RA axis reference value CRVAL_ to be between 0 and 360 deg
 				rafound = 0
@@ -161,7 +161,7 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 					elif header['crval%i'%(kk + 1)] > 360:
 						sys.stderr.write("WARNING: subtracting 360 deg from RA reference value.\n")
 						header['crval%i'%(kk + 1)] -= 360
-
+				
 				#if header['naxis'] == 4: wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL,wcs.WCSSUB_STOKES])
 				#else: wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL])
 				wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL])
@@ -188,15 +188,15 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 			#if header['naxis'] == 4:
 			#	catParUnits = catParUnits[:-1]
 			#	catParNames= catParNames[:-1]
-			print "WCS coordinates added to the catalogue."
-
+			print ('WCS coordinates added to catalogue.')
+			
 			# Create IAU-compliant source name:
 			# WARNING: This currently assumes a regular, ≥ 2-dim. data cube where the first two axes are longitude and latitude.
 			n_src = objects.shape[0]
 			n_par = objects.shape[1]
-
+			
 			iau_names = np.empty([n_src, 1], dtype=object)
-
+			
 			if header["ctype1"][:4] == "RA--":
 				# Equatorial coordinates try to figure out equinox:
 				iau_coord = "equ"
@@ -218,23 +218,23 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 				# Unsupported coordinate system:
 				iau_coord = ""
 				iau_equinox = ""
-
+			
 			for src in xrange(n_src):
 				lon = objects[src][n_par - 3]
 				lat = objects[src][n_par - 2]
-
+				
 				if iau_coord == "equ":
 					ra = lon / 15.0    # convert assumed degrees to hours
 					ra_h = int(ra)
 					ra_m = int((ra - ra_h) * 60.0)
 					ra_s = (ra - ra_h - (ra_m / 60.0)) * 3600.0
-
+					
 					dec_sgn = np.sign(lat)
 					dec = abs(lat)
 					dec_d = int(dec)
 					dec_m = int((dec - dec_d) * 60.0)
 					dec_s = (dec - dec_d - (dec_m / 60.0)) * 3600.0
-
+					
 					iau_pos = "{0:02d}{1:02d}{2:05.2f}".format(ra_h, ra_m, ra_s)
 					if dec_sgn < 0: iau_pos += "-"
 					else: iau_pos += "+"
@@ -244,15 +244,15 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 					if lat < 0.0: iau_pos += "-"
 					else: iau_pos += "+"
 					iau_pos += "{0:07.4f}".format(abs(lat))
-
+				
 				iau_names[src][0] = "SoFiA " + iau_equinox + iau_pos
-
+			
 			objects = np.concatenate((objects, iau_names), axis = 1)
 			catParUnits = tuple(list(catParUnits) + ["-"])
 			catParNames = tuple(list(catParNames) + ["name"])
 			catParFormt = tuple(list(catParFormt) + ["%30s"])
-
+		
 		except:
 			sys.stderr.write("WARNING: WCS conversion of parameters failed.\n")
-
+	
 	return(objects, catParNames, catParFormt, catParUnits)

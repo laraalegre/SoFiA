@@ -25,51 +25,51 @@ from scipy import ndimage
 #---------------------
 
 def readfits(fnamein):
-    """
-    read fits file, returning hdu
-
-    """
-    f1=pyfits.open(fnamein)
-    return f1
+	"""
+	read fits file, returning hdu
+	
+	"""
+	f1 = pyfits.open(fnamein)
+	return f1
 
 def writefits(fnameout, data, header):
-    """
-    Create fits file from given filename, data and header
-
-    """
-    hdu = pyfits.PrimaryHDU()
-    hdu.data = data
-    hdu.header = header
-    
-    fitsobj = pyfits.HDUList()
-    fitsobj.append(hdu)
-    fitsobj.writeto(fnameout,output_verify='warn')
+	"""
+	Create fits file from given filename, data and header
+	
+	"""
+	hdu = pyfits.PrimaryHDU()
+	hdu.data = data
+	hdu.header = header
+	
+	fitsobj = pyfits.HDUList()
+	fitsobj.append(hdu)
+	fitsobj.writeto(fnameout, output_verify='warn')
 
 def smooth(indata, type, kern_px, kern_py, kern_pz):
-    """
-    Smooth image array
-
-    type = g: gaussian
-    type = b: boxcar (average)
-    #type = m: boxcar (median), nb kernal must be 3D as currently written
-    
-    kern_px,y,z: sigma of gaussian kernal/box size
-    """
-    found_nan=numpy.isnan(indata).sum()
-    outdata=indata*1
-    if found_nan: outdata=numpy.nan_to_num(outdata)
-    if type == "g":
-        outdata=ndimage.gaussian_filter(outdata, (kern_pz, kern_px, kern_py))
-    elif type == "b":
-        outdata=ndimage.uniform_filter(outdata, (kern_pz, kern_px, kern_py))
-    #elif type == "m":
-    #    outdata=ndimage.filters.median_filter(input=outdata, size=(kern_pz, kern_px, kern_py))
-    else:
-        sys.stderr.write("ERROR: Smoothing type not recognized.\n")
-        sys.exit()
-    if found_nan: outdata[numpy.isnan(indata)]=numpy.nan
-    
-    return outdata
+	"""
+	Smooth image array
+	
+	type = g: gaussian
+	type = b: boxcar (average)
+	#type = m: boxcar (median), nb kernal must be 3D as currently written
+	
+	kern_px,y,z: sigma of gaussian kernal/box size
+	"""
+	found_nan = numpy.isnan(indata).sum()
+	outdata = indata * 1
+	if found_nan: outdata = numpy.nan_to_num(outdata)
+	if type == "g":
+		outdata=ndimage.gaussian_filter(outdata, (kern_pz, kern_px, kern_py))
+	elif type == "b":
+		outdata=ndimage.uniform_filter(outdata, (kern_pz, kern_px, kern_py))
+	#elif type == "m":
+	#	outdata=ndimage.filters.median_filter(input=outdata, size=(kern_pz, kern_px, kern_py))
+	else:
+		sys.stderr.write("ERROR: Smoothing type not recognized.\n")
+		sys.exit()
+	if found_nan: outdata[numpy.isnan(indata)] = numpy.nan
+	
+	return outdata
 
 #---------------------
 # main
@@ -94,15 +94,15 @@ imheader = image[0].header
 
 # apply masks
 
-if pc_pars['xchanmask']:    
-    xchanmask_tuples = ast.literal_eval(pc_pars['xchanmask'])
-    imdata[:,:,r_[xchanmask_tuples] ] = nan
+if pc_pars['xchanmask']:
+	xchanmask_tuples = ast.literal_eval(pc_pars['xchanmask'])
+	imdata[:,:,r_[xchanmask_tuples] ] = nan
 if pc_pars['ychanmask']:
-    ychanmask_tuples = ast.literal_eval(pc_pars['ychanmask'])
-    imdata[:,r_[ychanmask_tuples],:] = nan
+	ychanmask_tuples = ast.literal_eval(pc_pars['ychanmask'])
+	imdata[:,r_[ychanmask_tuples],:] = nan
 if pc_pars['zchanmask']:
-    zchanmask_tuples = ast.literal_eval(pc_pars['zchanmask'])
-    imdata[r_[zchanmask_tuples],:,: ] = nan
+	zchanmask_tuples = ast.literal_eval(pc_pars['zchanmask'])
+	imdata[r_[zchanmask_tuples],:,: ] = nan
 
 # smooth image
 

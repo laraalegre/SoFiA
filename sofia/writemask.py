@@ -38,28 +38,26 @@ def writeMask(cube, header, dictionary, filename, compress, flagOverwrite):
 				if optionsDepth[i] > optionsDepth[j]:
 					tmpString = optionsList[j] + '.' + tmpString
 					depthNumber = optionsDepth[j]
+				#end if
 				j -= 1
+			#end while
 			headerList.append(tmpString)
-	for option in headerList:
-		header.add_history(option)
-	if cube.max() < 32767:
-		cube=cube.astype('int16')
+		#end if
+	#end for
+	for option in headerList: header.add_history(option)
+	if cube.max() < 32767: cube=cube.astype('int16')
 
 	# add axes required to make the shape of the mask cube equal to the shape of the input datacube
-        while header['naxis']>len(cube.shape): cube.resize(tuple([1,]+list(cube.shape)))
-
+	while header['naxis'] > len(cube.shape): cube.resize(tuple([1,] + list(cube.shape)))
+	
 	hdu = fits.PrimaryHDU(data=cube, header=header)
 	hdu.header['BUNIT'] = 'source_ID'
 	hdu.header['DATAMIN'] = cube.min()
 	hdu.header['DATAMAX'] = cube.max()
-	#hdulist = fits.HDUList([hdu])
-	#name = os.path.splitext(filename)[0] + '_mask.fits'
+	
 	name = filename
-	if compress:
-		name += '.gz'
-
+	if compress: name += '.gz'
+	
 	# Check for overwrite flag:
-	if not flagOverwrite and os.path.exists(name):
-		sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
-	else:
-		hdu.writeto(name, output_verify='warn', clobber=True)
+	if not flagOverwrite and os.path.exists(name): sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
+	else: hdu.writeto(name, output_verify='warn', clobber=True)
