@@ -1039,6 +1039,9 @@ void SoFiA::updateFields()
 	n = tabInFilterFieldSmoothingSpectral->text().toDouble();
 	if(n < 0.0) tabInFilterFieldSmoothingSpectral->setText("0.0");
 	
+	// Disable source parameter list if not catalogue format selected:
+	tabOutputFieldParameters->setEnabled(tabOutputButtonASCII->isChecked() or tabOutputButtonXML->isChecked() or tabOutputButtonSQL->isChecked());
+	
 	// Disable output parameter buttons if "all" button is selected:
 	/*tabOutputButtonParameter_id->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_name->setEnabled(tabOutputGroupBox2->isChecked());
@@ -1130,9 +1133,8 @@ void SoFiA::updateFields()
 	if(tabOutputButtonASCII->isChecked() or tabOutputButtonXML->isChecked() or tabOutputButtonSQL->isChecked() or (tabOutputButtonFilteredCube->isEnabled() and tabOutputButtonFilteredCube->isChecked()) or tabOutputButtonMask->isChecked() or tabOutputButtonMom0->isChecked() or tabOutputButtonMom1->isChecked() or tabOutputButtonCubelets->isChecked()) toolBoxOP->setItemIcon(0, iconTaskComplete);
 	else toolBoxOP->setItemIcon(0, iconTaskReject);
 	
-	/*if(tabOutputGroupBox2->isChecked())          toolBoxOP->setItemIcon(1, iconTaskComplete);
-	else                                         toolBoxOP->setItemIcon(1, iconTaskReject);*/
-	tabOutputFieldParameters->setEnabled(tabOutputButtonASCII->isChecked() or tabOutputButtonXML->isChecked() or tabOutputButtonSQL->isChecked());
+	if(not (tabOutputFieldBaseName->text()).isEmpty() or not (tabOutputFieldDirectory->text()).isEmpty() or tabOutputButtonCompress->isChecked() or tabOutputButtonOverwrite->isChecked()) toolBoxOP->setItemIcon(1, iconTaskComplete);
+	else toolBoxOP->setItemIcon(1, iconTaskReject);
 	
 	updateActions();
 	
@@ -2012,7 +2014,7 @@ void SoFiA::createInterface()
 	tabInputLayout = new QVBoxLayout();
 	
 	// input files
-	tabInputGroupBox1 = new QGroupBox(tr("Files and settings"), toolBoxIP);
+	tabInputGroupBox1 = new QGroupBox(toolBoxIP);
 	tabInputForm1 = new QFormLayout();
 	
 	tabInputWidgetData = new QWidget(tabInputGroupBox1);
@@ -2989,19 +2991,21 @@ void SoFiA::createInterface()
 	
 	tabOutputLayout = new QVBoxLayout();
 	
-	tabOutputGroupBox1 = new QGroupBox(tr("Files and settings"), toolBoxOP);
+	tabOutputGroupBox1 = new QGroupBox(toolBoxOP);
 	
 	tabOutputForm1 = new QFormLayout();
 	
 	tabOutputFieldBaseName = new QLineEdit(tabOutputGroupBox1);
 	tabOutputFieldBaseName->setObjectName("writeCat.basename");
 	tabOutputFieldBaseName->setEnabled(true);
+	connect(tabOutputFieldBaseName, SIGNAL(textChanged(const QString &)), this, SLOT(updateFields()));
 	connect(tabOutputFieldBaseName, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
 	
 	tabOutputWidgetDirectory = new QWidget(tabOutputGroupBox1);
 	tabOutputLayoutDirectory = new QHBoxLayout();
 	tabOutputFieldDirectory  = new QLineEdit(tabOutputWidgetDirectory);
 	tabOutputFieldDirectory->setObjectName("writeCat.outputDir");
+	connect(tabOutputFieldDirectory, SIGNAL(textChanged(const QString &)), this, SLOT(updateFields()));
 	connect(tabOutputFieldDirectory, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
 	tabOutputButtonDirectory = new QPushButton(tr("Select..."), tabOutputWidgetDirectory);
 	connect(tabOutputButtonDirectory, SIGNAL(clicked()), this, SLOT(selectOutputDirectory()));
@@ -3071,7 +3075,7 @@ void SoFiA::createInterface()
 	tabOutputButtonMom1->setChecked(false);
 	connect(tabOutputButtonMom1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutputButtonMom1, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabOutputButtonCubelets = new QCheckBox(tr("Source products"), tabOutputGroupBox1);
+	tabOutputButtonCubelets = new QCheckBox(tr("Individual source products"), tabOutputGroupBox1);
 	tabOutputButtonCubelets->setObjectName("steps.doCubelets");
 	tabOutputButtonCubelets->setChecked(false);
 	connect(tabOutputButtonCubelets, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
@@ -3086,6 +3090,7 @@ void SoFiA::createInterface()
 	tabOutputButtonOverwrite = new QCheckBox(tr("Enable"), tabOutputGroupBox1);
 	tabOutputButtonOverwrite->setObjectName("writeCat.overwrite");
 	tabOutputButtonOverwrite->setChecked(false);
+	connect(tabOutputButtonOverwrite, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutputButtonOverwrite, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
 	tabOutputWidgetProducts = new QWidget(tabOutputGroupBox1);
@@ -3096,32 +3101,27 @@ void SoFiA::createInterface()
 	tabOutputLayoutProducts->addWidget(tabOutputButtonMask);
 	tabOutputLayoutProducts->addWidget(tabOutputButtonMom0);
 	tabOutputLayoutProducts->addWidget(tabOutputButtonMom1);
-	tabOutputLayoutProducts->addWidget(tabOutputButtonCubelets);
 	tabOutputLayoutProducts->addStretch();
 	tabOutputWidgetProducts->setLayout(tabOutputLayoutProducts);
 	
-	tabOutputForm1->addRow(tr("Base name:"), tabOutputFieldBaseName);
-	tabOutputForm1->addRow(tr("Output directory:"), tabOutputWidgetDirectory);
+	tabOutputForm1->addRow(tr("Data products:"), tabOutputWidgetProducts);
+	tabOutputForm1->addRow(tr(""), tabOutputButtonCubelets);
 	tabOutputForm1->addRow(tr("Source catalogue:"), tabOutputWidgetFormat);
 	tabOutputForm1->addRow(tr("Parameters:"), tabOutputFieldParameters);
 	tabOutputForm1->addRow(tr(""), tabOutputLabelParameters);
-	tabOutputForm1->addRow(tr("Data products:"), tabOutputWidgetProducts);
-	tabOutputForm1->addRow(tr("Compression:"), tabOutputButtonCompress);
-	tabOutputForm1->addRow(tr("Overwrite files:"), tabOutputButtonOverwrite);
 	tabOutputForm1->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 	tabOutputGroupBox1->setLayout(tabOutputForm1);
 	
-	/*tabOutputGroupBox2 = new QGroupBox(tr("Enable"), toolBoxOP);
-	tabOutputGroupBox2->setEnabled(true);
-	tabOutputGroupBox2->setCheckable(true);
-	tabOutputGroupBox2->setChecked(false);
-	connect(tabOutputGroupBox2, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
-	connect(tabOutputGroupBox2, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));*/
+	tabOutputGroupBox2 = new QGroupBox(toolBoxOP);
+	tabOutputForm2 = new QFormLayout();
+	tabOutputForm2->addRow(tr("Base name:"), tabOutputFieldBaseName);
+	tabOutputForm2->addRow(tr("Output directory:"), tabOutputWidgetDirectory);
+	tabOutputForm2->addRow(tr("Compression:"), tabOutputButtonCompress);
+	tabOutputForm2->addRow(tr("Overwrite files:"), tabOutputButtonOverwrite);
+	tabOutputForm2->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
+	tabOutputGroupBox2->setLayout(tabOutputForm2);
 	
-	
-	/*tabOutputForm2 = new QFormLayout();
-	
-	tabOutputLabelParameters = new QLabel(tr("<b>Note:</b> Depending on the actual pipeline settings, some selected parameters may not be created.<br />Please see the <a href=\"https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Source-Parameters\">SoFiA wiki</a> for a complete list of source parameters."));
+	/*tabOutputLabelParameters = new QLabel(tr("<b>Note:</b> Depending on the actual pipeline settings, some selected parameters may not be created.<br />Please see the <a href=\"https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Source-Parameters\">SoFiA wiki</a> for a complete list of source parameters."));
 	tabOutputLabelParameters->setTextFormat(Qt::RichText);
 	tabOutputLabelParameters->setOpenExternalLinks(true);
 	tabOutputLabelParameters->setWordWrap(false);
@@ -3457,7 +3457,7 @@ void SoFiA::createInterface()
 	tabOutputWidgetControls->setLayout(tabOutputLayoutControls);
 	
 	toolBoxOP->addItem(tabOutputGroupBox1, iconTaskReject, tr("Output Data Products"));
-	//toolBoxOP->addItem(tabOutputGroupBox2, iconTaskReject, tr("Output Parameters"));
+	toolBoxOP->addItem(tabOutputGroupBox2, iconTaskReject, tr("Additional Options"));
 	
 	tabOutputLayout->addWidget(toolBoxOP);
 	tabOutputLayout->addStretch();

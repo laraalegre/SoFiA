@@ -530,9 +530,9 @@ private:
 	QCheckBox    *tabOutputButtonCompress;
 	QCheckBox    *tabOutputButtonOverwrite;
 	
-	/*QGroupBox    *tabOutputGroupBox2;
+	QGroupBox    *tabOutputGroupBox2;
 	QFormLayout  *tabOutputForm2;
-	QGridLayout  *tabOutputLayoutParameters;
+	/*QGridLayout  *tabOutputLayoutParameters;
 	QWidget      *tabOutputWidgetParameters;
 	QLabel       *tabOutputLabelParameters;
 	QLabel       *tabOutputLabelParametersBasic;
