@@ -994,14 +994,14 @@ void SoFiA::updateFields()
 	tabOutputButtonFilteredCube->setEnabled(tabInFilterGroupBox1->isChecked() or tabInFilterGroupBox2->isChecked() or tabInFilterGroupBox3->isChecked() or not (tabInputFieldWeights->text()).isEmpty() or not (tabInputFieldWeightsFunction->text()).isEmpty());
 	
 	// Enable output filter fields when respective parameter is selected:
-	tabOutFilterFieldW50Min->setEnabled(tabOutFilterButtonW50->isChecked());
+	/*tabOutFilterFieldW50Min->setEnabled(tabOutFilterButtonW50->isChecked());
 	tabOutFilterFieldW50Max->setEnabled(tabOutFilterButtonW50->isChecked());
 	tabOutFilterFieldW20Min->setEnabled(tabOutFilterButtonW20->isChecked());
 	tabOutFilterFieldW20Max->setEnabled(tabOutFilterButtonW20->isChecked());
 	tabOutFilterFieldFpeakMin->setEnabled(tabOutFilterButtonFpeak->isChecked());
 	tabOutFilterFieldFpeakMax->setEnabled(tabOutFilterButtonFpeak->isChecked());
 	tabOutFilterFieldFintMin->setEnabled(tabOutFilterButtonFint->isChecked());
-	tabOutFilterFieldFintMax->setEnabled(tabOutFilterButtonFint->isChecked());
+	tabOutFilterFieldFintMax->setEnabled(tabOutFilterButtonFint->isChecked());*/
 	
 	// Disable kernel size field if autoKernel is selected:
 	//tabParametrisationFieldRelKernel->setEnabled(not tabParametrisationButtonAutoKernel->isChecked());
@@ -1985,15 +1985,15 @@ void SoFiA::createInterface()
 	tabSourceFinding   = new QWidget(tabs);
 	tabMerging         = new QWidget(tabs);
 	tabParametrisation = new QWidget(tabs);
-	tabOutFilter       = new QWidget(tabs);
+	//tabOutFilter       = new QWidget(tabs);
 	tabOutput          = new QWidget(tabs);
 	
 	tabs->addTab(tabInput,           tr("Input"));
-	tabs->addTab(tabInFilter,        tr("Input Filter"));
+	tabs->addTab(tabInFilter,        tr("Filtering"));
 	tabs->addTab(tabSourceFinding,   tr("Source Finding"));
 	tabs->addTab(tabMerging,         tr("Merging"));
 	tabs->addTab(tabParametrisation, tr("Parameterisation"));
-	tabs->addTab(tabOutFilter,       tr("Output Filter"));
+	//tabs->addTab(tabOutFilter,       tr("Output Filter"));
 	tabs->addTab(tabOutput,          tr("Output"));
 	
 	tabs->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
@@ -2835,7 +2835,7 @@ void SoFiA::createInterface()
 	// Set up output filter tab
 	// ------------------------
 	
-	toolBoxOF = new QToolBox(tabOutFilter);
+	/*toolBoxOF = new QToolBox(tabOutFilter);
 	
 	tabOutFilterLayout = new QVBoxLayout();
 	
@@ -2979,7 +2979,7 @@ void SoFiA::createInterface()
 	tabOutFilterLayout->addWidget(toolBoxOF);
 	tabOutFilterLayout->addStretch();
 	tabOutFilterLayout->addWidget(tabOutFilterWidgetControls);
-	tabOutFilter->setLayout(tabOutFilterLayout);
+	tabOutFilter->setLayout(tabOutFilterLayout);*/
 	
 	// Set up output tab
 	// -----------------

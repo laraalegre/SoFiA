@@ -263,7 +263,7 @@ private:
 	QWidget    *tabSourceFinding;
 	QWidget    *tabMerging;
 	QWidget    *tabParametrisation;
-	QWidget    *tabOutFilter;
+	//QWidget    *tabOutFilter;
 	QWidget    *tabOutput;
 	
 	
@@ -464,7 +464,7 @@ private:
 	
 	// Output filter tab
 	
-	QToolBox     *toolBoxOF;
+	/*QToolBox     *toolBoxOF;
 	
 	QVBoxLayout  *tabOutFilterLayout;
 	
@@ -494,7 +494,7 @@ private:
 	QHBoxLayout  *tabOutFilterLayoutControls;
 	QWidget      *tabOutFilterWidgetControls;
 	QPushButton  *tabOutFilterButtonPrev;
-	QPushButton  *tabOutFilterButtonNext;
+	QPushButton  *tabOutFilterButtonNext;*/
 	
 	
 	
