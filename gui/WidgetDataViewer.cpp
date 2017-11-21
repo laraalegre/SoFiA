@@ -145,9 +145,6 @@ int WidgetDataViewer::openFitsFile(const std::string &url)
 		dataMax = fips->maximum();
 	}
 	
-	//std::cout << "DATAMIN = " << dataMin << "\n";
-	//std::cout << "DATAMAX = " << dataMax << "\n";
-	
 	// Adjust user interface
 	slider->setMaximum(fips->dimension() < 3 ? 0 : fips->dimension(3) - 1);
 	slider->setEnabled(fips->dimension() > 2);
@@ -348,7 +345,6 @@ void WidgetDataViewer::setUpInterface()
 	
 	iconEditReset.addFile(QString(":/icons/22/edit-reset.png"), QSize(22, 22));
 	iconEditReset.addFile(QString(":/icons/16/edit-reset.png"), QSize(16, 16));
-	//iconEditReset = QIcon::fromTheme("edit-reset", iconEditReset);
 	
 	iconZoomIn.addFile(QString(":/icons/22/zoom-in.png"), QSize(22, 22));
 	iconZoomIn.addFile(QString(":/icons/16/zoom-in.png"), QSize(16, 16));
@@ -473,7 +469,6 @@ void WidgetDataViewer::setUpInterface()
 	labelLevelMin->setText("Range:");
 	labelLevelMin->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	labelLevelMax = new QLabel(settings);
-	//labelLevelMax->setText(QChar(0x2013));
 	labelLevelMax->setText(":");
 	labelLevelMax->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
 	fieldLevelMin = new QLineEdit(settings);
@@ -796,12 +791,6 @@ void WidgetDataViewer::showContextMenu(const QPoint &where)
 	contextMenu.addAction(actionZoomToFit);
 	contextMenu.addSeparator();
 	contextMenu.addMenu(&menuLut);
-	//contextMenu.addSeparator();
-	//contextMenu.addAction(actionPrev);
-	//contextMenu.addAction(actionNext);
-	//contextMenu.addSeparator();
-	//contextMenu.addAction(actionFirst);
-	//contextMenu.addAction(actionLast);
 	
 	contextMenu.exec(viewport->mapToGlobal(where));
 	

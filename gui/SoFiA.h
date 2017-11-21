@@ -263,7 +263,6 @@ private:
 	QWidget    *tabSourceFinding;
 	QWidget    *tabMerging;
 	QWidget    *tabParametrisation;
-	//QWidget    *tabOutFilter;
 	QWidget    *tabOutput;
 	
 	
@@ -448,9 +447,6 @@ private:
 	QFormLayout  *tabParametrisationForm2;
 	QSlider      *tabParametrisationSliderRelMin;
 	QLineEdit    *tabParametrisationFieldRelMin;
-	//QLineEdit    *tabParametrisationFieldRelMax;
-	//QLineEdit    *tabParametrisationFieldRelKernel;
-	//QCheckBox    *tabParametrisationButtonAutoKernel;
 	QSlider      *tabParametrisationSliderScaleKernel;
 	QLineEdit    *tabParametrisationFieldScaleKernel;
 	QCheckBox    *tabParametrisationButtonRelPlot;
@@ -459,42 +455,6 @@ private:
 	QWidget      *tabParametrisationWidgetControls;
 	QPushButton  *tabParametrisationButtonPrev;
 	QPushButton  *tabParametrisationButtonNext;
-	
-	
-	
-	// Output filter tab
-	
-	/*QToolBox     *toolBoxOF;
-	
-	QVBoxLayout  *tabOutFilterLayout;
-	
-	QGroupBox    *tabOutFilterGroupBox1;
-	QFormLayout  *tabOutFilterForm1;
-	QHBoxLayout  *tabOutFilterLayoutW50;
-	QWidget      *tabOutFilterWidgetW50;
-	QHBoxLayout  *tabOutFilterLayoutW20;
-	QWidget      *tabOutFilterWidgetW20;
-	QHBoxLayout  *tabOutFilterLayoutFpeak;
-	QWidget      *tabOutFilterWidgetFpeak;
-	QHBoxLayout  *tabOutFilterLayoutFint;
-	QWidget      *tabOutFilterWidgetFint;
-	QLineEdit    *tabOutFilterFieldW50Min;
-	QLineEdit    *tabOutFilterFieldW50Max;
-	QLineEdit    *tabOutFilterFieldW20Min;
-	QLineEdit    *tabOutFilterFieldW20Max;
-	QLineEdit    *tabOutFilterFieldFpeakMin;
-	QLineEdit    *tabOutFilterFieldFpeakMax;
-	QLineEdit    *tabOutFilterFieldFintMin;
-	QLineEdit    *tabOutFilterFieldFintMax;
-	QCheckBox    *tabOutFilterButtonW50;
-	QCheckBox    *tabOutFilterButtonW20;
-	QCheckBox    *tabOutFilterButtonFpeak;
-	QCheckBox    *tabOutFilterButtonFint;
-	
-	QHBoxLayout  *tabOutFilterLayoutControls;
-	QWidget      *tabOutFilterWidgetControls;
-	QPushButton  *tabOutFilterButtonPrev;
-	QPushButton  *tabOutFilterButtonNext;*/
 	
 	
 	
@@ -532,69 +492,6 @@ private:
 	
 	QGroupBox    *tabOutputGroupBox2;
 	QFormLayout  *tabOutputForm2;
-	/*QGridLayout  *tabOutputLayoutParameters;
-	QWidget      *tabOutputWidgetParameters;
-	QLabel       *tabOutputLabelParameters;
-	QLabel       *tabOutputLabelParametersBasic;
-	QLabel       *tabOutputLabelParametersBounds;
-	QLabel       *tabOutputLabelParametersGeometry;
-	QLabel       *tabOutputLabelParametersWCS;
-	QLabel       *tabOutputLabelParametersPhysical;
-	QLabel       *tabOutputLabelParametersBFFree;
-	QLabel       *tabOutputLabelParametersBFPhys;
-	
-	QCheckBox    *tabOutputButtonParameter_id;
-	QCheckBox    *tabOutputButtonParameter_name;
-	QCheckBox    *tabOutputButtonParameter_x_geo;
-	QCheckBox    *tabOutputButtonParameter_y_geo;
-	QCheckBox    *tabOutputButtonParameter_z_geo;
-	QCheckBox    *tabOutputButtonParameter_x;
-	QCheckBox    *tabOutputButtonParameter_y;
-	QCheckBox    *tabOutputButtonParameter_z;
-	QCheckBox    *tabOutputButtonParameter_x_min;
-	QCheckBox    *tabOutputButtonParameter_x_max;
-	QCheckBox    *tabOutputButtonParameter_y_min;
-	QCheckBox    *tabOutputButtonParameter_y_max;
-	QCheckBox    *tabOutputButtonParameter_z_min;
-	QCheckBox    *tabOutputButtonParameter_z_max;
-	QCheckBox    *tabOutputButtonParameter_n_pix;
-	QCheckBox    *tabOutputButtonParameter_n_los;
-	QCheckBox    *tabOutputButtonParameter_n_chan;
-	QCheckBox    *tabOutputButtonParameter_rel;
-	QCheckBox    *tabOutputButtonParameter_bf_a;
-	QCheckBox    *tabOutputButtonParameter_bf_b1;
-	QCheckBox    *tabOutputButtonParameter_bf_b2;
-	QCheckBox    *tabOutputButtonParameter_bf_c;
-	QCheckBox    *tabOutputButtonParameter_bf_chi2;
-	QCheckBox    *tabOutputButtonParameter_bf_flag;
-	QCheckBox    *tabOutputButtonParameter_bf_f_int;
-	QCheckBox    *tabOutputButtonParameter_bf_f_peak;
-	QCheckBox    *tabOutputButtonParameter_bf_w;
-	QCheckBox    *tabOutputButtonParameter_bf_w20;
-	QCheckBox    *tabOutputButtonParameter_bf_w50;
-	QCheckBox    *tabOutputButtonParameter_bf_xe;
-	QCheckBox    *tabOutputButtonParameter_bf_xp;
-	QCheckBox    *tabOutputButtonParameter_bf_z;
-	QCheckBox    *tabOutputButtonParameter_ell_maj;
-	QCheckBox    *tabOutputButtonParameter_ell_min;
-	QCheckBox    *tabOutputButtonParameter_ell_pa;
-	QCheckBox    *tabOutputButtonParameter_ell3s_maj;
-	QCheckBox    *tabOutputButtonParameter_ell3s_min;
-	QCheckBox    *tabOutputButtonParameter_ell3s_pa;
-	QCheckBox    *tabOutputButtonParameter_kin_pa;
-	QCheckBox    *tabOutputButtonParameter_f_peak;
-	QCheckBox    *tabOutputButtonParameter_f_int;
-	QCheckBox    *tabOutputButtonParameter_f_wm50;
-	QCheckBox    *tabOutputButtonParameter_rms;
-	QCheckBox    *tabOutputButtonParameter_w20;
-	QCheckBox    *tabOutputButtonParameter_w50;
-	QCheckBox    *tabOutputButtonParameter_wm50;
-	QCheckBox    *tabOutputButtonParameter_ra;
-	QCheckBox    *tabOutputButtonParameter_dec;
-	QCheckBox    *tabOutputButtonParameter_lon;
-	QCheckBox    *tabOutputButtonParameter_lat;
-	QCheckBox    *tabOutputButtonParameter_freq;
-	QCheckBox    *tabOutputButtonParameter_velo;*/
 	
 	QHBoxLayout  *tabOutputLayoutControls;
 	QWidget      *tabOutputWidgetControls;

@@ -34,9 +34,7 @@
 HelpBrowser::HelpBrowser(const QString &path, const QString &page, QWidget *parent)
 {
 	this->setParent(parent);
-	
 	this->setAttribute(Qt::WA_DeleteOnClose);    // Will automatically delete widget on close()!
-	//this->setAttribute(Qt::WA_GroupLeader);    // This property is deprecated in Qt 4.8!
 	
 	QIcon iconSoFiA;
 	iconSoFiA.addFile(QString(":/icons/32/SoFiA.png"), QSize(32, 32));
@@ -92,10 +90,6 @@ HelpBrowser::HelpBrowser(const QString &path, const QString &page, QWidget *pare
 void HelpBrowser::updateWindowTitle()
 {
 	this->setWindowTitle(tr("Help: %1").arg(textBrowser->documentTitle()));
-	
-	//buttonBack->setEnabled(textBrowser->isBackwardAvailable());
-	//std::cout << textBrowser->backwardHistoryCount() << std::endl;
-	
 	return;
 }
 
@@ -107,7 +101,6 @@ void HelpBrowser::showPage(const QString &page)
 	// it will not need to be deleted explicitly, as this will happen automatically when 
 	// the close() slot gets called.
 	
-	//QString path = QApplication::applicationDirPath() + QString("/doc");
 	QString path = QString(getenv("SOFIA_PIPELINE_PATH"));
 	path.replace("sofia_pipeline.py", "gui/doc");
 	

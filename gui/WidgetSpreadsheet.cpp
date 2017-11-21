@@ -198,7 +198,6 @@ int WidgetSpreadsheet::loadCatalog(QString &filename)
 			headerText.append(unit.nodeValue());
 			headerText.append(")");
 		}
-		//else headerText.append("\n");
 		
 		QTableWidgetItem* headerItem = new QTableWidgetItem(headerText, QTableWidgetItem::Type);
 		tableWidget->setHorizontalHeaderItem(i, headerItem);
