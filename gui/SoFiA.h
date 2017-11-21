@@ -522,13 +522,15 @@ private:
 	QHBoxLayout  *tabOutputLayoutDirectory;
 	QLineEdit    *tabOutputFieldDirectory;
 	QPushButton  *tabOutputButtonDirectory;
+	QLineEdit    *tabOutputFieldParameters;
+	QLabel       *tabOutputLabelParameters;
 	QCheckBox    *tabOutputButtonASCII;
 	QCheckBox    *tabOutputButtonXML;
 	QCheckBox    *tabOutputButtonSQL;
 	QCheckBox    *tabOutputButtonCompress;
 	QCheckBox    *tabOutputButtonOverwrite;
 	
-	QGroupBox    *tabOutputGroupBox2;
+	/*QGroupBox    *tabOutputGroupBox2;
 	QFormLayout  *tabOutputForm2;
 	QGridLayout  *tabOutputLayoutParameters;
 	QWidget      *tabOutputWidgetParameters;
@@ -592,7 +594,7 @@ private:
 	QCheckBox    *tabOutputButtonParameter_lon;
 	QCheckBox    *tabOutputButtonParameter_lat;
 	QCheckBox    *tabOutputButtonParameter_freq;
-	QCheckBox    *tabOutputButtonParameter_velo;
+	QCheckBox    *tabOutputButtonParameter_velo;*/
 	
 	QHBoxLayout  *tabOutputLayoutControls;
 	QWidget      *tabOutputWidgetControls;

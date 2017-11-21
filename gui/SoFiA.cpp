@@ -418,7 +418,7 @@ int SoFiA::updateVariables()
 	}
 	
 	// Treat list of output parameters separately and check respective check boxes:
-	QString listOutputPar;
+	/*QString listOutputPar;
 	
 	if(not tabOutputGroupBox2->isChecked())
 	{
@@ -492,7 +492,7 @@ int SoFiA::updateVariables()
 	listOutputPar.prepend(QString("["));
 	listOutputPar.append(QString("]"));
 	
-	parameters.insert(QString("writeCat.parameters"), listOutputPar);
+	parameters.insert(QString("writeCat.parameters"), listOutputPar);*/
 	
 	return 0;
 }
@@ -581,7 +581,7 @@ int SoFiA::setFields()
 	}
 	
 	// Treat list of output parameters separately and set respective check boxes:
-	QString listOutputPar = parameters.value(QString("writeCat.parameters"));
+	/*QString listOutputPar = parameters.value(QString("writeCat.parameters"));
 	
 	if(listOutputPar.contains(QString("\'*\'")))
 	{
@@ -696,7 +696,7 @@ int SoFiA::setFields()
 		if(listOutputPar.contains(QString("\'lat\'")))       tabOutputButtonParameter_lat->setChecked(true);
 		if(listOutputPar.contains(QString("\'freq\'")))      tabOutputButtonParameter_freq->setChecked(true);
 		if(listOutputPar.contains(QString("\'velo\'")))      tabOutputButtonParameter_velo->setChecked(true);
-	}
+	}*/
 	
 	return 0;
 }
@@ -819,9 +819,9 @@ int SoFiA::loadFile(QString &fileName)
 	else if(tabParametrisationGroupBox2->isChecked()) toolBoxPA->setCurrentIndex(toolBoxPA->indexOf(tabParametrisationGroupBox2));
 	else                                              toolBoxPA->setCurrentIndex(toolBoxPA->indexOf(tabParametrisationGroupBox1));
 	// Output:
-	if     (tabOutputGroupBox1->isChecked()) toolBoxOP->setCurrentIndex(toolBoxOP->indexOf(tabOutputGroupBox1));
+	/*if     (tabOutputGroupBox1->isChecked()) toolBoxOP->setCurrentIndex(toolBoxOP->indexOf(tabOutputGroupBox1));
 	else if(tabOutputGroupBox2->isChecked()) toolBoxOP->setCurrentIndex(toolBoxOP->indexOf(tabOutputGroupBox2));
-	else                                     toolBoxOP->setCurrentIndex(toolBoxOP->indexOf(tabOutputGroupBox1));
+	else                                     toolBoxOP->setCurrentIndex(toolBoxOP->indexOf(tabOutputGroupBox1));*/
 	
 	return 0;
 }
@@ -1040,7 +1040,7 @@ void SoFiA::updateFields()
 	if(n < 0.0) tabInFilterFieldSmoothingSpectral->setText("0.0");
 	
 	// Disable output parameter buttons if "all" button is selected:
-	tabOutputButtonParameter_id->setEnabled(tabOutputGroupBox2->isChecked());
+	/*tabOutputButtonParameter_id->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_name->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_x_geo->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_y_geo->setEnabled(tabOutputGroupBox2->isChecked());
@@ -1091,7 +1091,7 @@ void SoFiA::updateFields()
 	tabOutputButtonParameter_lon->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_lat->setEnabled(tabOutputGroupBox2->isChecked());
 	tabOutputButtonParameter_freq->setEnabled(tabOutputGroupBox2->isChecked());
-	tabOutputButtonParameter_velo->setEnabled(tabOutputGroupBox2->isChecked());
+	tabOutputButtonParameter_velo->setEnabled(tabOutputGroupBox2->isChecked());*/
 	
 	// Set icons on vertical tabs:
 	if((tabInputFieldData->text()).isEmpty())    toolBoxIP->setItemIcon(0, iconTaskReject);
@@ -1130,8 +1130,9 @@ void SoFiA::updateFields()
 	if(tabOutputButtonASCII->isChecked() or tabOutputButtonXML->isChecked() or tabOutputButtonSQL->isChecked() or (tabOutputButtonFilteredCube->isEnabled() and tabOutputButtonFilteredCube->isChecked()) or tabOutputButtonMask->isChecked() or tabOutputButtonMom0->isChecked() or tabOutputButtonMom1->isChecked() or tabOutputButtonCubelets->isChecked()) toolBoxOP->setItemIcon(0, iconTaskComplete);
 	else toolBoxOP->setItemIcon(0, iconTaskReject);
 	
-	if(tabOutputGroupBox2->isChecked())          toolBoxOP->setItemIcon(1, iconTaskComplete);
-	else                                         toolBoxOP->setItemIcon(1, iconTaskReject);
+	/*if(tabOutputGroupBox2->isChecked())          toolBoxOP->setItemIcon(1, iconTaskComplete);
+	else                                         toolBoxOP->setItemIcon(1, iconTaskReject);*/
+	tabOutputFieldParameters->setEnabled(tabOutputButtonASCII->isChecked() or tabOutputButtonXML->isChecked() or tabOutputButtonSQL->isChecked());
 	
 	updateActions();
 	
@@ -2139,7 +2140,7 @@ void SoFiA::createInterface()
 	connect(tabInputFieldSpectralSize, SIGNAL(editingFinished()), this, SLOT(updateFields()));
 	connect(tabInputFieldSpectralSize, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
 	
-	tabInputFieldMultiCat = new QCheckBox(tr("Create separate output catalogues "), tabInputGroupBox2);
+	tabInputFieldMultiCat = new QCheckBox(tr("Create separate output catalogues"), tabInputGroupBox2);
 	tabInputFieldMultiCat->setObjectName("optical.storeMultiCat");
 	tabInputFieldMultiCat->setChecked(false);
 	connect(tabInputFieldMultiCat, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
@@ -2245,15 +2246,15 @@ void SoFiA::createInterface()
 	
 	tabInFilterWidgetScaleXYZ = new QWidget(tabInFilterGroupBox2);
 	tabInFilterLayoutScaleXYZ = new QHBoxLayout();
-	tabInFilterFieldScaleX = new QCheckBox(tr("X "), tabInFilterWidgetScaleXYZ);
+	tabInFilterFieldScaleX = new QCheckBox(tr("X"), tabInFilterWidgetScaleXYZ);
 	tabInFilterFieldScaleX->setObjectName("scaleNoise.scaleX");
 	tabInFilterFieldScaleX->setChecked(false);
 	connect(tabInFilterFieldScaleX, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabInFilterFieldScaleY = new QCheckBox(tr("Y "), tabInFilterWidgetScaleXYZ);
+	tabInFilterFieldScaleY = new QCheckBox(tr("Y"), tabInFilterWidgetScaleXYZ);
 	tabInFilterFieldScaleY->setObjectName("scaleNoise.scaleY");
 	tabInFilterFieldScaleY->setChecked(false);
 	connect(tabInFilterFieldScaleY, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabInFilterFieldScaleZ = new QCheckBox(tr("Z "), tabInFilterWidgetScaleXYZ);
+	tabInFilterFieldScaleZ = new QCheckBox(tr("Z"), tabInFilterWidgetScaleXYZ);
 	tabInFilterFieldScaleZ->setObjectName("scaleNoise.scaleZ");
 	tabInFilterFieldScaleZ->setChecked(true);
 	connect(tabInFilterFieldScaleZ, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
@@ -2334,7 +2335,7 @@ void SoFiA::createInterface()
 	tabInFilterField2d1dScaleZ->setMaximum(50);
 	connect(tabInFilterField2d1dScaleZ, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
 	
-	tabInFilterField2d1dPositivity = new QCheckBox(tr("Enable "), tabInFilterGroupBox3);
+	tabInFilterField2d1dPositivity = new QCheckBox(tr("Enable"), tabInFilterGroupBox3);
 	tabInFilterField2d1dPositivity->setObjectName("wavelet.positivity");
 	tabInFilterField2d1dPositivity->setChecked(false);
 	connect(tabInFilterField2d1dPositivity, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
@@ -2491,7 +2492,7 @@ void SoFiA::createInterface()
 	tabSourceFindingFieldMaxScale->setMaximum(50);
 	connect(tabSourceFindingFieldMaxScale, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
 	
-	tabSourceFindingMedianTest = new QCheckBox(tr("Enable "), tabSourceFindingGroupBox3);
+	tabSourceFindingMedianTest = new QCheckBox(tr("Enable"), tabSourceFindingGroupBox3);
 	tabSourceFindingMedianTest->setObjectName("CNHI.medianTest");
 	connect(tabSourceFindingMedianTest, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
@@ -2651,7 +2652,7 @@ void SoFiA::createInterface()
 	tabMergingGroupBox2 = new QGroupBox(toolBoxME);
 	tabMergingForm2 = new QFormLayout();
 	
-	tabMergingButtonPositivity = new QCheckBox(tr("Enable "), tabMergingGroupBox2);
+	tabMergingButtonPositivity = new QCheckBox(tr("Enable"), tabMergingGroupBox2);
 	tabMergingButtonPositivity->setObjectName("merge.positivity");
 	tabMergingButtonPositivity->setEnabled(true);
 	tabMergingButtonPositivity->setChecked(false);
@@ -2709,17 +2710,17 @@ void SoFiA::createInterface()
 	connect(tabParametrisationGroupBox1, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	tabParametrisationForm1 = new QFormLayout();
 	
-	tabParametrisationButtonMaskOpt = new QCheckBox(tr("Optimise mask (ellipse) "), tabParametrisationGroupBox1);
+	tabParametrisationButtonMaskOpt = new QCheckBox(tr("Optimise mask (ellipse)"), tabParametrisationGroupBox1);
 	tabParametrisationButtonMaskOpt->setObjectName("parameters.optimiseMask");
 	tabParametrisationButtonMaskOpt->setEnabled(true);
 	tabParametrisationButtonMaskOpt->setChecked(false);
 	connect(tabParametrisationButtonMaskOpt, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabParametrisationButtonDilateMask = new QCheckBox(tr("Optimise mask (dilation) "), tabParametrisationGroupBox1);
+	tabParametrisationButtonDilateMask = new QCheckBox(tr("Optimise mask (dilation)"), tabParametrisationGroupBox1);
 	tabParametrisationButtonDilateMask->setObjectName("parameters.dilateMask");
 	tabParametrisationButtonDilateMask->setEnabled(true);
 	tabParametrisationButtonDilateMask->setChecked(false);
 	connect(tabParametrisationButtonDilateMask, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabParametrisationButtonBusyFunction = new QCheckBox(tr("Fit Busy Function "), tabParametrisationGroupBox1);
+	tabParametrisationButtonBusyFunction = new QCheckBox(tr("Fit Busy Function"), tabParametrisationGroupBox1);
 	tabParametrisationButtonBusyFunction->setObjectName("parameters.fitBusyFunction");
 	tabParametrisationButtonBusyFunction->setEnabled(true);
 	tabParametrisationButtonBusyFunction->setChecked(false);
@@ -2765,7 +2766,7 @@ void SoFiA::createInterface()
 	//tabParametrisationFieldRelKernel->setObjectName("reliability.kernel");
 	//connect(tabParametrisationFieldRelKernel, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
 	
-	//tabParametrisationButtonAutoKernel = new QCheckBox(tr("Automatically determine optimal kernel size "), tabParametrisationGroupBox1);
+	//tabParametrisationButtonAutoKernel = new QCheckBox(tr("Automatically determine optimal kernel size"), tabParametrisationGroupBox1);
 	//tabParametrisationButtonAutoKernel->setObjectName("reliability.autoKernel");
 	//tabParametrisationButtonAutoKernel->setEnabled(true);
 	//tabParametrisationButtonAutoKernel->setChecked(false);
@@ -2793,7 +2794,7 @@ void SoFiA::createInterface()
 	tabParametrisationWidgetScaleKernel->setLayout(tabParametrisationLayoutScaleKernel);
 	
 	
-	tabParametrisationButtonRelPlot = new QCheckBox(tr("Enable "), tabParametrisationGroupBox2);
+	tabParametrisationButtonRelPlot = new QCheckBox(tr("Enable"), tabParametrisationGroupBox2);
 	tabParametrisationButtonRelPlot->setObjectName("reliability.makePlot");
 	tabParametrisationButtonRelPlot->setEnabled(true);
 	tabParametrisationButtonRelPlot->setChecked(false);
@@ -2892,22 +2893,22 @@ void SoFiA::createInterface()
 	QLabel *labelFpeak = new QLabel(QString::fromUtf8("–"), tabOutFilterGroupBox1);
 	QLabel *labelFint  = new QLabel(QString::fromUtf8("–"), tabOutFilterGroupBox1);
 	
-	tabOutFilterButtonW50   = new QCheckBox(tr("Apply "), tabOutFilterGroupBox1);
+	tabOutFilterButtonW50   = new QCheckBox(tr("Apply"), tabOutFilterGroupBox1);
 	tabOutFilterButtonW50->setObjectName("applyW50Filt");
 	tabOutFilterButtonW50->setEnabled(true);
 	connect(tabOutFilterButtonW50, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutFilterButtonW50, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabOutFilterButtonW20   = new QCheckBox(tr("Apply "), tabOutFilterGroupBox1);
+	tabOutFilterButtonW20   = new QCheckBox(tr("Apply"), tabOutFilterGroupBox1);
 	tabOutFilterButtonW20->setObjectName("applyW20Filt");
 	tabOutFilterButtonW20->setEnabled(true);
 	connect(tabOutFilterButtonW20, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutFilterButtonW20, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabOutFilterButtonFpeak = new QCheckBox(tr("Apply "), tabOutFilterGroupBox1);
+	tabOutFilterButtonFpeak = new QCheckBox(tr("Apply"), tabOutFilterGroupBox1);
 	tabOutFilterButtonFpeak->setObjectName("applyFpeakFilt");
 	tabOutFilterButtonFpeak->setEnabled(true);
 	connect(tabOutFilterButtonFpeak, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutFilterButtonFpeak, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabOutFilterButtonFint  = new QCheckBox(tr("Apply "), tabOutFilterGroupBox1);
+	tabOutFilterButtonFint  = new QCheckBox(tr("Apply"), tabOutFilterGroupBox1);
 	tabOutFilterButtonFint->setObjectName("applyFintFilt");
 	tabOutFilterButtonFint->setEnabled(true);
 	connect(tabOutFilterButtonFint, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
@@ -3010,19 +3011,19 @@ void SoFiA::createInterface()
 	tabOutputLayoutDirectory->setContentsMargins(0, 0, 0, 0);
 	tabOutputWidgetDirectory->setLayout(tabOutputLayoutDirectory);
 	
-	tabOutputButtonASCII = new QCheckBox(tr("ASCII "), tabOutputGroupBox1);
+	tabOutputButtonASCII = new QCheckBox(tr("ASCII"), tabOutputGroupBox1);
 	tabOutputButtonASCII->setObjectName("writeCat.writeASCII");
 	tabOutputButtonASCII->setChecked(true);
 	tabOutputButtonASCII->setEnabled(true);
 	connect(tabOutputButtonASCII, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutputButtonASCII, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabOutputButtonXML = new QCheckBox(tr("VO table "), tabOutputGroupBox1);
+	tabOutputButtonXML = new QCheckBox(tr("VO table"), tabOutputGroupBox1);
 	tabOutputButtonXML->setObjectName("writeCat.writeXML");
 	tabOutputButtonXML->setChecked(false);
 	tabOutputButtonXML->setEnabled(true);
 	connect(tabOutputButtonXML, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutputButtonXML, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabOutputButtonSQL = new QCheckBox(tr("SQL "), tabOutputGroupBox1);
+	tabOutputButtonSQL = new QCheckBox(tr("SQL"), tabOutputGroupBox1);
 	tabOutputButtonSQL->setObjectName("writeCat.writeSQL");
 	tabOutputButtonSQL->setChecked(false);
 	tabOutputButtonSQL->setEnabled(true);
@@ -3039,39 +3040,50 @@ void SoFiA::createInterface()
 	tabOutputLayoutFormat->addStretch();
 	tabOutputWidgetFormat->setLayout(tabOutputLayoutFormat);
 	
-	tabOutputButtonFilteredCube = new QCheckBox(tr("Filtered cube "), tabOutputGroupBox1);
+	tabOutputFieldParameters = new QLineEdit(tabOutputGroupBox1);
+	tabOutputFieldParameters->setObjectName("writeCat.parameters");
+	tabOutputFieldParameters->setEnabled(true);
+	connect(tabOutputFieldParameters, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
+	
+	tabOutputLabelParameters = new QLabel(tr("<b>Note:</b> Depending on the actual pipeline settings, some selected parameters may not be written. Please see the <a href=\"https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Source-Parameters\">SoFiA wiki</a> for a complete list of source parameters."), tabOutputGroupBox1);
+	tabOutputLabelParameters->setWordWrap(true);
+	tabOutputLabelParameters->setContentsMargins(0, 0, 0, 0);
+	tabOutputLabelParameters->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+	tabOutputLabelParameters->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+	
+	tabOutputButtonFilteredCube = new QCheckBox(tr("Filtered cube"), tabOutputGroupBox1);
 	tabOutputButtonFilteredCube->setObjectName("steps.doWriteFilteredCube");
 	tabOutputButtonFilteredCube->setChecked(false);
 	connect(tabOutputButtonFilteredCube, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutputButtonFilteredCube, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabOutputButtonMask = new QCheckBox(tr("Mask "), tabOutputGroupBox1);
+	tabOutputButtonMask = new QCheckBox(tr("Mask"), tabOutputGroupBox1);
 	tabOutputButtonMask->setObjectName("steps.doWriteMask");
 	tabOutputButtonMask->setChecked(false);
 	connect(tabOutputButtonMask, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutputButtonMask, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabOutputButtonMom0 = new QCheckBox(tr("Mom. 0 "), tabOutputGroupBox1);
+	tabOutputButtonMom0 = new QCheckBox(tr("Mom. 0"), tabOutputGroupBox1);
 	tabOutputButtonMom0->setObjectName("steps.doMom0");
 	tabOutputButtonMom0->setChecked(false);
 	connect(tabOutputButtonMom0, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutputButtonMom0, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabOutputButtonMom1 = new QCheckBox(tr("Mom. 1 "), tabOutputGroupBox1);
+	tabOutputButtonMom1 = new QCheckBox(tr("Mom. 1"), tabOutputGroupBox1);
 	tabOutputButtonMom1->setObjectName("steps.doMom1");
 	tabOutputButtonMom1->setChecked(false);
 	connect(tabOutputButtonMom1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutputButtonMom1, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabOutputButtonCubelets = new QCheckBox(tr("Source products "), tabOutputGroupBox1);
+	tabOutputButtonCubelets = new QCheckBox(tr("Source products"), tabOutputGroupBox1);
 	tabOutputButtonCubelets->setObjectName("steps.doCubelets");
 	tabOutputButtonCubelets->setChecked(false);
 	connect(tabOutputButtonCubelets, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutputButtonCubelets, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
-	tabOutputButtonCompress = new QCheckBox(tr("Enable "), tabOutputGroupBox1);
+	tabOutputButtonCompress = new QCheckBox(tr("Enable"), tabOutputGroupBox1);
 	tabOutputButtonCompress->setObjectName("writeCat.compress");
 	tabOutputButtonCompress->setChecked(false);
 	connect(tabOutputButtonCompress, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutputButtonCompress, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
-	tabOutputButtonOverwrite = new QCheckBox(tr("Enable "), tabOutputGroupBox1);
+	tabOutputButtonOverwrite = new QCheckBox(tr("Enable"), tabOutputGroupBox1);
 	tabOutputButtonOverwrite->setObjectName("writeCat.overwrite");
 	tabOutputButtonOverwrite->setChecked(false);
 	connect(tabOutputButtonOverwrite, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
@@ -3091,21 +3103,23 @@ void SoFiA::createInterface()
 	tabOutputForm1->addRow(tr("Base name:"), tabOutputFieldBaseName);
 	tabOutputForm1->addRow(tr("Output directory:"), tabOutputWidgetDirectory);
 	tabOutputForm1->addRow(tr("Source catalogue:"), tabOutputWidgetFormat);
+	tabOutputForm1->addRow(tr("Parameters:"), tabOutputFieldParameters);
+	tabOutputForm1->addRow(tr(""), tabOutputLabelParameters);
 	tabOutputForm1->addRow(tr("Data products:"), tabOutputWidgetProducts);
 	tabOutputForm1->addRow(tr("Compression:"), tabOutputButtonCompress);
 	tabOutputForm1->addRow(tr("Overwrite files:"), tabOutputButtonOverwrite);
 	tabOutputForm1->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 	tabOutputGroupBox1->setLayout(tabOutputForm1);
 	
-	tabOutputGroupBox2 = new QGroupBox(tr("Enable"), toolBoxOP);
+	/*tabOutputGroupBox2 = new QGroupBox(tr("Enable"), toolBoxOP);
 	tabOutputGroupBox2->setEnabled(true);
 	tabOutputGroupBox2->setCheckable(true);
 	tabOutputGroupBox2->setChecked(false);
 	connect(tabOutputGroupBox2, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
-	connect(tabOutputGroupBox2, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	connect(tabOutputGroupBox2, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));*/
 	
 	
-	tabOutputForm2 = new QFormLayout();
+	/*tabOutputForm2 = new QFormLayout();
 	
 	tabOutputLabelParameters = new QLabel(tr("<b>Note:</b> Depending on the actual pipeline settings, some selected parameters may not be created.<br />Please see the <a href=\"https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Source-Parameters\">SoFiA wiki</a> for a complete list of source parameters."));
 	tabOutputLabelParameters->setTextFormat(Qt::RichText);
@@ -3425,7 +3439,7 @@ void SoFiA::createInterface()
 	
 	tabOutputForm2->addRow(tr(""), tabOutputWidgetParameters);
 	tabOutputForm2->addRow(tr(""), tabOutputLabelParameters);
-	tabOutputGroupBox2->setLayout(tabOutputForm2);
+	tabOutputGroupBox2->setLayout(tabOutputForm2);*/
 	
 	tabOutputButtonPrev = new QPushButton(tr("Previous"), tabOutput);
 	tabOutputButtonPrev->setIcon(iconGoPreviousView);
@@ -3443,7 +3457,7 @@ void SoFiA::createInterface()
 	tabOutputWidgetControls->setLayout(tabOutputLayoutControls);
 	
 	toolBoxOP->addItem(tabOutputGroupBox1, iconTaskReject, tr("Output Data Products"));
-	toolBoxOP->addItem(tabOutputGroupBox2, iconTaskReject, tr("Output Parameters"));
+	//toolBoxOP->addItem(tabOutputGroupBox2, iconTaskReject, tr("Output Parameters"));
 	
 	tabOutputLayout->addWidget(toolBoxOP);
 	tabOutputLayout->addStretch();
@@ -3809,7 +3823,7 @@ void SoFiA::createWhatsThis()
 	tabOutputButtonOverwrite->setWhatsThis(tr("<h3>writeCat.overwrite</h3><p>If <b>true</b>, overwrite any existing output files. If <b>false</b>, print an error message for any output file that already exists and skip writing that file.</p>"));
 	tabOutputButtonCompress->setWhatsThis(tr("<h3>writeCat.compress</h3><p>If set to <b>true</b>, use <a href=\"http://www.gzip.org/\">gzip</a> to compress all output files.</p>"));
 	tabOutputFieldDirectory->setWhatsThis(tr("<h3>writeCat.outputDir</h3><p>Optional directory path to which all output files are written. If not specified, the directory of the input cube will be used by default.</p>"));
-	tabOutputGroupBox2->setWhatsThis(tr("<h3>writeCat.parameters</h3><p>List of parameters to appear in source catalogue. Format:</p><p>['par1', 'par2', ...]</p><p>An asterisk, <span style=\"font-family:monospace;\">['*']</span>, means that all available parameters are written to the catalogue (default behaviour).</p><p> Note that, depending on the actual pipeline settings, some selected parameters may not appear in the source catalogue.</p>"));
+	tabOutputFieldParameters->setWhatsThis(tr("<h3>writeCat.parameters</h3><p>List of parameters to appear in source catalogue. Format:</p><p>['par1', 'par2', ...]</p><p>An asterisk, <span style=\"font-family:monospace;\">['*']</span>, means that all available parameters are written to the catalogue (default behaviour).</p><p> Note that, depending on the actual pipeline settings, some selected parameters may not appear in the source catalogue.</p>"));
 	tabOutputButtonASCII->setWhatsThis(tr("<h3>writeCat.writeASCII</h3><p>Write catalogue in ASCII format.</p>"));
 	tabOutputButtonSQL->setWhatsThis(tr("<h3>writeCat.writeSQL</h3><p>Write catalogue in SQL format.</p>"));
 	tabOutputButtonXML->setWhatsThis(tr("<h3>writeCat.writeXML</h3><p>Write catalogue in VO table (XML) format.</p>"));
