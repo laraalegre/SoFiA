@@ -18,10 +18,8 @@ from cpython cimport bool
 cdef inline int index_reflect(int index, int size) nogil:
     while index < 0 or index >= size:
 
-        if index < 0:
-            index = index * -1
-        if index >= size:
-            index = 2 * (size - 1) - index
+        if index < 0: index = index * -1
+        if index >= size: index = 2 * (size - 1) - index
 
     return index
 
@@ -37,7 +35,7 @@ cdef void convolve_with_stepsize(float[:] source, float[:] target, float[:] kern
 
     for i in range(size):
         index = i - kernelsize/2 * stepsize
-        a = 0.
+        a = 0.0
         for j in range(kernelsize):
             IF ZERO_BOUNDS:
                 if index >= 0 and index < size:
@@ -62,7 +60,7 @@ cdef void convolve_x_with_stepsize(float[:,:,:] source, float[:,:,:] target, flo
         for y in range(ysize):
             for x in range(xsize):
                 index = x - kernelsize/2 * stepsize
-                target[z,y,x] = 0.
+                target[z,y,x] = 0.0
                 for j in range(kernelsize):
                     IF ZERO_BOUNDS:
                         if index >= 0 and index < xsize:
@@ -87,7 +85,7 @@ cdef void convolve_y_with_stepsize(float[:,:,:] source, float[:,:,:] target, flo
         for y in range(ysize):
             for x in range(xsize):
                 index = y - kernelsize/2 * stepsize
-                target[z,y,x] = 0.
+                target[z,y,x] = 0.0
                 for j in range(kernelsize):
                     IF ZERO_BOUNDS:
                         if index >= 0 and index < ysize:
@@ -112,7 +110,7 @@ cdef void convolve_z_with_stepsize(float[:,:,:] source, float[:,:,:] target, flo
         for y in range(ysize):
             for x in range(xsize):
                 index = z - kernelsize/2 * stepsize
-                target[z,y,x] = 0.
+                target[z,y,x] = 0.0
                 for j in range(kernelsize):
                     IF ZERO_BOUNDS:
                         if index >= 0 and index < zsize:
@@ -140,11 +138,12 @@ cdef inline void inplace_diff(float[:,:,:] a, float[:,:,:] b):
                 a[i,j,k] = a[i,j,k] - b[i,j,k]
 
 
+# QUESTION: The function currently returns -1 for x = 0. Is this intended?
 cdef inline float sign(float x):
-    if x > 0.:
-        return 1.
+    if x > 0.0:
+        return 1.0
     else:
-        return -1.
+        return -1.0
 
 
 cdef class WaveletDecomposition2D1D:
@@ -229,7 +228,7 @@ cdef class WaveletDecomposition2D1D:
             return self._xy_scales
         def __set__(self, value):
             if value < 0:
-                self._xy_scales = np.floor(np.log(max(self.data.shape[1], self.data.shape[2]))/np.log(2.0)).astype(np.intc)
+                self._xy_scales = np.floor(np.log(max(self.data.shape[1], self.data.shape[2])) / np.log(2.0)).astype(np.intc)
             else:
                 self._xy_scales = np.floor(value).astype(np.intc)
 
@@ -242,7 +241,7 @@ cdef class WaveletDecomposition2D1D:
             return self._z_scales
         def __set__(self, value):
             if value < 0:
-                self._z_scales = np.floor(np.log(self.data.shape[0])/np.log(2.0)).astype(np.intc)
+                self._z_scales = np.floor(np.log(self.data.shape[0]) / np.log(2.0)).astype(np.intc)
             else:
                 self._z_scales = np.floor(value).astype(np.intc)
 
@@ -260,7 +259,7 @@ cdef class WaveletDecomposition2D1D:
             int xy_scale_factor, z_scale_factor
 
             int fine_xy, fine_z, coarse_xy, coarse_z
-            int i,j,k
+            int i, j, k
 
         xy_scale_factor = 1
 
@@ -528,7 +527,7 @@ cdef class Denoise2D1DHardMRS(Denoise2D1DHard):
     Subclass of Denoise2D1DHard which adds the use of a multi-resolution support
     to the denoising process.
     """
-    
+
     cdef:
         np.ndarray _mrs
         bool _fix_mrs
@@ -540,7 +539,7 @@ cdef class Denoise2D1DHardMRS(Denoise2D1DHard):
         xy_scale_range = self.xy_scales
         if self.xy_approx:
             xy_scale_range += 1
-        
+
         z_scale_range = self.z_scales
         if self.z_approx:
             z_scale_range += 1
@@ -584,11 +583,9 @@ cdef class Denoise2D1DHardMRS(Denoise2D1DHard):
         for i in range(data.shape[0]):
             for j in range(data.shape[1]):
                 for k in range(data.shape[2]):
-                    
                     if self._fix_mrs:
                         if mrs[xy_scale, z_scale, i, j, k]:
                             reconstruction[i,j,k] += work[work_array,i,j,k]
-                    
                     elif mrs[xy_scale, z_scale, i, j, k] or (thresholds[xy_scale,z_scale] >= 0 and abs(work[work_array,i,j,k]) > thresholds[xy_scale,z_scale]):
                         reconstruction[i,j,k] += work[work_array,i,j,k]
                         mrs[xy_scale, z_scale, i, j, k] = 1
@@ -599,7 +596,7 @@ cdef class Denoise2D1DSoft(Denoise2D1DHard):
     Subclass of Denoise2D1DHard which overrides the thresholding scheme to use
     the soft thresholding rule.
     """
-    
+
     cdef void threshold_uniform(self, int work_array, int xy_scale, int z_scale):
         cdef:
             float[:,:,:] data = self._data

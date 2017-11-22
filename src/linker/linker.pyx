@@ -22,12 +22,12 @@ cdef extern from "RJJ_ObjGen.h":
 							int max_x_val, int max_y_val, int max_z_val, 
 							int ss_mode,
 							size_t * data_metric, int * xyz_order)
-
+	
 	cdef void InitObjGen(vector[object_props *] & detections, long int & NOobj, int obj_limit, vector[long int] & obj_ids, vector[long int] & check_obj_ids, size_t *& data_metric, int *& xyz_order)
 	cdef void FreeObjGen(vector[object_props *] & detections, size_t *& data_metric, int *& xyz_order)
 	cdef void ThresholdObjs(vector[object_props *] & detections, long int NOobj, int obj_limit, int minSizeX, int minSizeY, int minSizeZ, int min_v_size, float intens_thresh_min, float intens_thresh_max, int min_LoS_count)
 	cdef void CreateMetric( size_t * data_metric, int * xyz_order, int size_x, int size_y, int size_z)
-
+	
 	cdef cppclass object_props:
 		
 		void CalcProps()
@@ -48,11 +48,11 @@ cdef extern from "RJJ_ObjGen.h":
 		float GetRAi_p()
 		float GetDECi_p()
 		float GetFREQi_p()
-
+		
 		float GetRAi_n()
 		float GetDECi_n()
 		float GetFREQi_n()
-
+		
 		# Geometric center
 		float GetRA()
 		float GetDEC()
@@ -66,12 +66,12 @@ cdef extern from "RJJ_ObjGen.h":
 		float GetTI()
 		float GetTI_p()
 		float GetTI_n()
-
+		
 		# Intensity stats
 		float GetAvgI()
 		float GetSigmaI()
 		float GetRMSI()
-
+		
 		# widths
 		float Get_w20_min()
 		float Get_w20_max()
@@ -81,7 +81,7 @@ cdef extern from "RJJ_ObjGen.h":
 		float Get_w50_max()
 		float Get_cw50_min()
 		float Get_cw50_max()
-
+		
 		# Number of voxels
 		int ShowVoxels()
 		
@@ -89,7 +89,7 @@ cdef extern from "RJJ_ObjGen.h":
 		int Get_srep_size(int index)
 		int Get_srep_grid(int index)
 		int Get_srep_strings(int index)
-
+		
 		# number of lines of sight that this object extends over
 		int Get_LoScount()
 
@@ -107,23 +107,23 @@ def link_objects(data, objects, mask, radiusX = 0, radiusY = 0, radiusZ = 0, min
 	
 	objects: array
 		The existing list of objects which will have new detections appended to it
-
+	
 	mask : array
 		The binary mask
-		
+	
 	radiusX, radiusY, radiusZ : int
 		The merging length in all three dimensions
-		
+	
 	minSizeX, minSizeY, minSizeZ : int
 		The minimum size objects can have in all three dimensions
-		
+	
 	min_LOS : int
 		The mininum pixel-extent in the spatial (x,y) domain of the data a source must have
-
+	
 	ss_mode : int
 		The linking method. A value of 1 uses a cuboid and all other values use an elliptical cylinder.
-		
-		
+	
+	
 	Returns
 	-------
 	
@@ -136,7 +136,6 @@ def link_objects(data, objects, mask, radiusX = 0, radiusY = 0, radiusZ = 0, min
 		
 		The Bounding box are defined is such a way that they can be
 		used as slices, i.e. data[Zmin:Zmax]
-			
 	
 	mask : array
 		The labeled and linked integer mask
@@ -151,15 +150,15 @@ cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, objects, np.ndarray
 				   int radiusX = 3, int radiusY = 3, int radiusZ = 5,
 				   int minSizeX = 1, int minSizeY = 1, int minSizeZ = 1,
 				   int min_LOS = 1):
-		
+	
 	cdef int i, x, y, z, g, g_start, g_end
 	cdef long int obj_id
 	cdef int obj_batch
-
+	
 	cdef int size_x = data.shape[2]
 	cdef int size_y = data.shape[1]
 	cdef int size_z = data.shape[0]
-			
+	
 	# set the number of existing objects to be the starting id
 	try:
 		obj_id = objects.shape[0]
@@ -178,7 +177,7 @@ cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, objects, np.ndarray
 	# Define arrays storing datacube geometry metric
 	cdef size_t * data_metric
 	cdef int * xyz_order	
-
+	
 	# Chunking is disabled for this interface
 	cdef int chunk_x_start = 0
 	cdef int chunk_y_start = 0
@@ -208,38 +207,36 @@ cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, objects, np.ndarray
 	
 	# Inititalize object pointers
 	InitObjGen(detections, NOobj, obj_limit, obj_ids, check_obj_ids, data_metric, xyz_order)
-
+	
 	# Define the mapping of RA, Dec and frequency to the datacube's first three axes. RA, Dec and freq. --> 1, 2, 3: use the default values of x=RA=1 y=Dec=2 z=freq.=3
 	xyz_order[0] = 1
 	xyz_order[1] = 2
 	xyz_order[2] = 3
-
+	
 	# create metric for accessing this data chunk in arbitrary x,y,z order
 	CreateMetric(data_metric, xyz_order, size_x, size_y, size_z)
-		
+	
 	# Create and threshold objects
 	NOobj = CreateObjects(<float *> data.data, <long int *> mask.data, size_x, size_y, size_z, chunk_x_start, chunk_y_start, chunk_z_start, radiusX, radiusY, radiusZ, minSizeX, minSizeY, minSizeZ, min_v_size, intens_thresh_min, intens_thresh_max, flag_val, obj_id, detections, obj_ids, check_obj_ids, obj_limit, size_x, size_y, size_z, ss_mode, data_metric, xyz_order)
 	ThresholdObjs(detections, NOobj, obj_limit, minSizeX, minSizeY, minSizeZ, min_v_size, intens_thresh_min, intens_thresh_max, min_LOS)
-
+	
 	# Reset output mask
 	for z in range(size_z):
 		for y in range(size_y):
 			for x in range(size_x):
 				mask[z,y,x] = 0
 	
-	# Create Python list `objects' from C++ vector `detections' and re-label mask with final, sequential IDs		
-	for i in range(NOobj):		
-		
+	# Create Python list `objects' from C++ vector `detections' and re-label mask with final, sequential IDs
+	for i in range(NOobj):
 		# calculate batch number for this object --- which group of objects does it belong to
 		obj_batch = i / obj_limit
-
-		if detections[obj_batch][i - (obj_batch * obj_limit)].ShowVoxels() >= 1:		
-	
+		
+		if detections[obj_batch][i - (obj_batch * obj_limit)].ShowVoxels() >= 1:
 			obj_id += 1
 			
 			obj = []
 			obj.append(obj_id)
-		
+			
 			detections[obj_batch][i - (obj_batch * obj_limit)].CalcProps()
 			
 			# Geometric center
@@ -267,18 +264,18 @@ cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, objects, np.ndarray
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetMinI())
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetMaxI())
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetTI())
-
+			
 			### new properties added for reliability analyses improvements
-
+			
 			# Positive and negative centers of mass
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetRAi_p())
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetDECi_p())
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetFREQi_p())
-
+			
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetRAi_n())
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetDECi_n())
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetFREQi_n())
-
+			
 			# Positive and negative total flux
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetTI_p())
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetTI_n())
@@ -287,45 +284,34 @@ cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, objects, np.ndarray
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetAvgI())
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetSigmaI())
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetRMSI())
-
+			
 			# W20 and W50
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].Get_w20_max() - detections[obj_batch][i - (obj_batch * obj_limit)].Get_w20_min())
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].Get_w50_max() - detections[obj_batch][i - (obj_batch * obj_limit)].Get_w50_min())
-
+			
 			# C.F.D. W20 and C.F.D. W50
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].Get_cw20_max() - detections[obj_batch][i - (obj_batch * obj_limit)].Get_cw20_min())
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].Get_cw50_max() - detections[obj_batch][i - (obj_batch * obj_limit)].Get_cw50_min())
-
+			
 			# the sizes of the bounding box
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetRAmax() - detections[obj_batch][i - (obj_batch * obj_limit)].GetRAmin() + 1);
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetDECmax() - detections[obj_batch][i - (obj_batch * obj_limit)].GetDECmin() + 1);
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetFREQmax() - detections[obj_batch][i - (obj_batch * obj_limit)].GetFREQmin() + 1);
-		
+			
 			# the number of lines of sight that the object covers
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].Get_LoScount());
-
+			
 			objects.append(obj)
 			
 			for y in range(detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_size(2), detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_size(3) + 1):
 				for x in range(detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_size(0), detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_size(1) + 1):
-					
 					g_start = detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_grid(((((y - detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_size(2)) * (detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_size(1) - detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_size(0) + 1)) + x - detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_size(0))))
 					g_end = detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_grid(((((y - detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_size(2)) * (detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_size(1) - detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_size(0) + 1)) + x - detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_size(0) + 1)))
 					
 					for g in range(g_start, g_end):
 						mask[detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_strings((2 * g)) : detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_strings((2 * g) + 1) + 1, y, x] = obj_id
-						
+	
 	# Free memory for object pointers
 	FreeObjGen(detections, data_metric, xyz_order)
-
+	
 	return objects, mask
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
