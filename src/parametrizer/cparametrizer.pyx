@@ -1,10 +1,17 @@
+# cython: language_level=3
 # distutils: language = c++
 # distutils: sources = ModuleParametrisation.cpp Unit.cpp Measurement.cpp Source.cpp SourceCatalog.cpp helperFunctions.cpp MaskOptimization.cpp BusyFit.cpp DataCube.cpp MetaData.cpp Parametrization.cpp WorldCoordinateSystem.cpp
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 
 from cparametrizer cimport *
 from cython.operator cimport dereference as deref, preincrement as inc
 from cpython cimport bool as python_bool
+from libcpp.string cimport string
+from cpython.version cimport PY_MAJOR_VERSION
 
 unit_std = UNIT_STD
 unit_exp = UNIT_EXP
@@ -71,14 +78,12 @@ cdef class PyUnit(object):
         del self.thisptr
 
     def setU(self, u=None):
+
         res = 0
         if u is None:
             self.clear()
-        elif isinstance(u, str):
-            res = self.thisptr.set(<string> u)
-        elif isinstance(u, unicode):
-            u = str(u)  # might raise UnicodeEncodeError
-            res = self.thisptr.set(<string> u)
+        elif isinstance(u, basestring):
+            res = self.thisptr.set(<string> u.encode('UTF-8'))
         elif isinstance(u, PyUnit):
             del self.thisptr
             self.thisptr = new Unit(deref((<PyUnit> u).thisptr))
@@ -92,7 +97,8 @@ cdef class PyUnit(object):
         """mode can either be unit_std or unit_exp
 
         the latter does some pretty printing (utf8 needed)"""
-        return self.thisptr.printString(<const unsigned int> mode)
+        b = self.thisptr.printString(<const unsigned int> mode)
+        return (b if PY_MAJOR_VERSION < 3 else b.decode('UTF-8'))
 
     def __repr__(self):
         return self.asString()
@@ -164,7 +170,7 @@ cdef class PyMeasurement:
         if isinstance(name, PyMeasurement):
             del self.thisptr
             self.thisptr = new Measurement[double](deref((<PyMeasurement> name).thisptr))
-        elif (isinstance(name, str) or isinstance(name, unicode)):
+        elif isinstance(name, basestring):
             self.setName(name)
             self.setValue(value)
             self.setUncertainty(uncertainty)
@@ -173,11 +179,9 @@ cdef class PyMeasurement:
             raise TypeError('PyMeasurement: Incompatible input type (name must be str or PyMeasurement)')
 
     def setName(self, n):
-        if not (isinstance(n, str) or isinstance(n, unicode)):
+        if not isinstance(n, basestring):
             raise TypeError('PyMeasurement: Incompatible input type (name must be str())')
-        if isinstance(n, unicode):
-            n = str(n)   # might raise UnicodeEncodeError
-        self.thisptr.setName(<string> n)
+        self.thisptr.setName(<string> n.encode('UTF-8'))
 
     def setValue(self, double v):
         self.thisptr.setValue(v)
@@ -196,7 +200,7 @@ cdef class PyMeasurement:
                         )
                     )
             res = self.thisptr.setInt(
-                <string> self.getName(),
+                <string> self.getName().encode('UTF-8'),
                 <double> self.getValue(),
                 <double> self.getUncertainty(),
                 <unsigned int> u
@@ -208,7 +212,8 @@ cdef class PyMeasurement:
             self.thisptr.setUnitUnit(deref((<PyUnit> u).thisptr))
 
     def getName(self):
-        return self.thisptr.getName()
+        b = self.thisptr.getName()
+        return (b if PY_MAJOR_VERSION < 3 else b.decode('UTF-8'))
 
     def getValue(self):
         return self.thisptr.getValue()
@@ -243,7 +248,8 @@ cdef class PyMeasurement:
                     )
                 )
 
-        return self.thisptr.printString(<unsigned int> mode, decimals, <bool> scientific)
+        b = self.thisptr.printString(<unsigned int> mode, decimals, <bool> scientific)
+        return (b if PY_MAJOR_VERSION < 3 else b.decode('UTF-8'))
 
     def __repr__(self):
         return self.asString()
@@ -295,7 +301,6 @@ cdef class PyMeasurement:
             return self.thisptr.islargereq(deref((<PyMeasurement> other).thisptr))
         else:
             raise NotImplementedError('PyMeasurement: requested operator not implemented')
-
 
     def copy(self):
         return PyMeasurement(self)
@@ -365,9 +370,9 @@ cdef class PySource:
         return self.thisptr.isDefined()
 
     def parameterDefined(self, s):
-        assert isinstance(s, str) or isinstance(s, unicode), 'parameter name must be str or unicode'
+        assert isinstance(s, basestring), 'parameter name must be str'
 
-        return self.thisptr.parameterDefined(<string> s)
+        return self.thisptr.parameterDefined(<string> s.encode('UTF-8'))
 
     def setParameter(self, name='noname', double value=0.0, double uncertainty=0.0, unit=''):
         """name can be str-type or another PyMeasurement
@@ -376,12 +381,10 @@ cdef class PySource:
         self.thisptr.setParameter(deref((<PyMeasurement> m).thisptr))
 
     def getParameter(self, s):
-        assert isinstance(s, str) or isinstance(s, unicode), 'parameter name must be str or unicode'
-        if isinstance(s, unicode):
-            s = str(s)   # might raise UnicodeEncodeError
+        assert isinstance(s, basestring), 'parameter name must be str'
 
         pm = PyMeasurement()
-        pm.thisptr = new Measurement[double](self.thisptr.getParameterMeasurement(<string> s))
+        pm.thisptr = new Measurement[double](self.thisptr.getParameterMeasurement(<string> s.encode('UTF-8')))
         if pm.getName() == 'notfound':
             raise KeyError('PySource: Parameter not found')
         return pm
@@ -394,13 +397,12 @@ cdef class PySource:
         return self.thisptr.getSourceID()
 
     def setSourceName(self, s):
-        assert isinstance(s, str) or isinstance(s, unicode), 'source name must be str or unicode'
-        if isinstance(s, unicode):
-            s = str(s)
-        self.thisptr.setSourceName(<string> s)
+        assert isinstance(s, basestring), 'source name must be str'
+        self.thisptr.setSourceName(<string> s.encode('UTF-8'))
 
     def getSourceName(self):
-        return self.thisptr.getSourceName()
+        b = self.thisptr.getSourceName()
+        return (b if PY_MAJOR_VERSION < 3 else b.decode('UTF-8'))
 
     ID = property(getSourceID, setSourceID, None, 'ID property')
     name = property(getSourceName, setSourceName, None, 'Source name property')
@@ -414,7 +416,8 @@ cdef class PySource:
         while mapiter != pmap.end():
             pm = PyMeasurement()
             pm.thisptr = new Measurement[double](deref(mapiter).second)
-            pdict[deref(mapiter).first] = pm
+            b = deref(mapiter).first
+            pdict[(b if PY_MAJOR_VERSION < 3 else b.decode('UTF-8'))] = pm
             inc(mapiter)
         return pdict
 
@@ -433,7 +436,7 @@ cdef class PySource:
         else:
             raise TypeError('PySource: Incompatible input type')
 
-        for key in pDict.keys():
+        for key in pDict:
             self.setParameter(pDict[key])
 
     def updateParameters(self, parameters):
@@ -454,7 +457,7 @@ cdef class PySource:
         pDict.update(pDictNew)
 
         self.clear()
-        for key in pDict.keys():
+        for key in pDict:
             self.setParameter(pDict[key])
 
     def clear(self):
@@ -477,7 +480,7 @@ cdef class PySourceCatalog:
         del self.thisptr
 
     def readDuchampFile(self, filename):
-        self.thisptr.readDuchampFile(<string> filename)
+        self.thisptr.readDuchampFile(<string> filename.encode('UTF-8'))
 
     def insert(self, PySource s, python_bool doCheck=True):
         sID = s.getSourceID()
@@ -537,10 +540,10 @@ cdef class PySourceCatalog:
 
         # check whether any new dict-ID doesn't match the source-ID
         assert all([
-            key == sDict[key].getSourceID() for key in sDict.keys()
+            key == sDict[key].getSourceID() for key in sDict
             ]), 'All dictionary keys must equal their source\'s ID!'
 
-        for key in sDict.keys():
+        for key in sDict:
             self.insert(sDict[key], False)  # no check needed, since catalog was cleared
 
     def updateSources(self, sources, python_bool warn_on_duplicate=True):
@@ -561,11 +564,11 @@ cdef class PySourceCatalog:
 
         # check whether any new dict-ID doesn't match the source-ID
         assert all([
-            key == sDict[key].getSourceID() for key in sDict.keys()
+            key == sDict[key].getSourceID() for key in sDict
             ]), 'All dictionary keys must equal their source\'s ID!'
 
         _presentIDs = self.getSourceIDs()
-        _newIDs = sDict.keys()
+        _newIDs = list(sDict.keys())
         _needsCheck = False
         if len(set(_presentIDs).intersection(set(_newIDs))) > 0:
             _needsCheck = True
@@ -573,11 +576,11 @@ cdef class PySourceCatalog:
                 raise AssertionError('one or more of the IDs already present in catalog')
 
 
-        for key in sDict.keys():
+        for key in sDict:
             if _needsCheck:
                 sID = sDict[key].getSourceID()
                 if sID in _presentIDs:
-                    print 'warning: ID', sID, 'already present, will overwrite'
+                    print('warning: ID', sID, 'already present, will overwrite')
                     self.update(sID, sDict[key])
                 else:
                     self.insert(sDict[key], False)  # no check needed, have already handled it
