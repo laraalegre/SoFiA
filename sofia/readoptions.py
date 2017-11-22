@@ -165,7 +165,7 @@ def readPipelineOptions(filename = "pipeline.options"):
 			parameter = str(".").join(parameter.split(".")[1:])
 			parameter = parameter.strip()
 			
-			if not (module in subtasks):
+			if module not in subtasks:
 				subtasks[module] = {}
 			subtasks = subtasks[module]
 			

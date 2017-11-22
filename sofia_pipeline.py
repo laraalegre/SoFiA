@@ -137,9 +137,9 @@ if not User_Parameters:
 
 # Overwrite default parameters with user parameters (if exist):
 for task in iter(User_Parameters):
-	if(task in Parameters):
+	if task in Parameters:
 		for key in iter(User_Parameters[task]):
-			if(key in Parameters[task]):
+			if key in Parameters[task]:
 				Parameters[task][key] = User_Parameters[task][key]
 
 # Define the base and output directory name used for output files (defaults to input file 
