@@ -87,15 +87,15 @@ def parametrise(
 		newSource = cp.PySource()
 		newSource.ID = obj[cathead == 'id']
 		newParamsDict = {
-			'x': cp.PyMeasurement('x', obj[cathead == 'x_geo'], 0., ''),
-			'y': cp.PyMeasurement('y', obj[cathead == 'y_geo'], 0., ''),
-			'z': cp.PyMeasurement('z', obj[cathead == 'z_geo'], 0., ''),
-			'x_min': cp.PyMeasurement('x_min', obj[cathead == 'x_min'], 0., ''),
-			'x_max': cp.PyMeasurement('x_max', obj[cathead == 'x_max'], 0., ''),
-			'y_min': cp.PyMeasurement('y_min', obj[cathead == 'y_min'], 0., ''),
-			'y_max': cp.PyMeasurement('y_max', obj[cathead == 'y_max'], 0., ''),
-			'z_min': cp.PyMeasurement('z_min', obj[cathead == 'z_min'], 0., ''),
-			'z_max': cp.PyMeasurement('z_max', obj[cathead == 'z_max'], 0., ''),
+			'x': cp.PyMeasurement('x', obj[cathead == 'x_geo'], 0.0, ''),
+			'y': cp.PyMeasurement('y', obj[cathead == 'y_geo'], 0.0, ''),
+			'z': cp.PyMeasurement('z', obj[cathead == 'z_geo'], 0.0, ''),
+			'x_min': cp.PyMeasurement('x_min', obj[cathead == 'x_min'], 0.0, ''),
+			'x_max': cp.PyMeasurement('x_max', obj[cathead == 'x_max'], 0.0, ''),
+			'y_min': cp.PyMeasurement('y_min', obj[cathead == 'y_min'], 0.0, ''),
+			'y_max': cp.PyMeasurement('y_max', obj[cathead == 'y_max'], 0.0, ''),
+			'z_min': cp.PyMeasurement('z_min', obj[cathead == 'z_min'], 0.0, ''),
+			'z_max': cp.PyMeasurement('z_max', obj[cathead == 'z_max'], 0.0, ''),
 			}
 		newSource.setParameters(newParamsDict)
 		initcatalog.insert(newSource)

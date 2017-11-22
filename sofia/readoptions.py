@@ -165,12 +165,12 @@ def readPipelineOptions(filename = "pipeline.options"):
 			parameter = str(".").join(parameter.split(".")[1:])
 			parameter = parameter.strip()
 			
-			if not subtasks.has_key(module):
+			if not (module in subtasks):
 				subtasks[module] = {}
 			subtasks = subtasks[module]
 			
 			if parameter.count(".") == 0:
-				if subtasks.has_key(parameter):
+				if parameter in subtasks:
 					sys.stderr.write("WARNING: Parameter already present in line %i of parameter file %s:\n%s\n"%(linenr+1,filename,line))
 					sys.stderr.write('         Will ignore repeated parameter.\n')
 					break

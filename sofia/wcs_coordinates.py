@@ -133,7 +133,7 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 			## check if there is a Nmap/GIPSY FITS header keyword value present
 			gipsyKey = [k for k in ['FREQ-OHEL','FREQ-OLSR','FREQ-RHEL','FREQ-RLSR'] if (k in [header[key] for key in header if ('CTYPE' in key)])]
 			if gipsyKey:
-				print 'GIPSY header found. Trying to convert it.'
+				print ('GIPSY header found. Trying to convert it.')
 				from astropy.wcs import Wcsprm
 				header = fix_gipsy_header(header)
 				wcsin = Wcsprm(str(header))

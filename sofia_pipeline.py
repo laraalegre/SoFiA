@@ -136,9 +136,9 @@ if not User_Parameters:
 	sys.exit(1)
 
 # Overwrite default parameters with user parameters (if exist):
-for task in User_Parameters.iterkeys():
+for task in iter(User_Parameters):
 	if(task in Parameters):
-		for key in User_Parameters[task].iterkeys():
+		for key in iter(User_Parameters[task]):
 			if(key in Parameters[task]):
 				Parameters[task][key] = User_Parameters[task][key]
 
