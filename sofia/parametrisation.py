@@ -142,11 +142,11 @@ def parametrise(
 	d = results.getSources()
 	
 	# select data set with maximum number of parameters
-	parsListLen = [len(d[d.keys()[i]].getParameters()) for i in range(0, len(d))]
+	parsListLen = [len(d[list(d.keys())[i]].getParameters()) for i in range(0, len(d))]
 	index = parsListLen.index(max(parsListLen))
 	
 	# add parameter names from parametrization
-	pars = d[d.keys()[index]].getParameters()
+	pars = d[list(d.keys())[index]].getParameters()
 	cathead = list(cathead)
 	newunits = {
 		'id': '-',
