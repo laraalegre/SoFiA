@@ -12,30 +12,57 @@ import imp
 def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, subcube=[], subcubeMode='pixel'):
 	# import the fits file into an numpy array for the cube and a dictionary for the header:
 	# the data cube is converted into a 3D array
+	
+	# First check if the data file exists:
+	if not os.path.isfile(inFile):
+		sys.stderr.write("ERROR: The specified data cube does not exist.\n       Cannot find: " + inFile + "\n")
+		raise SystemExit(1)
+	
+	# Handle sub-cube if requested by user:
+	# ALERT: Not that subcube boundaries for any axis are interpreted as [min, max) rather than [min, max] as expected by the user!!!
+	#        This should be changed to avoid confusion. In addition, we should agree at some point whether SoFiA should be 0 or 1-based.
 	if doSubcube:
-		if os.path.isfile(inFile) == False:
-			sys.stderr.write("ERROR: The specified data cube does not exist.\n")
-			sys.stderr.write("       Cannot find: " + inFile + "\n")
+		# Ensure that sub-cube specifications are as expected:
+		if len(subcube) not in [4, 6] or subcubeMode not in ['pixel', 'world']:
+			sys.stderr.write("ERROR: import.subcubeMode can only be \'pixel\' or \'world\',\n       and import.subcube must have 4 or 6 entries.\n")
 			raise SystemExit(1)
 		
-		if len(subcube):
-			from astropy import wcs
-			hdulist = fits.open(inFile, memmap=False)
-			header = hdulist[0].header
-			hdulist.close()
+		# Read the file header:
+		from astropy import wcs
+		hdulist = fits.open(inFile, memmap=False)
+		header = hdulist[0].header
+		hdulist.close()
 		
-		if (len(subcube) == 6 or len(subcube) == 4) and subcubeMode == 'world':
-			print ('Calculating subcube boundaries from input WCS centre and radius')
-			wcsin = wcs.WCS(header)
-			# calculate cos(Dec) correction for RA range
+		# Extract cube size information:
+		axisSize = []
+		for axis in range(min(3, header['NAXIS'])):
+			axisSize.append(int(header['NAXIS%i' % (axis + 1)]))
+		
+		# Sub-cube in world coordinates:
+		if subcubeMode == 'world':
+			sys.stdout.write('Calculating subcube boundaries from input WCS centre and radius\n')
+			
+			# Read WCS information:
+			try:
+				wcsin = wcs.WCS(header)
+			except:
+				sys.stderr.write("ERROR: Failed to read WCS information from data cube header.\n")
+				raise SystemExit(1)
+			
+			# Calculate cos(Dec) correction for RA range:
 			if wcsin.wcs.cunit[0] == 'deg' and wcsin.wcs.cunit[1] == 'deg':
-				corrfact = cos(subcube[1] / 180 * pi)
+				corrfact = cos(subcube[1] / 180.0 * pi)
+			
 			if header['NAXIS'] == 4:
 				subcube = wcsin.wcs_world2pix(array([[subcube[0] -subcube[3] / corrfact, subcube[1] - subcube[4], subcube[2] - subcube[5], 0], [subcube[0] + subcube[3] / corrfact, subcube[1] + subcube[4], subcube[2] + subcube[5], 0]]), 0)[:,:3]
 			elif header['NAXIS'] == 3:
 				subcube = wcsin.wcs_world2pix(array([[subcube[0] - subcube[3] / corrfact, subcube[1] - subcube[4], subcube[2] - subcube[5]], [subcube[0] + subcube[3] / corrfact, subcube[1] + subcube[4], subcube[2] + subcube[5]]]), 0)
 			elif header['NAXIS'] == 2:
 				subcube = wcsin.wcs_world2pix(array([[subcube[0] - subcube[2] / corrfact, subcube[1] - subcube[3]], [subcube[0] + subcube[2] / corrfact, subcube[1] + subcube[3]]]), 0)
+			else:
+				sys.stderr.write("ERROR: Unsupported number of axes.\n")
+				raise SystemExit(1)
+			
 			subcube = ravel(subcube, order='F')
 			# make sure min pix coord is < max pix coord for all axes
 			# this operation is meaningful because wcs_world2pix returns negative pixel coordinates only for pixels located before an axis' start
@@ -48,47 +75,74 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 				if subcube[4] > subcube[5]:
 					subcube[4], subcube[5] = subcube[5], subcube[4]
 			# constrain subcube to be within the cube boundaries; if this is not possible then exit
-			for ss in range(min(3, header['NAXIS'])):
-				if ceil(subcube[1 + 2 * ss]) < 0 or floor(subcube[2 * ss]) >= header['NAXIS%i' % (ss + 1)]:
-					sys.stderr.write("ERROR: The requested subcube is outside the input cube along axis %i \n" % (ss))
+			for axis in range(min(3, header['NAXIS'])):
+				if ceil(subcube[1 + 2 * axis]) < 0 or floor(subcube[2 * axis]) >= header['NAXIS%i' % (axis + 1)]:
+					sys.stderr.write("ERROR: The requested subcube is outside the input cube along axis %i \n" % (axis))
 					raise SystemExit(1)
 				else:
-					subcube[2 * ss] = max(0, floor(subcube[2 * ss]))
-					subcube[1 + 2 * ss] = min(header['NAXIS%i' % (ss + 1)] - 1, ceil(subcube[1 + 2 * ss])) + 1
+					subcube[2 * axis] = max(0, floor(subcube[2 * axis]))
+					subcube[1 + 2 * axis] = min(header['NAXIS%i' % (axis + 1)] - 1, ceil(subcube[1 + 2 * axis])) + 1
 			subcube = list(subcube.astype(int))
-		elif (len(subcube) == 6 or len(subcube) == 4) and subcubeMode == 'pixel':
-			# make sure pixel coordinates are integers
+		
+		# Sub-cube in pixel coordinates:
+		else:
+			# Ensure that pixel coordinates are integers:
 			for ss in subcube:
 				if type(ss) != int:
-					sys.stderr.write("ERROR: When subcubeMode = pixel the subcube must be defined by a set of integer pixel coordinates.\n")
-					sys.stderr.write("       The %i-th coordinate has the wrong type.\n" % subcube.index(ss))
+					sys.stderr.write("ERROR: For subcubeMode = pixel, subcube boundaries must be integer.\n")
+					sys.stderr.write("       The %i-th coordinate is not an integer value.\n" % subcube.index(ss))
 					raise SystemExit(1)
-			# make sure to be within the cube boundaries
-			for ss in range(min(3, header['NAXIS'])):
-				subcube[2 * ss] = max(0, subcube[2 * ss])
-			for ss in range(min(3, header['NAXIS'])):
-				subcube[1 + 2 * ss] = min(header['NAXIS%i' % (ss + 1)], subcube[1 + 2 * ss])
-		elif len(subcube):
-			sys.stderr.write("ERROR: import.subcubeMode can only be \'pixel\' or \'world\', and import.subcube must have 4 or 6 entries.\n")
-			raise SystemExit(1)
+			
+			# Ensure to be within cube boundaries:
+			for axis in range(min(3, header['NAXIS'])):
+				# Lower boundary:
+				if subcube[2 * axis] < 0:
+					subcube[2 * axis] = 0
+					sys.stderr.write("WARNING: Adjusting lower subcube boundary to 0 for axis %i.\n" % (axis + 1))
+				elif subcube[2 * axis] >= axisSize[axis]:
+					subcube[2 * axis] = axisSize[axis] - 1
+					sys.stderr.write("WARNING: Adjusting lower subcube boundary to %i for axis %i.\n" % (axisSize[axis] - 1, axis + 1))
+				# Upper boundary:
+				if subcube[2 * axis + 1] < 1:
+					subcube[2 * axis + 1] = 1
+					sys.stderr.write("WARNING: Adjusting upper subcube boundary to 1 for axis %i.\n" % (axis + 1))
+				elif subcube[2 * axis + 1] > axisSize[axis]:
+					subcube[2 * axis + 1] = axisSize[axis]
+					sys.stderr.write("WARNING: Adjusting upper subcube boundary to %i for axis %i.\n" % (axisSize[axis], axis + 1))
+			
+			# Ensure that boundaries are internally consistent:
+			for axis in range(min(3, header['NAXIS'])):
+				if subcube[2 * axis] >= subcube[2 * axis + 1]:
+					sys.stderr.write("ERROR: Lower subcube boundary greater than upper subcube boundary.\n")
+					sys.stderr.write("       Please check your input.\n")
+					raise SystemExit(1)
 		
+		# Report final subcube boundaries:
 		if len(subcube) == 4:
-			print ('Loading subcube of %s defined by [x1 x2 y1 y2] =' % inFile, subcube)
-		elif len(subcube) == 6:
-			print ('Loading subcube of %s defined by [x1 x2 y1 y2 z1 z2] =' % inFile, subcube)
-	else: 
-		print ('Loading cube: ' + inFile)
+			sys.stdout.write('Loading subcube of ' + str(inFile) + '\n  defined by [x1 x2 y1 y2] = ' + str(subcube) + '\n')
+		else:
+			sys.stdout.write('Loading subcube of ' + str(inFile) + '\n  defined by [x1 x2 y1 y2 z1 z2] = ' + str(subcube) + '\n')
+	else:
+		sys.stdout.write('Loading cube ' + str(inFile) + '\n')
 		subcube = []
-	f = fits.open(inFile, memmap=False, do_not_scale_image_data=True)
-	dict_Header = f[0].header
 	
-	# check whether the number of dimensions is acceptable and read data accordingly
-	# the default is three axis
+	# Open FITS file:
+	try:
+		f = fits.open(inFile, memmap=False, do_not_scale_image_data=True)
+		dict_Header = f[0].header
+	except:
+		sys.stderr.write("ERROR: Failed to load primary HDU of FITS file " + str(inFile) + "\n")
+		raise SystemExit(1)
+	
+	# Check whether the number of dimensions is acceptable and read data accordingly.
+	# The default is three axes:
 	if dict_Header['NAXIS'] == 3:
 		print ('The input cube has 3 axes:')
 		print ('type: ' + str(dict_Header['CTYPE1']) + ' ' + str(dict_Header['CTYPE2']) + ' ' + str(dict_Header['CTYPE3']))
 		print ('dimensions: ' + str(dict_Header['NAXIS1']) + ' ' + str(dict_Header['NAXIS2']) + ' ' + str(dict_Header['NAXIS3']))
+		
 		fullshape = [dict_Header['NAXIS3'], dict_Header['NAXIS2'], dict_Header['NAXIS1']]
+		
 		if len(subcube) == 6:
 			np_Cube = f[0].section[subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
 			dict_Header['CRPIX1'] -= subcube[0]
@@ -102,6 +156,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 		else:
 			sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given).\n" % len(subcube))
 			raise SystemExit(1)
+	# 4 axes:
 	elif dict_Header['NAXIS'] == 4:
 		if dict_Header['NAXIS4'] != 1:
 			print ('type: ' + str(dict_Header['CTYPE1']) + ' ' + str(dict_Header['CTYPE2']) + ' ' + str(dict_Header['CTYPE3']) + ' ' + str(dict_Header['CTYPE4']))
@@ -110,6 +165,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			raise SystemExit(1)
 		else:
 			fullshape = [dict_Header['NAXIS3'], dict_Header['NAXIS2'], dict_Header['NAXIS1']]
+			
 			if len(subcube) == 6:
 				np_Cube = f[0].section[0, subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
 				dict_Header['CRPIX1'] -= subcube[0]
@@ -123,15 +179,14 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			else:
 				sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given). Ignore 4th axis.\n" % len(subcube))
 				raise SystemExit(1)
-			#dict_Header['NAXIS'] = 3
-			#for key in ['CTYPE4', 'CRPIX4', 'CRVAL4', 'CDELT4', 'CUNIT4', 'NAXIS4']:
-			#	if key in dict_Header:
-			#		del(dict_Header[key])
+	# 2 axes:
 	elif dict_Header['NAXIS'] == 2:
 		sys.stderr.write("WARNING: The input cube has 2 axes, third axis added.\n")
 		print ('type: ' + str(dict_Header['CTYPE1']) + ' ' + str(dict_Header['CTYPE2']))
 		print ('dimensions: ' + str(dict_Header['NAXIS1']) + ' ' + str(dict_Header['NAXIS2']))
+		
 		fullshape = [dict_Header['NAXIS2'], dict_Header['NAXIS1']]
+		
 		if len(subcube) == 4:
 			np_Cube = array([f[0].section[subcube[2]:subcube[3], subcube[0]:subcube[1]]])
 			dict_Header['CRPIX1'] -= subcube[0]
@@ -143,6 +198,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 		else:
 			sys.stderr.write("ERROR: The subcube list must have 4 entries (%i given).\n" % len(subcube))
 			raise SystemExit(1)
+	# 1 axis:
 	elif dict_Header['NAXIS'] == 1:
 		sys.stderr.write("ERROR: The input has 1 axis, this is probably a spectrum instead of a 2D/3D image.\n")
 		sys.stderr.write("       Type: " + str(dict_Header['CTYPE1']) + "\n")
@@ -151,6 +207,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 	else:
 		sys.stderr.write("ERROR: The file has fewer than 1 or more than 4 dimensions.\n")
 		raise SystemExit(1)
+	
 	f.close()
 	
 	if 'BSCALE' in dict_Header and 'BZERO' in dict_Header:
@@ -164,17 +221,15 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 	#if dict_Header['CTYPE1'][0:2] != 'RA' or dict_Header['CTYPE2'][0:3] != 'DEC':
 	#	sys.stderr.write("WARNING: The dimensions are not in the expected order.\n")
 	
-	# the data cube has been loaded
 	print ('The data cube has been loaded.')
 	
-	# apply weights if a weights file exists:
+	# Apply weights file if provided:
 	if weightsFile:
 		# check whether the weights cube exists:
 		if os.path.isfile(weightsFile) == False:
 			sys.stderr.write("ERROR: The defined weights cube does not exist.\n")
 			sys.stderr.write("       Cannot find: " + weightsFile + "\n")
 			raise SystemExit(1)
-		
 		else:
 			# Scale the input cube with a weights cube
 			# load the weights cube and convert it into a 3D array to be applied to the data 3D array
@@ -212,7 +267,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			
 			f.close()
 			print ('Weights cube loaded and applied.')
-	
+	# Else apply weights function if defined:
 	elif weightsFunction:
 		# WARNING: I'm not sure if there is a safe way to properly implement multiplication of a data array 
 		# WARNING: with a user-specified function in Python without the need for a whitelist, nested loops, 
@@ -234,6 +289,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 				sys.stderr.write("       Please check your input.\n")
 				raise SystemExit(1)
 		
+		# ALERT: Why are we not applying the weights function continuously (channel-by-channel)?!?
 		# hardcoded number of weights chunks
 		Nz = 50
 		# check that the number of weights z-chunks is at most equal to the total nr of chans
@@ -264,11 +320,9 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 	
 	if maskFile:
 		# check whether the mask cube exists:
-		if os.path.isfile(maskFile) == False:
+		if not os.path.isfile(maskFile):
 			sys.stderr.write("ERROR: The specified mask cube does not exist.\n")
 			sys.stderr.write("       Cannot find: " + maskFile + "\n")
-			#print ('WARNING: Program continues, without using input mask')
-			#mask=zeros(np_Cube.shape)
 			raise SystemExit(1)
 		
 		else:
@@ -347,7 +401,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 					sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given).\n" % len(subcube))
 					raise SystemExit(1)
 			else:
-				sys.stderr.write("ERROR: The mask cube has less than 1 or more than 4 dimensions.\n")
+				sys.stderr.write("ERROR: The mask cube has fewer than 1 or more than 4 dimensions.\n")
 				raise SystemExit(1)
 			mask[mask > 0] = 1
 			g.close()
