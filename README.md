@@ -66,7 +66,7 @@ folder where the downloaded file was saved. Then follow the steps below.
 
    > tar -xzvf SoFiA-[version].tar.gz
 
-   where [version] is the downloaded version of SoFiA, e.g. 0.2. This will 
+   where [version] is the downloaded version of SoFiA, e.g. 1.0. This will 
    unpack all files into a directory called SoFiA-[version].
 
 2. Enter the installation directory
