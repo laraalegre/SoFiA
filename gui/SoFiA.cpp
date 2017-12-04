@@ -2569,7 +2569,7 @@ void SoFiA::createInterface()
 	tabOutputFieldParameters->setEnabled(true);
 	connect(tabOutputFieldParameters, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
 	
-	tabOutputLabelParameters = new QLabel(tr("<b>Note:</b> Depending on the actual pipeline settings, some selected parameters may not be written. Please see the <a href=\"https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Source-Parameters\">SoFiA wiki</a> for a complete list of source parameters."), tabOutputGroupBox1);
+	tabOutputLabelParameters = new QLabel(tr("<b>Note:</b> Depending on the actual pipeline settings, some selected parameters may not be written. Please see the SoFiA user manual or <a href=\"https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Source-Parameters\">wiki</a> for a complete list of source parameters."), tabOutputGroupBox1);
 	tabOutputLabelParameters->setWordWrap(true);
 	tabOutputLabelParameters->setContentsMargins(0, 0, 0, 0);
 	tabOutputLabelParameters->setAlignment(Qt::AlignTop | Qt::AlignLeft);
