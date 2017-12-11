@@ -147,6 +147,11 @@ for task in iter(User_Parameters):
 outputBase = Parameters['writeCat']['basename']
 outputDir  = Parameters['writeCat']['outputDir']
 
+if outputDir and not os.path.isdir(outputDir):
+	sys.stderr.write("ERROR: The output directory specified does not exist:\n")
+	sys.stderr.write("       %s\n" % outputDir)
+	sys.exit(1)
+
 if not outputBase or outputBase.isspace() or "/" in outputBase or "\\" in outputBase or outputBase == "." or outputBase == "..":
 	outroot = Parameters['import']['inFile'].split('/')[-1]
 	if (outroot.lower()).endswith(".fits") and len(outroot) > 5:
@@ -155,7 +160,7 @@ else:
 	outroot = outputBase
 
 if not outputDir or not os.path.isdir(outputDir) or outputDir.isspace():
-	outroot = Parameters['import']['inFile'][0:len(Parameters['import']['inFile'])-len(Parameters['import']['inFile'].split('/')[-1])]+outroot
+	outroot = Parameters['import']['inFile'][0:len(Parameters['import']['inFile']) - len(Parameters['import']['inFile'].split('/')[-1])] + outroot
 else:
 	if outputDir[-1] != '/': outputDir += '/'
 	outroot = outputDir + outroot
