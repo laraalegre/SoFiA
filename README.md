@@ -60,36 +60,36 @@ folder where the downloaded file was saved. Then follow the steps below.
 
    Download and unpack the zipped archive into a directory of your choice:
 
-   > unzip SoFiA-[version].zip
+   `unzip SoFiA-[version].zip`
 
    or
 
-   > tar -xzvf SoFiA-[version].tar.gz
+   `tar -xzvf SoFiA-[version].tar.gz`
 
-   where [version] is the downloaded version of SoFiA, e.g. 0.2. This will 
-   unpack all files into a directory called SoFiA-[version].
+   where `[version]` is the downloaded version of SoFiA, e.g. 1.0. This will 
+   unpack all files into a directory called `SoFiA-[version]`.
 
 2. Enter the installation directory
 
-   > cd SoFiA-[version]
+   `cd SoFiA-[version]`
 
 3. Compile and install the SoFiA pipeline and user interface
 
-   > python setup.py build --force
+   `python setup.py build --force`
 
    (add `--no-gui=True` to install SoFiA *without* graphical user interface)
 
 4. Set up environment variables
 
     Follow the instructions given at the end of the installation process to 
-    define the required environment variables and paths in your .bashrc or 
-    .cshrc file.
+    define the required environment variables and paths in your `.bashrc` or 
+    `.cshrc` file.
 
 5. Launch SoFiA
 
     Open a new terminal window and type:
 
-    > SoFiA &
+    `SoFiA &`
 
 
 Problems
