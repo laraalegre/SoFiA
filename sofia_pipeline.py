@@ -148,7 +148,7 @@ outputBase = Parameters['writeCat']['basename']
 outputDir  = Parameters['writeCat']['outputDir']
 
 if outputDir and not os.path.isdir(outputDir):
-	sys.stderr.write("ERROR: The output directory specified does not exist:\n")
+	sys.stderr.write("ERROR: The specified output directory does not exist:\n")
 	sys.stderr.write("       %s\n" % outputDir)
 	sys.exit(1)
 
