@@ -136,8 +136,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		hdu = fits.PrimaryHDU(data=subcube, header=headerCubelets)
 		hdulist = fits.HDUList([hdu])
 		name = outputDir + cubename + '_' + str(int(obj[0])) + '.fits'
-		if compress:
-			name += '.gz'
+		if compress: name += '.gz'
 		
 		# Check for overwrite flag:
 		if not flagOverwrite and os.path.exists(name):
@@ -181,8 +180,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 			del hdulist[0].header['CRVAL3']
 			del hdulist[0].header['CRPIX3']
 			name = outputDir + cubename + '_' + str(int(obj[0])) + '_pv.fits'
-			if compress:
-				name += '.gz'
+			if compress: name += '.gz'
 			
 			# Check for overwrite flag:
 			if not flagOverwrite and os.path.exists(name):
@@ -204,8 +202,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		hdu.header['ORIGIN'] = 'SoFiA version %s' % getVersion()
 		hdulist = fits.HDUList([hdu])
 		name = outputDir + cubename + '_' + str(int(obj[0])) + '_mask.fits'
-		if compress:
-			name += '.gz'
+		if compress: name += '.gz'
 		
 		# Check for overwrite flag:
 		if not flagOverwrite and os.path.exists(name):
@@ -275,8 +272,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		del(hdu.header['ctype3'])
 		if 'cunit3' in hdu.header: del(hdu.header['cunit3'])
 		name = outputDir + cubename + '_' + str(int(obj[0])) + '_mom0.fits'
-		if compress:
-			name += '.gz'
+		if compress: name += '.gz'
 		
 		# Check for overwrite flag:
 		if not flagOverwrite and os.path.exists(name):
@@ -302,8 +298,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		del(hdu.header['ctype3'])
 		if 'cunit3' in hdu.header: del(hdu.header['cunit3'])
 		name = outputDir + cubename + '_' + str(int(obj[0])) + '_mom1.fits'
-		if compress:
-			name += '.gz'
+		if compress: name += '.gz'
 		
 		# Check for overwrite flag:
 		if not flagOverwrite and os.path.exists(name):
@@ -328,8 +323,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		del(hdu.header['ctype3'])
 		if 'cunit3' in hdu.header: del(hdu.header['cunit3'])
 		name = outputDir + cubename + '_' + str(int(obj[0])) + '_mom2.fits'
-		if compress:
-			name += '.gz'
+		if compress: name += '.gz'
 		
 		# Check for overwrite flag:
 		if not flagOverwrite and os.path.exists(name):
@@ -352,7 +346,8 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 				f = gzip.open(name, 'wb')
 			else:
 				f = open(name, 'w')
-			#f.write('# '+specTypeX+' ('+specUnitX+')'+'  '+specTypeY+' ('+specUnitY+')\n')
+			
+			f.write('# SoFiA version %s\n' % getVersion())
 			
 			for i in range(0,len(spec)):
 				xspec = cValZ + (i + float(ZminNew) - cPixZ) * dZ
