@@ -658,9 +658,16 @@ void SoFiA::saveSettings()
 		
 		QTextStream outStream(&outFile);
 		
+		// Write some header information first:
+		time_t currentTime = time(0);
+		outStream << "# SoFiA parameter file\n";
+		outStream << "# Creator: SoFiA version 1.2.0-beta\n";
+		outStream << "# Date:    " << ctime(&currentTime) << '\n';
+		
+		// Then write the actual parameter settings:
 		for(QMap<QString, QString>::iterator iter = parameters.begin(); iter != parameters.end(); iter++)
 		{
-			outStream << iter.key() << "\t=\t" << iter.value() << endl;
+			outStream << iter.key() << "\t=\t" << iter.value() << '\n';
 		}
 		
 		outFile.close();

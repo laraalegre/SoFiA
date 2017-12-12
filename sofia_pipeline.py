@@ -62,7 +62,7 @@ def checkOverwrite(outputFile, isFile=True, isDir=False):
 
 def printProgressMessage(message):
 	print ("\n--- %.3f seconds since start" % (time() - t0))
-	print ("--- SoFiA: " + message)
+	print ("--- SoFiA " + str(version) + ": " + message)
 	sys.stdout.flush()
 	return
 
@@ -93,11 +93,26 @@ if len(sys.argv) != 2:
 # ---- Print some initial status information ----
 # -----------------------------------------------
 
-print ("\nRunning the SoFiA pipeline")
-print ("Using  Python  " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + "." + str(sys.version_info[2]) + " (" + sys.version_info[3] + ")")
+# Extract SoFiA version number
+version = "[unknown]";
+fileVersionPath = os.environ["SOFIA_PIPELINE_PATH"];
+fileVersionPath = fileVersionPath.replace("sofia_pipeline.py", "VERSION");
+try:
+	with open(fileVersionPath) as fileVersion:
+		for line in fileVersion:
+		   if line: version = line.strip();
+except:
+	sys.stderr.write("WARNING: Failed to read SoFiA version number.\n");
+
+print ("\n--------------------------")
+print ("Running the SoFiA pipeline")
+print ("--------------------------")
+print ("Using  SoFiA   " + str(version))
+print ("       Python  " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + "." + str(sys.version_info[2]))
 print ("       NumPy   " + np.__version__)
 print ("       SciPy   " + scipy_version)
 print ("       Astropy " + astropy_version)
+print ("--------------------------")
 
 
 

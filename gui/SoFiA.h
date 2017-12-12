@@ -51,6 +51,7 @@
 #define RELMIN_SCALE_FACTOR 100.0
 
 #include <iostream>
+#include <ctime>
 
 #include <QtGlobal>
 
