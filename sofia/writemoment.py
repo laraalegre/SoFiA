@@ -2,6 +2,7 @@
 import astropy.io.fits as pyfits
 import os
 import numpy as np
+from .version import *
 
 def removeOptions(dictionary):
 	modDictionary = dictionary
@@ -43,6 +44,7 @@ def writeMoment0(datacube,maskcube,filename,debug,header,compress):
 	hdu.header['bunit'] += '.km/s'
 	hdu.header['datamin'] = (m0 * dkms).min()
 	hdu.header['datamax'] = (m0 * dkms).max()
+	hdu.header['ORIGIN'] = 'SoFiA version %s' % getVersion()
 	del(hdu.header['crpix3'])
 	del(hdu.header['crval3'])
 	del(hdu.header['cdelt3'])
@@ -76,6 +78,7 @@ def writeMoment1(datacube, maskcube, filename, debug, header, m0, compress):
 	hdu.header['bunit'] = 'km/s'
 	hdu.header['datamin'] = np.nanmin(m1)
 	hdu.header['datamax'] = np.nanmax(m1)
+	hdu.header['ORIGIN'] = 'SoFiA version %s' % getVersion()
 	del(hdu.header['crpix3'])
 	del(hdu.header['crval3'])
 	del(hdu.header['cdelt3'])

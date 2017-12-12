@@ -7,6 +7,7 @@ import numpy as np;
 from xml.etree.ElementTree import Element, SubElement, tostring;
 from xml.dom import minidom;
 from gzip import open as gzopen;
+from .version import *
 
 
 # --------------------------------
@@ -86,26 +87,14 @@ def write_catalog_from_array(mode, objects, catHeader, catUnits, catFormat, parL
 		return;
 	
 	
-	# Add SoFiA version number to header
-	version = "[unknown]";
-	fileVersionPath = os.environ["SOFIA_PIPELINE_PATH"];
-	fileVersionPath = fileVersionPath.replace("sofia_pipeline.py", "VERSION");
-	try:
-		with open(fileVersionPath) as fileVersion:
-			for line in fileVersion:
-			   if line: version = line.strip();
-	except:
-		sys.stderr.write("WARNING: Failed to read SoFiA version number.\n");
-	
-	
 	# Create and write catalogue in requested format
 	# -------------------------------------------------------------------------
 	if mode == "XML":
 		# Define basic XML header information
 		votable          = Element("VOTABLE");
-		resource         = SubElement(votable, "RESOURCE", name="SoFiA catalogue (version %s)" % version);
+		resource         = SubElement(votable, "RESOURCE", name="SoFiA catalogue (version %s)" % getVersion());
 		description      = SubElement(resource, "DESCRIPTION");
-		description.text = "Source catalogue from the Source Finding Application (SoFiA) version %s" % version;
+		description.text = "Source catalogue from the Source Finding Application (SoFiA) version %s" % getVersion();
 		coosys           = SubElement(resource, "COOSYS", ID="J2000");
 		table            = SubElement(resource, "TABLE", ID="sofia_cat", name="sofia_cat");
 		
@@ -159,7 +148,7 @@ def write_catalog_from_array(mode, objects, catHeader, catUnits, catFormat, parL
 		noID = "id" not in parList;
 		
 		# Write some header information:
-		content = "-- SoFiA catalogue (version %s)\n\nSET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";\n\n" % version;
+		content = "-- SoFiA catalogue (version %s)\n\nSET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";\n\n" % getVersion();
 		
 		# Construct and write table structure:
 		flagProgress = False;
@@ -220,7 +209,7 @@ def write_catalog_from_array(mode, objects, catHeader, catUnits, catFormat, parL
 		headerCol  = "";
 		outFormat  = "";
 		colCount   =  0;
-		header     = "SoFiA catalogue (version %s)\n" % version;
+		header     = "SoFiA catalogue (version %s)\n" % getVersion();
 		
 		for par in parList:
 			index = list(catHeader).index(par);

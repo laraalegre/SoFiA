@@ -30,6 +30,7 @@ from sofia import parametrisation
 from sofia import wcs_coordinates
 from sofia import flag_cube
 from sofia import CNHI
+from sofia import version
 
 
 
@@ -62,7 +63,7 @@ def checkOverwrite(outputFile, isFile=True, isDir=False):
 
 def printProgressMessage(message):
 	print ("\n--- %.3f seconds since start" % (time() - t0))
-	print ("--- SoFiA " + str(version) + ": " + message)
+	print ("--- SoFiA " + version.getVersion() + ": " + message)
 	sys.stdout.flush()
 	return
 
@@ -93,21 +94,10 @@ if len(sys.argv) != 2:
 # ---- Print some initial status information ----
 # -----------------------------------------------
 
-# Extract SoFiA version number
-version = "[unknown]";
-fileVersionPath = os.environ["SOFIA_PIPELINE_PATH"];
-fileVersionPath = fileVersionPath.replace("sofia_pipeline.py", "VERSION");
-try:
-	with open(fileVersionPath) as fileVersion:
-		for line in fileVersion:
-		   if line: version = line.strip();
-except:
-	sys.stderr.write("WARNING: Failed to read SoFiA version number.\n");
-
 print ("\n--------------------------")
 print ("Running the SoFiA pipeline")
 print ("--------------------------")
-print ("Using  SoFiA   " + str(version))
+print ("Using  SoFiA   " + version.getVersion())
 print ("       Python  " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + "." + str(sys.version_info[2]))
 print ("       NumPy   " + np.__version__)
 print ("       SciPy   " + scipy_version)

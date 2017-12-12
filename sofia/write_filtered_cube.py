@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 from astropy.io import fits
 import os
+from .version import *
 
 def removeOptions(dictionary):
 	modDictionary = dictionary
@@ -47,8 +48,9 @@ def writeFilteredCube(cube, header, dictionary, filename, compress):
 	for option in headerList: header.add_history(option)
 	
 	hdu = fits.PrimaryHDU(data = cube, header = header)
-	hdu.header['datamin'] = cube.min()
-	hdu.header['datamax'] = cube.max()
+	hdu.header['DATAMIN'] = cube.min()
+	hdu.header['DATAMAX'] = cube.max()
+	hdu.header['ORIGIN'] = 'SoFiA version %s' % getVersion()
 	
 	if compress: filename += '.gz'
 	hdu.writeto(filename,output_verify='warn', clobber=True)

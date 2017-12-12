@@ -2,6 +2,7 @@
 from astropy.io import fits
 import os
 import sys
+from .version import *
 
 def removeOptions(dictionary):
 	modDictionary = dictionary
@@ -46,7 +47,7 @@ def writeMask(cube, header, dictionary, filename, compress, flagOverwrite):
 	#end for
 	for option in headerList: header.add_history(option)
 	if cube.max() < 32767: cube=cube.astype('int16')
-
+	
 	# add axes required to make the shape of the mask cube equal to the shape of the input datacube
 	while header['naxis'] > len(cube.shape): cube.resize(tuple([1,] + list(cube.shape)))
 	
@@ -54,6 +55,7 @@ def writeMask(cube, header, dictionary, filename, compress, flagOverwrite):
 	hdu.header['BUNIT'] = 'source_ID'
 	hdu.header['DATAMIN'] = cube.min()
 	hdu.header['DATAMAX'] = cube.max()
+	hdu.header['ORIGIN'] = 'SoFiA version %s' % getVersion()
 	
 	name = filename
 	if compress: name += '.gz'
