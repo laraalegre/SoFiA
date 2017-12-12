@@ -181,6 +181,8 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 			del hdulist[0].header['CRVAL3']
 			del hdulist[0].header['CRPIX3']
 			name = outputDir + cubename + '_' + str(int(obj[0])) + '_pv.fits'
+			if compress:
+				name += '.gz'
 			
 			# Check for overwrite flag:
 			if not flagOverwrite and os.path.exists(name):
