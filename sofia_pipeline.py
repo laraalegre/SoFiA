@@ -94,7 +94,7 @@ if len(sys.argv) != 2:
 # ---- Print some initial status information ----
 # -----------------------------------------------
 
-print ("\n--------------------------")
+print ("--------------------------")
 print ("Running the SoFiA pipeline")
 print ("--------------------------")
 print ("Using  SoFiA   " + version.getVersion())
