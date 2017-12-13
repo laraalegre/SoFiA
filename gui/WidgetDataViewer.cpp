@@ -625,7 +625,7 @@ void WidgetDataViewer::setUpLut(int type)
 		switch(type)
 		{
 			case RAINBOW:
-				if (i <  50)
+				if(i <  50)
 				{
 					valueR = 0;
 					valueG = static_cast<unsigned int>(255.0 * (static_cast<double>(i) - 0.0) / 50.0);
@@ -658,9 +658,18 @@ void WidgetDataViewer::setUpLut(int type)
 				break;
 			
 			case RANDOM:
-				valueR = static_cast<unsigned int>(255.0 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
-				valueG = static_cast<unsigned int>(255.0 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
-				valueB = static_cast<unsigned int>(255.0 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
+				if(i > 0)
+				{
+					valueR = static_cast<unsigned int>(255.0 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
+					valueG = static_cast<unsigned int>(255.0 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
+					valueB = static_cast<unsigned int>(255.0 * static_cast<double>(rand()) / static_cast<double>(RAND_MAX));
+				}
+				else
+				{
+					valueR = 255;
+					valueG = 255;
+					valueB = 255;
+				}
 				break;
 			
 			default:
@@ -670,8 +679,7 @@ void WidgetDataViewer::setUpLut(int type)
 				valueB = i;
 		}
 		
-		if(i < 255) lut.append(qRgb(valueR xor invert, valueG xor invert, valueB xor invert));
-		else lut.append(qRgb(valueR xor invert, valueG xor invert, valueB xor invert));
+		lut.append(qRgb(valueR xor invert, valueG xor invert, valueB xor invert));
 	}
 	
 	image->setColorTable(lut);
