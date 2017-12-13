@@ -379,7 +379,7 @@ double Fips::data(size_t *pos)
 	double result;
 	
 	// Copy value into result using correct data type
-	// WARNING: These functions require fixed-width integers number from C++11
+	// WARNING: These functions require fixed-width integer numbers from C++11
 	//          as well as the built-in byte-swap functions of GCC!
 	if(bitpix == -64 and sizeof(double) == bytes)
 	{
@@ -476,9 +476,11 @@ bool Fips::littleEndian()
 	// Figure out endinanness of machine.
 	// FITS data are big-endian according to standard,
 	// so conversion to little-endian may be required.
+	// WARNING: This check will only work on systems
+	//          where sizeof(long) > sizeof(char) = 1.
 	
 	long n = 1;
 	
-	// Return 'true' on little-endian systems
+	// Returns 'true' on little-endian systems
 	return *(char *)&n == 1;
 }
