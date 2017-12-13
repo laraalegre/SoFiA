@@ -130,7 +130,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		headerCubelets['NAXIS2'] = subcube.shape[1]
 		headerCubelets['NAXIS3'] = subcube.shape[0]
 		
-		headerCubelets['ORIGIN'] = 'SoFiA version %s' % getVersion()
+		headerCubelets['ORIGIN'] = getVersion(full=True)
 		
 		# write the cubelet
 		hdu = fits.PrimaryHDU(data=subcube, header=headerCubelets)
@@ -174,7 +174,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 			hdulist[0].header['CDELT2'] = hdulist[0].header['CDELT3']
 			hdulist[0].header['CRVAL2'] = hdulist[0].header['CRVAL3']
 			hdulist[0].header['CRPIX2'] = hdulist[0].header['CRPIX3']
-			hdulist[0].header['ORIGIN'] = 'SoFiA version %s' % getVersion()
+			hdulist[0].header['ORIGIN'] = getVersion(full=True)
 			del hdulist[0].header['CTYPE3']
 			del hdulist[0].header['CDELT3']
 			del hdulist[0].header['CRVAL3']
@@ -199,7 +199,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		hdu.header['bunit'] = 'source_ID'
 		hdu.header['datamin'] = submask.min()
 		hdu.header['datamax'] = submask.max()
-		hdu.header['ORIGIN'] = 'SoFiA version %s' % getVersion()
+		hdu.header['ORIGIN'] = getVersion(full=True)
 		hdulist = fits.HDUList([hdu])
 		name = outputDir + cubename + '_' + str(int(obj[0])) + '_mask.fits'
 		if compress: name += '.gz'
@@ -265,7 +265,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		hdu.header['bunit'] += bunitExt
 		hdu.header['datamin'] = np.nanmin(m0)
 		hdu.header['datamax'] = np.nanmax(m0)
-		hdu.header['ORIGIN'] = 'SoFiA version %s' % getVersion()
+		hdu.header['ORIGIN'] = getVersion(full=True)
 		del(hdu.header['crpix3'])
 		del(hdu.header['crval3'])
 		del(hdu.header['cdelt3'])
@@ -291,7 +291,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		hdu.header['bunit'] = bunitExt[1:]
 		hdu.header['datamin'] = np.nanmin(m1)
 		hdu.header['datamax'] = np.nanmax(m1)
-		hdu.header['ORIGIN'] = 'SoFiA version %s' % getVersion()
+		hdu.header['ORIGIN'] = getVersion(full=True)
 		del(hdu.header['crpix3'])
 		del(hdu.header['crval3'])
 		del(hdu.header['cdelt3'])
@@ -316,7 +316,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		hdu.header['bunit'] = bunitExt[1:]
 		hdu.header['datamin'] = np.nanmin(m2)
 		hdu.header['datamax'] = np.nanmax(m2)
-		hdu.header['ORIGIN'] = 'SoFiA version %s' % getVersion()
+		hdu.header['ORIGIN'] = getVersion(full=True)
 		del(hdu.header['crpix3'])
 		del(hdu.header['crval3'])
 		del(hdu.header['cdelt3'])
@@ -347,7 +347,8 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 			else:
 				f = open(name, 'w')
 			
-			f.write('# SoFiA version %s\n' % getVersion())
+			f.write('# Integrated source spectrum\n')
+			f.write('# Creator: %s\n\n' % getVersion(full=True))
 			
 			for i in range(0,len(spec)):
 				xspec = cValZ + (i + float(ZminNew) - cPixZ) * dZ

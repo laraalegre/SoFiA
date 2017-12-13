@@ -55,7 +55,7 @@ def writeMask(cube, header, dictionary, filename, compress, flagOverwrite):
 	hdu.header['BUNIT'] = 'source_ID'
 	hdu.header['DATAMIN'] = cube.min()
 	hdu.header['DATAMAX'] = cube.max()
-	hdu.header['ORIGIN'] = 'SoFiA version %s' % getVersion()
+	hdu.header['ORIGIN'] = getVersion(full=True)
 	
 	name = filename
 	if compress: name += '.gz'

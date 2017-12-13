@@ -50,7 +50,7 @@ def writeFilteredCube(cube, header, dictionary, filename, compress):
 	hdu = fits.PrimaryHDU(data = cube, header = header)
 	hdu.header['DATAMIN'] = cube.min()
 	hdu.header['DATAMAX'] = cube.max()
-	hdu.header['ORIGIN'] = 'SoFiA version %s' % getVersion()
+	hdu.header['ORIGIN'] = getVersion(full=True)
 	
 	if compress: filename += '.gz'
 	hdu.writeto(filename,output_verify='warn', clobber=True)

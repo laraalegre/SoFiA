@@ -63,7 +63,7 @@ def checkOverwrite(outputFile, isFile=True, isDir=False):
 
 def printProgressMessage(message):
 	print ("\n--- %.3f seconds since start" % (time() - t0))
-	print ("--- SoFiA " + version.getVersion() + ": " + message)
+	print ("--- %s: %s" % (version.getVersion(full=True), message))
 	sys.stdout.flush()
 	return
 

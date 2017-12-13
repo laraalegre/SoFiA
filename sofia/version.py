@@ -6,8 +6,8 @@ import sys
 # Function to return SoFiA version number
 # ---------------------------------------
 
-def getVersion():
-	version = "[unknown]";
+def getVersion(full = False):
+	version = "0.0";
 	fileVersionPath = os.environ["SOFIA_PIPELINE_PATH"];
 	fileVersionPath = fileVersionPath.replace("sofia_pipeline.py", "VERSION");
 	
@@ -18,4 +18,5 @@ def getVersion():
 	except:
 		sys.stderr.write("WARNING: Failed to read SoFiA version number.\n");
 	
+	if(full): return "SoFiA " + str(version)
 	return str(version)

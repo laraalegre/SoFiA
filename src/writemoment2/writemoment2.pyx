@@ -68,7 +68,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 	hdu.header['bunit'] = 'Nchan'
 	hdu.header['datamin'] = nrdetchan.min()
 	hdu.header['datamax'] = nrdetchan.max()
-	hdu.header['ORIGIN'] = 'SoFiA version %s' % getVersion()
+	hdu.header['ORIGIN'] = getVersion(full=True)
 	del(hdu.header['crpix3'])
 	del(hdu.header['crval3'])
 	del(hdu.header['cdelt3'])
@@ -138,7 +138,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 		hdu.header['bunit'] += bunitExt
 		hdu.header['datamin'] = (m0 * dkms).min()
 		hdu.header['datamax'] = (m0 * dkms).max()
-		hdu.header['ORIGIN'] = 'SoFiA version %s' % getVersion()
+		hdu.header['ORIGIN'] = getVersion(full=True)
 		del(hdu.header['crpix3'])
 		del(hdu.header['crval3'])
 		del(hdu.header['cdelt3'])
@@ -184,7 +184,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 		hdu.header['bunit'] = bunitExt
 		hdu.header['datamin'] = np.nanmin(m1)
 		hdu.header['datamax'] = np.nanmax(m1)
-		hdu.header['ORIGIN'] = 'SoFiA version %s' % getVersion()
+		hdu.header['ORIGIN'] = getVersion(full=True)
 		del(hdu.header['crpix3'])
 		del(hdu.header['crval3'])
 		del(hdu.header['cdelt3'])

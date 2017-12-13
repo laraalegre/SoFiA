@@ -661,7 +661,7 @@ void SoFiA::saveSettings()
 		// Write some header information first:
 		time_t currentTime = time(0);
 		outStream << "# SoFiA parameter file\n";
-		outStream << "# Creator: SoFiA version 1.2.0-beta\n";
+		outStream << "# Creator: SoFiA 1.2.0-beta\n";
 		outStream << "# Date:    " << ctime(&currentTime) << '\n';
 		
 		// Then write the actual parameter settings:
