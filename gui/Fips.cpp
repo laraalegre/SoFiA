@@ -405,21 +405,21 @@ double Fips::data(size_t *pos)
 	}
 	else if(bitpix == 16 and sizeof(uint16_t) == bytes)
 	{
-		uint16_t tmp;
+		int16_t tmp;
 		memcpy(&tmp, &dataArray[index], bytes);
 		if(littleEndian()) tmp = __builtin_bswap16(tmp);
 		result = static_cast<double>(tmp);
 	}
 	else if(bitpix == 32 and sizeof(uint32_t) == bytes)
 	{
-		uint32_t tmp;
+		int32_t tmp;
 		memcpy(&tmp, &dataArray[index], bytes);
 		if(littleEndian()) tmp = __builtin_bswap32(tmp);
 		result = static_cast<double>(tmp);
 	}
 	else if(bitpix == 64 and sizeof(uint64_t) == bytes)
 	{
-		uint64_t tmp;
+		int64_t tmp;
 		memcpy(&tmp, &dataArray[index], bytes);
 		if(littleEndian()) tmp = __builtin_bswap64(tmp);
 		result = static_cast<double>(tmp);
