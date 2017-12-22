@@ -13,8 +13,7 @@ def getVersion(full = False):
 	
 	try:
 		with open(fileVersionPath) as fileVersion:
-			for line in fileVersion:
-			   if line: version = line.strip();
+			version = (fileVersion.readline()).strip();
 	except:
 		sys.stderr.write("WARNING: Failed to read SoFiA version number.\n");
 	
