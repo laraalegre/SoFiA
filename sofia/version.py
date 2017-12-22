@@ -17,5 +17,5 @@ def getVersion(full = False):
 	except:
 		sys.stderr.write("WARNING: Failed to read SoFiA version number.\n");
 	
-	if(full): return "SoFiA " + str(version)
-	return str(version)
+	if(full): return "SoFiA " + str(version);
+	return str(version);
