@@ -13,6 +13,9 @@
 #define M_PI 3.14159265358979323846
 #endif
 
+#define SOURCE_LOOP_START for(long x = subRegionX1; x <= subRegionX2; ++x) { for(long y = subRegionY1; y <= subRegionY2; ++y) { for(long z = subRegionZ1; z <= subRegionZ2; ++z) { double fluxValue = static_cast<double>(dataCube->getData(x, y, z)); if(static_cast<unsigned short>(maskCube->getData(x, y, z)) == source->getSourceID())
+#define SOURCE_LOOP_END } } }
+
 
 
 // ----------- //
@@ -25,6 +28,7 @@ Parametrization::Parametrization()
 	dataCube = 0;
 	maskCube = 0;
 	source   = 0;
+	dataSize = 0;
 	
 	// Initialisation of all parameters:
 	noiseSubCube         = 0.0;
@@ -148,7 +152,7 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 	maskCube = 0;
 	source = 0;
 	
-	data.clear();            // Clear all previously defined data.
+	//data.clear();            // Clear all previously defined data.
 	
 	if(d == 0 or m == 0 or s == 0)
 	{
@@ -232,37 +236,15 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 	if(subRegionZ2 >= dataCube->getSize(2)) subRegionZ2 = dataCube->getSize(2) - 1L;
 	
 	// Extract all pixels belonging to the source and calculate local noise:
-	noiseSubCube   = 0.0;
+	dataSize = 0;
+	noiseSubCube = 0.0;
 	std::vector<double> rmsMad;
 	
-	for(long x = subRegionX1; x <= subRegionX2; ++x)
-	{
-		for(long y = subRegionY1; y <= subRegionY2; ++y)
-		{
-			for(long z = subRegionZ1; z <= subRegionZ2; ++z)
-			{
-				// Add only those pixels that are masked as being part of the source:
-				float tmpFlux = dataCube->getData(x, y, z);
-				
-				if(static_cast<unsigned short>(maskCube->getData(x, y, z)) == source->getSourceID())
-				{
-					struct DataPoint dataPoint;
-					
-					dataPoint.x = x;
-					dataPoint.y = y;
-					dataPoint.z = z;
-					dataPoint.value = tmpFlux;
-					data.push_back(dataPoint);
-				}
-				else if(maskCube->getData(x, y, z) == 0 and not std::isnan(tmpFlux))
-				{
-					rmsMad.push_back(static_cast<double>(tmpFlux));
-				}
-			}
-		}
-	}
+	SOURCE_LOOP_START ++dataSize;
+	else if(maskCube->getData(x, y, z) == 0 and not std::isnan(fluxValue)) rmsMad.push_back(static_cast<double>(fluxValue));
+	SOURCE_LOOP_END
 	
-	if(data.empty())
+	if(dataSize == 0)
 	{
 		std::cerr << "Error (Parametrization): No data found for source " << source->getSourceID() << ".\n";
 		return 1;
@@ -294,9 +276,9 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 
 int Parametrization::measureCentroid()
 {
-	if(data.empty() or spectrum.empty())
+	if(dataSize == 0)
 	{
-		std::cerr << "Error (Parametrization): No data loaded.\n";
+		std::cerr << "Error (Parametrization): No valid data found.\n";
 		return 1;
 	}
 	
@@ -309,31 +291,31 @@ int Parametrization::measureCentroid()
 	errCentroidZ = 0.0;
 	
 	// Centroid:
-	for(size_t i = 0; i < data.size(); ++i)
+	SOURCE_LOOP_START
 	{
-		if(data[i].value > 0.0)        // NOTE: Only positive pixels considered here!
+		if(fluxValue > 0.0)                // NOTE: Only positive pixels considered here!
 		{
-			centroidX += static_cast<double>(data[i].value) * static_cast<double>(data[i].x);
-			centroidY += static_cast<double>(data[i].value) * static_cast<double>(data[i].y);
-			centroidZ += static_cast<double>(data[i].value) * static_cast<double>(data[i].z);
-			sum       += static_cast<double>(data[i].value);
+			centroidX += fluxValue * static_cast<double>(x);
+			centroidY += fluxValue * static_cast<double>(y);
+			centroidZ += fluxValue * static_cast<double>(z);
+			sum       += fluxValue;
 		}
-	}
+	} SOURCE_LOOP_END
 	
 	centroidX /= sum;
 	centroidY /= sum;
 	centroidZ /= sum;
 	
 	// Uncertainties:
-	for(size_t i = 0; i < data.size(); ++i)
+	SOURCE_LOOP_START
 	{
-		if(data[i].value > 0.0)        // NOTE: Only positive pixels considered here!
+		if(fluxValue > 0.0)                // NOTE: Only positive pixels considered here!
 		{
-			errCentroidX += (static_cast<double>(data[i].x) - centroidX) * (static_cast<double>(data[i].x) - centroidX);
-			errCentroidY += (static_cast<double>(data[i].y) - centroidY) * (static_cast<double>(data[i].y) - centroidY);
-			errCentroidZ += (static_cast<double>(data[i].z) - centroidZ) * (static_cast<double>(data[i].z) - centroidZ);
+			errCentroidX += (static_cast<double>(x) - centroidX) * (static_cast<double>(x) - centroidX);
+			errCentroidY += (static_cast<double>(y) - centroidY) * (static_cast<double>(y) - centroidY);
+			errCentroidZ += (static_cast<double>(z) - centroidZ) * (static_cast<double>(z) - centroidZ);
 		}
-	}
+	} SOURCE_LOOP_END
 	
 	errCentroidX = sqrt(errCentroidX) * noiseSubCube / sum;
 	errCentroidY = sqrt(errCentroidY) * noiseSubCube / sum;
@@ -350,9 +332,9 @@ int Parametrization::measureCentroid()
 
 int Parametrization::measureFlux()
 {
-	if(data.empty())
+	if(dataSize == 0)
 	{
-		std::cerr << "Error (Parametrization): No data loaded.\n";
+		std::cerr << "Error (Parametrization): No valid data found.\n";
 		return 1;
 	}
 	
@@ -360,14 +342,14 @@ int Parametrization::measureFlux()
 	peakFlux  = -std::numeric_limits<double>::max();
 	
 	// Sum over all pixels (including negative ones):
-	for(size_t i = 0; i < data.size(); ++i)
+	SOURCE_LOOP_START
 	{
-		totalFlux  += static_cast<double>(data[i].value);
-		if(peakFlux < static_cast<double>(data[i].value)) peakFlux = static_cast<double>(data[i].value);
-	}
+		totalFlux += fluxValue;
+		if(peakFlux < fluxValue) peakFlux = fluxValue;
+	} SOURCE_LOOP_END
 	
 	// Calculate integrated SNR:
-	intSNR = totalFlux / (noiseSubCube * sqrt(static_cast<double>(data.size())));
+	intSNR = totalFlux / (noiseSubCube * sqrt(static_cast<double>(dataSize)));
 	// WARNING The integrated SNR would need to be divided by the beam solid angle,
 	// WARNING but this will need to be done outside this module as no header
 	// WARNING information known at this stage. The current value would only be
@@ -386,9 +368,9 @@ int Parametrization::fitEllipse()
 {
 	// (1) Fitting ellipse to intensity-weighted image:
 	
-	if(data.empty())
+	if(dataSize == 0)
 	{
-		std::cerr << "Error (Parametrization): No data loaded.\n";
+		std::cerr << "Error (Parametrization): No valid data found.\n";
 		return 1;
 	}
 	
@@ -403,18 +385,16 @@ int Parametrization::fitEllipse()
 	double momXY = 0.0;
 	double sum   = 0.0;
 	
-	for(size_t i = 0; i < data.size(); ++i)
+	SOURCE_LOOP_START
 	{
-		double fluxValue = static_cast<double>(data[i].value);
-		
 		if(fluxValue > 0.0)            // NOTE: Only positive pixels considered here!
 		{
-			momX  += static_cast<double>((data[i].x - source->getParameter("x")) * (data[i].x - source->getParameter("x"))) * fluxValue;
-			momY  += static_cast<double>((data[i].y - source->getParameter("y")) * (data[i].y - source->getParameter("y"))) * fluxValue;
-			momXY += static_cast<double>((data[i].x - source->getParameter("x")) * (data[i].y - source->getParameter("y"))) * fluxValue;
+			momX  += static_cast<double>((x - source->getParameter("x")) * (x - source->getParameter("x"))) * fluxValue;
+			momY  += static_cast<double>((y - source->getParameter("y")) * (y - source->getParameter("y"))) * fluxValue;
+			momXY += static_cast<double>((x - source->getParameter("x")) * (y - source->getParameter("y"))) * fluxValue;
 			sum += fluxValue;
 		}
-	}
+	} SOURCE_LOOP_END
 	
 	momX  /= sum;
 	momY  /= sum;
@@ -442,12 +422,12 @@ int Parametrization::fitEllipse()
 	size_t sizeY = subRegionY2 - subRegionY1 + 1;
 	
 	double *momentMap;
-	int    *maskMap;
+	long   *maskMap;
 	
 	try
 	{
 		momentMap = new double[sizeX * sizeY];
-		maskMap   = new int[sizeX * sizeY];
+		maskMap   = new long[sizeX * sizeY];
 	}
 	catch(std::bad_alloc &badAlloc)
 	{
@@ -461,11 +441,11 @@ int Parametrization::fitEllipse()
 		maskMap[i] = 0;
 	}
 	
-	for(size_t i = 0; i < data.size(); ++i)
+	SOURCE_LOOP_START
 	{
-		momentMap[data[i].x - subRegionX1 + sizeX * (data[i].y - subRegionY1)] += static_cast<double>(data[i].value);
-		maskMap[data[i].x - subRegionX1 + sizeX * (data[i].y - subRegionY1)]   += 1;
-	}
+		momentMap[x - subRegionX1 + sizeX * (y - subRegionY1)] += fluxValue;
+		maskMap[x - subRegionX1 + sizeX * (y - subRegionY1)] += 1;
+	} SOURCE_LOOP_END
 	
 	for(size_t x = 0; x < sizeX; ++x)
 	{
@@ -531,9 +511,9 @@ int Parametrization::fitEllipse()
 
 int Parametrization::kinematicMajorAxis()
 {
-	if(data.empty())
+	if(dataSize == 0)
 	{
-		std::cerr << "Error (Parametrization): No data loaded.\n";
+		std::cerr << "Error (Parametrization): No valid data found.\n";
 		return 1;
 	}
 	
@@ -545,16 +525,15 @@ int Parametrization::kinematicMajorAxis()
 	size_t firstPoint = size;
 	size_t lastPoint  = 0;
 	
-	for(size_t i = 0; i < data.size(); ++i)
+	SOURCE_LOOP_START
 	{
-		// NOTE: Only values > 3 sigma considered here!
-		if(data[i].value > 3.0 * noiseSubCube)
+		if(fluxValue > 3.0 * noiseSubCube)       // NOTE: Only values > 3 sigma considered here!
 		{
-			cenX[data[i].z - subRegionZ1] += static_cast<double>(data[i].value) * static_cast<double>(data[i].x);
-			cenY[data[i].z - subRegionZ1] += static_cast<double>(data[i].value) * static_cast<double>(data[i].y);
-			sum[data[i].z - subRegionZ1]  += static_cast<double>(data[i].value);
+			cenX[z - subRegionZ1] += fluxValue * static_cast<double>(x);
+			cenY[z - subRegionZ1] += fluxValue * static_cast<double>(y);
+			sum [z - subRegionZ1] += fluxValue;
 		}
-	}
+	} SOURCE_LOOP_END
 	
 	unsigned int counter = 0;
 	
@@ -678,9 +657,9 @@ int Parametrization::kinematicMajorAxis()
 
 int Parametrization::createIntegratedSpectrum()
 {
-	if(data.empty())
+	if(dataSize == 0)
 	{
-		std::cerr << "Error (Parametrization): No data loaded.\n";
+		std::cerr << "Error (Parametrization): No valid data found.\n";
 		return 1;
 	}
 	
@@ -696,11 +675,11 @@ int Parametrization::createIntegratedSpectrum()
 	std::vector<size_t> counter(spectrum.size(), 0);
 	
 	// Extract spectrum...
-	for(size_t i = 0; i < data.size(); i++)
+	SOURCE_LOOP_START
 	{
-		spectrum[data[i].z - subRegionZ1] += static_cast<double>(data[i].value);
-		counter[data[i].z - subRegionZ1]  += 1;
-	}
+		spectrum[z - subRegionZ1] += fluxValue;
+		counter [z - subRegionZ1] += 1;
+	} SOURCE_LOOP_END
 	
 	// ...and determine noise per channel:
 	// WARNING: This still needs some consideration. Is is wise to provide the rms per
@@ -731,9 +710,9 @@ int Parametrization::createIntegratedSpectrum()
 
 int Parametrization::measureLineWidth()
 {
-	if(data.empty() or spectrum.empty())
+	if(dataSize == 0 or spectrum.empty())
 	{
-		std::cerr << "Error (Parametrization): No data loaded.\n";
+		std::cerr << "Error (Parametrization): No valid data found.\n";
 		return 1;
 	}
 	
@@ -940,9 +919,9 @@ int Parametrization::measureLineWidth()
 
 int Parametrization::fitBusyFunction()
 {
-	if(data.empty() or spectrum.empty())
+	if(dataSize == 0 or spectrum.empty())
 	{
-		std::cerr << "Error (Parametrization): No data loaded.\n";
+		std::cerr << "Error (Parametrization): No valid data found.\n";
 		return 1;
 	}
 	
@@ -1013,9 +992,9 @@ int Parametrization::fitBusyFunction()
 
 /*int Parametrization::fitBusyFunction()
 {
-	if(data.empty() or spectrum.empty())
+	if(dataSize == 0 or spectrum.empty())
 	{
-		std::cerr << "Error (Parametrization): No data loaded.\n";
+		std::cerr << "Error (Parametrization): No valid data found.\n";
 		return 1;
 	}
 	

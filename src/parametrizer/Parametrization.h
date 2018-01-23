@@ -17,7 +17,7 @@ class Parametrization
 public:
 	Parametrization();
 	
-	int parametrize(DataCube<float> *d, DataCube<short> *m, Source *s, bool doBF = true);
+	int parametrize(DataCube<float> *d, DataCube<short> *m, Source *s, bool doBF = false);
 	
 private:
 	int loadData(DataCube<float> *d, DataCube<short> *m, Source *s);
@@ -47,15 +47,7 @@ private:
 	long subRegionZ1;
 	long subRegionZ2;
 	
-	struct DataPoint
-	{
-		long x;
-		long y;
-		long z;
-		float value;
-	};
-	
-	std::vector<struct DataPoint> data;
+	size_t dataSize;
 	double noiseSubCube;
 	
 	std::vector<double> spectrum;
