@@ -229,6 +229,18 @@ int mrqmin(T_xvals x[], T_data y[], T_data sig[], T_count ndata, double a[], int
   if(state_flag > 0) {
     covsrt(covar,ma,ia,mfit);
     covsrt(alpha,ma,ia,mfit);
+    for(i = 0; i < ma; i++){ delete [] temp_covar[i]; temp_covar[i] = NULL; }
+    delete [] temp_covar;
+    temp_covar = NULL;
+    delete [] w;
+    w = NULL;
+    for(i = 0; i < ma; i++){ delete [] v[i]; v[i] = NULL; }
+    delete [] v;
+    v = NULL;
+    delete [] soln;
+    soln = NULL;
+    delete [] b;
+    b = NULL;
     return 1;
   }
 
