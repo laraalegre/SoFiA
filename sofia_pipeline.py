@@ -254,8 +254,10 @@ if Parameters['steps']['doMerge']:
 # ---------------------
 
 printProgressMessage("Reading data cube(s)")
-
-np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters['steps']['doSubcube'], **Parameters['import'])
+kwargs = Parameters['import'].copy()
+kwargs.update(Parameters['flag'])
+kwargs.update({'doFlag':Parameters['steps']['doFlag']})
+np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters['steps']['doSubcube'], **kwargs)
 
 
 # -------------------------
@@ -265,9 +267,9 @@ np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters['steps'][
 if Parameters['steps']['doFlag'] or Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']:
 	printProgressMessage("Running input filters")
 
-# ---- FLAGGING ----
-if Parameters['steps']['doFlag']:
-	np_Cube = flag_cube.flag(np_Cube,**Parameters['flag'])
+## ---- FLAGGING ----
+#if Parameters['steps']['doFlag']:
+	#np_Cube = flag_cube.flag(np_Cube,**Parameters['flag'])
 
 # ---- SMOOTHING ----
 if Parameters['steps']['doSmooth']:
@@ -525,7 +527,10 @@ if Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Par
 	Parameters['import']['weightsFile'] = ''
 	Parameters['import']['maskFile'] = ''
 	Parameters['import']['weightsFunction'] = ''
-	np_Cube, dict_Header, bla, blabla = import_data.read_data(Parameters['steps']['doSubcube'], **Parameters['import'])
+	del np_Cube, dict_Header
+	kwargs = Parameters['import'].copy()
+	kwargs.update({'cubeOnly':True})
+	np_Cube, dict_Header = import_data.read_data(Parameters['steps']['doSubcube'], **kwargs)
 
 
 

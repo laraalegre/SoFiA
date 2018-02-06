@@ -42,104 +42,105 @@ def readPipelineOptions(filename = "pipeline.options"):
 	# convert the input values into the correct data type.
 	# Ensure that all new parameters get added to this list!
 	datatypes = {"steps.doSubcube": "bool", \
-	             "steps.doFlag": "bool", \
-	             "steps.doSmooth": "bool", \
-	             "steps.doScaleNoise": "bool", \
-	             "steps.doSCfind": "bool", \
-	             "steps.doThreshold": "bool", \
-	             "steps.doWavelet": "bool", \
-	             "steps.doCNHI": "bool", \
-	             "steps.doMerge": "bool", \
-	             "steps.doReliability": "bool", \
-	             "steps.doParameterise": "bool", \
-	             "steps.doWriteFilteredCube": "bool", \
-	             "steps.doWriteMask": "bool", \
-	             "steps.doWriteCat": "bool", \
-	             "steps.doMom0": "bool", \
-	             "steps.doMom1": "bool", \
-	             "steps.doCubelets": "bool", \
-	             "steps.doDebug": "bool", \
-	             "steps.doOptical": "bool", \
-	             "import.inFile": "string", \
-	             "import.weightsFile": "string", \
-	             "import.maskFile": "string", \
-	             "import.weightsFunction": "string", \
-	             "import.subcubeMode": "string", \
-	             "import.subcube": "array", \
-	             "flag.regions": "array", \
-	             "optical.sourceCatalogue": "string", \
-	             "optical.spatSize": "float", \
-	             "optical.specSize": "float", \
-	             "optical.storeMultiCat": "bool", \
-	             "smooth.kernel": "string", \
-	             "smooth.edgeMode": "string", \
-	             "smooth.kernelX": "float", \
-	             "smooth.kernelY": "float", \
-	             "smooth.kernelZ": "float", \
-	             "scaleNoise.statistic": "string", \
-	             "scaleNoise.edgeX": "int", \
-	             "scaleNoise.edgeY": "int", \
-	             "scaleNoise.edgeZ": "int", \
-	             "scaleNoise.scaleX": "bool", \
-	             "scaleNoise.scaleY": "bool", \
-	             "scaleNoise.scaleZ": "bool", \
-	             "SCfind.threshold": "float", \
-	             "SCfind.sizeFilter": "float", \
-	             "SCfind.maskScaleXY": "float", \
-	             "SCfind.maskScaleZ": "float", \
-	             "SCfind.edgeMode": "string", \
-	             "SCfind.rmsMode": "string", \
-	             "SCfind.kernels": "array", \
-	             "SCfind.kernelUnit": "string", \
-	             "SCfind.verbose": "bool", \
-	             "CNHI.pReq": "float", \
-	             "CNHI.qReq": "float", \
-	             "CNHI.minScale": "int", \
-	             "CNHI.maxScale": "int", \
-	             "CNHI.medianTest": "bool", \
-	             "CNHI.verbose": "int", \
-	             "wavelet.threshold": "float", \
-	             "wavelet.scaleXY": "int", \
-	             "wavelet.scaleZ": "int", \
-	             "wavelet.positivity": "bool", \
-	             "wavelet.iterations": "int", \
-	             "threshold.threshold": "float", \
-	             "threshold.clipMethod": "string", \
-	             "threshold.rmsMode": "string", \
-	             "threshold.verbose": "bool", \
-	             "merge.radiusX": "int", \
-	             "merge.radiusY": "int", \
-	             "merge.radiusZ": "int", \
-	             "merge.minSizeX": "int", \
-	             "merge.minSizeY": "int", \
-	             "merge.minSizeZ": "int", \
-	             "merge.positivity": "bool", \
-	             "reliability.parSpace": "array", \
-	             "reliability.logPars": "array", \
-	             "reliability.autoKernel": "bool", \
-	             "reliability.scaleKernel": "float", \
-	             "reliability.usecov": "bool", \
-	             "reliability.negPerBin": "float", \
-	             "reliability.skellamTol": "float", \
-	             "reliability.kernel": "array", \
-	             "reliability.fMin": "float", \
-	             "reliability.threshold": "float", \
-	             "reliability.makePlot": "bool", \
-	             "parameters.getUncertainties": "bool", \
-	             "parameters.fitBusyFunction": "bool", \
-	             "parameters.optimiseMask": "bool", \
-	             "parameters.dilateMask": "bool", \
-	             "parameters.dilateThreshold":"float",\
-	             "parameters.dilatePixMax":"int",\
-	             "parameters.dilateChan":"int",\
-	             "writeCat.overwrite":"bool", \
-	             "writeCat.compress":"bool", \
-	             "writeCat.outputDir": "string", \
-	             "writeCat.basename": "string", \
-	             "writeCat.writeASCII": "bool", \
-	             "writeCat.writeXML": "bool", \
-	             "writeCat.writeSQL": "bool", \
-	             "writeCat.parameters": "array"
+				"steps.doFlag": "bool", \
+				"steps.doSmooth": "bool", \
+				"steps.doScaleNoise": "bool", \
+				"steps.doSCfind": "bool", \
+				"steps.doThreshold": "bool", \
+				"steps.doWavelet": "bool", \
+				"steps.doCNHI": "bool", \
+				"steps.doMerge": "bool", \
+				"steps.doReliability": "bool", \
+				"steps.doParameterise": "bool", \
+				"steps.doWriteFilteredCube": "bool", \
+				"steps.doWriteMask": "bool", \
+				"steps.doWriteCat": "bool", \
+				"steps.doMom0": "bool", \
+				"steps.doMom1": "bool", \
+				"steps.doCubelets": "bool", \
+				"steps.doDebug": "bool", \
+				"steps.doOptical": "bool", \
+				"import.inFile": "string", \
+				"import.weightsFile": "string", \
+				"import.maskFile": "string", \
+				"import.weightsFunction": "string", \
+				"import.subcubeMode": "string", \
+				"import.subcube": "array", \
+				"flag.flagRegions": "array",\
+				"flag.flagFile": "string", \
+				"optical.sourceCatalogue": "string", \
+				"optical.spatSize": "float", \
+				"optical.specSize": "float", \
+				"optical.storeMultiCat": "bool", \
+				"smooth.kernel": "string", \
+				"smooth.edgeMode": "string", \
+				"smooth.kernelX": "float", \
+				"smooth.kernelY": "float", \
+				"smooth.kernelZ": "float", \
+				"scaleNoise.statistic": "string", \
+				"scaleNoise.edgeX": "int", \
+				"scaleNoise.edgeY": "int", \
+				"scaleNoise.edgeZ": "int", \
+				"scaleNoise.scaleX": "bool", \
+				"scaleNoise.scaleY": "bool", \
+				"scaleNoise.scaleZ": "bool", \
+				"SCfind.threshold": "float", \
+				"SCfind.sizeFilter": "float", \
+				"SCfind.maskScaleXY": "float", \
+				"SCfind.maskScaleZ": "float", \
+				"SCfind.edgeMode": "string", \
+				"SCfind.rmsMode": "string", \
+				"SCfind.kernels": "array", \
+				"SCfind.kernelUnit": "string", \
+				"SCfind.verbose": "bool", \
+				"CNHI.pReq": "float", \
+				"CNHI.qReq": "float", \
+				"CNHI.minScale": "int", \
+				"CNHI.maxScale": "int", \
+				"CNHI.medianTest": "bool", \
+				"CNHI.verbose": "int", \
+				"wavelet.threshold": "float", \
+				"wavelet.scaleXY": "int", \
+				"wavelet.scaleZ": "int", \
+				"wavelet.positivity": "bool", \
+				"wavelet.iterations": "int", \
+				"threshold.threshold": "float", \
+				"threshold.clipMethod": "string", \
+				"threshold.rmsMode": "string", \
+				"threshold.verbose": "bool", \
+				"merge.radiusX": "int", \
+				"merge.radiusY": "int", \
+				"merge.radiusZ": "int", \
+				"merge.minSizeX": "int", \
+				"merge.minSizeY": "int", \
+				"merge.minSizeZ": "int", \
+				"merge.positivity": "bool", \
+				"reliability.parSpace": "array", \
+				"reliability.logPars": "array", \
+				"reliability.autoKernel": "bool", \
+				"reliability.scaleKernel": "float", \
+				"reliability.usecov": "bool", \
+				"reliability.negPerBin": "float", \
+				"reliability.skellamTol": "float", \
+				"reliability.kernel": "array", \
+				"reliability.fMin": "float", \
+				"reliability.threshold": "float", \
+				"reliability.makePlot": "bool", \
+				"parameters.getUncertainties": "bool", \
+				"parameters.fitBusyFunction": "bool", \
+				"parameters.optimiseMask": "bool", \
+				"parameters.dilateMask": "bool", \
+				"parameters.dilateThreshold":"float",\
+				"parameters.dilatePixMax":"int",\
+				"parameters.dilateChan":"int",\
+				"writeCat.overwrite":"bool", \
+				"writeCat.compress":"bool", \
+				"writeCat.outputDir": "string", \
+				"writeCat.basename": "string", \
+				"writeCat.writeASCII": "bool", \
+				"writeCat.writeXML": "bool", \
+				"writeCat.writeSQL": "bool", \
+				"writeCat.parameters": "array"
 	}
 	
 	# Loop through all lines:
