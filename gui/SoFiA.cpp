@@ -942,6 +942,19 @@ void SoFiA::selectInputWeightsFile()
 
 
 
+// ------------------------------
+// Slot to select input flag cube
+// ------------------------------
+
+void SoFiA::selectInputFlagFile()
+{
+	selectFile(tabInputFieldFlagCube);
+	
+	return;
+}
+
+
+
 // -------------------------------------
 // Slot to select optical catalogue file
 // -------------------------------------
@@ -955,9 +968,9 @@ void SoFiA::selectOpticalCatalogFile()
 
 
 
-// ---------------------------------
-// Slot to select input weights cube
-// ---------------------------------
+// ------------------------------
+// Slot to select input mask cube
+// ------------------------------
 
 void SoFiA::selectInputMaskFile()
 {
@@ -1792,11 +1805,27 @@ void SoFiA::createInterface()
 	connect(tabInputGroupBox3, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabInputGroupBox3, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	tabInputForm3 = new QFormLayout();
+
+	
+	tabInputWidgetFlagCube = new QWidget(tabInputGroupBox3);
+	tabInputLayoutFlagCube = new QHBoxLayout();
+	tabInputFieldFlagCube  = new QLineEdit(tabInputWidgetFlagCube);
+	tabInputFieldFlagCube->setObjectName("flag.flagFile");
+	connect(tabInputFieldFlagCube, SIGNAL(textChanged(const QString &)), this, SLOT(updateFields()));
+	connect(tabInputFieldFlagCube, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
+	tabInputButtonFlagCube = new QPushButton(tr("Select..."), tabInputWidgetFlagCube);
+	connect(tabInputButtonFlagCube, SIGNAL(clicked()), this, SLOT(selectInputFlagFile()));
+	tabInputButtonFlagCube->setIcon(iconDocumentOpen);
+	tabInputLayoutFlagCube->addWidget(tabInputFieldFlagCube);
+	tabInputLayoutFlagCube->addWidget(tabInputButtonFlagCube);
+	tabInputLayoutFlagCube->setContentsMargins(0, 0, 0, 0);
+	tabInputWidgetFlagCube->setLayout(tabInputLayoutFlagCube);
 	
 	tabInputFieldFlags = new QLineEdit(tabInputGroupBox3);
-	tabInputFieldFlags->setObjectName("flag.regions");
+	tabInputFieldFlags->setObjectName("flag.flagRegions");
 	connect(tabInputFieldFlags, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
 	
+	tabInputForm3->addRow(tr("Flag cube:"), tabInputWidgetFlagCube);
 	tabInputForm3->addRow(tr("Range:"), tabInputFieldFlags);
 	tabInputForm3->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 	tabInputGroupBox3->setLayout(tabInputForm3);
@@ -2950,7 +2979,8 @@ void SoFiA::createWhatsThis()
 	tabSourceFindingFieldPReq->setWhatsThis(tr("<h3>CNHI.pReq</h3><p>Minimum probability requirement for detections to be considered genuine. Sensible values are typically in the range of about 10<sup>&minus;3</sup> to 10<sup>&minus;5</sup>.</p>"));
 	tabSourceFindingFieldQReq->setWhatsThis(tr("<h3>CNHI.qReq</h3><p>This is the Q value of the Kuiper test, which is a heuristic parameter for assessing the quality/accuracy of the probability calculated from the Kuiper test. The minimum scale that the CNHI source finder processes is increased until it is sufficiently large to ensure that the required Q value is achieved. This requirement supersedes the user-specified minimum scale (see parameter <strong>CNHI.minScale</strong>). The default value is <strong>3.8</strong>, which is the generally accepted minimally useful value.</p>"));
 	tabSourceFindingFieldVerbose->setWhatsThis(tr("<h3>CNHI.verbose</h3><p>An integer value that indicates the level of verbosity of the CNHI finder. Values of <strong>0</strong>, <strong>1</strong> and <strong>2</strong> correspond to <strong>none</strong>, <strong>minimal</strong> and <strong>maximal</strong>, respectively.</p>"));
-	tabInputFieldFlags->setWhatsThis(tr("<h3>flag.regions</h3><p>Pixel/channel range(s) to be flagged prior to source finding. Format:</p><p><code>[[x1, x2, y1, y2, z1, z2], ...]</code></p><p>A place holder, <code>''</code> (two single quotes), can be used for the upper range limit (<code>x2</code>, <code>y2</code>, and <code>z2</code>) to flag all the way to the end, e.g.</p><p><code>[[0, '', 0, '', 0, 19]]</code></p><p>will flag the first 20 channels of the entire cube. The default is an empty list, <code>[]</code>, which means to not flag anything.</p>"));
+	tabInputFieldFlags->setWhatsThis(tr("<h3>flag.flagRegions</h3><p>Pixel/channel range(s) to be flagged prior to source finding. Format:</p><p><code>[[x1, x2, y1, y2, z1, z2], ...]</code></p><p>A place holder, <code>''</code> (two single quotes), can be used for the upper range limit (<code>x2</code>, <code>y2</code>, and <code>z2</code>) to flag all the way to the end, e.g.</p><p><code>[[0, '', 0, '', 0, 19]]</code></p><p>will flag the first 20 channels of the entire cube. The default is an empty list, <code>[]</code>, which means to not flag anything.</p>"));
+	tabInputFieldFlagCube->setWhatsThis(tr("<h3>flag.flagCube</h3><p>Full path and file name of an optional file containing the flags of pixels in the input cube. The flags will be applied before running the source finder. The pixels that are flagged will be set to NaN in the data cube. The default is to not apply flags.</p>"));
 	tabInputFieldData->setWhatsThis(tr("<h3>import.inFile</h3><p>Full path and file name of the input data cube. This option is mandatory, and there is no default. Note that only <b>FITS</b> files are currently supported by SoFiA.</p>"));
 	tabInputFieldMask->setWhatsThis(tr("<h3>import.maskFile</h3><p>Full path and file name of an optional file containing a mask of pixels identified as part of a source, e.g. from a previous run of SoFiA. This can be used to re-parametrise sources without repeating the source finding step or to add more sources from a second source finding run. The default is to not read a mask cube.</p>"));
 	tabInputFieldSubcube->setWhatsThis(tr("<h3>import.subcube</h3><p>This parameter defines a subcube to be read in and processed by SoFiA. Depending on the value of import.subcubeMode, the range is either specified in pixels as</p><p><code>[x1, x2, y1, y2, z1, z2]</code></p><p>or in world coordinates as</p><p><code>[x, y, z, rx, ry, rz]</code></p><p>In the latter case, <code>x</code>, <code>y</code> and <code>z</code> define the centre of the subcube, and <code>rx</code>, <code>ry</code> and <code>rz</code> specify the half-widths in the three dimensions. If world coordinates are used, all parameters must be in the native format as defined in the header of the data cube; e.g. if <code>CUNIT3</code> is <code>'Hz'</code> then both <code>z</code> and <code>rz</code> must be given in hertz. The default is an empty list, <code>[]</code>, which means to read the entire cube.</p>"));
@@ -2994,7 +3024,7 @@ void SoFiA::createWhatsThis()
 	tabInFilterFieldSmoothingSpectral->setWhatsThis(tr("<h3>smooth.kernelZ</h3><p>Kernel size in pixels for third coordinate. For Gaussian kernels the value refers to the FWHM.</p>"));
 	tabSourceFindingGroupBox3->setWhatsThis(tr("<h3>steps.doCNHI</h3><p>Run the Characterised Noise HI (CNHI) source finder (<a href=\"http://adsabs.harvard.edu/abs/2012PASA...29..251J\">Jurek 2012</a>).</p>"));
 	tabOutputButtonCubelets->setWhatsThis(tr("<h3>steps.doCubelets</h3><p>Create and save data products for each individual source, including sub-cubes, moment 0, 1 and 2 maps, integrated spectra and position&ndash;velocity diagrams.</p>"));
-	tabInputGroupBox3->setWhatsThis(tr("<h3>steps.doFlag</h3><p>Flag pixel and channel ranges before proceeding. Details are specified with the <b>flag.regions</b> option.</p>"));
+	tabInputGroupBox3->setWhatsThis(tr("<h3>steps.doFlag</h3><p>Flag pixel and channel ranges before proceeding. Details are specified with the <b>flag.flagRegions</b> and the <b>flag.flagFile</b> option.</p>"));
 	tabMergingGroupBox1->setWhatsThis(tr("<h3>steps.doMerge</h3><p>Merge detected pixels into final sources.</p>"));
 	tabOutputButtonMom0->setWhatsThis(tr("<h3>steps.doMom0</h3><p>Create and save moment-0 map of all detections.</p>"));
 	tabOutputButtonMom1->setWhatsThis(tr("<h3>steps.doMom1</h3><p>Create and save moment-1 map of all detections.</p>"));
