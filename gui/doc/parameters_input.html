@@ -180,7 +180,7 @@
     <h3>Flagging</h3>
     
     <p>
-      SoFiA can offer to flag some regions of the data cube that are either affected by radio-frequency interference or contain other artefacts or emission to be excluded, such as Galactic foreground emission. An arbitrary number of pixel/channel ranges can be flagged prior to source finding using the <code>flag.regions</code> parameter. The pixel values in flagged regions are marked as blank and thus excluded from all subsequent processing.
+      SoFiA can offer to flag some regions of the data cube that are either affected by radio-frequency interference or contain other artefacts or emission to be excluded, such as Galactic foreground emission. An arbitrary number of pixel/channel ranges can be flagged prior to source finding using the <code>flag.flagCube</code> and/or <code>flag.flagRegions</code> parameter. The pixel values in flagged regions are marked as blank and thus excluded from all subsequent processing.
     </p>
     
     <table id="steps.doFlag">
@@ -197,13 +197,31 @@
             <td class="head">Default:</td><td class="body"><code>false</code></td>
         </tr>
         <tr>
-            <td class="head">Description:</td><td class="body">Flag pixel and channel ranges before proceeding. Details are specified with the <a href="#flag.regions">flag.regions</a> option.</td>
+            <td class="head">Description:</td><td class="body">Flag pixel and channel ranges before proceeding. Details are specified with the <a href="#flag.flagCube">flag.flagCube</a> and <a href="#flag.flagRegions">flag.flagRegions</a> option.</td>
         </tr>
     </table>
     
-    <table id="flag.regions">
+    <table id="flag.flagCube">
         <tr>
-            <td class="head">Parameter:</td><td class="body2">flag.regions</td>
+            <td class="head">Parameter:</td><td class="body2">flag.flagCube</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>string</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code></code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Name of an optional file containing the information which pixels to flag. The default is to not read a flag cube.</td>
+        </tr>
+    </table>
+    
+    <table id="flag.flagRegions">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">flag.flagRegions</td>
         </tr>
         <tr>
             <td class="head">Type:</td><td class="body"><code>list</code></td>
