@@ -34,41 +34,33 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 	x1 = edgeX
 	x2 = dimensions[2] - edgeX
 	
+	if z1 >= z2 or y1 >= y2 or x1 >= x2:
+		sys.stderr.write("ERROR: Edge size exceeds cube size for at least one axis.\n")
+		sys.exit(1)
+	
 	if scaleZ:
-		z_rms = np.zeros(dimensions[0])
-		for i in range(len(z_rms)):
+		for i in range(dimensions[0]):
 			if np.all(np.isnan(cube[i,y1:y2,x1:x2])):
-				z_rms[i] = 0
 				sys.stderr.write("WARNING: No valid data found in plane at z = " + str(i + 1) + "\n")
 			else:
-				z_rms[i] = GetRMS(cube[i, y1:y2, x1:x2], rmsMode=statistic, zoomx=1, zoomy=1, zoomz=1, verbose=verbose)
-		# Scale the cube by the rms
-		for i in range(len(z_rms)):
-			if z_rms[i] > 0: cube[i,:,:] = cube[i,:,:] / z_rms[i]
+				rms = GetRMS(cube[i, y1:y2, x1:x2], rmsMode=statistic, zoomx=1, zoomy=1, zoomz=1, verbose=verbose)
+				if rms > 0: cube[i,:,:] /= rms
 	
 	if scaleY:
-		y_rms = np.zeros(dimensions[1])
-		for i in range(len(y_rms)):
+		for i in range(dimensions[1]):
 			if np.all(np.isnan(cube[z1:z2,i,x1:x2])):
-				y_rms[i] = 0
 				sys.stderr.write("WARNING: No valid data found in plane at y = " + str(i + 1) + "\n")
 			else:
-				y_rms[i] = GetRMS(cube[z1:z2, i, x1:x2], rmsMode=statistic, zoomx=1, zoomy=1, zoomz=1, verbose=verbose)
-		# Scale the cube by the rms
-		for i in range(len(y_rms)):
-			if y_rms[i] > 0: cube[:,i,:] = cube[:,i,:] / y_rms[i]
+				rms = GetRMS(cube[z1:z2, i, x1:x2], rmsMode=statistic, zoomx=1, zoomy=1, zoomz=1, verbose=verbose)
+				if rms > 0: cube[:,i,:] /= rms
 	
 	if scaleX:
-		x_rms = np.zeros(dimensions[2])
-		for i in range(len(x_rms)):
+		for i in range(dimensions[2]):
 			if np.all(np.isnan(cube[z1:z2,y1:y2,i])):
-				x_rms[i] = 0
 				sys.stderr.write("WARNING: No valid data found in plane at x = " + str(i + 1) + "\n")
 			else:
-				x_rms[i] = GetRMS(cube[z1:z2, y1:y2, i], rmsMode=statistic, zoomx=1, zoomy=1, zoomz=1, verbose=verbose)
-		# Scale the cube by the rms
-		for i in range(len(x_rms)):
-			if x_rms[i] > 0: cube[:,:,i] = cube[:,:,i] / x_rms[i]
+				rms = GetRMS(cube[z1:z2, y1:y2, i], rmsMode=statistic, zoomx=1, zoomy=1, zoomz=1, verbose=verbose)
+				if rms > 0: cube[:,:,i] /= rms
 	
 	sys.stdout.write('Noise-scaled data cube generated.\n\n')
 	sys.stdout.flush()
