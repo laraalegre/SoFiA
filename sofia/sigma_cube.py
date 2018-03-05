@@ -40,27 +40,21 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 	
 	if scaleZ:
 		for i in range(dimensions[0]):
-			if np.all(np.isnan(cube[i,y1:y2,x1:x2])):
-				sys.stderr.write("WARNING: No valid data found in plane at z = " + str(i + 1) + "\n")
-			else:
+			if not np.all(np.isnan(cube[i, y1:y2, x1:x2])):
 				rms = GetRMS(cube[i, y1:y2, x1:x2], rmsMode=statistic, zoomx=1, zoomy=1, zoomz=1, verbose=verbose)
-				if rms > 0: cube[i,:,:] /= rms
+				if rms > 0: cube[i, :, :] /= rms
 	
 	if scaleY:
 		for i in range(dimensions[1]):
-			if np.all(np.isnan(cube[z1:z2,i,x1:x2])):
-				sys.stderr.write("WARNING: No valid data found in plane at y = " + str(i + 1) + "\n")
-			else:
+			if not np.all(np.isnan(cube[z1:z2, i, x1:x2])):
 				rms = GetRMS(cube[z1:z2, i, x1:x2], rmsMode=statistic, zoomx=1, zoomy=1, zoomz=1, verbose=verbose)
-				if rms > 0: cube[:,i,:] /= rms
+				if rms > 0: cube[:, i, :] /= rms
 	
 	if scaleX:
 		for i in range(dimensions[2]):
-			if np.all(np.isnan(cube[z1:z2,y1:y2,i])):
-				sys.stderr.write("WARNING: No valid data found in plane at x = " + str(i + 1) + "\n")
-			else:
+			if not np.all(np.isnan(cube[z1:z2, y1:y2, i])):
 				rms = GetRMS(cube[z1:z2, y1:y2, i], rmsMode=statistic, zoomx=1, zoomy=1, zoomz=1, verbose=verbose)
-				if rms > 0: cube[:,:,i] /= rms
+				if rms > 0: cube[:, :, i] /= rms
 	
 	sys.stdout.write('Noise-scaled data cube generated.\n\n')
 	sys.stdout.flush()
