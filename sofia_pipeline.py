@@ -255,8 +255,7 @@ if Parameters['steps']['doMerge']:
 
 printProgressMessage("Reading data cube(s)")
 kwargs = Parameters['import'].copy()
-kwargs.update(Parameters['flag'])
-kwargs.update({'doFlag':Parameters['steps']['doFlag']})
+kwargs.update({'doFlag':Parameters['steps']['doFlag'],'flagRegions':Parameters['flag']['regions'],'flagFile':Parameters['flag']['file']})
 np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters['steps']['doSubcube'], **kwargs)
 
 

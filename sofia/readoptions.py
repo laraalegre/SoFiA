@@ -66,8 +66,8 @@ def readPipelineOptions(filename = "pipeline.options"):
 				"import.weightsFunction": "string", \
 				"import.subcubeMode": "string", \
 				"import.subcube": "array", \
-				"flag.flagRegions": "array",\
-				"flag.flagFile": "string", \
+				"flag.regions": "array",\
+				"flag.file": "string", \
 				"optical.sourceCatalogue": "string", \
 				"optical.spatSize": "float", \
 				"optical.specSize": "float", \

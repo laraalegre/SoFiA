@@ -35,8 +35,8 @@ import.subcubeMode              =       pixel
 
 # Flagging module
 
-flag.flagRegions                =       []
-flag.flagFile                   =
+flag.regions                    =       []
+flag.file                       =
 
 
 # Optical finder module
