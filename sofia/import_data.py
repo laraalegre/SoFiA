@@ -5,11 +5,12 @@ from astropy.io import fits
 import os
 import sys
 from numpy import *
+import numpy as np
 import re
 import imp
 
 
-def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, subcube=[], subcubeMode='pixel'):
+def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, subcube=[], subcubeMode='pixel', doFlag=False, flagRegions=False, flagFile='', cubeOnly=False):
 	# import the fits file into an numpy array for the cube and a dictionary for the header:
 	# the data cube is converted into a 3D array
 	
@@ -223,195 +224,275 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 	
 	print ('The data cube has been loaded.')
 	
-	# Apply weights file if provided:
-	if weightsFile:
-		# check whether the weights cube exists:
-		if os.path.isfile(weightsFile) == False:
-			sys.stderr.write("ERROR: The defined weights cube does not exist.\n")
-			sys.stderr.write("       Cannot find: " + weightsFile + "\n")
-			raise SystemExit(1)
-		else:
-			# Scale the input cube with a weights cube
-			# load the weights cube and convert it into a 3D array to be applied to the data 3D array
-			# (note that the data has been converted into a 3D array above)
-			print ('Loading and applying weights cube: ' + weightsFile)
-			f = fits.open(weightsFile, memmap=False)
-			dict_Weights_header = f[0].header
-			if dict_Weights_header['NAXIS'] == 3:
-				if len(subcube) == 6:
-					np_Cube *= f[0].section[subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
-				else:
-					np_Cube *= f[0].data
-			elif dict_Weights_header['NAXIS'] == 4:
-				if dict_Weights_header['NAXIS4'] != 1:
-					sys.stderr.write("ERROR: The 4th dimension has more than 1 value.\n")
-					raise SystemExit(1)
-				else:
-					sys.stderr.write("WARNING: The weights cube has 4 axes; first axis ignored.\n")
-					if len(subcube) == 6: np_Cube *= f[0].section[0, subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
-					else: np_Cube *= f[0].section[0]
-			elif dict_Weights_header['NAXIS'] == 2:
-				sys.stderr.write("WARNING: The weights cube has 2 axes; third axis added.\n")
-				if len(subcube) == 6 or len(subcube) == 4: np_Cube *= array([f[0].section[subcube[2]:subcube[3], subcube[0]:subcube[1]]])
-				else: np_Cube *= array([f[0].data])
-			elif dict_Weights_header['NAXIS'] == 1:
-				sys.stderr.write("WARNING: The weights cube has 1 axis; interpreted as third axis; first and second axes added.\n")
-				if len(subcube) == 6: np_Cube *= reshape(f[0].section[subcube[4]:subcube[5]], (-1, 1, 1))
-				elif not len(subcube): np_Cube *= reshape(f[0].data, (-1, 1, 1))
-				else:
-					sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given).\n" % len(subcube))
-					raise SystemExit(1)
-			else:
-				sys.stderr.write("ERROR: The weights cube has fewer than 1 or more than 4 dimensions.\n")
+	
+	if not cubeOnly:
+		# Apply weights file if provided:
+		if weightsFile:
+			# The original data are replaced with the weighted cube!
+			# If weighting is being used, the data should be read in again during parameterisation.
+			# check whether the weights cube exists:
+			if os.path.isfile(weightsFile) == False:
+				sys.stderr.write("ERROR: The defined weights cube does not exist.\n")
+				sys.stderr.write("       Cannot find: " + weightsFile + "\n")
 				raise SystemExit(1)
+			else:
+				# Scale the input cube with a weights cube
+				# load the weights cube and convert it into a 3D array to be applied to the data 3D array
+				# (note that the data has been converted into a 3D array above)
+				print ('Loading and applying weights cube: ' + weightsFile)
+				f = fits.open(weightsFile, memmap=False)
+				dict_Weights_header = f[0].header
+				if dict_Weights_header['NAXIS'] == 3:
+					if len(subcube) == 6:
+						np_Cube *= f[0].section[subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
+					else:
+						np_Cube *= f[0].data
+				elif dict_Weights_header['NAXIS'] == 4:
+					if dict_Weights_header['NAXIS4'] != 1:
+						sys.stderr.write("ERROR: The 4th dimension has more than 1 value.\n")
+						raise SystemExit(1)
+					else:
+						sys.stderr.write("WARNING: The weights cube has 4 axes; first axis ignored.\n")
+						if len(subcube) == 6: np_Cube *= f[0].section[0, subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
+						else: np_Cube *= f[0].section[0]
+				elif dict_Weights_header['NAXIS'] == 2:
+					sys.stderr.write("WARNING: The weights cube has 2 axes; third axis added.\n")
+					if len(subcube) == 6 or len(subcube) == 4: np_Cube *= array([f[0].section[subcube[2]:subcube[3], subcube[0]:subcube[1]]])
+					else: np_Cube *= array([f[0].data])
+				elif dict_Weights_header['NAXIS'] == 1:
+					sys.stderr.write("WARNING: The weights cube has 1 axis; interpreted as third axis; first and second axes added.\n")
+					if len(subcube) == 6: np_Cube *= reshape(f[0].section[subcube[4]:subcube[5]], (-1, 1, 1))
+					elif not len(subcube): np_Cube *= reshape(f[0].data, (-1, 1, 1))
+					else:
+						sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given).\n" % len(subcube))
+						raise SystemExit(1)
+				else:
+					sys.stderr.write("ERROR: The weights cube has fewer than 1 or more than 4 dimensions.\n")
+					raise SystemExit(1)
+				
+				f.close()
+				print ('Weights cube loaded and applied.')
+				
+		# Else apply weights function if defined:
+		elif weightsFunction:
+			# WARNING: I'm not sure if there is a safe way to properly implement multiplication of a data array 
+			# WARNING: with a user-specified function in Python without the need for a whitelist, nested loops, 
+			# WARNING: or the creation of multiple copies of the cube.
+			print ("Evaluating function: %s" % weightsFunction)
 			
-			f.close()
-			print ('Weights cube loaded and applied.')
-	# Else apply weights function if defined:
-	elif weightsFunction:
-		# WARNING: I'm not sure if there is a safe way to properly implement multiplication of a data array 
-		# WARNING: with a user-specified function in Python without the need for a whitelist, nested loops, 
-		# WARNING: or the creation of multiple copies of the cube.
-		print ("Evaluating function: %s" % weightsFunction)
-		
-		# Define whitelist of allowed character sequences:
-		whitelist = ["x", "y", "z", "e", "E", "sin", "cos", "tan", "arcsin", "arccos", "arctan", "arctan2", "sinh", "cosh", "tanh", "arcsinh", "arccosh", "arctanh", "exp", "log", "sqrt", "square", "power", "absolute", "fabs", "sign"]
-		
-		# Search for all keywords consisting of consecutive sequences of alphabetical characters:
-		# NOTE: Explicit conversion to string is required unless readoptions.py is modified!
-		keywordsFound = filter(None, re.split("[^a-zA-Z]+", str(weightsFunction)))
-		
-		# Check for non-whitelisted sequences:
-		for keyword in keywordsFound:
-			if keyword not in whitelist:
-				sys.stderr.write("ERROR: Unsupported keyword/function found in weights function:\n")
-				sys.stderr.write("         %s\n" % weightsFunction)
-				sys.stderr.write("       Please check your input.\n")
-				raise SystemExit(1)
-		
-		# ALERT: Why are we not applying the weights function continuously (channel-by-channel)?!?
-		# hardcoded number of weights chunks
-		Nz = 50
-		# check that the number of weights z-chunks is at most equal to the total nr of chans
-		Nz = min(Nz, np_Cube.shape[0])
-		# calculate the size of each chunk along the Z axis (rounding to integer)
-		Lz = int(round(float(np_Cube.shape[0]) / Nz))
-		# calculate number of chunks really needed given above rounding
-		Nz = int(ceil(float(np_Cube.shape[0]) / Lz))
-		print ("Evaluating and applying weights function in %i chunks along the Z axis" % Nz)
-		for zz in range(Nz):
-			# last chunk may have different length than the others
-			if zz == Nz - 1: z, y, x = indices((np_Cube.shape[0] - Lz * zz, np_Cube.shape[1], np_Cube.shape[2]))
-			else: z, y, x = indices((Lz, np_Cube.shape[1], np_Cube.shape[2]))
-			z += zz * Lz
-			try:
-				# NOTE: eval() should be safe now as we don't allow for non-whitelisted sequences...
-				np_Cube[z,y,x] *= eval(str(weightsFunction))
-				# WARNING: There is no check here whether the expression to be evaluated is actually valid,
-				#          e.g. SoFiA will crash if the weights function is sqrt(-1). 'try' doesn't catch this!
-				#          Even if we set np.seterr(all='raise'), we still run into problems with expressions 
-				#          that are valid but not floating-point numbers, e.g. sqrt((1,2)).
-			except:
-				sys.stderr.write("ERROR: Failed to evaluate weights function:\n")
-				sys.stderr.write("         %s\n" % weightsFunction)
-				sys.stderr.write("       Please check your input.\n")
-				raise SystemExit(1)
-		print ("Function-weighted cube created.\n")
-	
-	if maskFile:
-		# check whether the mask cube exists:
-		if not os.path.isfile(maskFile):
-			sys.stderr.write("ERROR: The specified mask cube does not exist.\n")
-			sys.stderr.write("       Cannot find: " + maskFile + "\n")
-			raise SystemExit(1)
-		
-		else:
-			print ('Loading mask cube: ' + maskFile)
-			g = fits.open(maskFile, memmap=False)
-			dict_Mask_header = g[0].header
-			if dict_Mask_header['NAXIS'] == 3:
-				if dict_Mask_header['CRVAL1'] != dict_Header['CRVAL1'] or dict_Mask_header['CRVAL2'] != dict_Header['CRVAL2'] or dict_Mask_header['CRVAL3'] != dict_Header['CRVAL3']:
-					sys.stderr.write("ERROR: Input cube and mask are not on the same WCS grid.\n")
-					sys.stderr.write(str(dict_Mask_header['CRVAL1']) + ' ' + str(dict_Header['CRVAL1']) + ' ' + str(dict_Mask_header['CRVAL2']) + ' ' + str(dict_Header['CRVAL2']) + ' ' + str(dict_Mask_header['CRVAL3']) + ' ' + str(dict_Header['CRVAL3']))
+			# Define whitelist of allowed character sequences:
+			whitelist = ["x", "y", "z", "e", "E", "sin", "cos", "tan", "arcsin", "arccos", "arctan", "arctan2", "sinh", "cosh", "tanh", "arcsinh", "arccosh", "arctanh", "exp", "log", "sqrt", "square", "power", "absolute", "fabs", "sign"]
+			
+			# Search for all keywords consisting of consecutive sequences of alphabetical characters:
+			# NOTE: Explicit conversion to string is required unless readoptions.py is modified!
+			keywordsFound = filter(None, re.split("[^a-zA-Z]+", str(weightsFunction)))
+			
+			# Check for non-whitelisted sequences:
+			for keyword in keywordsFound:
+				if keyword not in whitelist:
+					sys.stderr.write("ERROR: Unsupported keyword/function found in weights function:\n")
+					sys.stderr.write("         %s\n" % weightsFunction)
+					sys.stderr.write("       Please check your input.\n")
 					raise SystemExit(1)
-				elif len(subcube) == 6:
-					if dict_Mask_header['NAXIS1'] == np_Cube.shape[2] and dict_Mask_header['NAXIS2'] == np_Cube.shape[1] and dict_Mask_header['NAXIS3'] == np_Cube.shape[0]:
-						print ('Subcube selection NOT applied to input mask. The full input mask cube matches size and WCS of the selected data subcube.')
-						mask = g[0].data
-					elif dict_Mask_header['NAXIS1'] == fullshape[2] and dict_Mask_header['NAXIS2'] == fullshape[1] and dict_Mask_header['NAXIS3'] == fullshape[0]:
-						print ('Subcube selection applied also to input mask. The mask subcube matches size and WCS of the selected data subcube.')
-						mask = g[0].section[subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
+			
+			# ALERT: Why are we not applying the weights function continuously (channel-by-channel)?!?
+			# hardcoded number of weights chunks
+			Nz = 50
+			# check that the number of weights z-chunks is at most equal to the total nr of chans
+			Nz = min(Nz, np_Cube.shape[0])
+			# calculate the size of each chunk along the Z axis (rounding to integer)
+			Lz = int(round(float(np_Cube.shape[0]) / Nz))
+			# calculate number of chunks really needed given above rounding
+			Nz = int(ceil(float(np_Cube.shape[0]) / Lz))
+			print ("Evaluating and applying weights function in %i chunks along the Z axis" % Nz)
+			for zz in range(Nz):
+				# last chunk may have different length than the others
+				if zz == Nz - 1: z, y, x = indices((np_Cube.shape[0] - Lz * zz, np_Cube.shape[1], np_Cube.shape[2]))
+				else: z, y, x = indices((Lz, np_Cube.shape[1], np_Cube.shape[2]))
+				z += zz * Lz
+				try:
+					# NOTE: eval() should be safe now as we don't allow for non-whitelisted sequences...
+					np_Cube[z,y,x] *= eval(str(weightsFunction))
+					# WARNING: There is no check here whether the expression to be evaluated is actually valid,
+					#          e.g. SoFiA will crash if the weights function is sqrt(-1). 'try' doesn't catch this!
+					#          Even if we set np.seterr(all='raise'), we still run into problems with expressions 
+					#          that are valid but not floating-point numbers, e.g. sqrt((1,2)).
+				except:
+					sys.stderr.write("ERROR: Failed to evaluate weights function:\n")
+					sys.stderr.write("         %s\n" % weightsFunction)
+					sys.stderr.write("       Please check your input.\n")
+					raise SystemExit(1)
+			print ("Function-weighted cube created.\n")
+
+		
+		if doFlag:
+			# Apply blanks cube if provided:
+			if flagFile:
+					# check whether the weights cube exists:
+					if os.path.isfile(flagFile) == False:
+							sys.stderr.write("ERROR: The defined flag cube does not exist.\n")
+							sys.stderr.write("       Cannot find: " + weightsFile + "\n")
+							raise SystemExit(1)
 					else:
-						sys.stderr.write("ERROR: Neither the full mask nor the subcube of the mask match size and WCS of the selected data subcube.\n")
+							# Scale the input cube with a weights cube
+							# load the weights cube and convert it into a 3D array to be applied to the data 3D array
+							# (note that the data has been converted into a 3D array above)
+							print ('Loading and applying flag cube: ' + flagFile)
+							f = fits.open(flagFile, memmap=False)
+							dict_Flag_header = f[0].header
+							if dict_Flag_header['NAXIS'] == 3:
+									if len(subcube) == 6:
+											flags = f[0].section[subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
+											np_Cube[np.isnan(flags)] = np.nan
+									else:
+											np_Cube[np.isnan(f[0].data)] = np.nan
+							elif dict_Flag_header['NAXIS'] == 4:
+									if dict_Flag_header['NAXIS4'] != 1:
+											sys.stderr.write("ERROR: The 4th dimension has more than 1 value.\n")
+											raise SystemExit(1)
+									else:
+											sys.stderr.write("WARNING: The flag cube has 4 axes; first axis ignored.\n")
+											if len(subcube) == 6:
+												flags = f[0].section[0, subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
+												np_Cube[np.isnan(flags)] = np.nan
+											else: np_Cube[np.isnan(f[0].section[0])] = np.nan
+							elif dict_Flag_header['NAXIS'] == 2:
+									sys.stderr.write("WARNING: The flag cube has 2 axes; third axis added.\n")
+									if len(subcube) == 6 or len(subcube) == 4: 
+										flags = f[0].section[subcube[2]:subcube[3], subcube[0]:subcube[1]]
+										for channel in range(np_Cube.shape[0]):
+											np_Cube[channel][np.isnan(flags)] = np.nan
+									else: 
+										for channel in range(np_Cube.shape[0]):
+											np_Cube[channel][np.isnan(f(0).data)] = np.nan
+							else:
+									sys.stderr.write("ERROR: The weights cube has fewer than 1 or more than 4 dimensions.\n")
+									raise SystemExit(1)
+							
+							f.close()
+							print ('Flag cube loaded and applied.')
+			# if flag regions if provided
+			if flagRegions:
+					np_Cube = flag(np_Cube,flagRegions)
+
+
+		if maskFile:
+				# check whether the mask cube exists:
+				if not os.path.isfile(maskFile):
+						sys.stderr.write("ERROR: The specified mask cube does not exist.\n")
+						sys.stderr.write("       Cannot find: " + maskFile + "\n")
 						raise SystemExit(1)
-				else: mask = g[0].data
-			elif dict_Mask_header['NAXIS'] == 4:
-				if dict_Mask_header['CRVAL1'] != dict_Header['CRVAL1'] or dict_Mask_header['CRVAL2'] != dict_Header['CRVAL2'] or dict_Mask_header['CRVAL3'] != dict_Header['CRVAL3']:
-					sys.stderr.write("ERROR: Input cube and mask are not on the same WCS grid.\n")
-					raise SystemExit(1)
-				elif dict_Mask_header['NAXIS4'] != 1:
-					sys.stderr.write("ERROR: The 4th dimension has more than 1 value.\n")
-					raise SystemExit(1)
-				elif len(subcube) == 6:
-					sys.stderr.write("WARNING: The mask cube has 4 axes; first axis ignored.\n")
-					if dict_Mask_header['NAXIS1'] == np_Cube.shape[2] and dict_Mask_header['NAXIS2'] == np_Cube.shape[1] and dict_Mask_header['NAXIS3'] == np_Cube.shape[0]:
-						print ('Subcube selection NOT applied to input mask. The full input mask cube matches size and WCS of the selected data subcube.')
-						mask = g[0].section[0]
-					elif dict_Mask_header['NAXIS1'] == fullshape[2] and dict_Mask_header['NAXIS2'] == fullshape[1] and dict_Mask_header['NAXIS3'] == fullshape[0]:
-						print ('Subcube selection applied also to input mask. The mask subcube matches size and WCS of the selected data subcube.')
-						mask = g[0].section[0, subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
-					else:
-						sys.stderr.write("ERROR: Neither the full mask nor the subcube of the mask match size and WCS of the selected data subcube.\n")
-						raise SystemExit(1)
-				else: mask = g[0].section[0]
-			elif dict_Mask_header['NAXIS'] == 2:
-				if dict_Mask_header['CRVAL1'] != dict_Header['CRVAL1'] or dict_Mask_header['CRVAL2'] != dict_Header['CRVAL2']:
-					sys.stderr.write("ERROR: Input cube and mask are not on the same WCS grid.\n")
-					raise SystemExit(1)
-				sys.stderr.write("WARNING: The mask cube has 2 axes; third axis added.\n")
-				if len(subcube) == 6 or len(subcube) == 4:
-					if dict_Mask_header['NAXIS1'] == np_Cube.shape[2] and dict_Mask_header['NAXIS2'] == np_Cube.shape[1]:
-						print ('Subcube selection NOT applied to input mask. The full input mask cube matches size and WCS of the selected data subcube.')
-						mask = array([g[0].data])
-					elif dict_Mask_header['NAXIS1'] == fullshape[2] and dict_Mask_header['NAXIS2'] == fullshape[1]:
-						print ('Subcube selection applied also to input mask. The mask subcube matches size and WCS of the selected data subcube.')
-						mask = array([g[0].section[subcube[2]:subcube[3], subcube[0]:subcube[1]]])
-					else:
-						sys.stderr.write("ERROR: Neither the full mask nor the subcube of the mask match size and WCS of the selected data subcube.\n")
-						raise SystemExit(1)
-				else: mask=array([g[0].data])
-			elif dict_Mask_header['NAXIS'] == 1:
-				sys.stderr.write("WARNING: The mask cube has 1 axis; interpreted as third axis; first and second axes added.\n")
-				if dict_Mask_header['CRVAL1'] != dict_Header['CRVAL1']:
-					sys.stderr.write("ERROR: Input cube and mask are not on the same WCS grid.\n")
-					raise SystemExit(1)
-				if len(subcube) == 6:
-					if dict_Mask_header['NAXIS1'] == np_Cube.shape[0]:
-						print ('Subcube selection NOT applied to input mask. The full input mask cube matches size and WCS of the selected data subcube.')
-						mask = reshape(g[0].data, (-1, 1, 1))
-					elif dict_Mask_header['NAXIS1'] == fullshape[0]:
-						print ('Subcube selection applied also to input mask. The mask subcube matches size and WCS of the selected data subcube.')
-						mask = reshape(g[0].section[subcube[4]:subcube[5]], (-1, 1, 1))
-					else:
-						sys.stderr.write("ERROR: Neither the full mask nor the subcube of the mask match size and WCS of the selected data subcube.\n")
-						raise SystemExit(1)
-				elif not len(subcube):
-					mask = reshape(g[0].data, (-1, 1, 1))
+				
 				else:
-					sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given).\n" % len(subcube))
-					raise SystemExit(1)
-			else:
-				sys.stderr.write("ERROR: The mask cube has fewer than 1 or more than 4 dimensions.\n")
-				raise SystemExit(1)
-			mask[mask > 0] = 1
-			g.close()
-			print ('Mask cube loaded.')
-		# In all cases, convert mask to Boolean with masked pixels set to 1.
-		mask = (mask > 0).astype(bool)
+						print ('Loading mask cube: ' + maskFile)
+						g = fits.open(maskFile, memmap=False)
+						dict_Mask_header = g[0].header
+						if dict_Mask_header['NAXIS'] == 3:
+								if dict_Mask_header['CRVAL1'] != dict_Header['CRVAL1'] or dict_Mask_header['CRVAL2'] != dict_Header['CRVAL2'] or dict_Mask_header['CRVAL3'] != dict_Header['CRVAL3']:
+										sys.stderr.write("ERROR: Input cube and mask are not on the same WCS grid.\n")
+										sys.stderr.write(str(dict_Mask_header['CRVAL1']) + ' ' + str(dict_Header['CRVAL1']) + ' ' + str(dict_Mask_header['CRVAL2']) + ' ' + str(dict_Header['CRVAL2']) + ' ' + str(dict_Mask_header['CRVAL3']) + ' ' + str(dict_Header['CRVAL3']))
+										raise SystemExit(1)
+								elif len(subcube) == 6:
+										if dict_Mask_header['NAXIS1'] == np_Cube.shape[2] and dict_Mask_header['NAXIS2'] == np_Cube.shape[1] and dict_Mask_header['NAXIS3'] == np_Cube.shape[0]:
+												print ('Subcube selection NOT applied to input mask. The full input mask cube matches size and WCS of the selected data subcube.')
+												mask = g[0].data
+										elif dict_Mask_header['NAXIS1'] == fullshape[2] and dict_Mask_header['NAXIS2'] == fullshape[1] and dict_Mask_header['NAXIS3'] == fullshape[0]:
+												print ('Subcube selection applied also to input mask. The mask subcube matches size and WCS of the selected data subcube.')
+												mask = g[0].section[subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
+										else:
+												sys.stderr.write("ERROR: Neither the full mask nor the subcube of the mask match size and WCS of the selected data subcube.\n")
+												raise SystemExit(1)
+								else: mask = g[0].data
+						elif dict_Mask_header['NAXIS'] == 4:
+								if dict_Mask_header['CRVAL1'] != dict_Header['CRVAL1'] or dict_Mask_header['CRVAL2'] != dict_Header['CRVAL2'] or dict_Mask_header['CRVAL3'] != dict_Header['CRVAL3']:
+										sys.stderr.write("ERROR: Input cube and mask are not on the same WCS grid.\n")
+										raise SystemExit(1)
+								elif dict_Mask_header['NAXIS4'] != 1:
+										sys.stderr.write("ERROR: The 4th dimension has more than 1 value.\n")
+										raise SystemExit(1)
+								elif len(subcube) == 6:
+										sys.stderr.write("WARNING: The mask cube has 4 axes; first axis ignored.\n")
+										if dict_Mask_header['NAXIS1'] == np_Cube.shape[2] and dict_Mask_header['NAXIS2'] == np_Cube.shape[1] and dict_Mask_header['NAXIS3'] == np_Cube.shape[0]:
+												print ('Subcube selection NOT applied to input mask. The full input mask cube matches size and WCS of the selected data subcube.')
+												mask = g[0].section[0]
+										elif dict_Mask_header['NAXIS1'] == fullshape[2] and dict_Mask_header['NAXIS2'] == fullshape[1] and dict_Mask_header['NAXIS3'] == fullshape[0]:
+												print ('Subcube selection applied also to input mask. The mask subcube matches size and WCS of the selected data subcube.')
+												mask = g[0].section[0, subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
+										else:
+												sys.stderr.write("ERROR: Neither the full mask nor the subcube of the mask match size and WCS of the selected data subcube.\n")
+												raise SystemExit(1)
+								else: mask = g[0].section[0]
+						elif dict_Mask_header['NAXIS'] == 2:
+								if dict_Mask_header['CRVAL1'] != dict_Header['CRVAL1'] or dict_Mask_header['CRVAL2'] != dict_Header['CRVAL2']:
+										sys.stderr.write("ERROR: Input cube and mask are not on the same WCS grid.\n")
+										raise SystemExit(1)
+								sys.stderr.write("WARNING: The mask cube has 2 axes; third axis added.\n")
+								if len(subcube) == 6 or len(subcube) == 4:
+										if dict_Mask_header['NAXIS1'] == np_Cube.shape[2] and dict_Mask_header['NAXIS2'] == np_Cube.shape[1]:
+												print ('Subcube selection NOT applied to input mask. The full input mask cube matches size and WCS of the selected data subcube.')
+												mask = array([g[0].data])
+										elif dict_Mask_header['NAXIS1'] == fullshape[2] and dict_Mask_header['NAXIS2'] == fullshape[1]:
+												print ('Subcube selection applied also to input mask. The mask subcube matches size and WCS of the selected data subcube.')
+												mask = array([g[0].section[subcube[2]:subcube[3], subcube[0]:subcube[1]]])
+										else:
+												sys.stderr.write("ERROR: Neither the full mask nor the subcube of the mask match size and WCS of the selected data subcube.\n")
+												raise SystemExit(1)
+								else: mask=array([g[0].data])
+						elif dict_Mask_header['NAXIS'] == 1:
+								sys.stderr.write("WARNING: The mask cube has 1 axis; interpreted as third axis; first and second axes added.\n")
+								if dict_Mask_header['CRVAL1'] != dict_Header['CRVAL1']:
+										sys.stderr.write("ERROR: Input cube and mask are not on the same WCS grid.\n")
+										raise SystemExit(1)
+								if len(subcube) == 6:
+										if dict_Mask_header['NAXIS1'] == np_Cube.shape[0]:
+												print ('Subcube selection NOT applied to input mask. The full input mask cube matches size and WCS of the selected data subcube.')
+												mask = reshape(g[0].data, (-1, 1, 1))
+										elif dict_Mask_header['NAXIS1'] == fullshape[0]:
+												print ('Subcube selection applied also to input mask. The mask subcube matches size and WCS of the selected data subcube.')
+												mask = reshape(g[0].section[subcube[4]:subcube[5]], (-1, 1, 1))
+										else:
+												sys.stderr.write("ERROR: Neither the full mask nor the subcube of the mask match size and WCS of the selected data subcube.\n")
+												raise SystemExit(1)
+								elif not len(subcube):
+										mask = reshape(g[0].data, (-1, 1, 1))
+								else:
+										sys.stderr.write("ERROR: The subcube list must have 6 entries (%i given).\n" % len(subcube))
+										raise SystemExit(1)
+						else:
+								sys.stderr.write("ERROR: The mask cube has fewer than 1 or more than 4 dimensions.\n")
+								raise SystemExit(1)
+						mask[mask > 0] = 1
+						g.close()
+						print ('Mask cube loaded.')
+				# In all cases, convert mask to Boolean with masked pixels set to 1.
+				mask = (mask > 0).astype(bool)
+		else:
+				# Create an empty mask if none is provided.
+				mask = zeros(np_Cube.shape, dtype=bool)
+
+
+	if not cubeOnly:
+		return np_Cube, dict_Header, mask, subcube
 	else:
-		# Create an empty mask if none is provided.
-		mask = zeros(np_Cube.shape, dtype=bool)
-	
-	# The original data are replaced with the weighted cube!
-	# If weighting is being used, the data should be read in again during parameterisation.
-	return np_Cube, dict_Header, mask, subcube
+		return np_Cube, dict_Header
+    
+
+def flag(cube,regions):
+		if regions:
+				print ('Start flagging cube')
+				dim = len(cube.shape)
+				try:
+						for region in regions:
+								for i in range(0, len(region) / 2):
+										if region[2 * i + 1] == '':
+												region[2 * i + 1] = cube.shape[dim - i - 1]
+								if len(region) == 2:
+										cube[0, region[2]:region[3], region[0]:region[1]] = np.nan
+								else:
+										cube[region[4]:region[5], region[2]:region[3], region[0]:region[1]] = np.nan
+						print ('Cube has been flagged')
+				
+				except:
+						sys.stderr.write("WARNING: Flagging did not succeed. Please check the dimensions of your cube and filters.\n")
+		
+		return cube

@@ -145,6 +145,7 @@ private slots:
 	void showHandbook(const QString &page = QString("index.html"));
 	void aboutSoFiA();
 	void selectInputWeightsFile();
+	void selectInputFlagFile();
 	void selectInputMaskFile();
 	void selectOpticalCatalogFile();
 	void displayPrevTab();
@@ -280,6 +281,7 @@ private:
 	QHBoxLayout  *tabInputLayoutMask;
 	QWidget      *tabInputWidgetMask;
 	
+	
 	QGroupBox    *tabInputGroupBox1;
 	QFormLayout  *tabInputForm1;
 	QLineEdit    *tabInputFieldData;
@@ -303,6 +305,11 @@ private:
 	QGroupBox    *tabInputGroupBox3;
 	QFormLayout  *tabInputForm3;
 	QLineEdit    *tabInputFieldFlags;
+	QHBoxLayout  *tabInputLayoutFlagCube;
+	QWidget      *tabInputWidgetFlagCube;
+	QLineEdit    *tabInputFieldFlagCube;
+	QPushButton  *tabInputButtonFlagCube;
+	
 	
 	QGroupBox    *tabInputGroupBox4;
 	QFormLayout  *tabInputForm4;
