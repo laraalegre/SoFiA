@@ -15,12 +15,12 @@ else:
 	from scipy import nanmedian
 
 
-def GaussianNoise(F, N0, s0):
-	return N0 * np.exp(-F**2 / 2 / s0**2)
+def Gaussian(x, A, sigma):
+	return A * np.exp(-x**2 / (2.0 * sigma**2))
 
 
 def GetRMS(cube, rmsMode="negative", zoomx=1, zoomy=1, zoomz=1, verbose=0, min_hist_peak=0.05, sample=1, fluxRange="all"):
-	### Arguments
+	### Description of arguments:
 	###   fluxRange  Define which part of the data are to be used in the noise measurement.
 	###              Allowed values:
 	###                'negative'  Use only pixels with negative flux.
@@ -29,19 +29,20 @@ def GetRMS(cube, rmsMode="negative", zoomx=1, zoomy=1, zoomz=1, verbose=0, min_h
 	
 	# Check input for sanity
 	if fluxRange != "all" and fluxRange != "positive" and fluxRange != "negative":
+		sys.stderr.write("WARNING: Illegal value of fluxRange = '" + str(fluxRange) + "'.\n")
+		sys.stderr.write("         Using default value of 'all' instead.\n")
 		fluxRange = "all"
-		sys.stderr.write("Illegal value of fluxRange; using default of 'all'.\n")
+	if rmsMode != "std" and rmsMode != "mad" and rmsMode != "negative":
+		sys.stderr.write("WARNING: Illegal value of rmsMode = '" + str(rmsMode) + "'.\n")
+		sys.stderr.write("         Using default value of 'mad' instead.\n")
+		rmsMode = "mad"
 	
-	sh = cube.shape
+	# Ensure that we have a 3D cube
+	if len(cube.shape) == 2: cube = np.array([cube])
 	
-	if len(sh) == 2:
-		# Add an extra dimension to make it a 3D cube
-		cube = np.array([cube])
-	sh = cube.shape
-	
-	x0, x1 = int(math.ceil((1 - 1.0 / zoomx) * sh[2] / 2)), int(math.floor((1 + 1.0 / zoomx) * sh[2] / 2)) + 1
-	y0, y1 = int(math.ceil((1 - 1.0 / zoomy) * sh[1] / 2)), int(math.floor((1 + 1.0 / zoomy) * sh[1] / 2)) + 1
-	z0, z1 = int(math.ceil((1 - 1.0 / zoomz) * sh[0] / 2)), int(math.floor((1 + 1.0 / zoomz) * sh[0] / 2)) + 1
+	x0, x1 = int(math.ceil((1 - 1.0 / zoomx) * cube.shape[2] / 2)), int(math.floor((1 + 1.0 / zoomx) * cube.shape[2] / 2)) + 1
+	y0, y1 = int(math.ceil((1 - 1.0 / zoomy) * cube.shape[1] / 2)), int(math.floor((1 + 1.0 / zoomy) * cube.shape[1] / 2)) + 1
+	z0, z1 = int(math.ceil((1 - 1.0 / zoomz) * cube.shape[0] / 2)), int(math.floor((1 + 1.0 / zoomz) * cube.shape[0] / 2)) + 1
 	if verbose: sys.stdout.write("    Estimating rms on subcube (x,y,z zoom = %.0f,%.0f,%.0f) ..." % (zoomx, zoomy, zoomz))
 	if verbose: sys.stdout.write("    Estimating rms on subcube sampling every %i voxels ..." % (sample))
 	if verbose: sys.stdout.write("    ... Subcube shape is " + str(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample].shape) + " ...")
@@ -74,7 +75,7 @@ def GetRMS(cube, rmsMode="negative", zoomx=1, zoomy=1, zoomz=1, verbose=0, min_h
 			fluxval = (bins[:-1] + bins[1:]) / 2
 			rmshisto = np.histogram(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample][~np.isnan(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample])], bins=bins)[0]
 		
-		rms = abs(sp.optimize.curve_fit(GaussianNoise, fluxval, rmshisto, p0=[rmshisto.max(), -fluxval[rmshisto < rmshisto.max() / 2].max() * 2 / 2.355])[0][1])
+		rms = abs(sp.optimize.curve_fit(Gaussian, fluxval, rmshisto, p0=[rmshisto.max(), -fluxval[rmshisto < rmshisto.max() / 2].max() * 2 / 2.355])[0][1])
 	
 	# MEDIAN ABSOLUTE DEVIATION
 	elif rmsMode == "mad":
