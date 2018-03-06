@@ -14,10 +14,6 @@ from .functions import *
 from time import time
 
 
-def GaussianNoise(F, N0, s0):
-	return N0 * np.exp(-F**2 / 2 / s0**2)
-
-
 def SizeFilter(mskt, sfx, sfy, sfz, sbx, sby, sbz, zt, sizeFilter, edgeMode='constant', verbose=0):
 	mskt = nd.filters.gaussian_filter(mskt, [0, mt.sqrt(sfy**2 + sby**2) / 2.355, mt.sqrt(sfx**2 + sbx**2) / 2.355], mode=edgeMode)
 	if zt == 'b': mskt = nd.filters.uniform_filter1d(mskt, max(sbz, sfz), axis=0, mode=edgeMode)
