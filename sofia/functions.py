@@ -21,7 +21,7 @@ def GaussianNoise(F, N0, s0):
 	return N0 * np.exp(-F**2 / 2 / s0**2)
 
 
-def GetRMS(cube, rmsMode='negative', zoomx=1, zoomy=1, zoomz=1, nrbins=10000, verbose=0, min_hist_peak=0.05, sample=1, useHalf=0):
+def GetRMS(cube, rmsMode='negative', zoomx=1, zoomy=1, zoomz=1, verbose=0, min_hist_peak=0.05, sample=1, useHalf=0):
 	sh = cube.shape
 	
 	if len(sh) == 2:
@@ -68,9 +68,9 @@ def GetRMS(cube, rmsMode='negative', zoomx=1, zoomy=1, zoomz=1, nrbins=10000, ve
 	elif rmsMode == 'mad':
 		# MEDIAN ABSOLUTE DEVIATION
 		if useHalf == 0:
-			rms = 1.4826 * nanmedian(abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample] - nanmedian(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample], axis=None, dtype=np.float64)), axis=None, dtype=np.float64)
+			rms = 1.4826 * nanmedian(abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample] - nanmedian(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample], axis=None)), axis=None)
 		else:
-			rms = 1.4826 * nanmedian(abs(subCube - nanmedian(subCube, axis=None, dtype=np.float64)), axis=None, dtype=np.float64)
+			rms = 1.4826 * nanmedian(abs(subCube - nanmedian(subCube, axis=None)), axis=None)
 	elif rmsMode == 'std':
 		# STANDARD DEVIATION
 		if useHalf == 0:
