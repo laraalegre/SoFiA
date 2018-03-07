@@ -20,12 +20,15 @@ def Gaussian(x, A, sigma):
 
 
 def GetRMS(cube, rmsMode="negative", zoomx=1, zoomy=1, zoomz=1, verbose=0, min_hist_peak=0.05, sample=1, fluxRange="all"):
-	### Description of arguments:
-	###   fluxRange  Define which part of the data are to be used in the noise measurement.
-	###              Allowed values:
-	###                'negative'  Use only pixels with negative flux.
-	###                'positive'  Use only pixels with positive flux.
-	###                'all'       Use both positive and negative (hence all) pixels.
+	"""
+	Description of arguments
+	------------------------
+	   fluxRange  Define which part of the data are to be used in the noise measurement.
+	              Allowed values:
+	                'negative'  Use only pixels with negative flux.
+	                'positive'  Use only pixels with positive flux.
+	                'all'       Use both positive and negative (i.e. all) pixels.
+	"""
 	
 	# Check input for sanity
 	if fluxRange != "all" and fluxRange != "positive" and fluxRange != "negative":
