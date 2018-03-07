@@ -77,7 +77,7 @@
             <td class="head">Default:</td><td class="body"><code></code></td>
         </tr>
         <tr>
-            <td class="head">Description:</td><td class="body">Name of an optional file containing a mask of pixels identified as part of a source, e.g. from a previous run of SoFiA. This can be used to re-parametrise sources without repeating the source finding step. The default is to not read a mask cube.</td>
+            <td class="head">Description:</td><td class="body">Name of an optional file containing a mask of pixels identified as part of a source, e.g. from a previous run of SoFiA. This can be used to re-parameterise sources without repeating the source finding step. The default is to not read a mask cube.</td>
         </tr>
     </table>
     
@@ -180,7 +180,7 @@
     <h3>Flagging</h3>
     
     <p>
-      SoFiA can offer to flag some regions of the data cube that are either affected by radio-frequency interference or contain other artefacts or emission to be excluded, such as Galactic foreground emission. An arbitrary number of pixel/channel ranges can be flagged prior to source finding using the <code>flag.file</code> and/or <code>flag.regions</code> parameter. The pixel values in flagged regions are marked as blank and thus excluded from all subsequent processing.
+      SoFiA can offer to flag some regions of the data cube that are either affected by radio-frequency interference or contain other artefacts or emission to be excluded, such as Galactic foreground emission. An arbitrary number of pixel/channel ranges can be flagged prior to source finding using the <code>flag.file</code> and/or <code>flag.regions</code> parameters. The pixel values in flagged regions are marked as blank and thus excluded from all subsequent processing.
     </p>
     
     <table id="steps.doFlag">
@@ -197,7 +197,7 @@
             <td class="head">Default:</td><td class="body"><code>false</code></td>
         </tr>
         <tr>
-            <td class="head">Description:</td><td class="body">Flag pixel and channel ranges before proceeding. Details are specified with the <a href="#flag.file">flag.file</a> and <a href="#flag.regions">flag.regions</a> option.</td>
+            <td class="head">Description:</td><td class="body">Flag pixel and channel ranges before proceeding. Details are specified with the <a href="#flag.file">flag.file</a> and <a href="#flag.regions">flag.regions</a> options.</td>
         </tr>
     </table>
     
@@ -215,7 +215,7 @@
             <td class="head">Default:</td><td class="body"><code></code></td>
         </tr>
         <tr>
-            <td class="head">Description:</td><td class="body">Name of an optional file containing the information which pixels to flag. The default is to not read a flag cube.</td>
+            <td class="head">Description:</td><td class="body">Full path and file name of an optional flagging cube that must be of the same dimensions as the input cube. All pixels that are flagged (i.e. set to BLANK) in the flagging cube will also be flagged in the input cube prior to source finding. The default is to not apply flags.</td>
         </tr>
     </table>
     

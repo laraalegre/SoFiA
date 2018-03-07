@@ -4,7 +4,7 @@
 from astropy.io import fits
 import os
 import sys
-import numpy as np
+from numpy import *
 import re
 import imp
 
@@ -342,9 +342,9 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 					if dict_Flag_header['NAXIS'] == 3:
 						if len(subcube) == 6:
 							flags = f[0].section[subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
-							np_Cube[np.isnan(flags)] = np.nan
+							np_Cube[isnan(flags)] = nan
 						else:
-							np_Cube[np.isnan(f[0].data)] = np.nan
+							np_Cube[isnan(f[0].data)] = nan
 					elif dict_Flag_header['NAXIS'] == 4:
 						if dict_Flag_header['NAXIS4'] != 1:
 							sys.stderr.write("ERROR: The 4th dimension has more than 1 value.\n")
@@ -353,17 +353,17 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 							sys.stderr.write("WARNING: The flag cube has 4 axes; first axis ignored.\n")
 							if len(subcube) == 6:
 								flags = f[0].section[0, subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
-								np_Cube[np.isnan(flags)] = np.nan
-							else: np_Cube[np.isnan(f[0].section[0])] = np.nan
+								np_Cube[isnan(flags)] = nan
+							else: np_Cube[isnan(f[0].section[0])] = nan
 					elif dict_Flag_header['NAXIS'] == 2:
 						sys.stderr.write("WARNING: The flag cube has 2 axes; third axis added.\n")
 						if len(subcube) == 6 or len(subcube) == 4: 
 							flags = f[0].section[subcube[2]:subcube[3], subcube[0]:subcube[1]]
 							for channel in range(np_Cube.shape[0]):
-								np_Cube[channel][np.isnan(flags)] = np.nan
+								np_Cube[channel][isnan(flags)] = nan
 						else: 
 							for channel in range(np_Cube.shape[0]):
-								np_Cube[channel][np.isnan(f(0).data)] = np.nan
+								np_Cube[channel][isnan(f(0).data)] = nan
 					else:
 						sys.stderr.write("ERROR: The weights cube has fewer than 1 or more than 4 dimensions.\n")
 						raise SystemExit(1)
@@ -372,7 +372,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 					print ('Flag cube loaded and applied.')
 			# if flag regions if provided
 			if flagRegions:
-					np_Cube = flag(np_Cube,flagRegions)
+				np_Cube = flag(np_Cube, flagRegions)
 		
 		
 		if maskFile:
@@ -467,7 +467,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 			mask = (mask > 0).astype(bool)
 		else:
 			# Create an empty mask if none is provided.
-			mask = np.zeros(np_Cube.shape, dtype=bool)
+			mask = zeros(np_Cube.shape, dtype=bool)
 	
 	
 	if not cubeOnly:
@@ -486,9 +486,9 @@ def flag(cube, regions):
 					if region[2 * i + 1] == '':
 						region[2 * i + 1] = cube.shape[dim - i - 1]
 				if len(region) == 2:
-					cube[0, region[2]:region[3], region[0]:region[1]] = np.nan
+					cube[0, region[2]:region[3], region[0]:region[1]] = nan
 				else:
-					cube[region[4]:region[5], region[2]:region[3], region[0]:region[1]] = np.nan
+					cube[region[4]:region[5], region[2]:region[3], region[0]:region[1]] = nan
 			print ('Cube has been flagged')
 		
 		except:
