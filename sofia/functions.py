@@ -39,6 +39,11 @@ def GetRMS(cube,rmsMode='negative',zoomx=1,zoomy=1,zoomz=1,nrbins=10000,verbose=
 	if rmsMode=='negative':
 		nrbins=max(100,int(mt.ceil(float(np.array(cube.shape).prod())/1e+5))) # overwrites nrbins value!!!
 		cubemin=np.nanmin(cube)
+		if cubemin>=0:
+			sys.stderr.write("ERROR: You requested to estimate the noise with the 'negative' method.\n")
+			sys.stderr.write("       This method cannot be used because the input cube/image does not include any negative pixels.\n")
+			sys.stderr.write("       If the data is OK and you wish to continue please select either the 'std' or 'mad' methods.\n")
+			sys.exit(1)
 		bins=np.arange(cubemin,abs(cubemin)/nrbins-1e-12,abs(cubemin)/nrbins)
 		fluxval=(bins[:-1]+bins[1:])/2
 		rmshisto=np.histogram(cube[z0:z1:sample,y0:y1:sample,x0:x1:sample][~np.isnan(cube[z0:z1:sample,y0:y1:sample,x0:x1:sample])],bins=bins)[0]
