@@ -59,6 +59,7 @@ smooth.kernelZ                  =       3.0
 # Noise scaling module
 
 scaleNoise.statistic            =       mad
+scaleNoise.fluxRange            =       all
 scaleNoise.scaleX               =       false
 scaleNoise.scaleY               =       false
 scaleNoise.scaleZ               =       true
@@ -84,6 +85,7 @@ SCfind.maskScaleXY              =       2.0
 SCfind.maskScaleZ               =       2.0
 SCfind.edgeMode                 =       constant
 SCfind.rmsMode                  =       negative
+SCfind.fluxRange                =       all
 SCfind.kernels                  =       [[ 0, 0, 0,'b'],[ 0, 0, 3,'b'],[ 0, 0, 7,'b'],[ 0, 0, 15,'b'],[ 3, 3, 0,'b'],[ 3, 3, 3,'b'],[ 3, 3, 7,'b'],[ 3, 3, 15,'b'],[ 6, 6, 0,'b'],[ 6, 6, 3,'b'],[ 6, 6, 7,'b'],[ 6, 6, 15,'b']]
 SCfind.kernelUnit               =       pixel
 SCfind.verbose                  =       true
@@ -102,6 +104,7 @@ CNHI.verbose                    =       1
 threshold.threshold             =       4.0
 threshold.clipMethod            =       relative
 threshold.rmsMode               =       std
+threshold.fluxRange             =       all
 threshold.verbose               =       false
 
 

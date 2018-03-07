@@ -782,8 +782,15 @@ void SoFiA::updateFields()
 	n = tabSourceFindingFieldQReq->text().toDouble();
 	if(n < 1.0) tabSourceFindingFieldQReq->setText("1.0");
 	
-	// Disable RMS mode field in threshold finder if clip mode is 'absolute':
+	// Disable RMS mode and flux range fields in threshold finder if clip mode is 'absolute', and disable flux range for RMS mode 'negative':
 	tabSourceFindingFieldRmsMode2->setEnabled(tabSourceFindingFieldClipMethod->currentIndex() == 0 and tabSourceFindingGroupBox2->isChecked());
+	tabSourceFindingFieldFluxRange2->setEnabled(tabSourceFindingFieldClipMethod->currentIndex() == 0 and tabSourceFindingFieldRmsMode2->currentIndex() != 0 and tabSourceFindingGroupBox2->isChecked());
+	
+	// Disable flux range field in threshold finder if RMS mode is 'negative':
+	tabSourceFindingFieldFluxRange->setEnabled(tabSourceFindingFieldRmsMode->currentIndex() != 0 and tabSourceFindingGroupBox1->isChecked());
+	
+	// Disable flux range field in noise scaling module if RMS statistic is 'negative':
+	tabInFilterFieldFluxRange->setEnabled(tabInFilterFieldStatistic->currentIndex() != 0 and tabInFilterGroupBox2->isChecked());
 	
 	// Enable/disable writing of filtered cube when no filters are selected:
 	tabOutputButtonFilteredCube->setEnabled(tabInFilterGroupBox1->isChecked() or tabInFilterGroupBox2->isChecked() or tabInFilterGroupBox3->isChecked() or not (tabInputFieldWeights->text()).isEmpty() or not (tabInputFieldWeightsFunction->text()).isEmpty());
@@ -1991,7 +1998,15 @@ void SoFiA::createInterface()
 	tabInFilterFieldStatistic->addItem(tr("Gaussian fit to negative fluxes"), QVariant(QString("negative")));
 	tabInFilterFieldStatistic->addItem(tr("Median absolute deviation"), QVariant(QString("mad")));
 	tabInFilterFieldStatistic->addItem(tr("Standard deviation"), QVariant(QString("std")));
+	connect(tabInFilterFieldStatistic, SIGNAL(currentIndexChanged(int)), this, SLOT(updateFields()));
 	connect(tabInFilterFieldStatistic, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
+	
+	tabInFilterFieldFluxRange = new QComboBox(tabInFilterGroupBox2);
+	tabInFilterFieldFluxRange->setObjectName("scaleNoise.fluxRange");
+	tabInFilterFieldFluxRange->addItem(tr("Negative"), QVariant(QString("negative")));
+	tabInFilterFieldFluxRange->addItem(tr("Positive"), QVariant(QString("positive")));
+	tabInFilterFieldFluxRange->addItem(tr("All"), QVariant(QString("all")));
+	connect(tabInFilterFieldFluxRange, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
 	
 	tabInFilterFieldEdgeX  = new QSpinBox(tabInFilterGroupBox2);
 	tabInFilterFieldEdgeX->setObjectName("scaleNoise.edgeX");
@@ -2014,6 +2029,7 @@ void SoFiA::createInterface()
 	
 	tabInFilterForm2->addRow(tr("Dimensions:"), tabInFilterWidgetScaleXYZ);
 	tabInFilterForm2->addRow(tr("Statistic:"), tabInFilterFieldStatistic);
+	tabInFilterForm2->addRow(tr("Flux range:"), tabInFilterFieldFluxRange);
 	tabInFilterForm2->addRow(tr("Edge X:"), tabInFilterFieldEdgeX);
 	tabInFilterForm2->addRow(tr("Edge Y:"), tabInFilterFieldEdgeY);
 	tabInFilterForm2->addRow(tr("Edge Z:"), tabInFilterFieldEdgeZ);
@@ -2143,7 +2159,15 @@ void SoFiA::createInterface()
 	tabSourceFindingFieldRmsMode->addItem(tr("Gaussian fit to negative fluxes"), QVariant(QString("negative")));
 	tabSourceFindingFieldRmsMode->addItem(tr("Median absolute deviation"), QVariant(QString("mad")));
 	tabSourceFindingFieldRmsMode->addItem(tr("Standard deviation"), QVariant(QString("std")));
+	connect(tabSourceFindingFieldRmsMode, SIGNAL(currentIndexChanged(int)), this, SLOT(updateFields()));
 	connect(tabSourceFindingFieldRmsMode, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
+	
+	tabSourceFindingFieldFluxRange = new QComboBox(tabSourceFindingGroupBox1);
+	tabSourceFindingFieldFluxRange->setObjectName("SCfind.fluxRange");
+	tabSourceFindingFieldFluxRange->addItem(tr("Negative"), QVariant(QString("negative")));
+	tabSourceFindingFieldFluxRange->addItem(tr("Positive"), QVariant(QString("positive")));
+	tabSourceFindingFieldFluxRange->addItem(tr("All"), QVariant(QString("all")));
+	connect(tabSourceFindingFieldFluxRange, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
 	
 	tabSourceFindingFieldKunit = new QComboBox(tabSourceFindingGroupBox1);
 	tabSourceFindingFieldKunit->setObjectName("SCfind.kernelUnit");
@@ -2158,8 +2182,9 @@ void SoFiA::createInterface()
 	connect(tabSourceFindingFieldKernels, SIGNAL(textChanged()), this, SLOT(parameterChanged()));
 	
 	tabSourceFindingForm1Left->addRow(tr("Threshold:"), tabSourceFindingFieldThreshold);
-	tabSourceFindingForm1Left->addRow(tr("Edge mode:"), tabSourceFindingFieldEdgeMode);
 	tabSourceFindingForm1Left->addRow(tr("RMS mode:"), tabSourceFindingFieldRmsMode);
+	tabSourceFindingForm1Left->addRow(tr("Flux range:"), tabSourceFindingFieldFluxRange);
+	tabSourceFindingForm1Left->addRow(tr("Edge mode:"), tabSourceFindingFieldEdgeMode);
 	tabSourceFindingForm1Left->addRow(tr("Kernel units:"), tabSourceFindingFieldKunit);
 	
 	tabSourceFindingForm1Right->addRow(tr("Kernels:"), tabSourceFindingFieldKernels);
@@ -2265,11 +2290,20 @@ void SoFiA::createInterface()
 	tabSourceFindingFieldRmsMode2->addItem(tr("Gaussian fit to negative fluxes"), QVariant(QString("negative")));
 	tabSourceFindingFieldRmsMode2->addItem(tr("Median absolute deviation"), QVariant(QString("mad")));
 	tabSourceFindingFieldRmsMode2->addItem(tr("Standard deviation"), QVariant(QString("std")));
+	connect(tabSourceFindingFieldRmsMode2, SIGNAL(currentIndexChanged(int)), this, SLOT(updateFields()));
 	connect(tabSourceFindingFieldRmsMode2, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
+	
+	tabSourceFindingFieldFluxRange2 = new QComboBox(tabSourceFindingGroupBox2);
+	tabSourceFindingFieldFluxRange2->setObjectName("threshold.fluxRange");
+	tabSourceFindingFieldFluxRange2->addItem(tr("Negative"), QVariant(QString("negative")));
+	tabSourceFindingFieldFluxRange2->addItem(tr("Positive"), QVariant(QString("positive")));
+	tabSourceFindingFieldFluxRange2->addItem(tr("All"), QVariant(QString("all")));
+	connect(tabSourceFindingFieldFluxRange2, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
 	
 	tabSourceFindingForm2->addRow(tr("Threshold:"), tabSourceFindingFieldThreshold2);
 	tabSourceFindingForm2->addRow(tr("Clip mode:"), tabSourceFindingFieldClipMethod);
 	tabSourceFindingForm2->addRow(tr("RMS mode:"), tabSourceFindingFieldRmsMode2);
+	tabSourceFindingForm2->addRow(tr("Flux range:"), tabSourceFindingFieldFluxRange2);
 	tabSourceFindingGroupBox2->setLayout(tabSourceFindingForm2);
 	
 	
@@ -3012,10 +3046,12 @@ void SoFiA::createWhatsThis()
 	tabInFilterFieldScaleY->setWhatsThis(tr("<h3>scaleNoise.scaleY</h3><p>Noise normalisation in second (spatial) dimension.</p>"));
 	tabInFilterFieldScaleZ->setWhatsThis(tr("<h3>scaleNoise.scaleZ</h3><p>Noise normalisation in third (spectral) dimension.</p>"));
 	tabInFilterFieldStatistic->setWhatsThis(tr("<h3>scaleNoise.statistic</h3><p>Statistic used to measure the noise. This can be median absolute deviation (<b>mad</b>), standard deviation (<b>std</b>) or Gaussian fit to negative fluxes (<b>negative</b>).</p>"));
+	tabInFilterFieldFluxRange->setWhatsThis(tr("<h3>scaleNoise.fluxRange</h3><p>Range of flux values to be used in noise measurement. Can be <b>negative</b>, <b>positive</b> or <b>all</b> to use only negative, only positive or all pixels, respectively.</p>"));
 	tabSourceFindingFieldEdgeMode->setWhatsThis(tr("<h3>SCfind.edgeMode</h3><p>Behaviour near the edge of the cube. The following values are possible:<p><ul><li><b>constant:</b> assume constant value of 0</li><li><b>nearest:</b> assume constant value equal to edge pixel</li><li><b>reflect:</b> mirror values at edge, thereby including the edge pixel itself</li><li><b>mirror:</b> mirror values at position of outermost pixel, thereby excluding the edge pixel itself</li><li><b>wrap:</b> copy values from opposite edge of the array</li></ul>"));
 	tabSourceFindingFieldKernels->setWhatsThis(tr("<h3>SCfind.kernels</h3><p>List of kernels to be used for smoothing. The format is:</p><p style=\"font-family:monospace;\">[[dx, dy, dz, 'type'], ...]</p><p>where <b>dx</b>, <b>dy</b>, and <b>dz</b> are the spatial and spectral kernel sizes (FWHM), and <b>'type'</b> can be boxcar (<b>'b'</b>) or Gaussian (<b>'g'</b>). Note that 'type' only applies to the spectral axis, and the spatial kernel is always Gaussian.</p>"));
 	tabSourceFindingFieldKunit->setWhatsThis(tr("<h3>SCfind.kernelUnit</h3><p>Are kernel parameters specified in <b>pixel</b> or <b>world</b> coordinates?</p>"));
 	tabSourceFindingFieldRmsMode->setWhatsThis(tr("<h3>SCfind.rmsMode</h3><p>Noise determination method: Gaussian fit to negative flux histogram (<b>negative</b>), median absolute deviation (<b>mad</b>), or standard deviation (<b>std</b>).</p>"));
+	tabSourceFindingFieldFluxRange->setWhatsThis(tr("<h3>SCfind.fluxRange</h3><p>Range of flux values to be used in noise measurement. Can be <b>negative</b>, <b>positive</b> or <b>all</b> to use only negative, only positive or all pixels, respectively.</p>"));
 	tabSourceFindingFieldThreshold->setWhatsThis(tr("<h3>SCfind.threshold</h3><p>Flux threshold relative to the noise level.</p>"));
 	tabInFilterFieldBorder->setWhatsThis(tr("<h3>smooth.edgeMode</h3><p>Behaviour near the edge of the cube. The following options are supported:</p><ul><li><b>constant:</b> assume constant value of 0</li><li><b>nearest:</b> assume constant value equal to edge pixel</li><li><b>reflect:</b> mirror values at edge, thereby including the edge pixel itself</li><li><b>mirror:</b> mirror values at position of outermost pixel, thereby excluding the edge pixel itself</li><li><b>wrap:</b> copy values from opposite edge of the array</li></ul>"));
 	tabInFilterFieldKernel->setWhatsThis(tr("<h3>smooth.kernel</h3><p>Type of smoothing kernel used in both spatial and spectral smoothing. Can be <b>gaussian</b>, <b>boxcar</b> or <b>median</b>.</p>"));
@@ -3041,6 +3077,7 @@ void SoFiA::createWhatsThis()
 	tabOutputButtonMask->setWhatsThis(tr("<h3>steps.doWriteMask</h3><p>Save source mask cube.</p>"));
 	tabSourceFindingFieldClipMethod->setWhatsThis(tr("<h3>threshold.clipMethod</h3><p>Define whether the flux threshold is <b>relative</b> to the noise level or in <b>absolute</b> flux units.</p>"));
 	tabSourceFindingFieldRmsMode2->setWhatsThis(tr("<h3>threshold.rmsMode</h3><p>Noise determination method: Gaussian fit to negative flux histogram (<b>negative</b>), median absolute deviation (<b>mad</b>), or standard deviation (<b>std</b>).</p>"));
+	tabSourceFindingFieldFluxRange2->setWhatsThis(tr("<h3>threshold.fluxRange</h3><p>Range of flux values to be used in noise measurement. Can be <b>negative</b>, <b>positive</b> or <b>all</b> to use only negative, only positive or all pixels, respectively.</p>"));
 	tabSourceFindingFieldThreshold2->setWhatsThis(tr("<h3>threshold.threshold</h3><p>Absolute or relative flux threshold for detections (see <b>threshold.clipMethod</b>).</p>"));
 	tabInFilterField2d1dIterations->setWhatsThis(tr("<h3>wavelet.iterations</h3><p>Number of iterations in the reconstruction process.</p>"));
 	tabInFilterField2d1dPositivity->setWhatsThis(tr("<h3>wavelet.positivity</h3><p>If <b>true</b>, include only positive wavelet components in the decomposition.</p>"));

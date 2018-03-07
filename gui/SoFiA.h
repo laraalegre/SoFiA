@@ -342,6 +342,7 @@ private:
 	QSpinBox     *tabInFilterFieldEdgeY;
 	QSpinBox     *tabInFilterFieldEdgeZ;
 	QComboBox    *tabInFilterFieldStatistic;
+	QComboBox    *tabInFilterFieldFluxRange;
 	QHBoxLayout  *tabInFilterLayoutScaleXYZ;
 	QWidget      *tabInFilterWidgetScaleXYZ;
 	QCheckBox    *tabInFilterFieldScaleX;
@@ -378,6 +379,7 @@ private:
 	QLineEdit    *tabSourceFindingFieldThreshold;
 	QComboBox    *tabSourceFindingFieldEdgeMode;
 	QComboBox    *tabSourceFindingFieldRmsMode;
+	QComboBox    *tabSourceFindingFieldFluxRange;
 	QComboBox    *tabSourceFindingFieldKunit;
 	QTextEdit    *tabSourceFindingFieldKernels;
 	
@@ -385,6 +387,7 @@ private:
 	QFormLayout  *tabSourceFindingForm2;
 	QLineEdit    *tabSourceFindingFieldThreshold2;
 	QComboBox    *tabSourceFindingFieldRmsMode2;
+	QComboBox    *tabSourceFindingFieldFluxRange2;
 	QComboBox    *tabSourceFindingFieldClipMethod;
 	
 	QGroupBox    *tabSourceFindingGroupBox3;

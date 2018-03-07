@@ -43,7 +43,7 @@ def SortKernels(kernels):
 	return uniquesky, velsmooth, velfshape
 
 
-def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, 'b'],], threshold=3.5, sizeFilter=0, maskScaleXY=2.0, maskScaleZ=2.0, kernelUnit='pixel', edgeMode='constant', rmsMode='negative', verbose=0):
+def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, 'b'],], threshold=3.5, sizeFilter=0, maskScaleXY=2.0, maskScaleZ=2.0, kernelUnit='pixel', edgeMode='constant', rmsMode='negative', fluxRange="all", verbose=0):
 	# Create binary mask array
 	msk = np.zeros(cube.shape, np.bool)
 	found_nan = np.isnan(cube).sum()
@@ -53,7 +53,7 @@ def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, 'b'],], threshold=3.5, siz
 	sampleRms = max(1, int((float(np.array(cube.shape).prod()) / maxNrVox)**(1.0 / min(3, len(cube.shape)))))
 	
 	# Measure noise in original cube with sampling "sampleRms"
-	rms = GetRMS(cube, rmsMode=rmsMode, zoomx=1, zoomy=1, zoomz=1, verbose=verbose, sample=sampleRms)
+	rms = GetRMS(cube, rmsMode=rmsMode, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=verbose, sample=sampleRms)
 	
 	# Loop over all kernels
 	for jj in kernels:
@@ -92,7 +92,7 @@ def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, 'b'],], threshold=3.5, siz
 		if found_nan: smoothedcube[np.isnan(cube)] = np.nan
 		
 		# Calculate the RMS of the smoothed cube:
-		smoothedrms = GetRMS(smoothedcube, rmsMode=rmsMode, zoomx=1, zoomy=1, zoomz=1, verbose=verbose, sample=sampleRms)
+		smoothedrms = GetRMS(smoothedcube, rmsMode=rmsMode, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=verbose, sample=sampleRms)
 		
 		# Get rid of the NaNs a second time:
 		if found_nan: smoothedcube = np.nan_to_num(smoothedcube)

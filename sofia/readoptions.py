@@ -78,6 +78,7 @@ def readPipelineOptions(filename = "pipeline.options"):
 				"smooth.kernelY": "float", \
 				"smooth.kernelZ": "float", \
 				"scaleNoise.statistic": "string", \
+				"scaleNoise.fluxRange": "string", \
 				"scaleNoise.edgeX": "int", \
 				"scaleNoise.edgeY": "int", \
 				"scaleNoise.edgeZ": "int", \
@@ -90,6 +91,7 @@ def readPipelineOptions(filename = "pipeline.options"):
 				"SCfind.maskScaleZ": "float", \
 				"SCfind.edgeMode": "string", \
 				"SCfind.rmsMode": "string", \
+				"SCfind.fluxRange": "string", \
 				"SCfind.kernels": "array", \
 				"SCfind.kernelUnit": "string", \
 				"SCfind.verbose": "bool", \
@@ -107,6 +109,7 @@ def readPipelineOptions(filename = "pipeline.options"):
 				"threshold.threshold": "float", \
 				"threshold.clipMethod": "string", \
 				"threshold.rmsMode": "string", \
+				"threshold.fluxRange": "string", \
 				"threshold.verbose": "bool", \
 				"merge.radiusX": "int", \
 				"merge.radiusY": "int", \

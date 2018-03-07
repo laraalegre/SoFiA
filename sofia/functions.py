@@ -19,7 +19,7 @@ def Gaussian(x, A, sigma):
 	return A * np.exp(-x**2 / (2.0 * sigma**2))
 
 
-def GetRMS(cube, rmsMode="negative", zoomx=1, zoomy=1, zoomz=1, verbose=0, min_hist_peak=0.05, sample=1, fluxRange="all"):
+def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1, verbose=0, min_hist_peak=0.05, sample=1):
 	"""
 	Description of arguments
 	------------------------
@@ -46,9 +46,9 @@ def GetRMS(cube, rmsMode="negative", zoomx=1, zoomy=1, zoomz=1, verbose=0, min_h
 	x0, x1 = int(math.ceil((1 - 1.0 / zoomx) * cube.shape[2] / 2)), int(math.floor((1 + 1.0 / zoomx) * cube.shape[2] / 2)) + 1
 	y0, y1 = int(math.ceil((1 - 1.0 / zoomy) * cube.shape[1] / 2)), int(math.floor((1 + 1.0 / zoomy) * cube.shape[1] / 2)) + 1
 	z0, z1 = int(math.ceil((1 - 1.0 / zoomz) * cube.shape[0] / 2)), int(math.floor((1 + 1.0 / zoomz) * cube.shape[0] / 2)) + 1
-	if verbose: sys.stdout.write("    Estimating rms on subcube (x,y,z zoom = %.0f,%.0f,%.0f) ..." % (zoomx, zoomy, zoomz))
-	if verbose: sys.stdout.write("    Estimating rms on subcube sampling every %i voxels ..." % (sample))
-	if verbose: sys.stdout.write("    ... Subcube shape is " + str(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample].shape) + " ...")
+	if verbose: sys.stdout.write("    Estimating rms on subcube (x,y,z zoom = %.0f,%.0f,%.0f) ...\n" % (zoomx, zoomy, zoomz))
+	if verbose: sys.stdout.write("    Estimating rms on subcube sampling every %i voxels ...\n" % (sample))
+	if verbose: sys.stdout.write("    ... Subcube shape is " + str(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample].shape) + " ...\n")
 	
 	
 	# Check if only negative or positive pixels are to be used:
@@ -72,7 +72,7 @@ def GetRMS(cube, rmsMode="negative", zoomx=1, zoomy=1, zoomz=1, verbose=0, min_h
 		while rmshisto[-nrsummedbins-1:].sum() < min_hist_peak * rmshisto.sum(): nrsummedbins += 1
 		
 		if nrsummedbins:
-			if verbose: sys.stdout.write("    ... adjusting bin size to get a fraction of voxels in central bin >= " + str(min_hist_peak))
+			if verbose: sys.stdout.write("    ... adjusting bin size to get a fraction of voxels in central bin >= " + str(min_hist_peak) + "\n")
 			nrbins /= (nrsummedbins + 1)
 			bins = np.arange(cubemin, abs(cubemin) / nrbins - 1e-12, abs(cubemin) / nrbins)
 			fluxval = (bins[:-1] + bins[1:]) / 2
@@ -94,6 +94,6 @@ def GetRMS(cube, rmsMode="negative", zoomx=1, zoomy=1, zoomz=1, verbose=0, min_h
 		else:
 			rms = np.nanstd(subCube, axis=None, dtype=np.float64)
 	
-	if verbose: sys.stdout.write("    ... %s rms = %.2e (data units)" % (rmsMode, rms))
+	if verbose: sys.stdout.write("    ... %s rms = %.2e (data units)\n" % (rmsMode, rms))
 	
 	return rms

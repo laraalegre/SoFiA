@@ -7,11 +7,11 @@ from .functions import *
 
 # Run a simple threshold filter and write out mask:
 
-def filter(mask, cube, header, clipMethod, threshold, rmsMode, verbose):
+def filter(mask, cube, header, clipMethod, threshold, rmsMode, fluxRange, verbose):
 	if clipMethod == 'relative':
 		# Determine the clip level
 		# Measure noise in original cube
-		rms = GetRMS(cube, rmsMode=rmsMode, zoomx=1, zoomy=1, zoomz=1, verbose=verbose)
+		rms = GetRMS(cube, rmsMode=rmsMode, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=verbose)
 		print ('Estimated rms = ' + str(rms))
 		clip = threshold * rms
 	if clipMethod == 'absolute':
