@@ -828,6 +828,17 @@ void SoFiA::updateFields()
 	n = tabInFilterFieldSmoothingSpectral->text().toDouble();
 	if(n < 0.0) tabInFilterFieldSmoothingSpectral->setText("0.0");
 	
+	// Noise scaling method
+	tabInFilterWidgetGrid->setEnabled(tabInFilterFieldMethod->currentIndex() == 1 and tabInFilterGroupBox2->isChecked());
+	tabInFilterWidgetWindow->setEnabled(tabInFilterFieldMethod->currentIndex() == 1 and tabInFilterGroupBox2->isChecked());
+	tabInFilterWidgetEdge->setEnabled(tabInFilterFieldMethod->currentIndex() == 0 and tabInFilterGroupBox2->isChecked());
+	tabInFilterWidgetScaleXYZ->setEnabled(tabInFilterFieldMethod->currentIndex() == 0 and tabInFilterGroupBox2->isChecked());
+	
+	tabInFilterFieldGridSpatial->setValue(tabInFilterFieldGridSpatial->value() + tabInFilterFieldGridSpatial->value() % 2);
+	tabInFilterFieldGridSpectral->setValue(tabInFilterFieldGridSpectral->value() + tabInFilterFieldGridSpectral->value() % 2);
+	tabInFilterFieldWindowSpatial->setValue(tabInFilterFieldWindowSpatial->value() + tabInFilterFieldWindowSpatial->value() % 2);
+	tabInFilterFieldWindowSpectral->setValue(tabInFilterFieldWindowSpectral->value() + tabInFilterFieldWindowSpectral->value() % 2);
+	
 	// Disable source parameter list if not catalogue format selected:
 	tabOutputFieldParameters->setEnabled(tabOutputButtonASCII->isChecked() or tabOutputButtonXML->isChecked() or tabOutputButtonSQL->isChecked());
 	
@@ -1918,6 +1929,7 @@ void SoFiA::createInterface()
 	connect(tabInFilterGroupBox1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabInFilterGroupBox1, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
+	// smoothing
 	tabInFilterForm1 = new QFormLayout();
 	
 	tabInFilterFieldKernel = new QComboBox(tabInFilterGroupBox1);
@@ -1970,6 +1982,7 @@ void SoFiA::createInterface()
 	connect(tabInFilterGroupBox2, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabInFilterGroupBox2, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
+	// noise scaling
 	tabInFilterForm2 = new QFormLayout();
 	
 	tabInFilterWidgetScaleXYZ = new QWidget(tabInFilterGroupBox2);
@@ -1992,6 +2005,13 @@ void SoFiA::createInterface()
 	tabInFilterLayoutScaleXYZ->addWidget(tabInFilterFieldScaleZ);
 	tabInFilterWidgetScaleXYZ->setLayout(tabInFilterLayoutScaleXYZ);
 	
+	tabInFilterFieldMethod = new QComboBox(tabInFilterGroupBox2);
+	tabInFilterFieldMethod->setObjectName("scaleNoise.method");
+	tabInFilterFieldMethod->addItem(tr("Global"), QVariant(QString("global")));
+	tabInFilterFieldMethod->addItem(tr("Local"), QVariant(QString("local")));
+	connect(tabInFilterFieldMethod, SIGNAL(currentIndexChanged(int)), this, SLOT(updateFields()));
+	connect(tabInFilterFieldMethod, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
+	
 	tabInFilterFieldStatistic = new QComboBox(tabInFilterGroupBox2);
 	tabInFilterFieldStatistic->setObjectName("scaleNoise.statistic");
 	tabInFilterFieldStatistic->addItem(tr("Gaussian fit to negative fluxes"), QVariant(QString("negative")));
@@ -2007,33 +2027,111 @@ void SoFiA::createInterface()
 	tabInFilterFieldFluxRange->addItem(tr("All"), QVariant(QString("all")));
 	connect(tabInFilterFieldFluxRange, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
 	
-	tabInFilterFieldEdgeX  = new QSpinBox(tabInFilterGroupBox2);
+	tabInFilterWidgetEdge = new QWidget(tabInFilterGroupBox2);
+	tabInFilterLayoutEdge = new QHBoxLayout();
+	tabInFilterFieldEdgeX  = new QSpinBox(tabInFilterWidgetEdge);
 	tabInFilterFieldEdgeX->setObjectName("scaleNoise.edgeX");
 	tabInFilterFieldEdgeX->setMaximumWidth(100);
 	tabInFilterFieldEdgeX->setMinimum(0);
 	tabInFilterFieldEdgeX->setMaximum(100);
 	connect(tabInFilterFieldEdgeX, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
-	tabInFilterFieldEdgeY = new QSpinBox(tabInFilterGroupBox2);
+	tabInFilterLabelEdgeX = new QLabel(tr("X"), tabInFilterWidgetEdge);
+	tabInFilterFieldEdgeY = new QSpinBox(tabInFilterWidgetEdge);
 	tabInFilterFieldEdgeY->setObjectName("scaleNoise.edgeY");
 	tabInFilterFieldEdgeY->setMaximumWidth(100);
 	tabInFilterFieldEdgeY->setMinimum(0);
 	tabInFilterFieldEdgeY->setMaximum(100);
 	connect(tabInFilterFieldEdgeY, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
-	tabInFilterFieldEdgeZ = new QSpinBox(tabInFilterGroupBox2);
+	tabInFilterLabelEdgeY = new QLabel(tr("Y"), tabInFilterWidgetEdge);
+	tabInFilterFieldEdgeZ = new QSpinBox(tabInFilterWidgetEdge);
 	tabInFilterFieldEdgeZ->setObjectName("scaleNoise.edgeZ");
 	tabInFilterFieldEdgeZ->setMaximumWidth(100);
 	tabInFilterFieldEdgeZ->setMinimum(0);
 	tabInFilterFieldEdgeZ->setMaximum(100);
 	connect(tabInFilterFieldEdgeZ, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
+	tabInFilterLabelEdgeZ = new QLabel(tr("Z"), tabInFilterWidgetEdge);
+	tabInFilterLayoutEdge->addWidget(tabInFilterFieldEdgeX);
+	tabInFilterLayoutEdge->addWidget(tabInFilterLabelEdgeX);
+	tabInFilterLayoutEdge->addSpacing(10);
+	tabInFilterLayoutEdge->addWidget(tabInFilterFieldEdgeY);
+	tabInFilterLayoutEdge->addWidget(tabInFilterLabelEdgeY);
+	tabInFilterLayoutEdge->addSpacing(10);
+	tabInFilterLayoutEdge->addWidget(tabInFilterFieldEdgeZ);
+	tabInFilterLayoutEdge->addWidget(tabInFilterLabelEdgeZ);
+	tabInFilterLayoutEdge->setContentsMargins(0, 0, 0, 0);
+	tabInFilterLayoutEdge->setSpacing(5);
+	tabInFilterWidgetEdge->setLayout(tabInFilterLayoutEdge);
 	
-	tabInFilterForm2->addRow(tr("Dimensions:"), tabInFilterWidgetScaleXYZ);
+	tabInFilterWidgetGrid = new QWidget(tabInFilterGroupBox2);
+	tabInFilterLayoutGrid = new QHBoxLayout();
+	tabInFilterFieldGridSpatial = new QSpinBox(tabInFilterWidgetGrid);
+	tabInFilterFieldGridSpatial->setObjectName("scaleNoise.gridSpatial");
+	tabInFilterFieldGridSpatial->setMaximumWidth(100);
+	tabInFilterFieldGridSpatial->setRange(2, 100);
+	tabInFilterFieldGridSpatial->setSingleStep(2);
+	connect(tabInFilterFieldGridSpatial, SIGNAL(editingFinished()), this, SLOT(updateFields()));
+	connect(tabInFilterFieldGridSpatial, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
+	tabInFilterLabelGridSpatial = new QLabel(tr("spatial"), tabInFilterWidgetGrid);
+	tabInFilterFieldGridSpectral = new QSpinBox(tabInFilterWidgetGrid);
+	tabInFilterFieldGridSpectral->setObjectName("scaleNoise.gridSpectral");
+	tabInFilterFieldGridSpectral->setMaximumWidth(100);
+	tabInFilterFieldGridSpectral->setRange(2, 100);
+	tabInFilterFieldGridSpectral->setSingleStep(2);
+	connect(tabInFilterFieldGridSpectral, SIGNAL(editingFinished()), this, SLOT(updateFields()));
+	connect(tabInFilterFieldGridSpectral, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
+	tabInFilterLabelGridSpectral = new QLabel(tr("spectral"), tabInFilterWidgetGrid);
+	tabInFilterLayoutGrid->addWidget(tabInFilterFieldGridSpatial);
+	tabInFilterLayoutGrid->addWidget(tabInFilterLabelGridSpatial);
+	tabInFilterLayoutGrid->addSpacing(10);
+	tabInFilterLayoutGrid->addWidget(tabInFilterFieldGridSpectral);
+	tabInFilterLayoutGrid->addWidget(tabInFilterLabelGridSpectral);
+	tabInFilterLayoutGrid->setContentsMargins(0, 0, 0, 0);
+	tabInFilterLayoutGrid->setSpacing(5);
+	tabInFilterWidgetGrid->setLayout(tabInFilterLayoutGrid);
+	
+	tabInFilterWidgetWindow = new QWidget(tabInFilterGroupBox2);
+	tabInFilterLayoutWindow = new QHBoxLayout();
+	tabInFilterFieldWindowSpatial = new QSpinBox(tabInFilterWidgetWindow);
+	tabInFilterFieldWindowSpatial->setObjectName("scaleNoise.windowSpatial");
+	tabInFilterFieldWindowSpatial->setMaximumWidth(100);
+	tabInFilterFieldWindowSpatial->setRange(2, 100);
+	tabInFilterFieldWindowSpatial->setSingleStep(2);
+	connect(tabInFilterFieldWindowSpatial, SIGNAL(editingFinished()), this, SLOT(updateFields()));
+	connect(tabInFilterFieldWindowSpatial, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
+	tabInFilterLabelWindowSpatial = new QLabel(tr("spatial"), tabInFilterWidgetWindow);
+	tabInFilterFieldWindowSpectral = new QSpinBox(tabInFilterWidgetWindow);
+	tabInFilterFieldWindowSpectral->setObjectName("scaleNoise.windowSpectral");
+	tabInFilterFieldWindowSpectral->setMaximumWidth(100);
+	tabInFilterFieldWindowSpectral->setRange(2, 100);
+	tabInFilterFieldWindowSpectral->setSingleStep(2);
+	connect(tabInFilterFieldWindowSpectral, SIGNAL(editingFinished()), this, SLOT(updateFields()));
+	connect(tabInFilterFieldWindowSpectral, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
+	tabInFilterLabelWindowSpectral = new QLabel(tr("spectral"), tabInFilterWidgetWindow);
+	tabInFilterLayoutWindow->addWidget(tabInFilterFieldWindowSpatial);
+	tabInFilterLayoutWindow->addWidget(tabInFilterLabelWindowSpatial);
+	tabInFilterLayoutWindow->addSpacing(10);
+	tabInFilterLayoutWindow->addWidget(tabInFilterFieldWindowSpectral);
+	tabInFilterLayoutWindow->addWidget(tabInFilterLabelWindowSpectral);
+	tabInFilterLayoutWindow->setContentsMargins(0, 0, 0, 0);
+	tabInFilterLayoutWindow->setSpacing(5);
+	tabInFilterWidgetWindow->setLayout(tabInFilterLayoutWindow);
+	
+	tabInFilterSeparator1 = new QFrame(tabInFilterGroupBox2);
+	tabInFilterSeparator1->setFrameShape(QFrame::HLine);
+	tabInFilterSeparator1->setFrameShadow(QFrame::Sunken);
+	tabInFilterSeparator2 = new QFrame(tabInFilterGroupBox2);
+	tabInFilterSeparator2->setFrameShape(QFrame::HLine);
+	tabInFilterSeparator2->setFrameShadow(QFrame::Sunken);
+	
+	tabInFilterForm2->addRow(tr("Method:"), tabInFilterFieldMethod);
 	tabInFilterForm2->addRow(tr("Statistic:"), tabInFilterFieldStatistic);
 	tabInFilterForm2->addRow(tr("Flux range:"), tabInFilterFieldFluxRange);
-	tabInFilterForm2->addRow(tr("Edge X:"), tabInFilterFieldEdgeX);
-	tabInFilterForm2->addRow(tr("Edge Y:"), tabInFilterFieldEdgeY);
-	tabInFilterForm2->addRow(tr("Edge Z:"), tabInFilterFieldEdgeZ);
-	
-	
+	tabInFilterForm2->addRow(tabInFilterSeparator1);
+	tabInFilterForm2->addRow(tr("Dimensions:"), tabInFilterWidgetScaleXYZ);
+	tabInFilterForm2->addRow(tr("Edge size:"), tabInFilterWidgetEdge);
+	tabInFilterForm2->addRow(tabInFilterSeparator2);
+	tabInFilterForm2->addRow(tr("Grid size:"), tabInFilterWidgetGrid);
+	tabInFilterForm2->addRow(tr("Window size:"), tabInFilterWidgetWindow);
 	
 	tabInFilterGroupBox3 = new QGroupBox(tr("Enable"), toolBoxIF);
 	tabInFilterGroupBox3->setObjectName("steps.doWavelet");
@@ -2042,6 +2140,7 @@ void SoFiA::createInterface()
 	connect(tabInFilterGroupBox3, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabInFilterGroupBox3, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
+	// 2D-1D wavelet filter
 	tabInFilterForm3 = new QFormLayout();
 	
 	tabInFilterField2d1dThreshold = new QLineEdit(tabInFilterGroupBox3);
@@ -3038,14 +3137,19 @@ void SoFiA::createWhatsThis()
 	tabParametrisationSliderScaleKernel->setWhatsThis(tr("<h3>reliability.scaleKernel</h3><p>If <b>autoKernel</b> is set to <b>true</b>, then this parameter will determine whether the kernel size will be set automatically by SoFiA (<b>auto</b>) or scaled by the given factor (<b>&gt;&nbsp;0</b>). If <b>autoKernel</b> is <b>false</b>, this option will be ignored."));
 	tabParametrisationButtonRelPlot->setWhatsThis(tr("<h3>reliability.makePlot</h3><p>If set to <b>true</b>, PDF files showing the distribution of positive and negative detections in parameter space will be created for diagnostic purposes.</p>"));
 	tabParametrisationFieldRelMin->setWhatsThis(tr("<h3>reliability.threshold</h3><p>Discard sources whose reliability is below this threshold.</p>"));
-	tabInFilterFieldEdgeX->setWhatsThis(tr("<h3>scaleNoise.edgeX</h3><p>Size of edge (in pixels) to be excluded in first coordinate.</p>"));
-	tabInFilterFieldEdgeY->setWhatsThis(tr("<h3>scaleNoise.edgeY</h3><p>Size of edge (in pixels) to be excluded in second coordinate.</p>"));
-	tabInFilterFieldEdgeZ->setWhatsThis(tr("<h3>scaleNoise.edgeZ</h3><p>Size of edge (in pixels) to be excluded in third coordinate.</p>"));
-	tabInFilterFieldScaleX->setWhatsThis(tr("<h3>scaleNoise.scaleX</h3><p>Noise normalisation in first (spatial) dimension.</p>"));
-	tabInFilterFieldScaleY->setWhatsThis(tr("<h3>scaleNoise.scaleY</h3><p>Noise normalisation in second (spatial) dimension.</p>"));
-	tabInFilterFieldScaleZ->setWhatsThis(tr("<h3>scaleNoise.scaleZ</h3><p>Noise normalisation in third (spectral) dimension.</p>"));
-	tabInFilterFieldStatistic->setWhatsThis(tr("<h3>scaleNoise.statistic</h3><p>Statistic used to measure the noise. This can be median absolute deviation (<b>mad</b>), standard deviation (<b>std</b>) or Gaussian fit to negative fluxes (<b>negative</b>).</p>"));
+	tabInFilterFieldEdgeX->setWhatsThis(tr("<h3>scaleNoise.edgeX</h3><p>Size of edge (in pixels) to be excluded in first coordinate. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));
+	tabInFilterFieldEdgeY->setWhatsThis(tr("<h3>scaleNoise.edgeY</h3><p>Size of edge (in pixels) to be excluded in second coordinate. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));
+	tabInFilterFieldEdgeZ->setWhatsThis(tr("<h3>scaleNoise.edgeZ</h3><p>Size of edge (in pixels) to be excluded in third coordinate. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));
 	tabInFilterFieldFluxRange->setWhatsThis(tr("<h3>scaleNoise.fluxRange</h3><p>Range of flux values to be used in noise measurement. Can be <b>negative</b>, <b>positive</b> or <b>all</b> to use only negative, only positive or all pixels, respectively.</p>"));
+	tabInFilterFieldGridSpatial->setWhatsThis(tr("<h3>scaleNoise.gridSpatial</h3><p>This defines the spatial grid size on which the local noise measurement takes place. The setting will be ignored if <b>scaleNoise.method = global</b>. It must be an even number of 2 or greater.</p>"));
+	tabInFilterFieldGridSpectral->setWhatsThis(tr("<h3>scaleNoise.gridSpectral</h3><p>This defines the spectral grid size on which the local noise measurement takes place. The setting will be ignored if <b>scaleNoise.method = global</b>. It must be an even number of 2 or greater.</p>"));
+	tabInFilterFieldMethod->setWhatsThis(tr("<h3>scaleNoise.method</h3><p>If set to <b>global</b>, the noise measurement will be carried out on the entire projected image plane perpendicular to the axis along which the noise is to be scaled (default). If set to <b>local</b>, the noise measurement will occur in a running window of specified size on a specified grid. Note that the latter can be slow and memory-heavy and is only recommended for small cubes or 2D images that are affected by localised noise variations.</p>"));
+	tabInFilterFieldScaleX->setWhatsThis(tr("<h3>scaleNoise.scaleX</h3><p>Noise normalisation in first (spatial) dimension. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));
+	tabInFilterFieldScaleY->setWhatsThis(tr("<h3>scaleNoise.scaleY</h3><p>Noise normalisation in second (spatial) dimension. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));
+	tabInFilterFieldScaleZ->setWhatsThis(tr("<h3>scaleNoise.scaleZ</h3><p>Noise normalisation in third (spectral) dimension. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));
+	tabInFilterFieldStatistic->setWhatsThis(tr("<h3>scaleNoise.statistic</h3><p>Statistic used to measure the noise. This can be median absolute deviation (<b>mad</b>), standard deviation (<b>std</b>) or Gaussian fit to negative fluxes (<b>negative</b>).</p>"));
+	tabInFilterFieldWindowSpatial->setWhatsThis(tr("<h3>scaleNoise.windowSpatial</h3><p>This defines the spatial window size over which the local noise measurement is taken. The setting will be ignored if <b>scaleNoise.method = global</b>. It must be an even number of 2 or greater.</p>"));
+	tabInFilterFieldWindowSpectral->setWhatsThis(tr("<h3>scaleNoise.windowSpectral</h3><p>This defines the spectral window size over which the local noise measurement is taken. The setting will be ignored if <b>scaleNoise.method = global</b>. It must be an even number of 2 or greater.</p>"));
 	tabSourceFindingFieldEdgeMode->setWhatsThis(tr("<h3>SCfind.edgeMode</h3><p>Behaviour near the edge of the cube. The following values are possible:<p><ul><li><b>constant:</b> assume constant value of 0</li><li><b>nearest:</b> assume constant value equal to edge pixel</li><li><b>reflect:</b> mirror values at edge, thereby including the edge pixel itself</li><li><b>mirror:</b> mirror values at position of outermost pixel, thereby excluding the edge pixel itself</li><li><b>wrap:</b> copy values from opposite edge of the array</li></ul>"));
 	tabSourceFindingFieldKernels->setWhatsThis(tr("<h3>SCfind.kernels</h3><p>List of kernels to be used for smoothing. The format is:</p><p style=\"font-family:monospace;\">[[dx, dy, dz, 'type'], ...]</p><p>where <b>dx</b>, <b>dy</b>, and <b>dz</b> are the spatial and spectral kernel sizes (FWHM), and <b>'type'</b> can be boxcar (<b>'b'</b>) or Gaussian (<b>'g'</b>). Note that 'type' only applies to the spectral axis, and the spatial kernel is always Gaussian.</p>"));
 	tabSourceFindingFieldKunit->setWhatsThis(tr("<h3>SCfind.kernelUnit</h3><p>Are kernel parameters specified in <b>pixel</b> or <b>world</b> coordinates?</p>"));

@@ -77,6 +77,7 @@ def readPipelineOptions(filename = "pipeline.options"):
 	             "smooth.kernelX": "float", \
 	             "smooth.kernelY": "float", \
 	             "smooth.kernelZ": "float", \
+	             "scaleNoise.method": "string", \
 	             "scaleNoise.statistic": "string", \
 	             "scaleNoise.fluxRange": "string", \
 	             "scaleNoise.edgeX": "int", \
@@ -85,6 +86,10 @@ def readPipelineOptions(filename = "pipeline.options"):
 	             "scaleNoise.scaleX": "bool", \
 	             "scaleNoise.scaleY": "bool", \
 	             "scaleNoise.scaleZ": "bool", \
+	             "scaleNoise.windowSpatial": "int", \
+	             "scaleNoise.windowSpectral": "int", \
+	             "scaleNoise.gridSpatial": "int", \
+	             "scaleNoise.gridSpectral": "int", \
 	             "SCfind.threshold": "float", \
 	             "SCfind.sizeFilter": "float", \
 	             "SCfind.maskScaleXY": "float", \

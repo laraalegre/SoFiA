@@ -149,7 +149,11 @@
     <h3>Noise Scaling</h3>
     
     <p>
-      The purpose of this filter is to automatically normalise the data cube by the local noise level. This can be helpful in situations where the noise varies across the data cube, e.g. as a function of frequency, which would be problematic for source finding algorithms that assume a constant noise level. Noise scaling can be applied to each of the three cube dimensions independently. Three different algorithms for measuring the local noise level, specified with the <code>scaleNoise.statistic</code> parameter, are currently offered by SoFiA: standard deviation, median absolute deviation and fitting of a Gaussian function to the negative part of the flux histogram.
+      The purpose of this filter is to automatically normalise the data cube by the noise level. This can be helpful in situations where the noise varies across the data cube, e.g. as a function of frequency, which would be problematic for source finding algorithms that assume a constant noise level. Noise scaling can be applied to each of the three cube dimensions independently. Three different algorithms for measuring the local noise level, specified with the <code>scaleNoise.statistic</code> parameter, are currently offered by SoFiA: standard deviation, median absolute deviation and fitting of a Gaussian function to the negative part of the flux histogram.
+    </p>
+    
+    <p>
+      SoFiA offers two different methods for measuring noise that can be selected with the <code>scaleNoise.method</code> parameter. If set to <code>global</code>, the noise will be measured across the entire image plane perpendicular to the axis along which the noise is to be normalised. This is the default method and by far the fastest and least memory-intensive method. Alternatively, if there are localised noise variation across the image, the <code>local</code> method can be applied, which will measure the noise in a running window of given size on a specified grid. This method is slow and memory-heavy and therefore only recommended for small cubes or 2D images with strong, highly localised noise variations, e.g. continuum images that have increased noise around bright sources.
     </p>
     
     <table id="steps.doScaleNoise">
@@ -169,61 +173,25 @@
             <td class="head">Description:</td><td class="body">If set to <code>true</code>, normalise noise levels across the data cube prior to source finding.</td>
         </tr>
     </table>
-    
-    <table id="scaleNoise.scaleX">
+
+    <table id="scaleNoise.method">
         <tr>
-            <td class="head">Parameter:</td><td class="body2">scaleNoise.scaleX</td>
+            <td class="head">Parameter:</td><td class="body2">scaleNoise.method</td>
         </tr>
         <tr>
-            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+            <td class="head">Type:</td><td class="body"><code>string</code></td>
         </tr>
         <tr>
-            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+            <td class="head">Values:</td><td class="body"><code>global</code>, <code>local</code></td>
         </tr>
         <tr>
-            <td class="head">Default:</td><td class="body"><code>false</code></td>
+            <td class="head">Default:</td><td class="body"><code>global</code></td>
         </tr>
         <tr>
-            <td class="head">Description:</td><td class="body">If set to <code>true</code>, apply noise normalisation in first (spatial) dimension.</td>
-        </tr>
-    </table>
-    
-    <table id="scaleNoise.scaleY">
-        <tr>
-            <td class="head">Parameter:</td><td class="body2">scaleNoise.scaleY</td>
-        </tr>
-        <tr>
-            <td class="head">Type:</td><td class="body"><code>bool</code></td>
-        </tr>
-        <tr>
-            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
-        </tr>
-        <tr>
-            <td class="head">Default:</td><td class="body"><code>false</code></td>
-        </tr>
-        <tr>
-            <td class="head">Description:</td><td class="body">If set to <code>true</code>, apply noise normalisation in second (spatial) dimension.</td>
+            <td class="head">Description:</td><td class="body">If set to <code>global</code>, the noise measurement will be carried out on the entire projected image plane perpendicular to the axis along which the noise is to be scaled (default). If set to <code>local</code>, the noise measurement will occur in a running window of specified size on a specified grid. Note that the latter can be slow and memory-heavy and is only recommended for small cubes or 2D images that are affected by localised noise variations.</td>
         </tr>
     </table>
-    
-    <table id="scaleNoise.scaleZ">
-        <tr>
-            <td class="head">Parameter:</td><td class="body2">scaleNoise.scaleZ</td>
-        </tr>
-        <tr>
-            <td class="head">Type:</td><td class="body"><code>bool</code></td>
-        </tr>
-        <tr>
-            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
-        </tr>
-        <tr>
-            <td class="head">Default:</td><td class="body"><code>true</code></td>
-        </tr>
-        <tr>
-            <td class="head">Description:</td><td class="body">If set to <code>true</code>, apply noise normalisation in third (spectral) dimension.</td>
-        </tr>
-    </table>
-    
+
     <table id="scaleNoise.statistic">
         <tr>
             <td class="head">Parameter:</td><td class="body2">scaleNoise.statistic</td>
@@ -241,7 +209,7 @@
             <td class="head">Description:</td><td class="body">Statistic used to determine the noise in the data cube. The following options are available: standard deviation (<code>std</code>), median absolute deviation (<code>mad</code>) or fitting of a Gaussian function to the negative part of the flux histogram (<code>negative</code>).</td>
         </tr>
     </table>
-    
+
     <table id="scaleNoise.fluxRange">
         <tr>
             <td class="head">Parameter:</td><td class="body2">scaleNoise.fluxRange</td>
@@ -259,7 +227,61 @@
             <td class="head">Description:</td><td class="body">Range of flux values to be used in noise measurement. Can be <code>negative</code>, <code>positive</code> or <code>all</code> to use only negative, only positive or all pixels, respectively.</td>
         </tr>
     </table>
-    
+
+    <table id="scaleNoise.scaleX">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">scaleNoise.scaleX</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, apply noise normalisation in first (spatial) dimension. The setting will be ignored if <code>scaleNoise.method = local</code>.</td>
+        </tr>
+    </table>
+
+    <table id="scaleNoise.scaleY">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">scaleNoise.scaleY</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, apply noise normalisation in second (spatial) dimension. The setting will be ignored if <code>scaleNoise.method = local</code>.</td>
+        </tr>
+    </table>
+
+    <table id="scaleNoise.scaleZ">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">scaleNoise.scaleZ</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>true</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, apply noise normalisation in third (spectral) dimension. The setting will be ignored if <code>scaleNoise.method = local</code>.</td>
+        </tr>
+    </table>
+
     <table id="scaleNoise.edgeX">
         <tr>
             <td class="head">Parameter:</td><td class="body2">scaleNoise.edgeX</td>
@@ -274,10 +296,10 @@
             <td class="head">Default:</td><td class="body"><code>0</code></td>
         </tr>
         <tr>
-            <td class="head">Description:</td><td class="body">Size of the edge (in pixels) to be excluded in first (spatial) dimension.</td>
+            <td class="head">Description:</td><td class="body">Size of the edge (in pixels) to be excluded in first (spatial) dimension. The setting will be ignored if <code>scaleNoise.method = local</code>.</td>
         </tr>
     </table>
-    
+
     <table id="scaleNoise.edgeY">
         <tr>
             <td class="head">Parameter:</td><td class="body2">scaleNoise.edgeY</td>
@@ -292,10 +314,10 @@
             <td class="head">Default:</td><td class="body"><code>0</code></td>
         </tr>
         <tr>
-            <td class="head">Description:</td><td class="body">Size of the edge (in pixels) to be excluded in second (spatial) dimension.</td>
+            <td class="head">Description:</td><td class="body">Size of the edge (in pixels) to be excluded in second (spatial) dimension. The setting will be ignored if <code>scaleNoise.method = local</code>.</td>
         </tr>
     </table>
-    
+
     <table id="scaleNoise.edgeZ">
         <tr>
             <td class="head">Parameter:</td><td class="body2">scaleNoise.edgeZ</td>
@@ -310,7 +332,79 @@
             <td class="head">Default:</td><td class="body"><code>0</code></td>
         </tr>
         <tr>
-            <td class="head">Description:</td><td class="body">Size of the edge (in pixels) to be excluded in third (spectral) dimension.</td>
+            <td class="head">Description:</td><td class="body">Size of the edge (in pixels) to be excluded in third (spectral) dimension. The setting will be ignored if <code>scaleNoise.method = local</code>.</td>
+        </tr>
+    </table>
+
+    <table id="scaleNoise.gridSpatial">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">scaleNoise.gridSpatial</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>2</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>10</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">This defines the spatial grid size on which the local noise measurement takes place. The setting will be ignored if <code>scaleNoise.method = global</code>. It must be an even number of 2 or greater.</td>
+        </tr>
+    </table>
+
+    <table id="scaleNoise.gridSpectral">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">scaleNoise.gridSpectral</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>2</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>10</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">This defines the spectral grid size on which the local noise measurement takes place. The setting will be ignored if <code>scaleNoise.method = global</code>. It must be an even number of 2 or greater.</td>
+        </tr>
+    </table>
+
+    <table id="scaleNoise.windowSpatial">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">scaleNoise.windowSpatial</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>2</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>20</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">This defines the spatial window size over which the local noise measurement is taken. The setting will be ignored if <code>scaleNoise.method = global</code>. It must be an even number of 2 or greater.</td>
+        </tr>
+    </table>
+
+    <table id="scaleNoise.windowSpectral">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">scaleNoise.windowSpectral</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>2</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>20</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">This defines the spectral window size over which the local noise measurement is taken. The setting will be ignored if <code>scaleNoise.method = global</code>. It must be an even number of 2 or greater.</td>
         </tr>
     </table>
     

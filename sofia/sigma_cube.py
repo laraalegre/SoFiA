@@ -8,38 +8,39 @@ import math
 # Function to read in a cube and scale it by the RMS.
 # This script is useful to correct for variation in noise as function of frequency, noisy edges of cubes and channels with strong RFI.
 
-def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0, edgeZ=0, statistic="mad", fluxRange="all", localNoise=False, windowSizeSpatial=20, windowSizeSpectral=20, gridSizeSpatial=10, gridSizeSpectral=10):
+def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0, edgeZ=0, statistic="mad", fluxRange="all", method="global", windowSpatial=20, windowSpectral=20, gridSpatial=10, gridSpectral=10):
 	"""
 	Sigma scaling only works for 3D cubes, as it is mainly designed to correct for differences in frequency.
 	
 	Parameters
 	----------
-	  cube:                The input cube.
-	  scaleX,Y,Z:          True or False to choose which axis should be scaled.
-	  edgeX,Y,Z:           The edges of the cube that are excluded from the noise calculation (default: 0,0,0).
-	  statistic:           Which algorithm to use: "negative", "mad" or "std" (default: "mad").
-	  localNoise:          True = measure local rms on specified grid. False = measure RMS in entire planes perpendicular to the axis being scaled.
-	  windowSizeSpatial:   Spatial window size over which to measure local RMS. Must be even.
-	  windowSizeSpectral:  Spectral window size over which to measure local RMS. Must be even.
-	  gridSizeSpatial:     Size of each spatial grid cell for local RMS measurement. Must be even.
-	  gridSizeSpectral:    Size of each spectral grid cell for local RMS measurement. Must be even.
+	  cube:            The input cube.
+	  scaleX,Y,Z:      True or False to choose which axis should be scaled.
+	  edgeX,Y,Z:       The edges of the cube that are excluded from the noise calculation (default: 0,0,0).
+	  statistic:       Which algorithm to use: "negative", "mad" or "std" (default: "mad").
+	  method:          "local"   Measure local rms on specified grid.
+	                   "global"  Measure RMS in entire planes perpendicular to the axis being scaled.
+	  windowSpatial:   Spatial window size over which to measure local RMS. Must be even.
+	  windowSpectral:  Spectral window size over which to measure local RMS. Must be even.
+	  gridSpatial:     Size of each spatial grid cell for local RMS measurement. Must be even.
+	  gridSpectral:    Size of each spectral grid cell for local RMS measurement. Must be even.
 	"""
 	
 	verbose = 0
 	
 	# Ensure that window and grid sizes are greater than 0 and divisible by 2
-	windowSizeSpatial  = max(windowSizeSpatial, 2)
-	windowSizeSpectral = max(windowSizeSpatial, 2)
-	gridSizeSpatial    = max(gridSizeSpatial, 2)
-	gridSizeSpectral   = max(gridSizeSpectral, 2)
-	windowSizeSpatial  += windowSizeSpatial % 2
-	windowSizeSpectral += windowSizeSpectral % 2
-	gridSizeSpatial    += gridSizeSpatial % 2
-	gridSizeSpectral   += gridSizeSpectral % 2
+	windowSpatial  = max(windowSpatial, 2)
+	windowSpectral = max(windowSpatial, 2)
+	gridSpatial    = max(gridSpatial, 2)
+	gridSpectral   = max(gridSpectral, 2)
+	windowSpatial  += windowSpatial % 2
+	windowSpectral += windowSpectral % 2
+	gridSpatial    += gridSpatial % 2
+	gridSpectral   += gridSpectral % 2
 	
 	# Divide window sizes by 2 to get radii
-	windowSizeSpatial  /= 2
-	windowSizeSpectral /= 2
+	windowSpatial  /= 2
+	windowSpectral /= 2
 	
 	sys.stdout.write("Generating noise-scaled data cube:\n")
 	
@@ -64,14 +65,14 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 		sys.exit(1)
 	
 	# LOCAL noise measurement within running window (slow and memory-intensive)
-	if localNoise:
+	if method == "local":
 		# Create empty cube (filled with 0) to hold noise values
 		rms_cube = np.zeros(cube.shape)
 		
 		# Create grid to be used
-		gridPointsZ = np.arange((dimensions[0] - gridSizeSpectral * (int(math.ceil(float(dimensions[0]) / float(gridSizeSpectral))) - 1)) / 2, dimensions[0], gridSizeSpectral)
-		gridPointsY = np.arange((dimensions[1] - gridSizeSpatial  * (int(math.ceil(float(dimensions[1]) / float(gridSizeSpatial)))  - 1)) / 2, dimensions[1], gridSizeSpatial)
-		gridPointsX = np.arange((dimensions[2] - gridSizeSpatial  * (int(math.ceil(float(dimensions[2]) / float(gridSizeSpatial)))  - 1)) / 2, dimensions[2], gridSizeSpatial)
+		gridPointsZ = np.arange((dimensions[0] - gridSpectral * (int(math.ceil(float(dimensions[0]) / float(gridSpectral))) - 1)) / 2, dimensions[0], gridSpectral)
+		gridPointsY = np.arange((dimensions[1] - gridSpatial  * (int(math.ceil(float(dimensions[1]) / float(gridSpatial)))  - 1)) / 2, dimensions[1], gridSpatial)
+		gridPointsX = np.arange((dimensions[2] - gridSpatial  * (int(math.ceil(float(dimensions[2]) / float(gridSpatial)))  - 1)) / 2, dimensions[2], gridSpatial)
 		gridPoints = []
 		for z in gridPointsZ:
 			for y in gridPointsY:
@@ -79,8 +80,8 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 					gridPoints.append((z, y, x))
 		
 		# Divide grid sizes by 2 to get radii
-		gridSizeSpatial /= 2
-		gridSizeSpectral /= 2
+		gridSpatial /= 2
+		gridSpectral /= 2
 		
 		# Create grid cell and window list
 		gridList = []
@@ -88,8 +89,8 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 		for z in gridPointsZ:
 			for y in gridPointsY:
 				for x in gridPointsX:
-					gridList.append((max(0, z - gridSizeSpectral), min(dimensions[0], z + gridSizeSpectral), max(0, y - gridSizeSpatial), min(dimensions[1], y + gridSizeSpatial), max(0, x - gridSizeSpatial), min(dimensions[2], x + gridSizeSpatial)))
-					windowList.append((max(0, z - windowSizeSpectral), min(dimensions[0], z + windowSizeSpectral), max(0, y - windowSizeSpatial), min(dimensions[1], y + windowSizeSpatial), max(0, x - windowSizeSpatial), min(dimensions[2], x + windowSizeSpatial)))
+					gridList.append((max(0, z - gridSpectral), min(dimensions[0], z + gridSpectral), max(0, y - gridSpatial), min(dimensions[1], y + gridSpatial), max(0, x - gridSpatial), min(dimensions[2], x + gridSpatial)))
+					windowList.append((max(0, z - windowSpectral), min(dimensions[0], z + windowSpectral), max(0, y - windowSpatial), min(dimensions[1], y + windowSpatial), max(0, x - windowSpatial), min(dimensions[2], x + windowSpatial)))
 		
 		# Iterate over data cube
 		for grid, window in list(zip(gridList, windowList)):

@@ -71,6 +71,7 @@
 #if QT_VERSION < 0x050000
 	#include <QtGui/QMainWindow>
 	#include <QtGui/QWidget>
+	#include <QtGui/QFrame>
 	#include <QtGui/QDockWidget>
 	#include <QtGui/QToolBox>
 	#include <QtGui/QStyle>
@@ -97,6 +98,7 @@
 #else
 	#include <QtWidgets/QMainWindow>
 	#include <QtWidgets/QWidget>
+	#include <QtWidgets/QFrame>
 	#include <QtWidgets/QDockWidget>
 	#include <QtWidgets/QToolBox>
 	#include <QtWidgets/QStyle>
@@ -338,6 +340,11 @@ private:
 	
 	QGroupBox    *tabInFilterGroupBox2;
 	QFormLayout  *tabInFilterForm2;
+	QWidget      *tabInFilterWidgetEdge;
+	QHBoxLayout  *tabInFilterLayoutEdge;
+	QLabel       *tabInFilterLabelEdgeX;
+	QLabel       *tabInFilterLabelEdgeY;
+	QLabel       *tabInFilterLabelEdgeZ;
 	QSpinBox     *tabInFilterFieldEdgeX;
 	QSpinBox     *tabInFilterFieldEdgeY;
 	QSpinBox     *tabInFilterFieldEdgeZ;
@@ -348,6 +355,21 @@ private:
 	QCheckBox    *tabInFilterFieldScaleX;
 	QCheckBox    *tabInFilterFieldScaleY;
 	QCheckBox    *tabInFilterFieldScaleZ;
+	QComboBox    *tabInFilterFieldMethod;
+	QWidget      *tabInFilterWidgetGrid;
+	QHBoxLayout  *tabInFilterLayoutGrid;
+	QLabel       *tabInFilterLabelGridSpatial;
+	QLabel       *tabInFilterLabelGridSpectral;
+	QSpinBox     *tabInFilterFieldGridSpatial;
+	QSpinBox     *tabInFilterFieldGridSpectral;
+	QWidget      *tabInFilterWidgetWindow;
+	QHBoxLayout  *tabInFilterLayoutWindow;
+	QLabel       *tabInFilterLabelWindowSpatial;
+	QLabel       *tabInFilterLabelWindowSpectral;
+	QSpinBox     *tabInFilterFieldWindowSpatial;
+	QSpinBox     *tabInFilterFieldWindowSpectral;
+	QFrame       *tabInFilterSeparator1;
+	QFrame       *tabInFilterSeparator2;
 	
 	QGroupBox    *tabInFilterGroupBox3;
 	QFormLayout  *tabInFilterForm3;

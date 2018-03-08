@@ -58,6 +58,11 @@ smooth.kernelZ                  =       3.0
 
 # Noise scaling module
 
+scaleNoise.method               =       global
+scaleNoise.windowSpatial        =       20
+scaleNoise.windowSpectral       =       20
+scaleNoise.gridSpatial          =       10
+scaleNoise.gridSpectral         =       10
 scaleNoise.statistic            =       mad
 scaleNoise.fluxRange            =       all
 scaleNoise.scaleX               =       false
