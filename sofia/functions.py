@@ -5,6 +5,7 @@ import math
 import numpy as np
 import scipy as sp
 from distutils.version import StrictVersion, LooseVersion
+import error
 
 # Check numpy and scipy version numbers for the nanmedian function import
 if LooseVersion(np.__version__) >= LooseVersion("1.9.0"):
@@ -64,6 +65,7 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 	if rmsMode == "negative":
 		nrbins = max(100, int(math.ceil(float(cube.size) / 1e+5)))
 		cubemin = np.nanmin(cube)
+		ensure(cubemin < 0, "Cannot estimate noise from Gaussian fit to negative flux\nhistogram; no negative fluxes found in data cube.")
 		bins = np.arange(cubemin, abs(cubemin) / nrbins - 1e-12, abs(cubemin) / nrbins)
 		fluxval = (bins[:-1] + bins[1:]) / 2
 		rmshisto = np.histogram(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample][~np.isnan(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample])], bins=bins)[0]
