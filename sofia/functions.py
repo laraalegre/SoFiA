@@ -122,7 +122,6 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 		# Calculate 2nd moment
 		mom2 = moment2(binCtr, hist)
 		err.ensure(mom2 > 0.0, "2nd moment of flux histogram <= 0. Cannot measure noise level.")
-		#err.print_info("Moment 2 = " + str(mom2 / binWidth) + " bins")
 		
 		# Adjust bin size if necessary
 		while mom2 / binWidth < 5.0:
