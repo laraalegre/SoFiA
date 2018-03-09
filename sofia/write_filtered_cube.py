@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 from astropy.io import fits
+from numpy import nanmin, nanmax
 import os
 from .version import *
 
@@ -48,8 +49,8 @@ def writeFilteredCube(cube, header, dictionary, filename, compress):
 	for option in headerList: header.add_history(option)
 	
 	hdu = fits.PrimaryHDU(data = cube, header = header)
-	hdu.header['DATAMIN'] = cube.min()
-	hdu.header['DATAMAX'] = cube.max()
+	hdu.header['DATAMIN'] = nanmin(cube)
+	hdu.header['DATAMAX'] = nanmax(cube)
 	hdu.header['ORIGIN'] = getVersion(full=True)
 	
 	if compress: filename += '.gz'
