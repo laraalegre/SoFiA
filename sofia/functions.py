@@ -19,6 +19,14 @@ else:
 def Gaussian(x, A, sigma):
 	return A * np.exp(-x**2 / (2.0 * sigma**2))
 
+def moment1(x, y):
+	err.ensure(x.size == y.size, "Incompatible array sizes encountered.")
+	return np.nansum(np.multiply(x, y)) / np.nansum(y)
+
+def moment2(x, y):
+	err.ensure(x.size == y.size, "Incompatible array sizes encountered.")
+	return np.sqrt(np.nansum(np.multiply(np.multiply(x - moment1(x, y), x - moment1(x, y)), y)) / np.nansum(y))
+
 
 def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1, verbose=0, min_hist_peak=0.05, sample=1):
 	"""
@@ -36,7 +44,7 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 		sys.stderr.write("WARNING: Illegal value of fluxRange = '" + str(fluxRange) + "'.\n")
 		sys.stderr.write("         Using default value of 'all' instead.\n")
 		fluxRange = "all"
-	if rmsMode != "std" and rmsMode != "mad" and rmsMode != "negative":
+	if rmsMode != "std" and rmsMode != "mad" and rmsMode != "negative" and rmsMode != "gauss":
 		sys.stderr.write("WARNING: Illegal value of rmsMode = '" + str(rmsMode) + "'.\n")
 		sys.stderr.write("         Using default value of 'mad' instead.\n")
 		rmsMode = "mad"
@@ -81,10 +89,53 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 			if verbose: sys.stdout.write("    ... adjusting bin size to get a fraction of voxels in central bin >= " + str(min_hist_peak) + "\n")
 			nrbins /= (nrsummedbins + 1)
 			bins = np.arange(cubemin, abs(cubemin) / nrbins - 1e-12, abs(cubemin) / nrbins)
-			fluxval = (bins[:-1] + bins[1:]) / 2
+			fluxval = (bins[:-1] + bins[1:]) / 2.0
 			rmshisto = np.histogram(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample][~np.isnan(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample])], bins=bins)[0]
 		
-		rms = abs(sp.optimize.curve_fit(Gaussian, fluxval, rmshisto, p0=[rmshisto.max(), -fluxval[rmshisto < rmshisto.max() / 2].max() * 2 / 2.355])[0][1])
+		rms = abs(sp.optimize.curve_fit(Gaussian, fluxval, rmshisto, p0=[rmshisto.max(), -fluxval[rmshisto < rmshisto.max() / 2.0].max() * 2.0 / 2.355])[0][1])
+	
+	elif rmsMode == "gauss":
+		nBins = 100
+		dataMin = float(np.nanmin(cube))
+		dataMax = float(np.nanmax(cube))
+		err.ensure(dataMin < dataMax, "Maximum not greater than minimum. Cannot determine noise level.")
+		
+		if fluxRange == "negative":
+			# Set upper limit to 0
+			err.ensure(dataMin < 0.0, "Minimum > 0. Cannot determine noise level for negative pixels.")
+			dataMax = 0.0
+		elif fluxRange == "positive":
+			# Set lower limit to 0
+			err.ensure(dataMax > 0.0, "Maximum < 0. Cannot determine noise level for positive pixels.")
+			dataMin = 0.0
+		else:
+			# Select the smallest of the two for both limits
+			err.ensure(dataMin < 0 and dataMax > 0.0, "Noise values not scattered around 0. Cannot measure noise level.")
+			dataMin = -min(abs(dataMin), abs(dataMax))
+			dataMax =  min(abs(dataMin), abs(dataMax))
+		
+		binWidth = (dataMax - dataMin) / float(nBins)
+		bins = np.arange(dataMin, dataMax, binWidth)
+		binCtr = (bins[:-1] + bins[1:]) / 2.0
+		hist = np.histogram(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample][~np.isnan(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample])], bins=bins)[0]
+		
+		# Calculate 2nd moment
+		mom2 = moment2(binCtr, hist)
+		err.ensure(mom2 > 0.0, "2nd moment of flux histogram < 0. Cannot measure noise level.")
+		#err.print_info("Moment 2 = " + str(mom2 / binWidth) + " bins")
+		
+		# Adjust bin size if necessary
+		while mom2 / binWidth < 5.0:
+			err.print_info("Increasing number of bins by factor of " + str(int(20.0 * binWidth / mom2)) + " for Gaussian fit.")
+			nBins = int(nBins * 20.0 * binWidth / mom2)
+			binWidth = (dataMax - dataMin) / float(nBins)
+			binCtr = (bins[:-1] + bins[1:]) / 2.0
+			hist = np.histogram(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample][~np.isnan(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample])], bins=bins)[0]
+			mom2 = moment2(binCtr, hist)
+			err.ensure(mom2 > 0.0, "2nd moment of flux histogram < 0. Cannot measure noise level.")
+		
+		# Carry out Gaussian fitting
+		rms = abs(sp.optimize.curve_fit(Gaussian, binCtr, hist, p0=[hist.max(), mom2])[0][1])
 	
 	# MEDIAN ABSOLUTE DEVIATION
 	elif rmsMode == "mad":

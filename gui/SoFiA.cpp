@@ -2015,6 +2015,7 @@ void SoFiA::createInterface()
 	tabInFilterFieldStatistic = new QComboBox(tabInFilterGroupBox2);
 	tabInFilterFieldStatistic->setObjectName("scaleNoise.statistic");
 	tabInFilterFieldStatistic->addItem(tr("Gaussian fit to negative fluxes"), QVariant(QString("negative")));
+	tabInFilterFieldStatistic->addItem(tr("Gaussian fit to flux histogram"), QVariant(QString("gauss")));
 	tabInFilterFieldStatistic->addItem(tr("Median absolute deviation"), QVariant(QString("mad")));
 	tabInFilterFieldStatistic->addItem(tr("Standard deviation"), QVariant(QString("std")));
 	connect(tabInFilterFieldStatistic, SIGNAL(currentIndexChanged(int)), this, SLOT(updateFields()));
@@ -2255,6 +2256,7 @@ void SoFiA::createInterface()
 	tabSourceFindingFieldRmsMode = new QComboBox(tabSourceFindingGroupBox1);
 	tabSourceFindingFieldRmsMode->setObjectName("SCfind.rmsMode");
 	tabSourceFindingFieldRmsMode->addItem(tr("Gaussian fit to negative fluxes"), QVariant(QString("negative")));
+	tabSourceFindingFieldRmsMode->addItem(tr("Gaussian fit to flux histogram"), QVariant(QString("gauss")));
 	tabSourceFindingFieldRmsMode->addItem(tr("Median absolute deviation"), QVariant(QString("mad")));
 	tabSourceFindingFieldRmsMode->addItem(tr("Standard deviation"), QVariant(QString("std")));
 	connect(tabSourceFindingFieldRmsMode, SIGNAL(currentIndexChanged(int)), this, SLOT(updateFields()));
@@ -2388,6 +2390,7 @@ void SoFiA::createInterface()
 	tabSourceFindingFieldRmsMode2 = new QComboBox(tabSourceFindingGroupBox2);
 	tabSourceFindingFieldRmsMode2->setObjectName("threshold.rmsMode");
 	tabSourceFindingFieldRmsMode2->addItem(tr("Gaussian fit to negative fluxes"), QVariant(QString("negative")));
+	tabSourceFindingFieldRmsMode2->addItem(tr("Gaussian fit to flux histogram"), QVariant(QString("gauss")));
 	tabSourceFindingFieldRmsMode2->addItem(tr("Median absolute deviation"), QVariant(QString("mad")));
 	tabSourceFindingFieldRmsMode2->addItem(tr("Standard deviation"), QVariant(QString("std")));
 	connect(tabSourceFindingFieldRmsMode2, SIGNAL(currentIndexChanged(int)), this, SLOT(updateFields()));
@@ -3152,13 +3155,13 @@ void SoFiA::createWhatsThis()
 	tabInFilterFieldScaleX->setWhatsThis(tr("<h3>scaleNoise.scaleX</h3><p>Noise normalisation in first (spatial) dimension. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));
 	tabInFilterFieldScaleY->setWhatsThis(tr("<h3>scaleNoise.scaleY</h3><p>Noise normalisation in second (spatial) dimension. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));
 	tabInFilterFieldScaleZ->setWhatsThis(tr("<h3>scaleNoise.scaleZ</h3><p>Noise normalisation in third (spectral) dimension. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));
-	tabInFilterFieldStatistic->setWhatsThis(tr("<h3>scaleNoise.statistic</h3><p>Statistic used to measure the noise. This can be median absolute deviation (<b>mad</b>), standard deviation (<b>std</b>) or Gaussian fit to negative fluxes (<b>negative</b>).</p>"));
+	tabInFilterFieldStatistic->setWhatsThis(tr("<h3>scaleNoise.statistic</h3><p>Statistic used to measure the noise. This can be median absolute deviation (<b>mad</b>), standard deviation (<b>std</b>), Gaussian fit to flux histogram (<b>gauss</b>) or Gaussian fit to negative fluxes (<b>negative</b>).</p>"));
 	tabInFilterFieldWindowSpatial->setWhatsThis(tr("<h3>scaleNoise.windowSpatial</h3><p>This defines the spatial window size over which the local noise measurement is taken. The setting will be ignored if <b>scaleNoise.method = global</b>. It must be an even number of 2 or greater.</p>"));
 	tabInFilterFieldWindowSpectral->setWhatsThis(tr("<h3>scaleNoise.windowSpectral</h3><p>This defines the spectral window size over which the local noise measurement is taken. The setting will be ignored if <b>scaleNoise.method = global</b>. It must be an even number of 2 or greater.</p>"));
 	tabSourceFindingFieldEdgeMode->setWhatsThis(tr("<h3>SCfind.edgeMode</h3><p>Behaviour near the edge of the cube. The following values are possible:<p><ul><li><b>constant:</b> assume constant value of 0</li><li><b>nearest:</b> assume constant value equal to edge pixel</li><li><b>reflect:</b> mirror values at edge, thereby including the edge pixel itself</li><li><b>mirror:</b> mirror values at position of outermost pixel, thereby excluding the edge pixel itself</li><li><b>wrap:</b> copy values from opposite edge of the array</li></ul>"));
 	tabSourceFindingFieldKernels->setWhatsThis(tr("<h3>SCfind.kernels</h3><p>List of kernels to be used for smoothing. The format is:</p><p style=\"font-family:monospace;\">[[dx, dy, dz, 'type'], ...]</p><p>where <b>dx</b>, <b>dy</b>, and <b>dz</b> are the spatial and spectral kernel sizes (FWHM), and <b>'type'</b> can be boxcar (<b>'b'</b>) or Gaussian (<b>'g'</b>). Note that 'type' only applies to the spectral axis, and the spatial kernel is always Gaussian.</p>"));
 	tabSourceFindingFieldKunit->setWhatsThis(tr("<h3>SCfind.kernelUnit</h3><p>Are kernel parameters specified in <b>pixel</b> or <b>world</b> coordinates?</p>"));
-	tabSourceFindingFieldRmsMode->setWhatsThis(tr("<h3>SCfind.rmsMode</h3><p>Noise determination method: Gaussian fit to negative flux histogram (<b>negative</b>), median absolute deviation (<b>mad</b>), or standard deviation (<b>std</b>).</p>"));
+	tabSourceFindingFieldRmsMode->setWhatsThis(tr("<h3>SCfind.rmsMode</h3><p>Noise determination method: Gaussian fit to flux histogram (<b>gauss</b>),Gaussian fit to negative flux histogram (<b>negative</b>), median absolute deviation (<b>mad</b>), or standard deviation (<b>std</b>).</p>"));
 	tabSourceFindingFieldFluxRange->setWhatsThis(tr("<h3>SCfind.fluxRange</h3><p>Range of flux values to be used in noise measurement. Can be <b>negative</b>, <b>positive</b> or <b>all</b> to use only negative, only positive or all pixels, respectively.</p>"));
 	tabSourceFindingFieldThreshold->setWhatsThis(tr("<h3>SCfind.threshold</h3><p>Flux threshold relative to the noise level.</p>"));
 	tabInFilterFieldBorder->setWhatsThis(tr("<h3>smooth.edgeMode</h3><p>Behaviour near the edge of the cube. The following options are supported:</p><ul><li><b>constant:</b> assume constant value of 0</li><li><b>nearest:</b> assume constant value equal to edge pixel</li><li><b>reflect:</b> mirror values at edge, thereby including the edge pixel itself</li><li><b>mirror:</b> mirror values at position of outermost pixel, thereby excluding the edge pixel itself</li><li><b>wrap:</b> copy values from opposite edge of the array</li></ul>"));
@@ -3184,7 +3187,7 @@ void SoFiA::createWhatsThis()
 	tabOutputButtonFilteredCube->setWhatsThis(tr("<h3>steps.doWriteFilteredCube</h3><p>Save a copy of the filtered data cube. Note that this will only make sense if at least one of the input filters was applied.</p>"));
 	tabOutputButtonMask->setWhatsThis(tr("<h3>steps.doWriteMask</h3><p>Save source mask cube.</p>"));
 	tabSourceFindingFieldClipMethod->setWhatsThis(tr("<h3>threshold.clipMethod</h3><p>Define whether the flux threshold is <b>relative</b> to the noise level or in <b>absolute</b> flux units.</p>"));
-	tabSourceFindingFieldRmsMode2->setWhatsThis(tr("<h3>threshold.rmsMode</h3><p>Noise determination method: Gaussian fit to negative flux histogram (<b>negative</b>), median absolute deviation (<b>mad</b>), or standard deviation (<b>std</b>).</p>"));
+	tabSourceFindingFieldRmsMode2->setWhatsThis(tr("<h3>threshold.rmsMode</h3><p>Noise determination method: Gaussian fit to flux histogram (<b>gauss</b>), Gaussian fit to negative flux histogram (<b>negative</b>), median absolute deviation (<b>mad</b>), or standard deviation (<b>std</b>).</p>"));
 	tabSourceFindingFieldFluxRange2->setWhatsThis(tr("<h3>threshold.fluxRange</h3><p>Range of flux values to be used in noise measurement. Can be <b>negative</b>, <b>positive</b> or <b>all</b> to use only negative, only positive or all pixels, respectively.</p>"));
 	tabSourceFindingFieldThreshold2->setWhatsThis(tr("<h3>threshold.threshold</h3><p>Absolute or relative flux threshold for detections (see <b>threshold.clipMethod</b>).</p>"));
 	tabInFilterField2d1dIterations->setWhatsThis(tr("<h3>wavelet.iterations</h3><p>Number of iterations in the reconstruction process.</p>"));
