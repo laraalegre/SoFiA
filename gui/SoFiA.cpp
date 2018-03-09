@@ -2275,7 +2275,7 @@ void SoFiA::createInterface()
 	
 	tabSourceFindingFieldKernels = new QTextEdit(tabSourceFindingGroupBox1);
 	tabSourceFindingFieldKernels->setObjectName("SCfind.kernels");
-	tabSourceFindingFieldKernels->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+	tabSourceFindingFieldKernels->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	tabSourceFindingFieldKernels->setMaximumHeight(120);
 	connect(tabSourceFindingFieldKernels, SIGNAL(textChanged()), this, SLOT(parameterChanged()));
 	
@@ -2294,6 +2294,8 @@ void SoFiA::createInterface()
 	tabSourceFindingForm1Layout->addWidget(tabSourceFindingWidget1Left);
 	tabSourceFindingForm1Layout->addWidget(tabSourceFindingWidget1Right);
 	tabSourceFindingForm1Layout->setContentsMargins(0, 0, 0, 0);
+	tabSourceFindingForm1Layout->setStretchFactor(tabSourceFindingWidget1Left, 0);
+	tabSourceFindingForm1Layout->setStretchFactor(tabSourceFindingWidget1Right, 1);
 	
 	tabSourceFindingGroupBox1->setLayout(tabSourceFindingForm1Layout);
 	
@@ -2491,15 +2493,18 @@ void SoFiA::createInterface()
 	tabMergingForm1Left->addRow(tr("Radius X:"), tabMergingFieldRadiusX);
 	tabMergingForm1Left->addRow(tr("Radius Y:"), tabMergingFieldRadiusY);
 	tabMergingForm1Left->addRow(tr("Radius Z:"), tabMergingFieldRadiusZ);
+	tabMergingForm1Left->setContentsMargins(0, 0, 0, 0);
 	tabMergingForm1Right->addRow(tr("Min. size X:"), tabMergingFieldMinSizeX);
 	tabMergingForm1Right->addRow(tr("Min. size Y:"), tabMergingFieldMinSizeY);
 	tabMergingForm1Right->addRow(tr("Min. size Z:"), tabMergingFieldMinSizeZ);
+	tabMergingForm1Right->setContentsMargins(0, 0, 0, 0);
 	tabMergingWidget1Left->setLayout(tabMergingForm1Left);
 	tabMergingWidget1Right->setLayout(tabMergingForm1Right);
 	
 	tabMergingForm1Layout->addWidget(tabMergingWidget1Left);
 	tabMergingForm1Layout->addWidget(tabMergingWidget1Right);
-	tabMergingForm1Layout->setContentsMargins(0, 0, 0, 0);
+	tabMergingForm1Layout->addStretch();
+	tabMergingForm1Layout->setSpacing(15);
 	tabMergingGroupBox1->setLayout(tabMergingForm1Layout);
 	
 	
