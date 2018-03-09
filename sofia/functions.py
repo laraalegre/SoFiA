@@ -28,7 +28,7 @@ def moment2(x, y):
 	return np.sqrt(np.nansum(np.multiply(np.multiply(x - moment1(x, y), x - moment1(x, y)), y)) / np.nansum(y))
 
 
-def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1, verbose=0, min_hist_peak=0.05, sample=1):
+def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1, verbose=0, min_hist_peak=0.05, sample=1, twoPassStd=True):
 	"""
 	Description of arguments
 	------------------------
@@ -148,8 +148,10 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 	elif rmsMode == "std":
 		if fluxRange == "all":
 			rms = np.nanstd(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample], axis=None, dtype=np.float64)
+                        if twoPassStd: rms = np.nanstd(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample][abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample])<5*rms], axis=None, dtype=np.float64)
 		else:
 			rms = np.nanstd(subCube, axis=None, dtype=np.float64)
+                        if twoPassStd: rms = np.nanstd(subCube[abs(subCube)<5*rms], axis=None, dtype=np.float64)
 	
 	if verbose: sys.stdout.write("    ... %s rms = %.2e (data units)\n" % (rmsMode, rms))
 	
