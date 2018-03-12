@@ -19,13 +19,15 @@ else:
 def Gaussian(x, A, sigma):
 	return A * np.exp(-x**2 / (2.0 * sigma**2))
 
-def moment1(x, y):
-	err.ensure(x.size == y.size, "Incompatible array sizes encountered.")
-	return np.nansum(np.multiply(x, y)) / np.nansum(y)
+#def moment1(x, y):
+#	err.ensure(x.size == y.size, "Incompatible array sizes encountered.")
+#	return np.nansum(np.multiply(x, y)) / np.nansum(y)
 
 def moment2(x, y):
 	err.ensure(x.size == y.size, "Incompatible array sizes encountered.")
-	return np.sqrt(np.nansum(np.multiply(np.multiply(x - moment1(x, y), x - moment1(x, y)), y)) / np.nansum(y))
+	#return np.sqrt(np.nansum(np.multiply(np.multiply(x - moment1(x, y), x - moment1(x, y)), y)) / np.nansum(y))
+	# NOTE: Assuming here that the first moment is zero:
+	return np.sqrt(np.nansum(np.multiply(np.multiply(x, x), y)) / np.nansum(y))
 
 
 def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1, verbose=0, min_hist_peak=0.05, sample=1):
