@@ -62,11 +62,11 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 	
 	# Check if only negative or positive pixels are to be used:
 	if fluxRange == "negative":
-		subCube = cube[cube[z0:z1:sample, y0:y1:sample, x0:x1:sample] < 0]
+		subCube = cube[z0:z1:sample, y0:y1:sample, x0:x1:sample][cube[z0:z1:sample, y0:y1:sample, x0:x1:sample] < 0]
 		err.ensure(subCube.size, "Cannot measure noise from negative flux values.\nNo negative fluxes found in data cube.")
 		subCube[::2] *= -1   # Flip the sign of every other element
 	elif fluxRange == "positive":
-		subCube = cube[cube[z0:z1:sample, y0:y1:sample, x0:x1:sample] > 0]
+		subCube = cube[z0:z1:sample, y0:y1:sample, x0:x1:sample][cube[z0:z1:sample, y0:y1:sample, x0:x1:sample] > 0]
 		err.ensure(subCube.size, "Cannot measure noise from positive flux values.\nNo positive fluxes found in data cube.")
 		subCube[::2] *= -1   # Flip the sign of every other element
 	
