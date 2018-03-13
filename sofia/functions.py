@@ -96,6 +96,7 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 		
 		rms = abs(sp.optimize.curve_fit(Gaussian, fluxval, rmshisto, p0=[rmshisto.max(), -fluxval[rmshisto < rmshisto.max() / 2.0].max() * 2.0 / 2.355])[0][1])
 	
+	# GAUSSIAN FIT TO FLUX HISTOGRAM
 	elif rmsMode == "gauss":
 		nBins = 100
 		dataMin = float(np.nanmin(cube))
@@ -126,7 +127,9 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 		err.ensure(mom2 > 0.0, "2nd moment of flux histogram <= 0. Cannot measure noise level.")
 		
 		# Adjust bin size if necessary
-		while mom2 / binWidth < 5.0:
+		counter = 0
+		while mom2 / binWidth < 5.0 and counter < 3:
+			counter += 1
 			err.print_info("Increasing number of bins by factor of " + str(int(20.0 * binWidth / mom2)) + " for Gaussian fit.")
 			nBins = int(nBins * 20.0 * binWidth / mom2)
 			binWidth = (dataMax - dataMin) / float(nBins)
