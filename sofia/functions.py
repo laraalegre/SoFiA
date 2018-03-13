@@ -96,8 +96,8 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 		
 		rms = abs(sp.optimize.curve_fit(Gaussian, fluxval, rmshisto, p0=[rmshisto.max(), -fluxval[rmshisto < rmshisto.max() / 2.0].max() * 2.0 / 2.355])[0][1])
 	
-	# GAUSSIAN FIT TO FLUX HISTOGRAM
-	elif rmsMode == "gauss":
+	# GAUSSIAN FIT TO FLUX HISTOGRAM / SECOND MOMENT OF FLUX HISTOGRAM
+	elif rmsMode == "gauss" or rmsMode == "moment":
 		nBins = 100
 		dataMin = float(np.nanmin(cube))
 		dataMax = float(np.nanmax(cube))
@@ -138,8 +138,9 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 			mom2 = moment2(binCtr, hist)
 			err.ensure(mom2 > 0.0, "2nd moment of flux histogram < 0. Cannot measure noise level.")
 		
-		# Carry out Gaussian fitting
-		rms = abs(sp.optimize.curve_fit(Gaussian, binCtr, hist, p0=[hist.max(), mom2])[0][1])
+		# Carry out Gaussian fitting if requested
+		if rmsMode == "gauss": rms = abs(sp.optimize.curve_fit(Gaussian, binCtr, hist, p0=[hist.max(), mom2])[0][1])
+		else: rms = mom2
 	
 	# MEDIAN ABSOLUTE DEVIATION
 	elif rmsMode == "mad":
