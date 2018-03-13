@@ -40,14 +40,16 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 	# LOCAL noise measurement within running window (slower and less memory-friendly)
 	if method == "local":
 		# Ensure that window and grid sizes are integers greater than 0 and divisible by 2
-		windowSpatial  = int(max(windowSpatial, 2))
-		windowSpectral = int(max(windowSpectral, 2))
-		gridSpatial    = int(max(gridSpatial, 2))
-		gridSpectral   = int(max(gridSpectral, 2))
+		windowSpatial  = int(max(windowSpatial, 4))
+		windowSpectral = int(max(windowSpectral, 4))
 		windowSpatial  += windowSpatial % 2
 		windowSpectral += windowSpectral % 2
-		gridSpatial    += gridSpatial % 2
-		gridSpectral   += gridSpectral % 2
+		#gridSpatial    = int(max(gridSpatial, 2))
+		#gridSpectral   = int(max(gridSpectral, 2))
+		gridSpatial    = int(windowSpatial / 2)
+		gridSpectral   = int(windowSpectral / 2)
+		gridSpatial    -= gridSpatial % 2
+		gridSpectral   -= gridSpectral % 2
 		
 		err.print_info("  Using grid size of [" + str(gridSpatial) + ", " + str(gridSpectral) + "]")
 		err.print_info("  and window size of [" + str(windowSpatial) + ", " + str(windowSpectral) + "].")

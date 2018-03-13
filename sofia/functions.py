@@ -24,10 +24,14 @@ def Gaussian(x, A, sigma):
 #	return np.nansum(np.multiply(x, y)) / np.nansum(y)
 
 def moment2(x, y):
-	err.ensure(x.size == y.size, "Incompatible array sizes encountered.")
+	err.ensure(x.size == y.size, "Incompatible array sizes encountered in moment calculation.")
 	#return np.sqrt(np.nansum(np.multiply(np.multiply(x - moment1(x, y), x - moment1(x, y)), y)) / np.nansum(y))
 	# NOTE: Assuming here that the first moment is zero:
 	return np.sqrt(np.nansum(np.multiply(np.multiply(x, x), y)) / np.nansum(y))
+
+def standard_deviation(x, mean):
+	err.ensure(x.size > 0, "Array size of 0 encountered in calculation of std. dev.")
+	return np.sqrt(np.sum(np.multiply(x - mean, x - mean)) / x.size)
 
 
 def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1, verbose=0, min_hist_peak=0.05, sample=1):
@@ -46,7 +50,7 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 		sys.stderr.write("WARNING: Illegal value of fluxRange = '" + str(fluxRange) + "'.\n")
 		sys.stderr.write("         Using default value of 'all' instead.\n")
 		fluxRange = "all"
-	if rmsMode != "std" and rmsMode != "mad" and rmsMode != "negative" and rmsMode != "gauss":
+	if rmsMode != "std" and rmsMode != "mad" and rmsMode != "negative" and rmsMode != "gauss" and rmsMode != "moment":
 		sys.stderr.write("WARNING: Illegal value of rmsMode = '" + str(rmsMode) + "'.\n")
 		sys.stderr.write("         Using default value of 'mad' instead.\n")
 		rmsMode = "mad"
@@ -57,20 +61,20 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 	x0, x1 = int(math.ceil((1 - 1.0 / zoomx) * cube.shape[2] / 2)), int(math.floor((1 + 1.0 / zoomx) * cube.shape[2] / 2)) + 1
 	y0, y1 = int(math.ceil((1 - 1.0 / zoomy) * cube.shape[1] / 2)), int(math.floor((1 + 1.0 / zoomy) * cube.shape[1] / 2)) + 1
 	z0, z1 = int(math.ceil((1 - 1.0 / zoomz) * cube.shape[0] / 2)), int(math.floor((1 + 1.0 / zoomz) * cube.shape[0] / 2)) + 1
-	if verbose: sys.stdout.write("    Estimating rms on subcube (x,y,z zoom = %.0f,%.0f,%.0f) ...\n" % (zoomx, zoomy, zoomz))
-	if verbose: sys.stdout.write("    Estimating rms on subcube sampling every %i voxels ...\n" % (sample))
-	if verbose: sys.stdout.write("    ... Subcube shape is " + str(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample].shape) + " ...\n")
+	err.print_info("    Estimating rms on subcube (x,y,z zoom = %.0f,%.0f,%.0f) ...\n" % (zoomx, zoomy, zoomz), verbose)
+	err.print_info("    Estimating rms on subcube sampling every %i voxels ...\n" % (sample), verbose)
+	err.print_info("    ... Subcube shape is " + str(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample].shape) + " ...\n", verbose)
 	
 	
 	# Check if only negative or positive pixels are to be used:
 	if fluxRange == "negative":
-		subCube = cube[cube[z0:z1:sample, y0:y1:sample, x0:x1:sample] < 0]
+		subCube = -cube[cube[z0:z1:sample, y0:y1:sample, x0:x1:sample] < 0]
 		err.ensure(subCube.size, "Cannot measure noise from negative flux values.\nNo negative fluxes found in data cube.")
-		subCube[::2] *= -1   # Flip the sign of every other element
+		#subCube[::2] *= -1   # Flip the sign of every other element
 	elif fluxRange == "positive":
 		subCube = cube[cube[z0:z1:sample, y0:y1:sample, x0:x1:sample] > 0]
 		err.ensure(subCube.size, "Cannot measure noise from positive flux values.\nNo positive fluxes found in data cube.")
-		subCube[::2] *= -1   # Flip the sign of every other element
+		#subCube[::2] *= -1   # Flip the sign of every other element
 	
 	
 	# GAUSSIAN FIT TO NEGATIVE FLUXES
@@ -124,11 +128,11 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 		
 		# Calculate 2nd moment
 		mom2 = moment2(binCtr, hist)
-		err.ensure(mom2 > 0.0, "2nd moment of flux histogram <= 0. Cannot measure noise level.")
+		err.ensure(mom2 > 0.0, "2nd moment of flux histogram is 0. Cannot measure noise level.")
 		
 		# Adjust bin size if necessary
 		counter = 0
-		while mom2 / binWidth < 5.0 and counter < 3:
+		while mom2 < 5.0 * binWidth and counter < 3:
 			counter += 1
 			err.print_info("Increasing number of bins by factor of " + str(int(20.0 * binWidth / mom2)) + " for Gaussian fit.")
 			nBins = int(nBins * 20.0 * binWidth / mom2)
@@ -147,15 +151,19 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 		if fluxRange == "all":
 			rms = 1.4826 * nanmedian(abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample] - nanmedian(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample], axis=None)), axis=None)
 		else:
-			rms = 1.4826 * nanmedian(abs(subCube - nanmedian(subCube, axis=None)), axis=None)
+			#rms = 1.4826 * nanmedian(abs(subCube - nanmedian(subCube, axis=None)), axis=None)
+			rms = 1.4826 * np.median(abs(subCube), axis=None)
+			# NOTE: Here we assume that the median of the data is zero! There should be non NaNs in subCube.
 	
 	# STANDARD DEVIATION
 	elif rmsMode == "std":
 		if fluxRange == "all":
 			rms = np.nanstd(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample], axis=None, dtype=np.float64)
 		else:
-			rms = np.nanstd(subCube, axis=None, dtype=np.float64)
+			#rms = np.nanstd(subCube, axis=None, dtype=np.float64)
+			rms = standard_deviation(subCube, 0.0)
+			# NOTE: Here we assume that the mean of the data is zero! There should be non NaNs in subCube.
 	
-	if verbose: sys.stdout.write("    ... %s rms = %.2e (data units)\n" % (rmsMode, rms))
+	err.print_info("    ... %s rms = %.2e (data units)\n" % (rmsMode, rms), verbose)
 	
 	return rms
