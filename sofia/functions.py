@@ -20,6 +20,7 @@ else:
 # Gaussian function centred at 0
 # ------------------------------
 def Gaussian(x, A, sigma):
+	err.ensure(sigma != 0, "Invalid width of 0 encountered in Gaussian function.")
 	return A * np.exp(-x**2 / (2.0 * sigma**2))
 
 
@@ -28,7 +29,7 @@ def Gaussian(x, A, sigma):
 # --------------------------------------------------------
 def moment2(x, y):
 	err.ensure(x.size == y.size, "Incompatible array sizes encountered in moment calculation.")
-	return np.sqrt(np.nansum(x * x * y) / np.nansum(y))
+	return np.sqrt(np.sum(x * x * y) / np.sum(y))
 
 
 # ------------------------------------------------
@@ -152,7 +153,7 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 		
 		# Adjust bin size if necessary
 		counter = 0
-		while mom2 < 5.0 * binWidth and counter < 3:
+		while mom2 < 5.0 * binWidth and counter < 2:
 			counter += 1
 			err.print_info("Increasing number of bins by factor of " + str(int(20.0 * binWidth / mom2)) + " for Gaussian fit.")
 			nBins = int(nBins * 20.0 * binWidth / mom2)
@@ -181,6 +182,7 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 		if fluxRange == "all":
 			#rms = np.nanstd(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample], axis=None, dtype=np.float64)
 			rms = nan_standard_deviation(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample])
+			# NOTE: Here we assume that the mean of the data is zero!
 		else:
 			#rms = np.nanstd(halfCube, axis=None, dtype=np.float64)
 			rms = standard_deviation(halfCube)
