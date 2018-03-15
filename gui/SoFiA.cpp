@@ -2117,20 +2117,20 @@ void SoFiA::createInterface()
 	tabInFilterLayoutWindow->setSpacing(5);
 	tabInFilterWidgetWindow->setLayout(tabInFilterLayoutWindow);
 	
-	tabInFilterSeparator1 = new QFrame(tabInFilterGroupBox2);
+	/*tabInFilterSeparator1 = new QFrame(tabInFilterGroupBox2);
 	tabInFilterSeparator1->setFrameShape(QFrame::HLine);
 	tabInFilterSeparator1->setFrameShadow(QFrame::Sunken);
 	tabInFilterSeparator2 = new QFrame(tabInFilterGroupBox2);
 	tabInFilterSeparator2->setFrameShape(QFrame::HLine);
-	tabInFilterSeparator2->setFrameShadow(QFrame::Sunken);
+	tabInFilterSeparator2->setFrameShadow(QFrame::Sunken);*/
 	
 	tabInFilterForm2->addRow(tr("Method:"), tabInFilterFieldMethod);
 	tabInFilterForm2->addRow(tr("Statistic:"), tabInFilterFieldStatistic);
 	tabInFilterForm2->addRow(tr("Flux range:"), tabInFilterFieldFluxRange);
-	tabInFilterForm2->addRow(tabInFilterSeparator1);
+	//tabInFilterForm2->addRow(tabInFilterSeparator1);
 	tabInFilterForm2->addRow(tr("Dimensions:"), tabInFilterWidgetScaleXYZ);
 	tabInFilterForm2->addRow(tr("Edge size:"), tabInFilterWidgetEdge);
-	tabInFilterForm2->addRow(tabInFilterSeparator2);
+	//tabInFilterForm2->addRow(tabInFilterSeparator2);
 	//tabInFilterForm2->addRow(tr("Grid size:"), tabInFilterWidgetGrid);
 	tabInFilterForm2->addRow(tr("Window size:"), tabInFilterWidgetWindow);
 	
