@@ -829,13 +829,13 @@ void SoFiA::updateFields()
 	if(n < 0.0) tabInFilterFieldSmoothingSpectral->setText("0.0");
 	
 	// Noise scaling method
-	tabInFilterWidgetGrid->setEnabled(tabInFilterFieldMethod->currentIndex() == 1 and tabInFilterGroupBox2->isChecked());
+	//tabInFilterWidgetGrid->setEnabled(tabInFilterFieldMethod->currentIndex() == 1 and tabInFilterGroupBox2->isChecked());
 	tabInFilterWidgetWindow->setEnabled(tabInFilterFieldMethod->currentIndex() == 1 and tabInFilterGroupBox2->isChecked());
 	tabInFilterWidgetEdge->setEnabled(tabInFilterFieldMethod->currentIndex() == 0 and tabInFilterGroupBox2->isChecked());
 	tabInFilterWidgetScaleXYZ->setEnabled(tabInFilterFieldMethod->currentIndex() == 0 and tabInFilterGroupBox2->isChecked());
 	
-	tabInFilterFieldGridSpatial->setValue(tabInFilterFieldGridSpatial->value() + tabInFilterFieldGridSpatial->value() % 2);
-	tabInFilterFieldGridSpectral->setValue(tabInFilterFieldGridSpectral->value() + tabInFilterFieldGridSpectral->value() % 2);
+	//tabInFilterFieldGridSpatial->setValue(tabInFilterFieldGridSpatial->value() + tabInFilterFieldGridSpatial->value() % 2);
+	//tabInFilterFieldGridSpectral->setValue(tabInFilterFieldGridSpectral->value() + tabInFilterFieldGridSpectral->value() % 2);
 	tabInFilterFieldWindowSpatial->setValue(tabInFilterFieldWindowSpatial->value() + tabInFilterFieldWindowSpatial->value() % 2);
 	tabInFilterFieldWindowSpectral->setValue(tabInFilterFieldWindowSpectral->value() + tabInFilterFieldWindowSpectral->value() % 2);
 	
@@ -2063,7 +2063,7 @@ void SoFiA::createInterface()
 	tabInFilterLayoutEdge->setSpacing(5);
 	tabInFilterWidgetEdge->setLayout(tabInFilterLayoutEdge);
 	
-	tabInFilterWidgetGrid = new QWidget(tabInFilterGroupBox2);
+	/*tabInFilterWidgetGrid = new QWidget(tabInFilterGroupBox2);
 	tabInFilterLayoutGrid = new QHBoxLayout();
 	tabInFilterFieldGridSpatial = new QSpinBox(tabInFilterWidgetGrid);
 	tabInFilterFieldGridSpatial->setObjectName("scaleNoise.gridSpatial");
@@ -2088,14 +2088,14 @@ void SoFiA::createInterface()
 	tabInFilterLayoutGrid->addWidget(tabInFilterLabelGridSpectral);
 	tabInFilterLayoutGrid->setContentsMargins(0, 0, 0, 0);
 	tabInFilterLayoutGrid->setSpacing(5);
-	tabInFilterWidgetGrid->setLayout(tabInFilterLayoutGrid);
+	tabInFilterWidgetGrid->setLayout(tabInFilterLayoutGrid);*/
 	
 	tabInFilterWidgetWindow = new QWidget(tabInFilterGroupBox2);
 	tabInFilterLayoutWindow = new QHBoxLayout();
 	tabInFilterFieldWindowSpatial = new QSpinBox(tabInFilterWidgetWindow);
 	tabInFilterFieldWindowSpatial->setObjectName("scaleNoise.windowSpatial");
 	tabInFilterFieldWindowSpatial->setMaximumWidth(100);
-	tabInFilterFieldWindowSpatial->setRange(2, 100);
+	tabInFilterFieldWindowSpatial->setRange(4, 999);
 	tabInFilterFieldWindowSpatial->setSingleStep(2);
 	connect(tabInFilterFieldWindowSpatial, SIGNAL(editingFinished()), this, SLOT(updateFields()));
 	connect(tabInFilterFieldWindowSpatial, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
@@ -2103,7 +2103,7 @@ void SoFiA::createInterface()
 	tabInFilterFieldWindowSpectral = new QSpinBox(tabInFilterWidgetWindow);
 	tabInFilterFieldWindowSpectral->setObjectName("scaleNoise.windowSpectral");
 	tabInFilterFieldWindowSpectral->setMaximumWidth(100);
-	tabInFilterFieldWindowSpectral->setRange(2, 100);
+	tabInFilterFieldWindowSpectral->setRange(4, 999);
 	tabInFilterFieldWindowSpectral->setSingleStep(2);
 	connect(tabInFilterFieldWindowSpectral, SIGNAL(editingFinished()), this, SLOT(updateFields()));
 	connect(tabInFilterFieldWindowSpectral, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
@@ -2131,7 +2131,7 @@ void SoFiA::createInterface()
 	tabInFilterForm2->addRow(tr("Dimensions:"), tabInFilterWidgetScaleXYZ);
 	tabInFilterForm2->addRow(tr("Edge size:"), tabInFilterWidgetEdge);
 	tabInFilterForm2->addRow(tabInFilterSeparator2);
-	tabInFilterForm2->addRow(tr("Grid size:"), tabInFilterWidgetGrid);
+	//tabInFilterForm2->addRow(tr("Grid size:"), tabInFilterWidgetGrid);
 	tabInFilterForm2->addRow(tr("Window size:"), tabInFilterWidgetWindow);
 	
 	tabInFilterGroupBox3 = new QGroupBox(tr("Enable"), toolBoxIF);
@@ -3149,8 +3149,8 @@ void SoFiA::createWhatsThis()
 	tabInFilterFieldEdgeY->setWhatsThis(tr("<h3>scaleNoise.edgeY</h3><p>Size of edge (in pixels) to be excluded in second coordinate. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));
 	tabInFilterFieldEdgeZ->setWhatsThis(tr("<h3>scaleNoise.edgeZ</h3><p>Size of edge (in pixels) to be excluded in third coordinate. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));
 	tabInFilterFieldFluxRange->setWhatsThis(tr("<h3>scaleNoise.fluxRange</h3><p>Range of flux values to be used in noise measurement. Can be <b>negative</b>, <b>positive</b> or <b>all</b> to use only negative, only positive or all pixels, respectively.</p>"));
-	tabInFilterFieldGridSpatial->setWhatsThis(tr("<h3>scaleNoise.gridSpatial</h3><p>This defines the spatial grid size on which the local noise measurement takes place. The setting will be ignored if <b>scaleNoise.method = global</b>. It must be an even number of 2 or greater.</p>"));
-	tabInFilterFieldGridSpectral->setWhatsThis(tr("<h3>scaleNoise.gridSpectral</h3><p>This defines the spectral grid size on which the local noise measurement takes place. The setting will be ignored if <b>scaleNoise.method = global</b>. It must be an even number of 2 or greater.</p>"));
+	//tabInFilterFieldGridSpatial->setWhatsThis(tr("<h3>scaleNoise.gridSpatial</h3><p>This defines the spatial grid size on which the local noise measurement takes place. The setting will be ignored if <b>scaleNoise.method = global</b>. It must be an even number of 2 or greater.</p>"));
+	//tabInFilterFieldGridSpectral->setWhatsThis(tr("<h3>scaleNoise.gridSpectral</h3><p>This defines the spectral grid size on which the local noise measurement takes place. The setting will be ignored if <b>scaleNoise.method = global</b>. It must be an even number of 2 or greater.</p>"));
 	tabInFilterFieldMethod->setWhatsThis(tr("<h3>scaleNoise.method</h3><p>If set to <b>global</b>, the noise measurement will be carried out on the entire projected image plane perpendicular to the axis along which the noise is to be scaled (default). If set to <b>local</b>, the noise measurement will occur in a running window of specified size on a specified grid. Note that the latter can be slow and memory-heavy and is only recommended for small cubes or 2D images that are affected by localised noise variations.</p>"));
 	tabInFilterFieldScaleX->setWhatsThis(tr("<h3>scaleNoise.scaleX</h3><p>Noise normalisation in first (spatial) dimension. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));
 	tabInFilterFieldScaleY->setWhatsThis(tr("<h3>scaleNoise.scaleY</h3><p>Noise normalisation in second (spatial) dimension. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));

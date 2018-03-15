@@ -16,37 +16,36 @@ else:
 	from scipy import nanmedian
 
 
-# ---------------------------------
-# Gaussian function centred at zero
-# ---------------------------------
+# ------------------------------
+# Gaussian function centred at 0
+# ------------------------------
 def Gaussian(x, A, sigma):
 	return A * np.exp(-x**2 / (2.0 * sigma**2))
 
 
-# ---------------------------------
-# First moment of data sample y(x)
-# --------------------------------
-#def moment1(x, y):
-#	err.ensure(x.size == y.size, "Incompatible array sizes encountered.")
-#	return np.nansum(np.multiply(x, y)) / np.nansum(y)
-
-
-# ---------------------------------
-# Second moment of data sample y(x)
-# ---------------------------------
+# --------------------------------------------------------
+# Second moment of data sample y(x) with first moment of 0
+# --------------------------------------------------------
 def moment2(x, y):
 	err.ensure(x.size == y.size, "Incompatible array sizes encountered in moment calculation.")
-	#return np.sqrt(np.nansum(np.multiply(np.multiply(x - moment1(x, y), x - moment1(x, y)), y)) / np.nansum(y))
-	# NOTE: Assuming here that the first moment is zero:
-	return np.sqrt(np.nansum(np.multiply(np.multiply(x, x), y)) / np.nansum(y))
+	return np.sqrt(np.nansum(x * x * y) / np.nansum(y))
 
 
-# ---------------------------------
-# Standard deviation of data sample
-# ---------------------------------
-def standard_deviation(x, mean):
+# ------------------------------------------------
+# Standard deviation of data sample with mean of 0
+# ------------------------------------------------
+def standard_deviation(x):
 	err.ensure(x.size > 0, "Array size of 0 encountered in calculation of std. dev.")
-	return np.sqrt(np.sum(np.multiply(x - mean, x - mean)) / x.size)
+	return np.sqrt(np.sum(x * x) / x.size)
+
+
+# --------------------------------------------------------------------
+# Standard deviation of data sample with mean of 0, accounting for NaN
+# --------------------------------------------------------------------
+def nan_standard_deviation(x):
+	y = x[~np.isnan(x)]
+	err.ensure(y.size > 0, "Array size of 0 encountered in calculation of std. dev.")
+	return np.sqrt(np.sum(y * y) / y.size)
 
 
 # -----------------------------------
@@ -86,13 +85,17 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 	
 	# Check if only negative or positive pixels are to be used:
 	if fluxRange == "negative":
-		halfCube = cube[cube[z0:z1:sample, y0:y1:sample, x0:x1:sample] < 0]
+		with np.errstate(invalid="ignore"):
+			halfCube = cube[z0:z1:sample, y0:y1:sample, x0:x1:sample][cube[z0:z1:sample, y0:y1:sample, x0:x1:sample] < 0]
 		err.ensure(halfCube.size, "Cannot measure noise from negative flux values.\nNo negative fluxes found in data cube.")
-		#halfCube[::2] *= -1   # Flip the sign of every other element (no longer required)
 	elif fluxRange == "positive":
-		halfCube = cube[cube[z0:z1:sample, y0:y1:sample, x0:x1:sample] > 0]
+		with np.errstate(invalid="ignore"):
+			halfCube = cube[z0:z1:sample, y0:y1:sample, x0:x1:sample][cube[z0:z1:sample, y0:y1:sample, x0:x1:sample] > 0]
 		err.ensure(halfCube.size, "Cannot measure noise from positive flux values.\nNo positive fluxes found in data cube.")
-		#halfCube[::2] *= -1   # Flip the sign of every other element (no longer required)
+	# NOTE: The purpose of the with... statement is to temporarily disable certain warnings, as otherwise the
+	#       Python interpreter would print a warning whenever a value of NaN is compared to 0. The comparison
+	#       is defined to yield False, which conveniently removes NaNs by default without having to do that
+	#       manually in a separate step, but the associated warning message is unfortunately a nuisance.
 	
 	
 	# GAUSSIAN FIT TO NEGATIVE FLUXES
@@ -165,20 +168,23 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 	# MEDIAN ABSOLUTE DEVIATION
 	elif rmsMode == "mad":
 		if fluxRange == "all":
-			rms = 1.4826 * nanmedian(abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample] - nanmedian(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample], axis=None)), axis=None)
+			#rms = 1.4826 * nanmedian(abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample] - nanmedian(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample], axis=None)), axis=None)
+			rms = 1.4826 * nanmedian(abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample]), axis=None)
+			# NOTE: Here we assume that the median of the data is zero!
 		else:
 			#rms = 1.4826 * nanmedian(abs(halfCube - nanmedian(halfCube, axis=None)), axis=None)
 			rms = 1.4826 * np.median(abs(halfCube), axis=None)
-			# NOTE: Here we assume that the median of the data is zero! There should be no NaNs in halfCube.
+			# NOTE: Here we assume that the median of the data is zero! There are no NaNs in halfCube.
 	
 	# STANDARD DEVIATION
 	elif rmsMode == "std":
 		if fluxRange == "all":
-			rms = np.nanstd(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample], axis=None, dtype=np.float64)
+			#rms = np.nanstd(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample], axis=None, dtype=np.float64)
+			rms = nan_standard_deviation(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample])
 		else:
 			#rms = np.nanstd(halfCube, axis=None, dtype=np.float64)
-			rms = standard_deviation(halfCube, 0.0)
-			# NOTE: Here we assume that the mean of the data is zero! There should be no NaNs in halfCube.
+			rms = standard_deviation(halfCube)
+			# NOTE: Here we assume that the mean of the data is zero! There are no NaNs in halfCube.
 	
 	err.print_info("    ... %s rms = %.2e (data units)" % (rmsMode, rms), verbose)
 	

@@ -356,12 +356,12 @@ private:
 	QCheckBox    *tabInFilterFieldScaleY;
 	QCheckBox    *tabInFilterFieldScaleZ;
 	QComboBox    *tabInFilterFieldMethod;
-	QWidget      *tabInFilterWidgetGrid;
-	QHBoxLayout  *tabInFilterLayoutGrid;
-	QLabel       *tabInFilterLabelGridSpatial;
-	QLabel       *tabInFilterLabelGridSpectral;
-	QSpinBox     *tabInFilterFieldGridSpatial;
-	QSpinBox     *tabInFilterFieldGridSpectral;
+	//QWidget      *tabInFilterWidgetGrid;
+	//QHBoxLayout  *tabInFilterLayoutGrid;
+	//QLabel       *tabInFilterLabelGridSpatial;
+	//QLabel       *tabInFilterLabelGridSpectral;
+	//QSpinBox     *tabInFilterFieldGridSpatial;
+	//QSpinBox     *tabInFilterFieldGridSpectral;
 	QWidget      *tabInFilterWidgetWindow;
 	QHBoxLayout  *tabInFilterLayoutWindow;
 	QLabel       *tabInFilterLabelWindowSpatial;
