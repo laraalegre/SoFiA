@@ -89,7 +89,7 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 		
 		# Divide data cube by RMS cube
 		rms_cube[rms_cube <= 0] = np.nan
-		cube = rms_cube
+		cube /= rms_cube
 		
 		# Delete the RMS cube again to release its memory
 		del rms_cube
