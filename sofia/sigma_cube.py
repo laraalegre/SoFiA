@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import numpy as np
+from scipy.interpolate import griddata
 from .functions import *
 import sys
 import math
@@ -24,7 +25,7 @@ Parameters
   gridSpectral:    Size of each spectral grid cell for local RMS measurement. Must be even.
 """
 
-def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0, edgeZ=0, statistic="mad", fluxRange="all", method="global", windowSpatial=20, windowSpectral=20, gridSpatial=10, gridSpectral=10):
+def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0, edgeZ=0, statistic="mad", fluxRange="all", method="global", windowSpatial=20, windowSpectral=20, gridSpatial=10, gridSpectral=10, interpolation=False):
 	# Print some informational messages
 	err.print_info("Generating noise-scaled data cube:")
 	err.print_info("  Selecting " + str(method) + " noise measurement method.")
@@ -77,11 +78,18 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 					window = (max(0, z - windowSpectral), min(dimensions[0], z + windowSpectral), max(0, y - windowSpatial), min(dimensions[1], y + windowSpatial), max(0, x - windowSpatial), min(dimensions[2], x + windowSpatial))
 					
 					if not np.all(np.isnan(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]])):
-						rms_cube[grid[0]:grid[1], grid[2]:grid[3], grid[4]:grid[5]] = GetRMS(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0)
+						if interpolation:
+							rms_cube[z, y, x] = GetRMS(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0)
+						else:
+							rms_cube[grid[0]:grid[1], grid[2]:grid[3], grid[4]:grid[5]] = GetRMS(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0)
+		
+		# Carry out linear interpolation if requested
+		# Not yet implemented. Idea: First do bilinear interpolation across image planes followed by
+		# linear interpolation long the spectral axis.
 		
 		# Divide data cube by RMS cube
 		rms_cube[rms_cube <= 0] = np.nan
-		cube /= rms_cube
+		cube = rms_cube
 		
 		# Delete the RMS cube again to release its memory
 		del rms_cube

@@ -52,15 +52,27 @@ def nan_standard_deviation(x):
 # -----------------------------------
 # Function to measure RMS noise level
 # -----------------------------------
-def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1, verbose=0, min_hist_peak=0.05, sample=1):
+def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1, verbose=0, min_hist_peak=0.05, sample=1, twoPass=True):
 	"""
 	Description of arguments
 	------------------------
-	   fluxRange  Define which part of the data are to be used in the noise measurement.
-	              Allowed values:
-	                'negative'  Use only pixels with negative flux.
-	                'positive'  Use only pixels with positive flux.
-	                'all'       Use both positive and negative (i.e. all) pixels.
+	rmsMode    Select which algorithm should be used for calculating the noise.
+	           Allowed options:
+	             'std'       Standard deviation about 0.
+	             'mad'       Median absolute deviation about 0.
+	             'moment'    2nd moment of flux histogram, assuming a 1st moment of 0.
+	             'gauss'     Width of Gaussian fitted to flux histogram, assuming a centroid of 0.
+	             'negative'  Width of Gaussian fitted to negative side of the flux histogram,
+	                         again assuming a centroid of 0. This is a legacy option and may be
+	                         removed from SoFiA in the future.
+	fluxRange  Define which part of the data are to be used in the noise measurement.
+	           Allowed options:
+	             'negative'  Use only pixels with negative flux.
+	             'positive'  Use only pixels with positive flux.
+	             'all'       Use both positive and negative (i.e. all) pixels.
+	verbose    Print additional progress messages if set to True.
+	twoPass    Run a second pass of MAD and STD, this time with a clip level of 5 times
+	           the RMS from the first pass.
 	"""
 	
 	# Check input for sanity
@@ -169,25 +181,41 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 	# MEDIAN ABSOLUTE DEVIATION
 	elif rmsMode == "mad":
 		if fluxRange == "all":
-			#rms = 1.4826 * nanmedian(abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample] - nanmedian(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample], axis=None)), axis=None)
-			rms = 1.4826 * nanmedian(abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample]), axis=None)
 			# NOTE: Here we assume that the median of the data is zero!
+			rms = 1.4826 * nanmedian(abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample]), axis=None)
+			if twoPass:
+				err.print_info("Repeating noise estimation with 5-sigma clip.", verbose)
+				rms = 1.4826 * nanmedian(abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample][abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample]) < 5.0 * rms]), axis=None)
 		else:
-			#rms = 1.4826 * nanmedian(abs(halfCube - nanmedian(halfCube, axis=None)), axis=None)
+			# NOTE: Here we assume that the median of the data is zero! There are no more NaNs in halfCube.
 			rms = 1.4826 * np.median(abs(halfCube), axis=None)
-			# NOTE: Here we assume that the median of the data is zero! There are no NaNs in halfCube.
+			if twoPass:
+				err.print_info("Repeating noise estimation with 5-sigma clip.", verbose)
+				rms = 1.4826 * np.median(abs(halfCube[abs(halfCube) < 5.0 * rms]), axis=None)
 	
 	# STANDARD DEVIATION
 	elif rmsMode == "std":
 		if fluxRange == "all":
-			#rms = np.nanstd(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample], axis=None, dtype=np.float64)
-			rms = nan_standard_deviation(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample])
 			# NOTE: Here we assume that the mean of the data is zero!
+			rms = nan_standard_deviation(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample])
+			if twoPass:
+				err.print_info("Repeating noise estimation with 5-sigma clip.", verbose)
+				rms = nan_standard_deviation(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample][abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample]) < 5.0 * rms])
 		else:
-			#rms = np.nanstd(halfCube, axis=None, dtype=np.float64)
+			# NOTE: Here we assume that the mean of the data is zero! There are no more NaNs in halfCube.
 			rms = standard_deviation(halfCube)
-			# NOTE: Here we assume that the mean of the data is zero! There are no NaNs in halfCube.
+			if twoPass:
+				err.print_info("Repeating noise estimation with 5-sigma clip.", verbose)
+				rms = standard_deviation(halfCube[abs(halfCube) < 5.0 * rms])
 	
 	err.print_info("    ... %s rms = %.2e (data units)" % (rmsMode, rms), verbose)
 	
 	return rms
+
+
+# Copy of previous, full MAD and STD calculations
+# -----------------------------------------------
+# MAD all: rms = 1.4826 * nanmedian(abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample] - nanmedian(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample], axis=None)), axis=None)
+# MAD pos/neg: rms = 1.4826 * nanmedian(abs(halfCube - nanmedian(halfCube, axis=None)), axis=None)
+# STD all: rms = np.nanstd(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample], axis=None, dtype=np.float64)
+# STD pos/neg: rms = np.nanstd(halfCube, axis=None, dtype=np.float64)
