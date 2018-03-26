@@ -149,11 +149,15 @@
     <h3>Noise Scaling</h3>
     
     <p>
-      The purpose of this filter is to automatically normalise the data cube by the noise level. This can be helpful in situations where the noise varies across the data cube, e.g. as a function of frequency, which would be problematic for source finding algorithms that assume a constant noise level. Noise scaling can be applied to each of the three cube dimensions independently. Three different algorithms for measuring the local noise level, specified with the <code>scaleNoise.statistic</code> parameter, are currently offered by SoFiA: standard deviation, median absolute deviation and fitting of a Gaussian function to the negative part of the flux histogram.
+      The purpose of this filter is to automatically normalise the data cube by the noise level. This can be helpful in situations where the noise varies across the data cube, e.g. as a function of frequency, which would be problematic for source finding algorithms that assume a constant noise level. Noise scaling can be applied to each of the three cube dimensions independently. Three different algorithms for measuring the local noise level, specified with the <code>scaleNoise.statistic</code> parameter, are currently offered by SoFiA: standard deviation, median absolute deviation and fitting of a Gaussian function to the flux histogram. In addition, SoFiA offers the option of measuring the noise across only the negative or positive part of the flux histogram to mitigate the impact of actual source emission or absorption on the flux measurement.
     </p>
     
     <p>
-      SoFiA offers two different methods for measuring noise that can be selected with the <code>scaleNoise.method</code> parameter. If set to <code>global</code>, the noise will be measured across the entire image plane perpendicular to the axis along which the noise is to be normalised. This is the default method and by far the fastest and least memory-intensive method. Alternatively, if there are localised noise variation across the image, the <code>local</code> method can be applied, which will measure the noise in a running window of given size on a specified grid. This method is slow and memory-heavy and therefore only recommended for small cubes or 2D images with strong, highly localised noise variations, e.g. continuum images that have increased noise around bright sources.
+      SoFiA offers two different methods for measuring noise that can be selected with the <code>scaleNoise.method</code> parameter. If set to <code>global</code>, the noise will be measured across the entire image plane perpendicular to the axis along which the noise is to be normalised. This is the default method and by far the fastest and least memory-intensive method. It can be applied to all three axes of the cube independently to take out both spatial and spectral noise variations.
+    </p>
+    
+    <p>
+      Alternatively, if there are highly localised noise variations across the image, <code>scaleNoise.method</code> can be set to <code>local</code>, which will measure the noise in a running window of given size on a specified grid. SoFiA offers the possibility of interpolating the noise measurements in between sparse grid points in order to speed up the measurement process. It is usually sufficient to specify a spatial/spectral window size across which the noise is measured; SoFiA will automatically determine an optimal grid with cells of about half the window size. Note that the <code>local</code> noise measurement method is slow and memory-heavy and therefore only recommended for small cubes or 2D images with strong, highly localised noise variations, e.g. continuum images that have increased noise around bright sources.
     </p>
     
     <table id="steps.doScaleNoise">
@@ -338,37 +342,37 @@
 
     <table id="scaleNoise.gridSpatial">
         <tr>
-            <td class="head">Parameter:</td><td class="body2">scaleNoise.gridSpatial</td>
+            <td class="head2">Parameter:</td><td class="body3">scaleNoise.gridSpatial</td>
         </tr>
         <tr>
-            <td class="head">Type:</td><td class="body"><code>int</code></td>
+            <td class="head2">Type:</td><td class="body"><code>int</code></td>
         </tr>
         <tr>
-            <td class="head">Values:</td><td class="body">&ge; <code>2</code></td>
+            <td class="head2">Values:</td><td class="body">&ge; <code>0</code></td>
         </tr>
         <tr>
-            <td class="head">Default:</td><td class="body"><code>10</code></td>
+            <td class="head2">Default:</td><td class="body"><code>0</code></td>
         </tr>
         <tr>
-            <td class="head">Description:</td><td class="body">This defines the spatial grid size on which the local noise measurement takes place. The setting will be ignored if <code>scaleNoise.method = global</code>. It must be an even number of 2 or greater.</td>
+            <td class="head2">Description:</td><td class="body">This defines the separation of spatial grid points on which the local noise measurement takes place. The setting will only be relevant if <code>scaleNoise.method = local</code>. It must be an odd number of 1 or greater. Alternatively, if set to 0 (default), SoFiA will automatically determine an appropriate grid size based on the specified window size. This is a hidden option not available in the GUI.</td>
         </tr>
     </table>
 
     <table id="scaleNoise.gridSpectral">
         <tr>
-            <td class="head">Parameter:</td><td class="body2">scaleNoise.gridSpectral</td>
+            <td class="head2">Parameter:</td><td class="body3">scaleNoise.gridSpectral</td>
         </tr>
         <tr>
-            <td class="head">Type:</td><td class="body"><code>int</code></td>
+            <td class="head2">Type:</td><td class="body"><code>int</code></td>
         </tr>
         <tr>
-            <td class="head">Values:</td><td class="body">&ge; <code>2</code></td>
+            <td class="head2">Values:</td><td class="body">&ge; <code>0</code></td>
         </tr>
         <tr>
-            <td class="head">Default:</td><td class="body"><code>10</code></td>
+            <td class="head2">Default:</td><td class="body"><code>0</code></td>
         </tr>
         <tr>
-            <td class="head">Description:</td><td class="body">This defines the spectral grid size on which the local noise measurement takes place. The setting will be ignored if <code>scaleNoise.method = global</code>. It must be an even number of 2 or greater.</td>
+            <td class="head2">Description:</td><td class="body">This defines the separation of spectral grid points on which the local noise measurement takes place. The setting will only be relevant if <code>scaleNoise.method = local</code>. It must be an odd number of 1 or greater. Alternatively, if set to 0 (default), SoFiA will automatically determine an appropriate grid size based on the specified window size. This is a hidden option not available in the GUI.</td>
         </tr>
     </table>
 
@@ -380,13 +384,13 @@
             <td class="head">Type:</td><td class="body"><code>int</code></td>
         </tr>
         <tr>
-            <td class="head">Values:</td><td class="body">&ge; <code>2</code></td>
+            <td class="head">Values:</td><td class="body">&ge; <code>1</code></td>
         </tr>
         <tr>
-            <td class="head">Default:</td><td class="body"><code>20</code></td>
+            <td class="head">Default:</td><td class="body"><code>25</code></td>
         </tr>
         <tr>
-            <td class="head">Description:</td><td class="body">This defines the spatial window size over which the local noise measurement is taken. The setting will be ignored if <code>scaleNoise.method = global</code>. It must be an even number of 2 or greater.</td>
+            <td class="head">Description:</td><td class="body">This defines the spatial window size over which the local noise measurement is taken. The setting will be relevant if <code>scaleNoise.method = local</code>. It must be an odd number of 1 or greater.</td>
         </tr>
     </table>
 
@@ -398,13 +402,31 @@
             <td class="head">Type:</td><td class="body"><code>int</code></td>
         </tr>
         <tr>
-            <td class="head">Values:</td><td class="body">&ge; <code>2</code></td>
+            <td class="head">Values:</td><td class="body">&ge; <code>1</code></td>
         </tr>
         <tr>
-            <td class="head">Default:</td><td class="body"><code>20</code></td>
+            <td class="head">Default:</td><td class="body"><code>15</code></td>
         </tr>
         <tr>
-            <td class="head">Description:</td><td class="body">This defines the spectral window size over which the local noise measurement is taken. The setting will be ignored if <code>scaleNoise.method = global</code>. It must be an even number of 2 or greater.</td>
+            <td class="head">Description:</td><td class="body">This defines the spectral window size over which the local noise measurement is taken. The setting will be relevant if <code>scaleNoise.method = local</code>. It must be an odd number of 1 or greater.</td>
+        </tr>
+    </table>
+
+    <table id="scaleNoise.interpolation">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">scaleNoise.interpolation</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code> then the local noise measurement made by SoFiA will be interpolated in between grid points using linear interpolation. Note that this can be quite slow. If set to <code>false</code> (default), the measured noise value will instead fill the entire grid cell, which is usually much faster, but creates sharp edges along the boundaries of grid cells. This setting will only be relevant if <code>scaleNoise.method = local</code>.</td>
         </tr>
     </table>
     

@@ -368,8 +368,9 @@ private:
 	QLabel       *tabInFilterLabelWindowSpectral;
 	QSpinBox     *tabInFilterFieldWindowSpatial;
 	QSpinBox     *tabInFilterFieldWindowSpectral;
-	//QFrame       *tabInFilterSeparator1;
-	//QFrame       *tabInFilterSeparator2;
+	QCheckBox    *tabInFilterFieldInterpolation;
+	QFrame       *tabInFilterSeparator1;
+	QFrame       *tabInFilterSeparator2;
 	
 	QGroupBox    *tabInFilterGroupBox3;
 	QFormLayout  *tabInFilterForm3;

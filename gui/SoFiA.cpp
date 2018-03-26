@@ -831,13 +831,14 @@ void SoFiA::updateFields()
 	// Noise scaling method
 	//tabInFilterWidgetGrid->setEnabled(tabInFilterFieldMethod->currentIndex() == 1 and tabInFilterGroupBox2->isChecked());
 	tabInFilterWidgetWindow->setEnabled(tabInFilterFieldMethod->currentIndex() == 1 and tabInFilterGroupBox2->isChecked());
+	tabInFilterFieldInterpolation->setEnabled(tabInFilterFieldMethod->currentIndex() == 1 and tabInFilterGroupBox2->isChecked());
 	tabInFilterWidgetEdge->setEnabled(tabInFilterFieldMethod->currentIndex() == 0 and tabInFilterGroupBox2->isChecked());
 	tabInFilterWidgetScaleXYZ->setEnabled(tabInFilterFieldMethod->currentIndex() == 0 and tabInFilterGroupBox2->isChecked());
 	
 	//tabInFilterFieldGridSpatial->setValue(tabInFilterFieldGridSpatial->value() + tabInFilterFieldGridSpatial->value() % 2);
 	//tabInFilterFieldGridSpectral->setValue(tabInFilterFieldGridSpectral->value() + tabInFilterFieldGridSpectral->value() % 2);
-	tabInFilterFieldWindowSpatial->setValue(tabInFilterFieldWindowSpatial->value() + tabInFilterFieldWindowSpatial->value() % 2);
-	tabInFilterFieldWindowSpectral->setValue(tabInFilterFieldWindowSpectral->value() + tabInFilterFieldWindowSpectral->value() % 2);
+	tabInFilterFieldWindowSpatial->setValue(tabInFilterFieldWindowSpatial->value() + (1 - tabInFilterFieldWindowSpatial->value() % 2));
+	tabInFilterFieldWindowSpectral->setValue(tabInFilterFieldWindowSpectral->value() + (1 - tabInFilterFieldWindowSpectral->value() % 2));
 	
 	// Disable source parameter list if not catalogue format selected:
 	tabOutputFieldParameters->setEnabled(tabOutputButtonASCII->isChecked() or tabOutputButtonXML->isChecked() or tabOutputButtonSQL->isChecked());
@@ -1985,26 +1986,6 @@ void SoFiA::createInterface()
 	// noise scaling
 	tabInFilterForm2 = new QFormLayout();
 	
-	tabInFilterWidgetScaleXYZ = new QWidget(tabInFilterGroupBox2);
-	tabInFilterLayoutScaleXYZ = new QHBoxLayout();
-	tabInFilterFieldScaleX = new QCheckBox(tr("X"), tabInFilterWidgetScaleXYZ);
-	tabInFilterFieldScaleX->setObjectName("scaleNoise.scaleX");
-	tabInFilterFieldScaleX->setChecked(false);
-	connect(tabInFilterFieldScaleX, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabInFilterFieldScaleY = new QCheckBox(tr("Y"), tabInFilterWidgetScaleXYZ);
-	tabInFilterFieldScaleY->setObjectName("scaleNoise.scaleY");
-	tabInFilterFieldScaleY->setChecked(false);
-	connect(tabInFilterFieldScaleY, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabInFilterFieldScaleZ = new QCheckBox(tr("Z"), tabInFilterWidgetScaleXYZ);
-	tabInFilterFieldScaleZ->setObjectName("scaleNoise.scaleZ");
-	tabInFilterFieldScaleZ->setChecked(true);
-	connect(tabInFilterFieldScaleZ, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabInFilterLayoutScaleXYZ->setContentsMargins(0, 0, 0, 0);
-	tabInFilterLayoutScaleXYZ->addWidget(tabInFilterFieldScaleX);
-	tabInFilterLayoutScaleXYZ->addWidget(tabInFilterFieldScaleY);
-	tabInFilterLayoutScaleXYZ->addWidget(tabInFilterFieldScaleZ);
-	tabInFilterWidgetScaleXYZ->setLayout(tabInFilterLayoutScaleXYZ);
-	
 	tabInFilterFieldMethod = new QComboBox(tabInFilterGroupBox2);
 	tabInFilterFieldMethod->setObjectName("scaleNoise.method");
 	tabInFilterFieldMethod->addItem(tr("Global"), QVariant(QString("global")));
@@ -2027,6 +2008,26 @@ void SoFiA::createInterface()
 	tabInFilterFieldFluxRange->addItem(tr("Positive"), QVariant(QString("positive")));
 	tabInFilterFieldFluxRange->addItem(tr("All"), QVariant(QString("all")));
 	connect(tabInFilterFieldFluxRange, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
+	
+	tabInFilterWidgetScaleXYZ = new QWidget(tabInFilterGroupBox2);
+	tabInFilterLayoutScaleXYZ = new QHBoxLayout();
+	tabInFilterFieldScaleX = new QCheckBox(tr("X"), tabInFilterWidgetScaleXYZ);
+	tabInFilterFieldScaleX->setObjectName("scaleNoise.scaleX");
+	tabInFilterFieldScaleX->setChecked(false);
+	connect(tabInFilterFieldScaleX, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	tabInFilterFieldScaleY = new QCheckBox(tr("Y"), tabInFilterWidgetScaleXYZ);
+	tabInFilterFieldScaleY->setObjectName("scaleNoise.scaleY");
+	tabInFilterFieldScaleY->setChecked(false);
+	connect(tabInFilterFieldScaleY, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	tabInFilterFieldScaleZ = new QCheckBox(tr("Z"), tabInFilterWidgetScaleXYZ);
+	tabInFilterFieldScaleZ->setObjectName("scaleNoise.scaleZ");
+	tabInFilterFieldScaleZ->setChecked(true);
+	connect(tabInFilterFieldScaleZ, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	tabInFilterLayoutScaleXYZ->setContentsMargins(0, 0, 0, 0);
+	tabInFilterLayoutScaleXYZ->addWidget(tabInFilterFieldScaleX);
+	tabInFilterLayoutScaleXYZ->addWidget(tabInFilterFieldScaleY);
+	tabInFilterLayoutScaleXYZ->addWidget(tabInFilterFieldScaleZ);
+	tabInFilterWidgetScaleXYZ->setLayout(tabInFilterLayoutScaleXYZ);
 	
 	tabInFilterWidgetEdge = new QWidget(tabInFilterGroupBox2);
 	tabInFilterLayoutEdge = new QHBoxLayout();
@@ -2095,7 +2096,7 @@ void SoFiA::createInterface()
 	tabInFilterFieldWindowSpatial = new QSpinBox(tabInFilterWidgetWindow);
 	tabInFilterFieldWindowSpatial->setObjectName("scaleNoise.windowSpatial");
 	tabInFilterFieldWindowSpatial->setMaximumWidth(100);
-	tabInFilterFieldWindowSpatial->setRange(4, 999);
+	tabInFilterFieldWindowSpatial->setRange(1, 999);
 	tabInFilterFieldWindowSpatial->setSingleStep(2);
 	connect(tabInFilterFieldWindowSpatial, SIGNAL(editingFinished()), this, SLOT(updateFields()));
 	connect(tabInFilterFieldWindowSpatial, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
@@ -2103,7 +2104,7 @@ void SoFiA::createInterface()
 	tabInFilterFieldWindowSpectral = new QSpinBox(tabInFilterWidgetWindow);
 	tabInFilterFieldWindowSpectral->setObjectName("scaleNoise.windowSpectral");
 	tabInFilterFieldWindowSpectral->setMaximumWidth(100);
-	tabInFilterFieldWindowSpectral->setRange(4, 999);
+	tabInFilterFieldWindowSpectral->setRange(1, 999);
 	tabInFilterFieldWindowSpectral->setSingleStep(2);
 	connect(tabInFilterFieldWindowSpectral, SIGNAL(editingFinished()), this, SLOT(updateFields()));
 	connect(tabInFilterFieldWindowSpectral, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
@@ -2117,22 +2118,28 @@ void SoFiA::createInterface()
 	tabInFilterLayoutWindow->setSpacing(5);
 	tabInFilterWidgetWindow->setLayout(tabInFilterLayoutWindow);
 	
-	/*tabInFilterSeparator1 = new QFrame(tabInFilterGroupBox2);
+	tabInFilterFieldInterpolation = new QCheckBox(tr("Enable"), tabInFilterGroupBox2);
+	tabInFilterFieldInterpolation->setObjectName("scaleNoise.interpolation");
+	tabInFilterFieldInterpolation->setChecked(false);
+	connect(tabInFilterFieldInterpolation, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	
+	tabInFilterSeparator1 = new QFrame(tabInFilterGroupBox2);
 	tabInFilterSeparator1->setFrameShape(QFrame::HLine);
 	tabInFilterSeparator1->setFrameShadow(QFrame::Sunken);
 	tabInFilterSeparator2 = new QFrame(tabInFilterGroupBox2);
 	tabInFilterSeparator2->setFrameShape(QFrame::HLine);
-	tabInFilterSeparator2->setFrameShadow(QFrame::Sunken);*/
+	tabInFilterSeparator2->setFrameShadow(QFrame::Sunken);
 	
 	tabInFilterForm2->addRow(tr("Method:"), tabInFilterFieldMethod);
 	tabInFilterForm2->addRow(tr("Statistic:"), tabInFilterFieldStatistic);
 	tabInFilterForm2->addRow(tr("Flux range:"), tabInFilterFieldFluxRange);
-	//tabInFilterForm2->addRow(tabInFilterSeparator1);
+	tabInFilterForm2->addRow(tabInFilterSeparator1);
 	tabInFilterForm2->addRow(tr("Dimensions:"), tabInFilterWidgetScaleXYZ);
 	tabInFilterForm2->addRow(tr("Edge size:"), tabInFilterWidgetEdge);
-	//tabInFilterForm2->addRow(tabInFilterSeparator2);
+	tabInFilterForm2->addRow(tabInFilterSeparator2);
 	//tabInFilterForm2->addRow(tr("Grid size:"), tabInFilterWidgetGrid);
 	tabInFilterForm2->addRow(tr("Window size:"), tabInFilterWidgetWindow);
+	tabInFilterForm2->addRow(tr("Interpolation:"), tabInFilterFieldInterpolation);
 	
 	tabInFilterGroupBox3 = new QGroupBox(tr("Enable"), toolBoxIF);
 	tabInFilterGroupBox3->setObjectName("steps.doWavelet");
@@ -2244,15 +2251,6 @@ void SoFiA::createInterface()
 	connect(tabSourceFindingFieldThreshold, SIGNAL(editingFinished()), this, SLOT(updateFields()));
 	connect(tabSourceFindingFieldThreshold, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
 	
-	tabSourceFindingFieldEdgeMode = new QComboBox(tabSourceFindingGroupBox1);
-	tabSourceFindingFieldEdgeMode->setObjectName("SCfind.edgeMode");
-	tabSourceFindingFieldEdgeMode->addItem(tr("Constant"), QVariant(QString("constant")));
-	tabSourceFindingFieldEdgeMode->addItem(tr("Reflect"), QVariant(QString("reflect")));
-	tabSourceFindingFieldEdgeMode->addItem(tr("Mirror"), QVariant(QString("mirror")));
-	tabSourceFindingFieldEdgeMode->addItem(tr("Nearest"), QVariant(QString("nearest")));
-	tabSourceFindingFieldEdgeMode->addItem(tr("Wrap"), QVariant(QString("wrap")));
-	connect(tabSourceFindingFieldEdgeMode, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
-	
 	tabSourceFindingFieldRmsMode = new QComboBox(tabSourceFindingGroupBox1);
 	tabSourceFindingFieldRmsMode->setObjectName("SCfind.rmsMode");
 	tabSourceFindingFieldRmsMode->addItem(tr("Gaussian fit to negative fluxes"), QVariant(QString("negative")));
@@ -2268,6 +2266,15 @@ void SoFiA::createInterface()
 	tabSourceFindingFieldFluxRange->addItem(tr("Positive"), QVariant(QString("positive")));
 	tabSourceFindingFieldFluxRange->addItem(tr("All"), QVariant(QString("all")));
 	connect(tabSourceFindingFieldFluxRange, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
+	
+	tabSourceFindingFieldEdgeMode = new QComboBox(tabSourceFindingGroupBox1);
+	tabSourceFindingFieldEdgeMode->setObjectName("SCfind.edgeMode");
+	tabSourceFindingFieldEdgeMode->addItem(tr("Constant"), QVariant(QString("constant")));
+	tabSourceFindingFieldEdgeMode->addItem(tr("Reflect"), QVariant(QString("reflect")));
+	tabSourceFindingFieldEdgeMode->addItem(tr("Mirror"), QVariant(QString("mirror")));
+	tabSourceFindingFieldEdgeMode->addItem(tr("Nearest"), QVariant(QString("nearest")));
+	tabSourceFindingFieldEdgeMode->addItem(tr("Wrap"), QVariant(QString("wrap")));
+	connect(tabSourceFindingFieldEdgeMode, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
 	
 	tabSourceFindingFieldKunit = new QComboBox(tabSourceFindingGroupBox1);
 	tabSourceFindingFieldKunit->setObjectName("SCfind.kernelUnit");
@@ -2572,16 +2579,16 @@ void SoFiA::createInterface()
 	connect(tabParametrisationGroupBox1, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	tabParametrisationForm1 = new QFormLayout();
 	
-	tabParametrisationButtonMaskOpt = new QCheckBox(tr("Optimise mask (ellipse)"), tabParametrisationGroupBox1);
-	tabParametrisationButtonMaskOpt->setObjectName("parameters.optimiseMask");
-	tabParametrisationButtonMaskOpt->setEnabled(true);
-	tabParametrisationButtonMaskOpt->setChecked(false);
-	connect(tabParametrisationButtonMaskOpt, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	tabParametrisationButtonDilateMask = new QCheckBox(tr("Optimise mask (dilation)"), tabParametrisationGroupBox1);
 	tabParametrisationButtonDilateMask->setObjectName("parameters.dilateMask");
 	tabParametrisationButtonDilateMask->setEnabled(true);
 	tabParametrisationButtonDilateMask->setChecked(false);
 	connect(tabParametrisationButtonDilateMask, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	tabParametrisationButtonMaskOpt = new QCheckBox(tr("Optimise mask (ellipse)"), tabParametrisationGroupBox1);
+	tabParametrisationButtonMaskOpt->setObjectName("parameters.optimiseMask");
+	tabParametrisationButtonMaskOpt->setEnabled(true);
+	tabParametrisationButtonMaskOpt->setChecked(false);
+	connect(tabParametrisationButtonMaskOpt, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	tabParametrisationButtonBusyFunction = new QCheckBox(tr("Fit Busy Function"), tabParametrisationGroupBox1);
 	tabParametrisationButtonBusyFunction->setObjectName("parameters.fitBusyFunction");
 	tabParametrisationButtonBusyFunction->setEnabled(true);
@@ -2688,69 +2695,7 @@ void SoFiA::createInterface()
 	tabOutputLayout = new QVBoxLayout();
 	
 	tabOutputGroupBox1 = new QGroupBox(toolBoxOP);
-	
-	tabOutputForm1 = new QFormLayout();
-	
-	tabOutputFieldBaseName = new QLineEdit(tabOutputGroupBox1);
-	tabOutputFieldBaseName->setObjectName("writeCat.basename");
-	tabOutputFieldBaseName->setEnabled(true);
-	connect(tabOutputFieldBaseName, SIGNAL(textChanged(const QString &)), this, SLOT(updateFields()));
-	connect(tabOutputFieldBaseName, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
-	
-	tabOutputWidgetDirectory = new QWidget(tabOutputGroupBox1);
-	tabOutputLayoutDirectory = new QHBoxLayout();
-	tabOutputFieldDirectory  = new QLineEdit(tabOutputWidgetDirectory);
-	tabOutputFieldDirectory->setObjectName("writeCat.outputDir");
-	connect(tabOutputFieldDirectory, SIGNAL(textChanged(const QString &)), this, SLOT(updateFields()));
-	connect(tabOutputFieldDirectory, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
-	tabOutputButtonDirectory = new QPushButton(tr("Select..."), tabOutputWidgetDirectory);
-	connect(tabOutputButtonDirectory, SIGNAL(clicked()), this, SLOT(selectOutputDirectory()));
-	tabOutputButtonDirectory->setIcon(iconDocumentOpen);
-	tabOutputLayoutDirectory->addWidget(tabOutputFieldDirectory);
-	tabOutputLayoutDirectory->addWidget(tabOutputButtonDirectory);
-	tabOutputLayoutDirectory->setContentsMargins(0, 0, 0, 0);
-	tabOutputWidgetDirectory->setLayout(tabOutputLayoutDirectory);
-	
-	tabOutputButtonASCII = new QCheckBox(tr("ASCII"), tabOutputGroupBox1);
-	tabOutputButtonASCII->setObjectName("writeCat.writeASCII");
-	tabOutputButtonASCII->setChecked(true);
-	tabOutputButtonASCII->setEnabled(true);
-	connect(tabOutputButtonASCII, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
-	connect(tabOutputButtonASCII, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabOutputButtonXML = new QCheckBox(tr("VO table"), tabOutputGroupBox1);
-	tabOutputButtonXML->setObjectName("writeCat.writeXML");
-	tabOutputButtonXML->setChecked(false);
-	tabOutputButtonXML->setEnabled(true);
-	connect(tabOutputButtonXML, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
-	connect(tabOutputButtonXML, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabOutputButtonSQL = new QCheckBox(tr("SQL"), tabOutputGroupBox1);
-	tabOutputButtonSQL->setObjectName("writeCat.writeSQL");
-	tabOutputButtonSQL->setChecked(false);
-	tabOutputButtonSQL->setEnabled(true);
-	connect(tabOutputButtonSQL, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
-	connect(tabOutputButtonSQL, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	
-	tabOutputWidgetFormat = new QWidget(tabOutputGroupBox1);
-	tabOutputLayoutFormat = new QHBoxLayout();
-	tabOutputLayoutFormat->setContentsMargins(0, 0, 0, 0);
-	tabOutputLayoutFormat->setSpacing(10);
-	tabOutputLayoutFormat->addWidget(tabOutputButtonASCII);
-	tabOutputLayoutFormat->addWidget(tabOutputButtonXML);
-	tabOutputLayoutFormat->addWidget(tabOutputButtonSQL);
-	tabOutputLayoutFormat->addStretch();
-	tabOutputWidgetFormat->setLayout(tabOutputLayoutFormat);
-	
-	tabOutputFieldParameters = new QLineEdit(tabOutputGroupBox1);
-	tabOutputFieldParameters->setObjectName("writeCat.parameters");
-	tabOutputFieldParameters->setEnabled(true);
-	connect(tabOutputFieldParameters, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
-	
-	tabOutputLabelParameters = new QLabel(tr("<b>Note:</b> Depending on the actual pipeline settings, some selected parameters may not be written. Please see the SoFiA user manual or <a href=\"https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Source-Parameters\">wiki</a> for a complete list of source parameters."), tabOutputGroupBox1);
-	tabOutputLabelParameters->setWordWrap(true);
-	tabOutputLabelParameters->setContentsMargins(0, 0, 0, 0);
-	tabOutputLabelParameters->setAlignment(Qt::AlignTop | Qt::AlignLeft);
-	tabOutputLabelParameters->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
-	
+		
 	tabOutputButtonFilteredCube = new QCheckBox(tr("Filtered cube"), tabOutputGroupBox1);
 	tabOutputButtonFilteredCube->setObjectName("steps.doWriteFilteredCube");
 	tabOutputButtonFilteredCube->setChecked(false);
@@ -2777,17 +2722,35 @@ void SoFiA::createInterface()
 	connect(tabOutputButtonCubelets, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutputButtonCubelets, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
-	tabOutputButtonCompress = new QCheckBox(tr("Enable"), tabOutputGroupBox1);
-	tabOutputButtonCompress->setObjectName("writeCat.compress");
-	tabOutputButtonCompress->setChecked(false);
-	connect(tabOutputButtonCompress, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
-	connect(tabOutputButtonCompress, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	tabOutputButtonASCII = new QCheckBox(tr("ASCII"), tabOutputGroupBox1);
+	tabOutputButtonASCII->setObjectName("writeCat.writeASCII");
+	tabOutputButtonASCII->setChecked(true);
+	tabOutputButtonASCII->setEnabled(true);
+	connect(tabOutputButtonASCII, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
+	connect(tabOutputButtonASCII, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	tabOutputButtonXML = new QCheckBox(tr("VO table"), tabOutputGroupBox1);
+	tabOutputButtonXML->setObjectName("writeCat.writeXML");
+	tabOutputButtonXML->setChecked(false);
+	tabOutputButtonXML->setEnabled(true);
+	connect(tabOutputButtonXML, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
+	connect(tabOutputButtonXML, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	tabOutputButtonSQL = new QCheckBox(tr("SQL"), tabOutputGroupBox1);
+	tabOutputButtonSQL->setObjectName("writeCat.writeSQL");
+	tabOutputButtonSQL->setChecked(false);
+	tabOutputButtonSQL->setEnabled(true);
+	connect(tabOutputButtonSQL, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
+	connect(tabOutputButtonSQL, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
-	tabOutputButtonOverwrite = new QCheckBox(tr("Enable"), tabOutputGroupBox1);
-	tabOutputButtonOverwrite->setObjectName("writeCat.overwrite");
-	tabOutputButtonOverwrite->setChecked(false);
-	connect(tabOutputButtonOverwrite, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
-	connect(tabOutputButtonOverwrite, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	tabOutputFieldParameters = new QLineEdit(tabOutputGroupBox1);
+	tabOutputFieldParameters->setObjectName("writeCat.parameters");
+	tabOutputFieldParameters->setEnabled(true);
+	connect(tabOutputFieldParameters, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
+	
+	tabOutputLabelParameters = new QLabel(tr("<b>Note:</b> Depending on the actual pipeline settings, some selected parameters may not be written. Please see the SoFiA user manual or <a href=\"https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Source-Parameters\">wiki</a> for a complete list of source parameters."), tabOutputGroupBox1);
+	tabOutputLabelParameters->setWordWrap(true);
+	tabOutputLabelParameters->setContentsMargins(0, 0, 0, 0);
+	tabOutputLabelParameters->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+	tabOutputLabelParameters->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
 	
 	tabOutputWidgetProducts = new QWidget(tabOutputGroupBox1);
 	tabOutputLayoutProducts = new QHBoxLayout();
@@ -2800,6 +2763,17 @@ void SoFiA::createInterface()
 	tabOutputLayoutProducts->addStretch();
 	tabOutputWidgetProducts->setLayout(tabOutputLayoutProducts);
 	
+	tabOutputWidgetFormat = new QWidget(tabOutputGroupBox1);
+	tabOutputLayoutFormat = new QHBoxLayout();
+	tabOutputLayoutFormat->setContentsMargins(0, 0, 0, 0);
+	tabOutputLayoutFormat->setSpacing(10);
+	tabOutputLayoutFormat->addWidget(tabOutputButtonASCII);
+	tabOutputLayoutFormat->addWidget(tabOutputButtonXML);
+	tabOutputLayoutFormat->addWidget(tabOutputButtonSQL);
+	tabOutputLayoutFormat->addStretch();
+	tabOutputWidgetFormat->setLayout(tabOutputLayoutFormat);
+	
+	tabOutputForm1 = new QFormLayout();
 	tabOutputForm1->addRow(tr("Data products:"), tabOutputWidgetProducts);
 	tabOutputForm1->addRow(tr(""), tabOutputButtonCubelets);
 	tabOutputForm1->addRow(tr("Source catalogue:"), tabOutputWidgetFormat);
@@ -2808,7 +2782,41 @@ void SoFiA::createInterface()
 	tabOutputForm1->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 	tabOutputGroupBox1->setLayout(tabOutputForm1);
 	
+	
 	tabOutputGroupBox2 = new QGroupBox(toolBoxOP);
+	
+	tabOutputFieldBaseName = new QLineEdit(tabOutputGroupBox2);
+	tabOutputFieldBaseName->setObjectName("writeCat.basename");
+	tabOutputFieldBaseName->setEnabled(true);
+	connect(tabOutputFieldBaseName, SIGNAL(textChanged(const QString &)), this, SLOT(updateFields()));
+	connect(tabOutputFieldBaseName, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
+	
+	tabOutputWidgetDirectory = new QWidget(tabOutputGroupBox2);
+	tabOutputLayoutDirectory = new QHBoxLayout();
+	tabOutputFieldDirectory  = new QLineEdit(tabOutputWidgetDirectory);
+	tabOutputFieldDirectory->setObjectName("writeCat.outputDir");
+	connect(tabOutputFieldDirectory, SIGNAL(textChanged(const QString &)), this, SLOT(updateFields()));
+	connect(tabOutputFieldDirectory, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
+	tabOutputButtonDirectory = new QPushButton(tr("Select..."), tabOutputWidgetDirectory);
+	connect(tabOutputButtonDirectory, SIGNAL(clicked()), this, SLOT(selectOutputDirectory()));
+	tabOutputButtonDirectory->setIcon(iconDocumentOpen);
+	tabOutputLayoutDirectory->addWidget(tabOutputFieldDirectory);
+	tabOutputLayoutDirectory->addWidget(tabOutputButtonDirectory);
+	tabOutputLayoutDirectory->setContentsMargins(0, 0, 0, 0);
+	tabOutputWidgetDirectory->setLayout(tabOutputLayoutDirectory);
+	
+	tabOutputButtonCompress = new QCheckBox(tr("Enable"), tabOutputGroupBox2);
+	tabOutputButtonCompress->setObjectName("writeCat.compress");
+	tabOutputButtonCompress->setChecked(false);
+	connect(tabOutputButtonCompress, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
+	connect(tabOutputButtonCompress, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	
+	tabOutputButtonOverwrite = new QCheckBox(tr("Enable"), tabOutputGroupBox2);
+	tabOutputButtonOverwrite->setObjectName("writeCat.overwrite");
+	tabOutputButtonOverwrite->setChecked(false);
+	connect(tabOutputButtonOverwrite, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
+	connect(tabOutputButtonOverwrite, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	
 	tabOutputForm2 = new QFormLayout();
 	tabOutputForm2->addRow(tr("Base name:"), tabOutputFieldBaseName);
 	tabOutputForm2->addRow(tr("Output directory:"), tabOutputWidgetDirectory);
@@ -3149,6 +3157,7 @@ void SoFiA::createWhatsThis()
 	tabInFilterFieldEdgeY->setWhatsThis(tr("<h3>scaleNoise.edgeY</h3><p>Size of edge (in pixels) to be excluded in second coordinate. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));
 	tabInFilterFieldEdgeZ->setWhatsThis(tr("<h3>scaleNoise.edgeZ</h3><p>Size of edge (in pixels) to be excluded in third coordinate. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));
 	tabInFilterFieldFluxRange->setWhatsThis(tr("<h3>scaleNoise.fluxRange</h3><p>Range of flux values to be used in noise measurement. Can be <b>negative</b>, <b>positive</b> or <b>all</b> to use only negative, only positive or all pixels, respectively.</p>"));
+	tabInFilterFieldInterpolation->setWhatsThis(tr("<h3>scaleNoise.interpolation</h3><p>If set to <b>true</b> then the local noise measurement made by SoFiA will be interpolated in between grid points using linear interpolation. Note that this can be quite slow. If set to <b>false</b> (default), the measured noise value will instead fill the entire grid cell, which is usually much faster, but creates sharp edges along the boundaries of grid cells. This setting will only be relevant if <b>scaleNoise.method = local</b>.</p>"));
 	//tabInFilterFieldGridSpatial->setWhatsThis(tr("<h3>scaleNoise.gridSpatial</h3><p>This defines the spatial grid size on which the local noise measurement takes place. The setting will be ignored if <b>scaleNoise.method = global</b>. It must be an even number of 2 or greater.</p>"));
 	//tabInFilterFieldGridSpectral->setWhatsThis(tr("<h3>scaleNoise.gridSpectral</h3><p>This defines the spectral grid size on which the local noise measurement takes place. The setting will be ignored if <b>scaleNoise.method = global</b>. It must be an even number of 2 or greater.</p>"));
 	tabInFilterFieldMethod->setWhatsThis(tr("<h3>scaleNoise.method</h3><p>If set to <b>global</b>, the noise measurement will be carried out on the entire projected image plane perpendicular to the axis along which the noise is to be scaled (default). If set to <b>local</b>, the noise measurement will occur in a running window of specified size on a specified grid. Note that the latter can be slow and memory-heavy and is only recommended for small cubes or 2D images that are affected by localised noise variations.</p>"));
@@ -3156,8 +3165,8 @@ void SoFiA::createWhatsThis()
 	tabInFilterFieldScaleY->setWhatsThis(tr("<h3>scaleNoise.scaleY</h3><p>Noise normalisation in second (spatial) dimension. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));
 	tabInFilterFieldScaleZ->setWhatsThis(tr("<h3>scaleNoise.scaleZ</h3><p>Noise normalisation in third (spectral) dimension. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));
 	tabInFilterFieldStatistic->setWhatsThis(tr("<h3>scaleNoise.statistic</h3><p>Statistic used to measure the noise. This can be median absolute deviation (<b>mad</b>), standard deviation (<b>std</b>), Gaussian fit to flux histogram (<b>gauss</b>) or Gaussian fit to negative fluxes (<b>negative</b>).</p>"));
-	tabInFilterFieldWindowSpatial->setWhatsThis(tr("<h3>scaleNoise.windowSpatial</h3><p>This defines the spatial window size over which the local noise measurement is taken. The setting will be ignored if <b>scaleNoise.method = global</b>. It must be an even number of 2 or greater.</p>"));
-	tabInFilterFieldWindowSpectral->setWhatsThis(tr("<h3>scaleNoise.windowSpectral</h3><p>This defines the spectral window size over which the local noise measurement is taken. The setting will be ignored if <b>scaleNoise.method = global</b>. It must be an even number of 2 or greater.</p>"));
+	tabInFilterFieldWindowSpatial->setWhatsThis(tr("<h3>scaleNoise.windowSpatial</h3><p>This defines the spatial window size over which the local noise measurement is taken. The setting will be relevant if <b>scaleNoise.method = local</b>. It must be an odd number of 1 or greater.</p>"));
+	tabInFilterFieldWindowSpectral->setWhatsThis(tr("<h3>scaleNoise.windowSpectral</h3><p>This defines the spectral window size over which the local noise measurement is taken. The setting will be relevant if <b>scaleNoise.method = local</b>. It must be an odd number of 1 or greater.</p>"));
 	tabSourceFindingFieldEdgeMode->setWhatsThis(tr("<h3>SCfind.edgeMode</h3><p>Behaviour near the edge of the cube. The following values are possible:<p><ul><li><b>constant:</b> assume constant value of 0</li><li><b>nearest:</b> assume constant value equal to edge pixel</li><li><b>reflect:</b> mirror values at edge, thereby including the edge pixel itself</li><li><b>mirror:</b> mirror values at position of outermost pixel, thereby excluding the edge pixel itself</li><li><b>wrap:</b> copy values from opposite edge of the array</li></ul>"));
 	tabSourceFindingFieldKernels->setWhatsThis(tr("<h3>SCfind.kernels</h3><p>List of kernels to be used for smoothing. The format is:</p><p style=\"font-family:monospace;\">[[dx, dy, dz, 'type'], ...]</p><p>where <b>dx</b>, <b>dy</b>, and <b>dz</b> are the spatial and spectral kernel sizes (FWHM), and <b>'type'</b> can be boxcar (<b>'b'</b>) or Gaussian (<b>'g'</b>). Note that 'type' only applies to the spectral axis, and the spatial kernel is always Gaussian.</p>"));
 	tabSourceFindingFieldKunit->setWhatsThis(tr("<h3>SCfind.kernelUnit</h3><p>Are kernel parameters specified in <b>pixel</b> or <b>world</b> coordinates?</p>"));

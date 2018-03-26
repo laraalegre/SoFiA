@@ -90,6 +90,7 @@ def readPipelineOptions(filename = "pipeline.options"):
 	             "scaleNoise.windowSpectral": "int", \
 	             "scaleNoise.gridSpatial": "int", \
 	             "scaleNoise.gridSpectral": "int", \
+	             "scaleNoise.interpolation": "bool", \
 	             "SCfind.threshold": "float", \
 	             "SCfind.sizeFilter": "float", \
 	             "SCfind.maskScaleXY": "float", \

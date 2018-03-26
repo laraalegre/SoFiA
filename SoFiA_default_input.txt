@@ -59,10 +59,6 @@ smooth.kernelZ                  =       3.0
 # Noise scaling module
 
 scaleNoise.method               =       global
-scaleNoise.windowSpatial        =       20
-scaleNoise.windowSpectral       =       20
-scaleNoise.gridSpatial          =       10
-scaleNoise.gridSpectral         =       10
 scaleNoise.statistic            =       mad
 scaleNoise.fluxRange            =       all
 scaleNoise.scaleX               =       false
@@ -71,6 +67,11 @@ scaleNoise.scaleZ               =       true
 scaleNoise.edgeX                =       0
 scaleNoise.edgeY                =       0
 scaleNoise.edgeZ                =       0
+scaleNoise.windowSpatial        =       25
+scaleNoise.windowSpectral       =       15
+scaleNoise.gridSpatial          =       0
+scaleNoise.gridSpectral         =       0
+scaleNoise.interpolation        =       false
 
 
 # 2D-1D wavelet finder module
