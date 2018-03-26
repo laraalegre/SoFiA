@@ -185,7 +185,8 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 			rms = 1.4826 * nanmedian(abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample]), axis=None)
 			if twoPass:
 				err.print_info("Repeating noise estimation with 5-sigma clip.", verbose)
-				rms = 1.4826 * nanmedian(abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample][abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample]) < 5.0 * rms]), axis=None)
+				with np.errstate(invalid="ignore"):
+					rms = 1.4826 * nanmedian(abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample][abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample]) < 5.0 * rms]), axis=None)
 		else:
 			# NOTE: Here we assume that the median of the data is zero! There are no more NaNs in halfCube.
 			rms = 1.4826 * np.median(abs(halfCube), axis=None)
@@ -200,7 +201,8 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 			rms = nan_standard_deviation(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample])
 			if twoPass:
 				err.print_info("Repeating noise estimation with 5-sigma clip.", verbose)
-				rms = nan_standard_deviation(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample][abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample]) < 5.0 * rms])
+				with np.errstate(invalid="ignore"):
+					rms = nan_standard_deviation(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample][abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample]) < 5.0 * rms])
 		else:
 			# NOTE: Here we assume that the mean of the data is zero! There are no more NaNs in halfCube.
 			rms = standard_deviation(halfCube)

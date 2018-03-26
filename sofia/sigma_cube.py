@@ -23,7 +23,7 @@ Parameters
   windowSpectral:  Spectral window size over which to measure local RMS. Must be even.
   gridSpatial:     Size of each spatial grid cell for local RMS measurement. Must be even.
   gridSpectral:    Size of each spectral grid cell for local RMS measurement. Must be even.
-  interpolation:   If True, use linear interpolation, otherwise nearest-neighbour interpolation.
+  interpolation:   If True, use linear interpolation, otherwise fill entire grid cell with RMS value.
 """
 
 def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0, edgeZ=0, statistic="mad", fluxRange="all", method="global", windowSpatial=20, windowSpectral=20, gridSpatial=0, gridSpectral=0, interpolation=False):
@@ -66,7 +66,7 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 		err.print_info("  and window size of [" + str(windowSpatial) + ", " + str(windowSpectral) + "].")
 		
 		# Create empty cube (filled with 0) to hold noise values
-		rms_cube = np.zeros(cube.shape)
+		rms_cube = np.full(cube.shape, np.nan)
 		
 		# Generate grid points to be used
 		gridPointsZ = np.arange((dimensions[0] - gridSpectral * (int(math.ceil(float(dimensions[0]) / float(gridSpectral))) - 1)) // 2, dimensions[0], gridSpectral)
@@ -92,34 +92,40 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 							# Write value into grid point for later interpolation
 							rms_cube[z, y, x] = GetRMS(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0)
 						else:
-							# Fill grid cell (nearest neighbour interpolation))
+							# Fill entire grid cell
 							rms_cube[grid[0]:grid[1], grid[2]:grid[3], grid[4]:grid[5]] = GetRMS(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0)
 		
-		# Carry out linear interpolation if requested
+		# Carry out linear interpolation if requested, taking NaNs into account
 		if interpolation:
 			# First across each spatial plane
 			if gridSpatial > 1:
 				for z in gridPointsZ:
 					for y in gridPointsY:
 						data_values   = rms_cube[z, y, gridPointsX]
-						interp_coords = np.arange(0, dimensions[2])
-						interp_values = np.interp(interp_coords, gridPointsX, data_values)
-						rms_cube[z, y, 0:dimensions[2]] = interp_values
+						not_nan = np.logical_not(np.isnan(data_values))
+						if not_nan.size:
+							interp_coords = np.arange(0, dimensions[2])
+							interp_values = np.interp(interp_coords, gridPointsX[not_nan], data_values[not_nan])
+							rms_cube[z, y, 0:dimensions[2]] = interp_values
 					for x in range(dimensions[2]):
 						data_values   = rms_cube[z, gridPointsY, x]
-						interp_coords = np.arange(0, dimensions[1])
-						interp_values = np.interp(interp_coords, gridPointsY, data_values)
-						rms_cube[z, 0:dimensions[1], x] = interp_values
+						not_nan = np.logical_not(np.isnan(data_values))
+						if not_nan.size:
+							interp_coords = np.arange(0, dimensions[1])
+							interp_values = np.interp(interp_coords, gridPointsY[not_nan], data_values[not_nan])
+							rms_cube[z, 0:dimensions[1], x] = interp_values
 			# Then along the spectral axis
 			if gridSpectral > 1:
 				for y in range(dimensions[1]):
 					for x in range(dimensions[2]):
 						data_values   = rms_cube[gridPointsZ, y, x]
-						interp_coords = np.arange(0, dimensions[0])
-						interp_values = np.interp(interp_coords, gridPointsZ, data_values)
-						rms_cube[0:dimensions[0], y, x] = interp_values
+						not_nan = np.logical_not(np.isnan(data_values))
+						if not_nan.size:
+							interp_coords = np.arange(0, dimensions[0])
+							interp_values = np.interp(interp_coords, gridPointsZ[not_nan], data_values[not_nan])
+							rms_cube[0:dimensions[0], y, x] = interp_values
 		
-		# Replace invalid RMS values with NaN
+		# Replace any invalid RMS values with NaN
 		rms_cube[rms_cube <= 0] = np.nan
 		
 		# Divide data cube by RMS cube
