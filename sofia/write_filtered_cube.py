@@ -24,7 +24,6 @@ def recursion(dictionary, optionsList, optionsDepth, counter=0):
 
 
 def writeFilteredCube(cube, header, dictionary, filename, compress):
-	header.add_history('SoFiA input filtering')
 	optionsList = []
 	optionsDepth = []
 	dictionary = removeOptions(dictionary)

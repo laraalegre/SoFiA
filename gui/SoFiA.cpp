@@ -795,6 +795,9 @@ void SoFiA::updateFields()
 	// Enable/disable writing of filtered cube when no filters are selected:
 	tabOutputButtonFilteredCube->setEnabled(tabInFilterGroupBox1->isChecked() or tabInFilterGroupBox2->isChecked() or tabInFilterGroupBox3->isChecked() or not (tabInputFieldWeights->text()).isEmpty() or not (tabInputFieldWeightsFunction->text()).isEmpty());
 	
+	// Enable/disable writing of noise cube when noise scaling is not set:
+	tabOutputButtonNoiseCube->setEnabled(tabInFilterGroupBox2->isChecked());
+	
 	// Check reliability threshold slider position:
 	tabParametrisationFieldRelMin->setText(QString::number(static_cast<double>(tabParametrisationSliderRelMin->value()) / RELMIN_SCALE_FACTOR, 'f', 2));
 	
@@ -911,6 +914,7 @@ void SoFiA::updateActions()
 	
 	actionShowCube->setEnabled(not (tabInputFieldData->text()).isEmpty() and not tabOutputButtonCompress->isChecked());
 	actionShowFilteredCube->setEnabled(not (tabInputFieldData->text()).isEmpty() and tabOutputButtonFilteredCube->isEnabled() and tabOutputButtonFilteredCube->isChecked() and not tabOutputButtonCompress->isChecked());
+	actionShowNoiseCube->setEnabled(not (tabInputFieldData->text()).isEmpty() and tabOutputButtonNoiseCube->isEnabled() and tabOutputButtonNoiseCube->isChecked() and not tabOutputButtonCompress->isChecked());
 	actionShowMask->setEnabled(not (tabInputFieldData->text()).isEmpty() and tabOutputButtonMask->isChecked() and not tabOutputButtonCompress->isChecked());
 	actionShowMom0->setEnabled(not (tabInputFieldData->text()).isEmpty() and tabOutputButtonMom0->isChecked() and not tabOutputButtonCompress->isChecked());
 	actionShowMom1->setEnabled(not (tabInputFieldData->text()).isEmpty() and tabOutputButtonMom1->isChecked() and not tabOutputButtonCompress->isChecked());
@@ -1440,6 +1444,23 @@ void SoFiA::showFilteredCube()
 
 
 
+// -----------------------
+// Slot to show noise cube
+// -----------------------
+
+void SoFiA::showNoiseCube()
+{
+	QString extension = QString("_noise.fits");
+	QString filename = extractFileName(extension);
+	
+	WidgetDataViewer *widgetDataViewer = new WidgetDataViewer(filename.toUtf8().constData(), this);
+	widgetDataViewer->show();
+	
+	return;
+}
+
+
+
 // ----------------------
 // Slot to show mask cube
 // ----------------------
@@ -1696,7 +1717,7 @@ void SoFiA::createInterface()
 	
 	iconFolderImage.addFile(QString(":/icons/16/folder-image.png"), QSize(16, 16));
 	iconFolderImage.addFile(QString(":/icons/22/folder-image.png"), QSize(22, 22));
-	iconFolderImage     = QIcon::fromTheme("folder-image", iconTaskReject);
+	iconFolderImage     = QIcon::fromTheme("folder-image", iconFolderImage);
 	
 	// Create main widget that contains everything else
 	// ------------------------------------------------
@@ -2118,10 +2139,12 @@ void SoFiA::createInterface()
 	tabInFilterLayoutWindow->setSpacing(5);
 	tabInFilterWidgetWindow->setLayout(tabInFilterLayoutWindow);
 	
-	tabInFilterFieldInterpolation = new QCheckBox(tr("Enable"), tabInFilterGroupBox2);
+	tabInFilterFieldInterpolation = new QComboBox(tabInFilterGroupBox2);
 	tabInFilterFieldInterpolation->setObjectName("scaleNoise.interpolation");
-	tabInFilterFieldInterpolation->setChecked(false);
-	connect(tabInFilterFieldInterpolation, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	tabInFilterFieldInterpolation->addItem(tr("None"), QVariant(QString("none")));
+	tabInFilterFieldInterpolation->addItem(tr("Linear"), QVariant(QString("linear")));
+	tabInFilterFieldInterpolation->addItem(tr("Cubic"), QVariant(QString("cubic")));
+	connect(tabInFilterFieldInterpolation, SIGNAL(currentIndexChanged(int)), this, SLOT(parameterChanged()));
 	
 	tabInFilterSeparator1 = new QFrame(tabInFilterGroupBox2);
 	tabInFilterSeparator1->setFrameShape(QFrame::HLine);
@@ -2716,6 +2739,11 @@ void SoFiA::createInterface()
 	tabOutputButtonMom1->setChecked(false);
 	connect(tabOutputButtonMom1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutputButtonMom1, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	tabOutputButtonNoiseCube = new QCheckBox(tr("Noise cube"), tabOutputGroupBox1);
+	tabOutputButtonNoiseCube->setObjectName("steps.doWriteNoiseCube");
+	tabOutputButtonNoiseCube->setChecked(false);
+	connect(tabOutputButtonNoiseCube, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
+	connect(tabOutputButtonNoiseCube, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	tabOutputButtonCubelets = new QCheckBox(tr("Individual source products"), tabOutputGroupBox1);
 	tabOutputButtonCubelets->setObjectName("steps.doCubelets");
 	tabOutputButtonCubelets->setChecked(false);
@@ -2763,6 +2791,15 @@ void SoFiA::createInterface()
 	tabOutputLayoutProducts->addStretch();
 	tabOutputWidgetProducts->setLayout(tabOutputLayoutProducts);
 	
+	tabOutputWidgetProducts2 = new QWidget(tabOutputGroupBox1);
+	tabOutputLayoutProducts2 = new QHBoxLayout();
+	tabOutputLayoutProducts2->setContentsMargins(0, 0, 0, 0);
+	tabOutputLayoutProducts2->setSpacing(10);
+	tabOutputLayoutProducts2->addWidget(tabOutputButtonNoiseCube);
+	tabOutputLayoutProducts2->addWidget(tabOutputButtonCubelets);
+	tabOutputLayoutProducts2->addStretch();
+	tabOutputWidgetProducts2->setLayout(tabOutputLayoutProducts2);
+	
 	tabOutputWidgetFormat = new QWidget(tabOutputGroupBox1);
 	tabOutputLayoutFormat = new QHBoxLayout();
 	tabOutputLayoutFormat->setContentsMargins(0, 0, 0, 0);
@@ -2775,7 +2812,7 @@ void SoFiA::createInterface()
 	
 	tabOutputForm1 = new QFormLayout();
 	tabOutputForm1->addRow(tr("Data products:"), tabOutputWidgetProducts);
-	tabOutputForm1->addRow(tr(""), tabOutputButtonCubelets);
+	tabOutputForm1->addRow(tr(""), tabOutputWidgetProducts2);
 	tabOutputForm1->addRow(tr("Source catalogue:"), tabOutputWidgetFormat);
 	tabOutputForm1->addRow(tr("Parameters:"), tabOutputFieldParameters);
 	tabOutputForm1->addRow(tr(""), tabOutputLabelParameters);
@@ -2972,6 +3009,10 @@ void SoFiA::createInterface()
 	actionShowFilteredCube->setEnabled(false);
 	connect(actionShowFilteredCube, SIGNAL(triggered()), this, SLOT(showFilteredCube()));
 	
+	actionShowNoiseCube = new QAction(tr("Noise Cube"), this);
+	actionShowNoiseCube->setEnabled(false);
+	connect(actionShowNoiseCube, SIGNAL(triggered()), this, SLOT(showNoiseCube()));
+	
 	actionShowMask = new QAction(tr("Mask Cube"), this);
 	actionShowMask->setEnabled(false);
 	connect(actionShowMask, SIGNAL(triggered()), this, SLOT(showMask()));
@@ -3066,6 +3107,7 @@ void SoFiA::createInterface()
 	menuShowImage->setIcon(iconFolderImage);
 	menuShowImage->addAction(actionShowCube);
 	menuShowImage->addAction(actionShowFilteredCube);
+	menuShowImage->addAction(actionShowNoiseCube);
 	menuShowImage->addAction(actionShowMask);
 	menuShowImage->addAction(actionShowMom0);
 	menuShowImage->addAction(actionShowMom1);
@@ -3157,7 +3199,7 @@ void SoFiA::createWhatsThis()
 	tabInFilterFieldEdgeY->setWhatsThis(tr("<h3>scaleNoise.edgeY</h3><p>Size of edge (in pixels) to be excluded in second coordinate. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));
 	tabInFilterFieldEdgeZ->setWhatsThis(tr("<h3>scaleNoise.edgeZ</h3><p>Size of edge (in pixels) to be excluded in third coordinate. The setting will be ignored if <b>scaleNoise.method = local</b>.</p>"));
 	tabInFilterFieldFluxRange->setWhatsThis(tr("<h3>scaleNoise.fluxRange</h3><p>Range of flux values to be used in noise measurement. Can be <b>negative</b>, <b>positive</b> or <b>all</b> to use only negative, only positive or all pixels, respectively.</p>"));
-	tabInFilterFieldInterpolation->setWhatsThis(tr("<h3>scaleNoise.interpolation</h3><p>If set to <b>true</b> then the local noise measurement made by SoFiA will be interpolated in between grid points using linear interpolation. Note that this can be quite slow. If set to <b>false</b> (default), the measured noise value will instead fill the entire grid cell, which is usually much faster, but creates sharp edges along the boundaries of grid cells. This setting will only be relevant if <b>scaleNoise.method = local</b>.</p>"));
+	tabInFilterFieldInterpolation->setWhatsThis(tr("<h3>scaleNoise.interpolation</h3><p>Select if the local noise measurement made by SoFiA should be interpolated in between grid points or not. The following settings are allowed:</p><ul><li><b>none</b> will simply fill each grid cell with the noise value. This is the default setting.</li><li><b>linear</b> will carry out a linear interpolation between grid points, which is slower, but results in smoother noise maps.</li><li><b>cubic</b> will carry out a cubic spline interpolation between grid points, which is by far the slowest method, but results in the smoothest noise maps.</li></ul><p>Note that this setting will only be relevant if <b>scaleNoise.method = local</b>.</p>"));
 	//tabInFilterFieldGridSpatial->setWhatsThis(tr("<h3>scaleNoise.gridSpatial</h3><p>This defines the spatial grid size on which the local noise measurement takes place. The setting will be ignored if <b>scaleNoise.method = global</b>. It must be an even number of 2 or greater.</p>"));
 	//tabInFilterFieldGridSpectral->setWhatsThis(tr("<h3>scaleNoise.gridSpectral</h3><p>This defines the spectral grid size on which the local noise measurement takes place. The setting will be ignored if <b>scaleNoise.method = global</b>. It must be an even number of 2 or greater.</p>"));
 	tabInFilterFieldMethod->setWhatsThis(tr("<h3>scaleNoise.method</h3><p>If set to <b>global</b>, the noise measurement will be carried out on the entire projected image plane perpendicular to the axis along which the noise is to be scaled (default). If set to <b>local</b>, the noise measurement will occur in a running window of specified size on a specified grid. Note that the latter can be slow and memory-heavy and is only recommended for small cubes or 2D images that are affected by localised noise variations.</p>"));
@@ -3194,6 +3236,7 @@ void SoFiA::createWhatsThis()
 	tabSourceFindingGroupBox2->setWhatsThis(tr("<h3>steps.doThreshold</h3><p>Run the threshold finder on the data cube.</p>"));
 	tabInFilterGroupBox3->setWhatsThis(tr("<h3>steps.doWavelet</h3><p>Decompose the data cube into wavelet components using the 2D&ndash;1D wavelet decomposition algorithm of <a href=\"http://adsabs.harvard.edu/abs/2012PASA...29..244F\">Fl&ouml;er et al. (2012)</a>.</p>"));
 	tabOutputButtonFilteredCube->setWhatsThis(tr("<h3>steps.doWriteFilteredCube</h3><p>Save a copy of the filtered data cube. Note that this will only make sense if at least one of the input filters was applied.</p>"));
+	tabOutputButtonNoiseCube->setWhatsThis(tr("<h3>steps.doWriteNoiseCube</h3><p>If set to <b>true</b>, then a copy of the noise cube estimated by SoFiA will be written to disk as a FITS file. This will only work if noise scaling is enabled.</p>"));
 	tabOutputButtonMask->setWhatsThis(tr("<h3>steps.doWriteMask</h3><p>Save source mask cube.</p>"));
 	tabSourceFindingFieldClipMethod->setWhatsThis(tr("<h3>threshold.clipMethod</h3><p>Define whether the flux threshold is <b>relative</b> to the noise level or in <b>absolute</b> flux units.</p>"));
 	tabSourceFindingFieldRmsMode2->setWhatsThis(tr("<h3>threshold.rmsMode</h3><p>Noise determination method: Gaussian fit to flux histogram (<b>gauss</b>), Gaussian fit to negative flux histogram (<b>negative</b>), median absolute deviation (<b>mad</b>), or standard deviation (<b>std</b>).</p>"));

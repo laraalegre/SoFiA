@@ -163,6 +163,7 @@ private slots:
 	void showCatalogue();
 	void showCube();
 	void showFilteredCube();
+	void showNoiseCube();
 	void showMask();
 	void showMom0();
 	void showMom1();
@@ -247,6 +248,7 @@ private:
 	QAction    *actionShowCatalogue;
 	QAction    *actionShowCube;
 	QAction    *actionShowFilteredCube;
+	QAction    *actionShowNoiseCube;
 	QAction    *actionShowMask;
 	QAction    *actionShowMom0;
 	QAction    *actionShowMom1;
@@ -368,7 +370,7 @@ private:
 	QLabel       *tabInFilterLabelWindowSpectral;
 	QSpinBox     *tabInFilterFieldWindowSpatial;
 	QSpinBox     *tabInFilterFieldWindowSpectral;
-	QCheckBox    *tabInFilterFieldInterpolation;
+	QComboBox    *tabInFilterFieldInterpolation;
 	QFrame       *tabInFilterSeparator1;
 	QFrame       *tabInFilterSeparator2;
 	
@@ -503,7 +505,10 @@ private:
 	
 	QHBoxLayout  *tabOutputLayoutProducts;
 	QWidget      *tabOutputWidgetProducts;
+	QHBoxLayout  *tabOutputLayoutProducts2;
+	QWidget      *tabOutputWidgetProducts2;
 	QCheckBox    *tabOutputButtonFilteredCube;
+	QCheckBox    *tabOutputButtonNoiseCube;
 	QCheckBox    *tabOutputButtonMask;
 	QCheckBox    *tabOutputButtonMom0;
 	QCheckBox    *tabOutputButtonMom1;

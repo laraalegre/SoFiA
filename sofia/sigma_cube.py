@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import numpy as np
-from scipy.interpolate import griddata
+from scipy.interpolate import InterpolatedUnivariateSpline
 from .functions import *
 import sys
 import math
@@ -23,10 +23,10 @@ Parameters
   windowSpectral:  Spectral window size over which to measure local RMS. Must be even.
   gridSpatial:     Size of each spatial grid cell for local RMS measurement. Must be even.
   gridSpectral:    Size of each spectral grid cell for local RMS measurement. Must be even.
-  interpolation:   If True, use linear interpolation, otherwise fill entire grid cell with RMS value.
+  interpolation:   Interpolate values between grid points? Can be "none", "linear" or "cubic"
 """
 
-def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0, edgeZ=0, statistic="mad", fluxRange="all", method="global", windowSpatial=20, windowSpectral=20, gridSpatial=0, gridSpectral=0, interpolation=False):
+def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0, edgeZ=0, statistic="mad", fluxRange="all", method="global", windowSpatial=20, windowSpectral=20, gridSpatial=0, gridSpectral=0, interpolation="none"):
 	# Print some informational messages
 	err.print_info("Generating noise-scaled data cube:")
 	err.print_info("  Selecting " + str(method) + " noise measurement method.")
@@ -38,6 +38,9 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 	
 	# Check the dimensions of the cube (could be obtained from header information)
 	dimensions = np.shape(cube)
+	
+	# Create empty cube (filled with 0) to hold noise values
+	rms_cube = np.full(cube.shape, np.nan)
 	
 	# LOCAL noise measurement within running window (slower and less memory-friendly)
 	if method == "local":
@@ -65,9 +68,6 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 		err.print_info("  Using grid size of [" + str(gridSpatial) + ", " + str(gridSpectral) + "]")
 		err.print_info("  and window size of [" + str(windowSpatial) + ", " + str(windowSpectral) + "].")
 		
-		# Create empty cube (filled with 0) to hold noise values
-		rms_cube = np.full(cube.shape, np.nan)
-		
 		# Generate grid points to be used
 		gridPointsZ = np.arange((dimensions[0] - gridSpectral * (int(math.ceil(float(dimensions[0]) / float(gridSpectral))) - 1)) // 2, dimensions[0], gridSpectral)
 		gridPointsY = np.arange((dimensions[1] - gridSpatial  * (int(math.ceil(float(dimensions[1]) / float(gridSpatial)))  - 1)) // 2, dimensions[1], gridSpatial)
@@ -88,51 +88,75 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 					window = (max(0, z - radiusWindowSpectral), min(dimensions[0], z + radiusWindowSpectral + 1), max(0, y - radiusWindowSpatial), min(dimensions[1], y + radiusWindowSpatial + 1), max(0, x - radiusWindowSpatial), min(dimensions[2], x + radiusWindowSpatial + 1))
 					
 					if not np.all(np.isnan(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]])):
-						if interpolation:
+						if interpolation == "linear" or interpolation == "cubic":
 							# Write value into grid point for later interpolation
 							rms_cube[z, y, x] = GetRMS(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0)
 						else:
 							# Fill entire grid cell
 							rms_cube[grid[0]:grid[1], grid[2]:grid[3], grid[4]:grid[5]] = GetRMS(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0)
 		
-		# Carry out linear interpolation if requested, taking NaNs into account
-		if interpolation:
+		# Carry out interpolation if requested, taking NaNs into account
+		if interpolation == "linear" or interpolation == "cubic":
+			err.print_info("Interpolating in between grid points.")
+			
 			# First across each spatial plane
 			if gridSpatial > 1:
 				for z in gridPointsZ:
 					for y in gridPointsY:
 						data_values   = rms_cube[z, y, gridPointsX]
 						not_nan = np.logical_not(np.isnan(data_values))
-						if not_nan.size:
+						if any(not_nan):
 							interp_coords = np.arange(0, dimensions[2])
-							interp_values = np.interp(interp_coords, gridPointsX[not_nan], data_values[not_nan])
-							rms_cube[z, y, 0:dimensions[2]] = interp_values
+							if interpolation == "cubic":
+								spline = InterpolatedUnivariateSpline(gridPointsX[not_nan], data_values[not_nan])
+								rms_cube[z, y, 0:dimensions[2]] = spline(interp_coords)
+							else:
+								interp_values = np.interp(interp_coords, gridPointsX[not_nan], data_values[not_nan])
+								rms_cube[z, y, 0:dimensions[2]] = interp_values
 					for x in range(dimensions[2]):
 						data_values   = rms_cube[z, gridPointsY, x]
 						not_nan = np.logical_not(np.isnan(data_values))
-						if not_nan.size:
+						if any(not_nan):
 							interp_coords = np.arange(0, dimensions[1])
-							interp_values = np.interp(interp_coords, gridPointsY[not_nan], data_values[not_nan])
-							rms_cube[z, 0:dimensions[1], x] = interp_values
+							if interpolation == "cubic":
+								spline = InterpolatedUnivariateSpline(gridPointsY[not_nan], data_values[not_nan])
+								rms_cube[z, 0:dimensions[1], x] = spline(interp_coords)
+							else:
+								interp_values = np.interp(interp_coords, gridPointsY[not_nan], data_values[not_nan])
+								rms_cube[z, 0:dimensions[1], x] = interp_values
+					# Alternative option: 2-D spatial interpolation using SciPy's interp2d
+					#from scipy.interpolate import interp2d
+					#xx, yy = np.meshgrid(gridPointsX, gridPointsY)
+					#data_values = rms_cube[z, yy, xx]
+					#f = interp2d(gridPointsX, gridPointsY, data_values, kind="cubic")
+					#interp_coords_x = np.arange(0, dimensions[2])
+					#interp_coords_y = np.arange(0, dimensions[1])
+					#rms_cube[z, :, :] = f(interp_coords_x, interp_coords_y)
+			
 			# Then along the spectral axis
 			if gridSpectral > 1:
 				for y in range(dimensions[1]):
 					for x in range(dimensions[2]):
 						data_values   = rms_cube[gridPointsZ, y, x]
 						not_nan = np.logical_not(np.isnan(data_values))
-						if not_nan.size:
+						if any(not_nan):
 							interp_coords = np.arange(0, dimensions[0])
-							interp_values = np.interp(interp_coords, gridPointsZ[not_nan], data_values[not_nan])
-							rms_cube[0:dimensions[0], y, x] = interp_values
+							if interpolation == "cubic":
+								spline = InterpolatedUnivariateSpline(gridPointsZ[not_nan], data_values[not_nan])
+								rms_cube[0:dimensions[0], y, x] = spline(interp_coords)
+							else:
+								interp_values = np.interp(interp_coords, gridPointsZ[not_nan], data_values[not_nan])
+								rms_cube[0:dimensions[0], y, x] = interp_values
 		
 		# Replace any invalid RMS values with NaN
-		rms_cube[rms_cube <= 0] = np.nan
+		with np.errstate(invalid="ignore"):
+			rms_cube[rms_cube <= 0] = np.nan
 		
 		# Divide data cube by RMS cube
 		cube /= rms_cube
 		
 		# Delete the RMS cube again to release its memory
-		del rms_cube
+		#del rms_cube
 	
 	# GLOBAL noise measurement on entire 2D plane (faster and more memory-friendly)
 	else:
@@ -152,20 +176,26 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 			for i in range(dimensions[0]):
 				if not np.all(np.isnan(cube[i, y1:y2, x1:x2])):
 					rms = GetRMS(cube[i, y1:y2, x1:x2], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0)
-					if rms > 0: cube[i, :, :] /= rms
+					if rms > 0:
+						rms_cube[i, :, :] = rms
+						cube[i, :, :] /= rms
 		
 		if scaleY:
 			for i in range(dimensions[1]):
 				if not np.all(np.isnan(cube[z1:z2, i, x1:x2])):
 					rms = GetRMS(cube[z1:z2, i, x1:x2], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0)
-					if rms > 0: cube[:, i, :] /= rms
+					if rms > 0:
+						rms_cube[:, i, :] = rms
+						cube[:, i, :] /= rms
 		
 		if scaleX:
 			for i in range(dimensions[2]):
 				if not np.all(np.isnan(cube[z1:z2, y1:y2, i])):
 					rms = GetRMS(cube[z1:z2, y1:y2, i], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0)
-					if rms > 0: cube[:, :, i] /= rms
+					if rms > 0:
+						rms_cube[:, :, i] = rms
+						cube[:, :, i] /= rms
 	
 	err.print_info("Noise-scaled data cube generated.\n")
 	
-	return cube
+	return cube, rms_cube

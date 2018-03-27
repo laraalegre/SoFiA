@@ -178,6 +178,7 @@ else:
 
 
 outputFilteredCube  = '%s_filtered.fits' % outroot
+outputNoiseCube     = '%s_noise.fits' % outroot
 outputSkellamPDF    = '%s_skel.pdf' % outroot
 outputScatterPDF    = '%s_scat.pdf' % outroot
 outputContoursPDF   = '%s_cont.pdf' % outroot
@@ -195,6 +196,9 @@ if not Parameters['writeCat']['overwrite']:
 	# Output filtered cube
 	if Parameters['steps']['doWriteFilteredCube'] and (Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']):
 		checkOverwrite(outputFilteredCube)
+
+	if Parameters['steps']['doWriteNoiseCube'] and Parameters['steps']['doScaleNoise']:
+		checkOverwrite(outputNoiseCube)
 
 	# Reliability plots
 	if Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and Parameters['reliability']['makePlot']:
@@ -276,7 +280,7 @@ if Parameters['steps']['doSmooth']:
 
 # ---- SIGMA CUBE ----
 if Parameters['steps']['doScaleNoise']:
-	np_Cube = sigma_cube.sigma_scale(np_Cube, **Parameters['scaleNoise'])
+	np_Cube, noise_cube = sigma_cube.sigma_scale(np_Cube, **Parameters['scaleNoise'])
 
 # --- WAVELET ---
 if Parameters['steps']['doWavelet']:
@@ -293,6 +297,11 @@ if Parameters['steps']['doWavelet']:
 if Parameters['steps']['doWriteFilteredCube'] and (Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']):
 	print ('SoFiA: Writing filtered cube')
 	write_filtered_cube.writeFilteredCube(np_Cube, dict_Header, Parameters, outputFilteredCube, Parameters['writeCat']['compress'])
+
+# --- WRITE NOISE CUBE ---
+if Parameters['steps']['doWriteNoiseCube'] and Parameters['steps']['doScaleNoise']:
+	print ('SoFiA: Writing noise cube')
+	write_filtered_cube.writeFilteredCube(noise_cube, dict_Header, Parameters, outputNoiseCube, Parameters['writeCat']['compress'])
 
 if Parameters['steps']['doFlag'] or Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']:
 	print ("Filtering complete")

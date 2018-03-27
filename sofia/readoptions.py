@@ -53,6 +53,7 @@ def readPipelineOptions(filename = "pipeline.options"):
 	             "steps.doReliability": "bool", \
 	             "steps.doParameterise": "bool", \
 	             "steps.doWriteFilteredCube": "bool", \
+	             "steps.doWriteNoiseCube": "bool", \
 	             "steps.doWriteMask": "bool", \
 	             "steps.doWriteCat": "bool", \
 	             "steps.doMom0": "bool", \
@@ -90,7 +91,7 @@ def readPipelineOptions(filename = "pipeline.options"):
 	             "scaleNoise.windowSpectral": "int", \
 	             "scaleNoise.gridSpatial": "int", \
 	             "scaleNoise.gridSpectral": "int", \
-	             "scaleNoise.interpolation": "bool", \
+	             "scaleNoise.interpolation": "string", \
 	             "SCfind.threshold": "float", \
 	             "SCfind.sizeFilter": "float", \
 	             "SCfind.maskScaleXY": "float", \

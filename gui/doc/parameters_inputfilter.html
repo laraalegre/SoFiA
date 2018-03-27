@@ -27,6 +27,16 @@
       This section describes the different input filtering options offered by SoFiA. Currently, three different filters are available, including a simple, three-dimensional <em>smoothing</em> filter, a basic <em>noise-scaling</em> filter and a three-dimensional <em>wavelet decomposition</em> algorithm. Their settings are explained below.
     </p>
     
+    <ul>
+      <li>The purpose of the <strong>smoothing filter</strong> is to smooth the entire data cube with a user-specified kernel. This can be useful in certain situations, e.g. when only a threshold finder is to be applied to the data.</li>
+      <li>The scope of the <strong>noise scaling</strong> filter is to divide the data cube by a local measurement of the noise level in order to remove any noise variations across the cube prior to source finding. This is recommended for all data cubes with varying noise across the spatial or spectral axes, e.g. interferometric images after primary-beam correction.</li>
+      <li>The <strong>wavelet filter</strong> will decompose the entire data cube into wavelet components and filter out wavelet scales associated with noise while retaining those scales on which there is actual source emission. It can be combined with the threshold finder to reliably detect sources while filtering out potential false detections due to noise.
+    </ul>
+    
+    <p>
+      The individual settings for these filters are explained in more detail below.
+    </p>
+    
     <h3>Smoothing</h3>
     
     <p>
@@ -157,7 +167,7 @@
     </p>
     
     <p>
-      Alternatively, if there are highly localised noise variations across the image, <code>scaleNoise.method</code> can be set to <code>local</code>, which will measure the noise in a running window of given size on a specified grid. SoFiA offers the possibility of interpolating the noise measurements in between sparse grid points in order to speed up the measurement process. It is usually sufficient to specify a spatial/spectral window size across which the noise is measured; SoFiA will automatically determine an optimal grid with cells of about half the window size. Note that the <code>local</code> noise measurement method is slow and memory-heavy and therefore only recommended for small cubes or 2D images with strong, highly localised noise variations, e.g. continuum images that have increased noise around bright sources.
+      Alternatively, if there are highly localised noise variations across the image, <code>scaleNoise.method</code> can be set to <code>local</code>, which will measure the noise in a running window of given size on a specified grid. SoFiA offers the possibility of interpolating the noise measurements in between sparse grid points in order to speed up the measurement process. It is usually sufficient to specify a spatial/spectral window size across which the noise is measured and set the grid size to <code>0</code> (the default setting); in this case SoFiA will automatically determine an optimal grid with cells of about half the window size. Note that the <code>local</code> noise measurement method is slow and memory-heavy and therefore only recommended for small cubes or 2D images with strong, highly localised noise variations, e.g. continuum images that have increased noise around bright sources.
     </p>
     
     <table id="steps.doScaleNoise">
@@ -417,16 +427,16 @@
             <td class="head">Parameter:</td><td class="body2">scaleNoise.interpolation</td>
         </tr>
         <tr>
-            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+            <td class="head">Type:</td><td class="body"><code>string</code></td>
         </tr>
         <tr>
-            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+            <td class="head">Values:</td><td class="body"><code>none</code>, <code>linear</code>, <code>cubic</code></td>
         </tr>
         <tr>
-            <td class="head">Default:</td><td class="body"><code>false</code></td>
+            <td class="head">Default:</td><td class="body"><code>none</code></td>
         </tr>
         <tr>
-            <td class="head">Description:</td><td class="body">If set to <code>true</code> then the local noise measurement made by SoFiA will be interpolated in between grid points using linear interpolation. Note that this can be quite slow. If set to <code>false</code> (default), the measured noise value will instead fill the entire grid cell, which is usually much faster, but creates sharp edges along the boundaries of grid cells. This setting will only be relevant if <code>scaleNoise.method = local</code>.</td>
+            <td class="head">Description:</td><td class="body">Select if the local noise measurement made by SoFiA should be interpolated in between grid points or not. The default is <code>none</code> which will simply fill each grid cell with the noise value. <code>linear</code> will carry out a linear interpolation between grid points, which is slower, but results in smoother noise maps. Lastly, <code>cubic</code> will carry out a cubic spline interpolation between grid points, which is by far the slowest method, but results in the smoothest noise maps. Note that this setting will only be relevant if <code>scaleNoise.method = local</code>.</td>
         </tr>
     </table>
     

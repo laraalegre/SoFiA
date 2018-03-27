@@ -34,7 +34,7 @@
 		</p>
 		
 		<p>
-			In addition to catalogues, SoFiA can produce imaging products, including a copy of the filtered input cube (assuming that an input filter was applied), a copy of the source mask cube, moment-0 and moment-1 maps of all detected pixels, as well as individual imaging products for each detected source (including a small subcube, moment-0, 1 and 2 images, a position&ndash;velocity diagram, and an integrated spectrum). All of these output products can be compressed using <a href="http://www.gzip.org/">gzip</a> if desired.
+			In addition to catalogues, SoFiA can produce imaging products, including a copy of the filtered input cube (assuming that an input filter was applied), noise cube (with noise scaling enabled), source mask cube, moment-0 and moment-1 maps of all detected pixels, as well as individual imaging products for each detected source (including a small subcube, moment-0, 1 and 2 images, a position&ndash;velocity diagram, and an integrated spectrum). All of these output products can be compressed using <a href="http://www.gzip.org/">gzip</a> if desired.
 		</p>
 		
 		<table id="steps.doWriteCat">
@@ -72,6 +72,24 @@
 				<td class="head">Description:</td><td class="body">If set to <code>true</code>, save a copy of the filtered data cube. Note that this will only make sense if at least one of the input filters was applied.</td>
 			</tr>
 		</table>
+		
+		<table id="steps.doWriteNoiseCube">
+			<tr>
+				<td class="head">Parameter:</td><td class="body2">steps.doWriteNoiseCube</td>
+			</tr>
+			<tr>
+				<td class="head">Type:</td><td class="body"><code>bool</code></td>
+			</tr>
+			<tr>
+				<td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+			</tr>
+			<tr>
+				<td class="head">Default:</td><td class="body"><code>false</code></td>
+			</tr>
+			<tr>
+				<td class="head">Description:</td><td class="body">If set to <code>true</code>, then a copy of the noise cube estimated by SoFiA will be written to disk as a FITS file. This will only work if noise scaling is enabled (<code>steps.doScaleNoise = true</code>).</td>
+			</tr>
+    </table>
 		
 		<table id="steps.doWriteMask">
 			<tr>

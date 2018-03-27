@@ -15,6 +15,7 @@ steps.doMerge                   =       true
 steps.doReliability             =       false
 steps.doParameterise            =       true
 steps.doWriteFilteredCube       =       false
+steps.doWriteNoiseCube          =       false
 steps.doWriteMask               =       false
 steps.doWriteCat                =       true
 steps.doMom0                    =       false
@@ -71,7 +72,7 @@ scaleNoise.windowSpatial        =       25
 scaleNoise.windowSpectral       =       15
 scaleNoise.gridSpatial          =       0
 scaleNoise.gridSpectral         =       0
-scaleNoise.interpolation        =       false
+scaleNoise.interpolation        =       none
 
 
 # 2D-1D wavelet finder module
