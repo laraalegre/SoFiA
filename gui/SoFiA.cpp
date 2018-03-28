@@ -309,10 +309,8 @@ int SoFiA::selectFile(QLineEdit *target, bool isDirectory)
 // Function to set defaults
 // ------------------------
 
-int SoFiA::setDefaults()
+int SoFiA::setDefaults(const QString &fileName)
 {
-	QString fileName = SOFIA_DEFAULT_SETTINGS;
-	
 	if(loadFile(fileName))
 	{
 		QString messageText = tr("<p>Failed to load default parameters.</p><p>Please close the programme and check your installation. SoFiA will not function properly without the default parameters.</p>");
@@ -325,7 +323,7 @@ int SoFiA::setDefaults()
 	currentFileName.clear();
 	
 	QString messageText = QString("");
-	QString statusText = tr("Parameters reset to default.");
+	QString statusText = tr("Default parameters loaded.");
 	showMessage(MESSAGE_INFO, messageText, statusText);
 	
 	settingsChanged = false;
@@ -549,7 +547,7 @@ void SoFiA::loadSettings()
 // Function to load file
 // ---------------------
 
-int SoFiA::loadFile(QString &fileName)
+int SoFiA::loadFile(const QString &fileName)
 {
 	if(fileName.isEmpty()) return 0;
 	
@@ -1073,6 +1071,56 @@ void SoFiA::resetToDefault()
 
 
 
+// ------------------------------------------
+// Slot to load parameter set 'Extragalactic'
+// ------------------------------------------
+
+void SoFiA::loadParsetExtragalactic()
+{
+	if(settingsChanged)
+	{
+		QMessageBox messageBox(this);
+		messageBox.setWindowTitle(tr("SoFiA - New Parameter File"));
+		messageBox.setText(tr("<p>This action will load the default parameter set %1 and close the current file. All unsaved changes will be lost.</p><p>Do you wish to create a new parameter file?</p>").arg(QString::fromUtf8("‘Extragalactic HI Cube’")));
+		messageBox.setStandardButtons(QMessageBox::Cancel | QMessageBox::Ok);
+		messageBox.setDefaultButton(QMessageBox::Ok);
+		messageBox.setIcon(QMessageBox::Warning);
+		
+		int choice = messageBox.exec();
+		if(choice != QMessageBox::Ok) return;
+	}
+	
+	setDefaults(SOFIA_PARSET_EXTRAGALACTIC);
+	return;
+}
+
+
+
+// --------------------------------------
+// Slot to load parameter set 'Continuum'
+// --------------------------------------
+
+void SoFiA::loadParsetContinuum()
+{
+	if(settingsChanged)
+	{
+		QMessageBox messageBox(this);
+		messageBox.setWindowTitle(tr("SoFiA - New Parameter File"));
+		messageBox.setText(tr("<p>This action will load the default parameter set %1 and close the current file. All unsaved changes will be lost.</p><p>Do you wish to create a new parameter file?</p>").arg(QString::fromUtf8("‘Radio Continuum Image’")));
+		messageBox.setStandardButtons(QMessageBox::Cancel | QMessageBox::Ok);
+		messageBox.setDefaultButton(QMessageBox::Ok);
+		messageBox.setIcon(QMessageBox::Warning);
+		
+		int choice = messageBox.exec();
+		if(choice != QMessageBox::Ok) return;
+	}
+	
+	setDefaults(SOFIA_PARSET_CONTINUUM);
+	return;
+}
+
+
+
 // ---------------------------
 // Slot to show SoFiA handbook
 // ---------------------------
@@ -1093,7 +1141,7 @@ void SoFiA::showHandbook(const QString &page)
 
 void SoFiA::aboutSoFiA()
 {
-	QString messageText = tr("<h3>About SoFiA</h3><p>Version 1.2.0-beta (using Qt %1)</p><p>SoFiA, the <b>Source Finding Application</b>, is a 3D source finding pipeline designed to detect and parameterise galaxies in HI data cubes. The acronym SoFiA is based on the Greek word %2, which means wisdom.</p><p>SoFiA is free software: you can redistribute it and/or modify it under the terms of the <b>GNU General Public License</b> as published by the Free Software Foundation, either version 3 of the licence, or (at your option) any later version.</p><p>SoFiA is distributed in the hope that it will be useful, but <b>without any warranty</b>; without even the implied warranty of merchantability or fitness for a particular purpose. See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with SoFiA. If not, see <a href=\"http://www.gnu.org/licenses/\">http://www.gnu.org/licenses/</a>.</p><p>SoFiA uses the Oxygen icon set which is licensed under version&nbsp;3 of the <a href=\"http://www.gnu.org/licenses/lgpl-3.0.txt\">GNU Lesser General Public License</a>. For more details please see the Oxygen section on <a href=\"https://techbase.kde.org/Projects/Oxygen/Licensing\">KDE TechBase</a> or the <a href=\"http://www.kde.org/\">KDE website</a>.</p><p>&copy; 2017 The SoFiA Authors</p>").arg(QString(qVersion())).arg(QString::fromUtf8("σοφία"));
+	QString messageText = tr("<h3>About SoFiA</h3><p>Version 1.2.0-beta (using Qt %1)</p><p>SoFiA, the <b>Source Finding Application</b>, is a 3D source finding pipeline designed to detect and parameterise galaxies in HI data cubes. The acronym SoFiA is based on the Greek word %2, which means wisdom.</p><p>SoFiA is free software: you can redistribute it and/or modify it under the terms of the <b>GNU General Public License</b> as published by the Free Software Foundation, either version 3 of the licence, or (at your option) any later version.</p><p>SoFiA is distributed in the hope that it will be useful, but <b>without any warranty</b>; without even the implied warranty of merchantability or fitness for a particular purpose. See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with SoFiA. If not, see <a href=\"http://www.gnu.org/licenses/\">http://www.gnu.org/licenses/</a>.</p><p>SoFiA uses the Oxygen icon set which is licensed under version&nbsp;3 of the <a href=\"http://www.gnu.org/licenses/lgpl-3.0.txt\">GNU Lesser General Public License</a>. For more details please see the Oxygen section on <a href=\"https://techbase.kde.org/Projects/Oxygen/Licensing\">KDE TechBase</a> or the <a href=\"http://www.kde.org/\">KDE website</a>.</p><p>&copy; 2018 The SoFiA Authors</p>").arg(QString(qVersion())).arg(QString::fromUtf8("σοφία"));
 	QString statusText = QString("");
 	showMessage(MESSAGE_INFO, messageText, statusText);
 	
@@ -2956,6 +3004,12 @@ void SoFiA::createInterface()
 	actionOpen->setIcon(iconDocumentOpen);
 	connect(actionOpen, SIGNAL(triggered()), this, SLOT(loadSettings()));
 	
+	actionLoadParsetExtragalactic = new QAction(tr("Extragalactic HI Cube"), this);
+	connect(actionLoadParsetExtragalactic, SIGNAL(triggered()), this, SLOT(loadParsetExtragalactic()));
+	
+	actionLoadParsetContinuum = new QAction(tr("Radio Continuum Image"), this);
+	connect(actionLoadParsetContinuum, SIGNAL(triggered()), this, SLOT(loadParsetContinuum()));
+	
 	actionSave = new QAction(tr("Save"), this);
 	actionSave->setShortcuts(QKeySequence::Save);
 	actionSave->setIcon(iconDocumentSave);
@@ -3086,8 +3140,14 @@ void SoFiA::createInterface()
 	// Set up menu
 	// -----------
 	
+	menuLoadParset = new QMenu(tr("&Parameter Sets"), this);
+	menuLoadParset->setIcon(iconDocumentNew);
+	menuLoadParset->addAction(actionLoadParsetExtragalactic);
+	menuLoadParset->addAction(actionLoadParsetContinuum);
+	
 	menuFile = new QMenu(tr("&File"), this);
 	menuFile->addAction(actionDefault);
+	menuFile->addMenu(menuLoadParset);
 	menuFile->addSeparator();
 	menuFile->addAction(actionOpen);
 	menuFile->addSeparator();

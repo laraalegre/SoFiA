@@ -199,10 +199,6 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 					if rms > 0:
 						rms_cube[:, :, i] *= rms
 						cube[:, :, i] /= rms
-		
-		# Replace values of 1 with NaN
-		#with np.errstate(invalid="ignore"):
-		#	rms_cube[rms_cube == 1] = np.nan
 	
 	err.print_info("Noise-scaled data cube generated.\n")
 	

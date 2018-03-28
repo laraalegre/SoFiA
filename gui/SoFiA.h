@@ -33,6 +33,8 @@
 #define PIPELINEINTERFACE_H
 
 #define SOFIA_DEFAULT_SETTINGS ":/SoFiA_default_input.txt"
+#define SOFIA_PARSET_EXTRAGALACTIC ":/parsets/SoFiA_parset_extragalactic.par"
+#define SOFIA_PARSET_CONTINUUM ":/parsets/SoFiA_parset_continuum.par"
 #define SOFIA_TEMP_FILE        "SoFiA.session"
 #define SOFIA_RC_FILE          ".SoFiA"
 
@@ -138,6 +140,8 @@ private slots:
 	void selectInputDataFile();
 	void selectOutputDirectory();
 	void loadSettings();
+	void loadParsetExtragalactic();
+	void loadParsetContinuum();
 	void saveSettings();
 	void saveSettingsAs();
 	void saveLogAs();
@@ -193,10 +197,10 @@ private:
 	WidgetSpreadsheet *spreadsheet;
 	
 	int  selectFile(QLineEdit *target, bool isDirectory = false);
-	int  loadFile(QString &fileName);
+	int  loadFile(const QString &fileName);
 	int  updateVariables();
 	int  setFields();
-	int  setDefaults();
+	int  setDefaults(const QString &fileName = QString::fromUtf8(SOFIA_DEFAULT_SETTINGS));
 	int  loadSession();
 	int  saveSession();
 	int  showMessage(int severity, QString &messageText, QString &statusText);
@@ -228,6 +232,7 @@ private:
 	QIcon iconFolderImage;
 	
 	QMenu      *menuFile;
+	QMenu      *menuLoadParset;
 	QMenu      *menuPipeline;
 	QMenu      *menuView;
 	QMenu      *menuShowImage;
@@ -237,6 +242,8 @@ private:
 	QToolBar   *toolBar;
 	
 	QAction    *actionOpen;
+	QAction    *actionLoadParsetExtragalactic;
+	QAction    *actionLoadParsetContinuum;
 	QAction    *actionSave;
 	QAction    *actionSaveAs;
 	QAction    *actionExit;
