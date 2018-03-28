@@ -31,16 +31,14 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 	err.print_info("Generating noise-scaled data cube:")
 	err.print_info("  Selecting " + str(method) + " noise measurement method.")
 	
-	if statistic == "mad": err.print_info("  Applying Median Absolute Deviation (MAD) to " + str(fluxRange) + " pixels.")
-	if statistic == "std": err.print_info("  Applying Standard Deviation (STD) to " + str(fluxRange) + " pixels.")
+	if statistic == "mad": err.print_info("  Applying median absolute deviation to " + str(fluxRange) + " pixels.")
+	if statistic == "std": err.print_info("  Applying standard deviation to " + str(fluxRange) + " pixels.")
+	if statistic == "gauss": err.print_info("  Applying Gaussian fit to " + str(fluxRange) + " pixels.")
 	if statistic == "negative": err.print_info("  Applying Gaussian fit to negative pixels.")
 	sys.stdout.flush()
 	
 	# Check the dimensions of the cube (could be obtained from header information)
 	dimensions = np.shape(cube)
-	
-	# Create empty cube (filled with 0) to hold noise values
-	rms_cube = np.full(cube.shape, np.nan)
 	
 	# LOCAL noise measurement within running window (slower and less memory-friendly)
 	if method == "local":
@@ -79,6 +77,9 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 		radiusWindowSpatial = windowSpatial // 2
 		radiusWindowSpectral = windowSpectral // 2
 		
+		# Create empty cube (filled with NaN) to hold noise values
+		rms_cube = np.full(cube.shape, np.nan)
+		
 		# Determine RMS across window centred on grid cell
 		for z in gridPointsZ:
 			for y in gridPointsY:
@@ -97,7 +98,7 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 		
 		# Carry out interpolation if requested, taking NaNs into account
 		if interpolation == "linear" or interpolation == "cubic":
-			err.print_info("Interpolating in between grid points.")
+			err.print_info("  Interpolating in between grid points (" + str(interpolation) + ").")
 			
 			# First across each spatial plane
 			if gridSpatial > 1:
@@ -171,13 +172,16 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 		# Make sure edges don't exceed cube size
 		err.ensure(z1 < z2 and y1 < y2 and x1 < x2, "Edge size exceeds cube size for at least one axis.")
 		
+		# Create empty cube (filled with 1) to hold noise values
+		rms_cube = np.ones(cube.shape)
+		
 		# Measure noise across 2D planes and scale cube accordingly
 		if scaleZ:
 			for i in range(dimensions[0]):
 				if not np.all(np.isnan(cube[i, y1:y2, x1:x2])):
 					rms = GetRMS(cube[i, y1:y2, x1:x2], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0)
 					if rms > 0:
-						rms_cube[i, :, :] = rms
+						rms_cube[i, :, :] *= rms
 						cube[i, :, :] /= rms
 		
 		if scaleY:
@@ -185,7 +189,7 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 				if not np.all(np.isnan(cube[z1:z2, i, x1:x2])):
 					rms = GetRMS(cube[z1:z2, i, x1:x2], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0)
 					if rms > 0:
-						rms_cube[:, i, :] = rms
+						rms_cube[:, i, :] *= rms
 						cube[:, i, :] /= rms
 		
 		if scaleX:
@@ -193,8 +197,12 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 				if not np.all(np.isnan(cube[z1:z2, y1:y2, i])):
 					rms = GetRMS(cube[z1:z2, y1:y2, i], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0)
 					if rms > 0:
-						rms_cube[:, :, i] = rms
+						rms_cube[:, :, i] *= rms
 						cube[:, :, i] /= rms
+		
+		# Replace values of 1 with NaN
+		#with np.errstate(invalid="ignore"):
+		#	rms_cube[rms_cube == 1] = np.nan
 	
 	err.print_info("Noise-scaled data cube generated.\n")
 	

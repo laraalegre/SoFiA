@@ -295,13 +295,16 @@ if Parameters['steps']['doWavelet']:
 
 # --- WRITE FILTERED CUBE ---
 if Parameters['steps']['doWriteFilteredCube'] and (Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']):
-	print ('SoFiA: Writing filtered cube')
+	print ('Writing filtered cube')
 	write_filtered_cube.writeFilteredCube(np_Cube, dict_Header, Parameters, outputFilteredCube, Parameters['writeCat']['compress'])
 
 # --- WRITE NOISE CUBE ---
 if Parameters['steps']['doWriteNoiseCube'] and Parameters['steps']['doScaleNoise']:
-	print ('SoFiA: Writing noise cube')
+	print ('Writing noise cube')
 	write_filtered_cube.writeFilteredCube(noise_cube, dict_Header, Parameters, outputNoiseCube, Parameters['writeCat']['compress'])
+
+# Delete noise cube again to release memory
+del noise_cube
 
 if Parameters['steps']['doFlag'] or Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']:
 	print ("Filtering complete")
