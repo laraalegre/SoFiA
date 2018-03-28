@@ -39,7 +39,7 @@ def regridMaskedChannels(datacube,maskcube,header):
 	return datacube
 
 def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOverwrite):
-	# strip path variable to get the file name and the directory separately
+	# Strip path variable to get the file name and the directory separately
 	splitroot = outroot.split('/')
 	cubename  = splitroot[-1]
 	if len(splitroot) > 1:
@@ -47,14 +47,14 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 	else:
 		outputDir = './objects/'
 	
-	# check if output directory exists and create it if not
+	# Check if output directory exists and create it if not
 	if not os.path.exists(outputDir):
 		os.system('mkdir ' + outputDir)
 	
-	# copy of header for manipulation
+	# Copy of header for manipulation
 	headerCubelets = header.copy()
 	
-	# read all important information (central pixels & values, increments) from the header
+	# Read all important information (central pixels & values, increments) from the header
 	dX    = headerCubelets['CDELT1']
 	dY    = headerCubelets['CDELT2']
 	dZ    = headerCubelets['CDELT3']
@@ -71,7 +71,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 	cubeDim = cube.shape
 	
 	for obj in objects:
-		# centers and bounding boxes 
+		# Centres and bounding boxes 
 		#obj = np.array(objects[rr - 1])
 		Xc = obj[cathead == 'x'][0]
 		Yc = obj[cathead == 'y'][0]
@@ -83,7 +83,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		Ymax = obj[cathead == 'y_max'][0]
 		Zmax = obj[cathead == 'z_max'][0]
 		
-		# if center of mass estimation is wrong replace by geometric center
+		# If centre of mass estimation is wrong replace by geometric centre
 		if Xc < 0 or Xc > cubeDim[2] - 1: Xc = obj[cathead == 'x_geo'][0]
 		if Yc < 0 or Yc > cubeDim[1] - 1: Yc = obj[cathead == 'y_geo'][0]
 		if Zc < 0 or Zc > cubeDim[0] - 1: Zc = obj[cathead == 'z_geo'][0]
@@ -92,12 +92,12 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		cPixYNew = int(Yc)
 		cPixZNew = int(Zc)
 		
-		# largest distance of source limits from the center
+		# Largest distance of source limits from the centre
 		maxX = 2 * max(abs(cPixXNew - Xmin), abs(cPixXNew - Xmax))
 		maxY = 2 * max(abs(cPixYNew - Ymin), abs(cPixYNew - Ymax))
 		maxZ = 2 * max(abs(cPixZNew - Zmin), abs(cPixZNew - Zmax))
 		
-		# calculate the new bounding box for the mass centered cube
+		# Calculate the new bounding box for the mass centred cube
 		XminNew = cPixXNew - maxX
 		if XminNew < 0: XminNew = 0
 		YminNew = cPixYNew - maxY
@@ -111,28 +111,28 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		ZmaxNew = cPixZNew + maxZ
 		if ZmaxNew > cubeDim[0] - 1: ZmaxNew = cubeDim[0] - 1
 		
-		# calculate the center with respect to the cutout cube
+		# Calculate the centre with respect to the cutout cube
 		cPixXCut = cPixX - XminNew
 		cPixYCut = cPixY - YminNew
 		cPixZCut = cPixZ - ZminNew
 		
-		# update header keywords:
+		# Update header keywords:
 		headerCubelets['CRPIX1'] = cPixXCut + 1
 		headerCubelets['CRPIX2'] = cPixYCut + 1
 		headerCubelets['CRPIX3'] = cPixZCut + 1
 		
-		# extract the cubelet
+		# Extract the cubelet
 		[ZminNew, ZmaxNew, YminNew, YmaxNew, XminNew, XmaxNew] = map(int, [ZminNew, ZmaxNew, YminNew, YmaxNew, XminNew, XmaxNew])
 		subcube = cube[ZminNew:ZmaxNew + 1, YminNew:YmaxNew + 1, XminNew:XmaxNew + 1]
 		
-		# update header keywords:
+		# Update header keywords:
 		headerCubelets['NAXIS1'] = subcube.shape[2]
 		headerCubelets['NAXIS2'] = subcube.shape[1]
 		headerCubelets['NAXIS3'] = subcube.shape[0]
 		
 		headerCubelets['ORIGIN'] = getVersion(full=True)
 		
-		# write the cubelet
+		# Write the cubelet
 		hdu = fits.PrimaryHDU(data=subcube, header=headerCubelets)
 		hdulist = fits.HDUList([hdu])
 		name = outputDir + cubename + '_' + str(int(obj[0])) + '.fits'
@@ -146,7 +146,9 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		
 		hdulist.close()
 		
-		# make PV diagram
+		
+		# POSITION-VELOCITY DIAGRAM
+		# -------------------------
 		if 'kin_pa' in cathead:
 			pv_sampling = 10
 			pv_r = np.arange(-max(subcube.shape[1:]), max(subcube.shape[1:]) - 1 + 1.0 / pv_sampling, 1.0 / pv_sampling)
@@ -189,12 +191,12 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 				hdulist.writeto(name,output_verify='warn', clobber=True)
 			hdulist.close()
 		
-		# remove all other sources from the mask
+		# Remove all other sources from the mask
 		submask = mask[ZminNew:ZmaxNew + 1, YminNew:YmaxNew + 1, XminNew:XmaxNew + 1].astype('int')
 		submask[submask != obj[0]] = 0
 		submask[submask == obj[0]] = 1
 		
-		# write mask
+		# Write mask
 		hdu = fits.PrimaryHDU(data=submask.astype('int16'), header=headerCubelets)
 		hdu.header['bunit'] = 'source_ID'
 		hdu.header['datamin'] = submask.min()
@@ -211,11 +213,11 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 			hdulist.writeto(name, output_verify='warn', clobber=True)
 		hdulist.close()
 		
-		# units of moment images
-		# velocity
+		# Units of moment images
+		# Velocity
 		if 'vopt' in headerCubelets['ctype3'].lower() or 'vrad' in headerCubelets['ctype3'].lower() or 'velo' in headerCubelets['ctype3'].lower() or 'felo' in headerCubelets['ctype3'].lower():
 			if not 'cunit3' in headerCubelets or headerCubelets['cunit3'].lower() == 'm/s':
-				# converting m/s to km/s
+				# Converting m/s to km/s
 				dkms = abs(headerCubelets['cdelt3']) / 1e+3
 				scalemom12 = 1.0 / 1e+3
 				bunitExt = '.km/s'
@@ -224,41 +226,43 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 				scalemom12 = 1.0
 				bunitExt = '.km/s'
 			else:
-				# working with whatever units the cube has
+				# Working with whatever units the cube has
 				dkms = abs(headerCubelets['cdelt3'])
 				scalemom12 = 1.0
 				bunitExt = '.' + headerCubelets['cunit3']
-		# frequency
+		# Frequency
 		elif 'freq' in headerCubelets['ctype3'].lower():
 			if not 'cunit3' in headerCubelets or headerCubelets['cunit3'].lower() == 'hz':
 				dkms = abs(headerCubelets['cdelt3'])
 				scalemom12 = 1.0
 				bunitExt = '.Hz'
 			elif headerCubelets['cunit3'].lower() == 'khz':
-				# converting kHz to Hz
+				# Converting kHz to Hz
 				dkms = abs(headerCubelets['cdelt3']) * 1e+3
 				scalemom12 = 1e+3
 				bunitExt = '.Hz'
 			else:
-				# working with whatever units the cube has
+				# Working with whatever units the cube has
 				dkms = abs(headerCubelets['cdelt3'])
 				scalemom12 = 1.0
 				bunitExt = '.' + headerCubelets['cunit3']
-		# other
+		# Other
 		else:
-			# working with whatever units the cube has
+			# Working with whatever units the cube has
 			dkms = abs(headerCubelets['cdelt3'])
 			scalemom12 = 1.0
 			if not 'cunit3' in headerCubelets: bunitExt = '.std_unit_' + headerCubelets['ctype3']
 			else: bunitExt = '.' + headerCubelets['cunit3']
 		
-		# make copy of subcube and regrid
+		# Make copy of subcube and regrid
 		subcubeCopy = subcube.copy()
 		subcubeCopy[submask == 0] = 0
 		if 'cellscal' in headerCubelets:
 			if headerCubelets['cellscal'] == '1/F': subcubeCopy = regridMaskedChannels(subcubeCopy, submask, headerCubelets)
 		
-		# moment 0
+		
+		# MOMENT 0
+		# --------
 		m0 = np.nan_to_num(subcubeCopy).sum(axis=0)
 		m0 *= dkms
 		hdu = fits.PrimaryHDU(data=m0, header=headerCubelets)
@@ -280,11 +284,13 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		else:
 			hdu.writeto(name, output_verify='warn', clobber=True)
 		
-		# prepare mom0 image for mom1 and mom2 calculation
+		# Prepare mom0 image for mom1 and mom2 calculation
 		m0[m0 == 0] = np.nan
 		m0 /= dkms
 		
-		# moment 1
+		
+		# MOMENT 1
+		# --------
 		m1 = ((np.arange(subcubeCopy.shape[0]).reshape((subcubeCopy.shape[0], 1, 1)) * np.ones(subcubeCopy.shape) - headerCubelets['crpix3'] + 1) * headerCubelets['cdelt3'] + headerCubelets['crval3']) * scalemom12
 		m1 = np.divide(np.array(np.nan_to_num(m1 * subcubeCopy).sum(axis=0)), m0)
 		hdu = fits.PrimaryHDU(data=m1, header=headerCubelets)
@@ -307,7 +313,8 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 			hdu.writeto(name, output_verify='warn', clobber=True)
 		
 		
-		# moment 2
+		# MOMENT 2
+		# --------
 		m2 = ((np.arange(subcubeCopy.shape[0]).reshape((subcubeCopy.shape[0], 1, 1)) * np.ones(subcubeCopy.shape) - headerCubelets['crpix3'] + 1) * headerCubelets['cdelt3'] + headerCubelets['crval3']) * scalemom12
 		m2 = (m2 - m1)**2
 		m2 = np.divide(np.array(np.nan_to_num(m2 * subcubeCopy).sum(axis=0)), m0)
@@ -331,8 +338,11 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 		else:
 			hdu.writeto(name, output_verify='warn', clobber=True)
 		
-		# spectra
-		spec = np.nansum(subcubeCopy, axis=(1,2))
+		
+		# INTEGRATED SPECTRUM
+		# -------------------
+		spec = np.nansum(subcubeCopy, axis=(1, 2))
+		nPix = np.sum(~np.isnan(subcubeCopy), axis=(1, 2))
 		
 		name = outputDir + cubename + '_' + str(int(obj[0])) + '_spec.txt'
 		if compress: name += '.gz'
@@ -348,10 +358,29 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, compress, flagOv
 				f = open(name, 'w')
 			
 			f.write('# Integrated source spectrum\n')
-			f.write('# Creator: %s\n\n' % getVersion(full=True))
+			f.write('# Creator: %s\n#\n' % getVersion(full=True))
+			f.write('# Description of columns:\n')
+			f.write('# - Chan      Channel number.\n')
+			f.write('# - Spectral  Associated value of the spectral coordinate according to\n')
+			f.write('#             the WCS information in the FITS file header.\n')
+			f.write('# - Sum       Sum of flux values of all spatial pixels covered by the\n')
+			f.write('#             source in that channel. Note that this has not yet been\n')
+			f.write('#             divided by the beam solid angle! If your data cube is in\n')
+			f.write('#             Jy/beam, you will have to manually divide by the beam\n')
+			f.write('#             size which, for Gaussian beams, is given as\n')
+			f.write('#               PI * a * b / (4 * ln(2))\n')
+			f.write('#             where a and b are the major and minor axis of the beam in\n')
+			f.write('#             units of pixels.\n')
+			f.write('# - Npix      Number of spatial pixels covered by the source in that\n')
+			f.write('#             channel. This can be used to determine the statistical\n')
+			f.write('#             uncertainty of the summed flux value. Again, this has\n')
+			f.write('#             not yet been corrected for any potential spatial correla-\n')
+			f.write('#             tion of pixels due to the beam solid angle!\n#\n')
+			f.write('# Chan        Spectral             Sum    Npix\n')
+			f.write('# --------------------------------------------\n')
 			
 			for i in range(0,len(spec)):
 				xspec = cValZ + (i + float(ZminNew) - cPixZ) * dZ
-				f.write('%9.0f %15.6e %15.6e\n' % (i + float(ZminNew), xspec, spec[i]))
+				f.write('%6d %15.6e %15.6e %7d\n' % (i + ZminNew, xspec, spec[i], nPix[i]))
 			
 			f.close()

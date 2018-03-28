@@ -2744,7 +2744,7 @@ void SoFiA::createInterface()
 	tabOutputButtonNoiseCube->setChecked(false);
 	connect(tabOutputButtonNoiseCube, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabOutputButtonNoiseCube, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabOutputButtonCubelets = new QCheckBox(tr("Individual source products"), tabOutputGroupBox1);
+	tabOutputButtonCubelets = new QCheckBox(tr("Source products"), tabOutputGroupBox1);
 	tabOutputButtonCubelets->setObjectName("steps.doCubelets");
 	tabOutputButtonCubelets->setChecked(false);
 	connect(tabOutputButtonCubelets, SIGNAL(toggled(bool)), this, SLOT(updateFields()));

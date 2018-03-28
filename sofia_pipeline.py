@@ -304,7 +304,8 @@ if Parameters['steps']['doWriteNoiseCube'] and Parameters['steps']['doScaleNoise
 	write_filtered_cube.writeFilteredCube(noise_cube, dict_Header, Parameters, outputNoiseCube, Parameters['writeCat']['compress'])
 
 # Delete noise cube again to release memory
-del noise_cube
+if Parameters['steps']['doScaleNoise']:
+	del noise_cube
 
 if Parameters['steps']['doFlag'] or Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']:
 	print ("Filtering complete")
