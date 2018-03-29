@@ -52,7 +52,7 @@ def nan_standard_deviation(x):
 # -----------------------------------
 # Function to measure RMS noise level
 # -----------------------------------
-def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1, verbose=0, min_hist_peak=0.05, sample=1, twoPass=True):
+def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1, verbose=0, min_hist_peak=0.05, sample=1, twoPass=False):
 	"""
 	Description of arguments
 	------------------------

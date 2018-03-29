@@ -1697,23 +1697,23 @@ void SoFiA::createInterface()
 	
 	iconDocumentNew.addFile(QString(":/icons/22/document-new.png"), QSize(22, 22));
 	iconDocumentNew.addFile(QString(":/icons/16/document-new.png"), QSize(16, 16));
-	iconDocumentNew     = QIcon::fromTheme("document-new", iconDocumentNew);
+	iconDocumentNew = QIcon::fromTheme("document-new", iconDocumentNew);
 	
 	iconDocumentOpen.addFile(QString(":/icons/22/document-open.png"), QSize(22, 22));
 	iconDocumentOpen.addFile(QString(":/icons/16/document-open.png"), QSize(16, 16));
-	iconDocumentOpen    = QIcon::fromTheme("document-open", iconDocumentOpen);
+	iconDocumentOpen = QIcon::fromTheme("document-open", iconDocumentOpen);
 	
-	iconDocumentPreview.addFile(QString(":/icons/22/document-preview.png"), QSize(22, 22));
-	iconDocumentPreview.addFile(QString(":/icons/16/document-preview.png"), QSize(16, 16));
-	iconDocumentPreview = QIcon::fromTheme("document-preview", iconDocumentPreview);
+	iconTextCsv.addFile(QString(":/icons/22/text-csv.png"), QSize(22, 22));
+	iconTextCsv.addFile(QString(":/icons/16/text-csv.png"), QSize(16, 16));
+	iconTextCsv = QIcon::fromTheme("text-csv", iconTextCsv);
 	
 	iconDocumentSave.addFile(QString(":/icons/22/document-save.png"), QSize(22, 22));
 	iconDocumentSave.addFile(QString(":/icons/16/document-save.png"), QSize(16, 16));
-	iconDocumentSave    = QIcon::fromTheme("document-save", iconDocumentSave);
+	iconDocumentSave = QIcon::fromTheme("document-save", iconDocumentSave);
 	
 	iconDocumentSaveAs.addFile(QString(":/icons/22/document-save-as.png"), QSize(22, 22));
 	iconDocumentSaveAs.addFile(QString(":/icons/16/document-save-as.png"), QSize(16, 16));
-	iconDocumentSaveAs  = QIcon::fromTheme("document-save-as", iconDocumentSaveAs);
+	iconDocumentSaveAs = QIcon::fromTheme("document-save-as", iconDocumentSaveAs);
 	
 	iconApplicationExit.addFile(QString(":/icons/22/application-exit.png"), QSize(22, 22));
 	iconApplicationExit.addFile(QString(":/icons/16/application-exit.png"), QSize(16, 16));
@@ -1721,51 +1721,63 @@ void SoFiA::createInterface()
 	
 	iconDialogOkApply.addFile(QString(":/icons/22/dialog-ok-apply.png"), QSize(22, 22));
 	iconDialogOkApply.addFile(QString(":/icons/16/dialog-ok-apply.png"), QSize(16, 16));
-	iconDialogOkApply   = QIcon::fromTheme("dialog-ok-apply", iconDialogOkApply);
+	iconDialogOkApply = QIcon::fromTheme("dialog-ok-apply", iconDialogOkApply);
 	
 	iconDialogCancel.addFile(QString(":/icons/22/dialog-cancel.png"), QSize(22, 22));
 	iconDialogCancel.addFile(QString(":/icons/16/dialog-cancel.png"), QSize(16, 16));
-	iconDialogCancel    = QIcon::fromTheme("dialog-cancel", iconDialogCancel);
+	iconDialogCancel = QIcon::fromTheme("dialog-cancel", iconDialogCancel);
 	
 	iconDialogClose.addFile(QString(":/icons/22/dialog-close.png"), QSize(22, 22));
 	iconDialogClose.addFile(QString(":/icons/16/dialog-close.png"), QSize(16, 16));
-	iconDialogClose     = QIcon::fromTheme("dialog-close", iconDialogClose);
+	iconDialogClose = QIcon::fromTheme("dialog-close", iconDialogClose);
 	
 	iconGoPreviousView.addFile(QString(":/icons/22/go-previous-view.png"), QSize(22, 22));
 	iconGoPreviousView.addFile(QString(":/icons/16/go-previous-view.png"), QSize(16, 16));
-	iconGoPreviousView  = QIcon::fromTheme("go-previous-view", iconGoPreviousView);
+	iconGoPreviousView = QIcon::fromTheme("go-previous-view", iconGoPreviousView);
 	
 	iconGoNextView.addFile(QString(":/icons/22/go-next-view.png"), QSize(22, 22));
 	iconGoNextView.addFile(QString(":/icons/16/go-next-view.png"), QSize(16, 16));
-	iconGoNextView      = QIcon::fromTheme("go-next-view", iconGoNextView);
+	iconGoNextView = QIcon::fromTheme("go-next-view", iconGoNextView);
 	
 	iconEditClearList.addFile(QString(":/icons/22/edit-clear-list.png"), QSize(22, 22));
 	iconEditClearList.addFile(QString(":/icons/16/edit-clear-list.png"), QSize(16, 16));
-	iconEditClearList   = QIcon::fromTheme("edit-clear-list", iconEditClearList);
+	iconEditClearList = QIcon::fromTheme("edit-clear-list", iconEditClearList);
 	
 	iconFullScreen.addFile(QString(":/icons/22/view-fullscreen.png"), QSize(22, 22));
 	iconFullScreen.addFile(QString(":/icons/16/view-fullscreen.png"), QSize(16, 16));
-	iconFullScreen      = QIcon::fromTheme("view-fullscreen", iconFullScreen);
+	iconFullScreen = QIcon::fromTheme("view-fullscreen", iconFullScreen);
 	
 	iconHelpContents.addFile(QString(":/icons/22/help-contents.png"), QSize(22, 22));
 	iconHelpContents.addFile(QString(":/icons/16/help-contents.png"), QSize(16, 16));
-	iconHelpContents    = QIcon::fromTheme("help-contents", iconHelpContents);
+	iconHelpContents = QIcon::fromTheme("help-contents", iconHelpContents);
 	
 	iconHelpAbout.addFile(QString(":/icons/22/help-about.png"), QSize(22, 22));
 	iconHelpAbout.addFile(QString(":/icons/16/help-about.png"), QSize(16, 16));
-	iconHelpAbout       = QIcon::fromTheme("help-about", iconHelpAbout);
+	iconHelpAbout = QIcon::fromTheme("help-about", iconHelpAbout);
 	
 	iconTaskComplete.addFile(QString(":/icons/16/task-complete.png"), QSize(16, 16));
 	iconTaskComplete.addFile(QString(":/icons/22/task-complete.png"), QSize(22, 22));
-	iconTaskComplete    = QIcon::fromTheme("task-complete", iconTaskComplete);
+	iconTaskComplete = QIcon::fromTheme("task-complete", iconTaskComplete);
 	
 	iconTaskReject.addFile(QString(":/icons/16/task-reject.png"), QSize(16, 16));
 	iconTaskReject.addFile(QString(":/icons/22/task-reject.png"), QSize(22, 22));
-	iconTaskReject      = QIcon::fromTheme("task-reject", iconTaskReject);
+	iconTaskReject = QIcon::fromTheme("task-reject", iconTaskReject);
 	
 	iconFolderImage.addFile(QString(":/icons/16/folder-image.png"), QSize(16, 16));
 	iconFolderImage.addFile(QString(":/icons/22/folder-image.png"), QSize(22, 22));
-	iconFolderImage     = QIcon::fromTheme("folder-image", iconFolderImage);
+	iconFolderImage = QIcon::fromTheme("folder-image", iconFolderImage);
+	
+	iconDrawRectangle.addFile(QString(":/icons/16/draw-rectangle.png"), QSize(16, 16));
+	iconDrawRectangle.addFile(QString(":/icons/22/draw-rectangle.png"), QSize(22, 22));
+	//iconDrawRectangle = QIcon::fromTheme("draw-rectangle", iconDrawRectangle);
+	
+	iconDrawCube.addFile(QString(":/icons/16/draw-cube.png"), QSize(16, 16));
+	iconDrawCube.addFile(QString(":/icons/22/draw-cube.png"), QSize(22, 22));
+	//iconDrawCube = QIcon::fromTheme("draw-cube", iconDrawCube);
+	
+	iconImageXGeneric.addFile(QString(":/icons/16/image-x-generic.png"), QSize(16, 16));
+	iconImageXGeneric.addFile(QString(":/icons/22/fimage-x-generic.png"), QSize(22, 22));
+	iconImageXGeneric = QIcon::fromTheme("image-x-generic", iconImageXGeneric);
 	
 	// Create main widget that contains everything else
 	// ------------------------------------------------
@@ -3005,9 +3017,11 @@ void SoFiA::createInterface()
 	connect(actionOpen, SIGNAL(triggered()), this, SLOT(loadSettings()));
 	
 	actionLoadParsetExtragalactic = new QAction(tr("Extragalactic HI Cube"), this);
+	actionLoadParsetExtragalactic->setIcon(iconDrawCube);
 	connect(actionLoadParsetExtragalactic, SIGNAL(triggered()), this, SLOT(loadParsetExtragalactic()));
 	
 	actionLoadParsetContinuum = new QAction(tr("Radio Continuum Image"), this);
+	actionLoadParsetContinuum->setIcon(iconDrawRectangle);
 	connect(actionLoadParsetContinuum, SIGNAL(triggered()), this, SLOT(loadParsetContinuum()));
 	
 	actionSave = new QAction(tr("Save"), this);
@@ -3052,31 +3066,37 @@ void SoFiA::createInterface()
 	
 	actionShowCatalogue = new QAction(tr("View Catalogue"), this);
 	actionShowCatalogue->setEnabled(false);
-	actionShowCatalogue->setIcon(iconDocumentPreview);
+	actionShowCatalogue->setIcon(iconTextCsv);
 	connect(actionShowCatalogue, SIGNAL(triggered()), this, SLOT(showCatalogue()));
 	
 	actionShowCube = new QAction(tr("Data Cube"), this);
 	actionShowCube->setEnabled(false);
+	actionShowCube->setIcon(iconImageXGeneric);
 	connect(actionShowCube, SIGNAL(triggered()), this, SLOT(showCube()));
 	
 	actionShowFilteredCube = new QAction(tr("Filtered Cube"), this);
 	actionShowFilteredCube->setEnabled(false);
+	actionShowFilteredCube->setIcon(iconImageXGeneric);
 	connect(actionShowFilteredCube, SIGNAL(triggered()), this, SLOT(showFilteredCube()));
 	
 	actionShowNoiseCube = new QAction(tr("Noise Cube"), this);
 	actionShowNoiseCube->setEnabled(false);
+	actionShowNoiseCube->setIcon(iconImageXGeneric);
 	connect(actionShowNoiseCube, SIGNAL(triggered()), this, SLOT(showNoiseCube()));
 	
 	actionShowMask = new QAction(tr("Mask Cube"), this);
 	actionShowMask->setEnabled(false);
+	actionShowMask->setIcon(iconImageXGeneric);
 	connect(actionShowMask, SIGNAL(triggered()), this, SLOT(showMask()));
 	
 	actionShowMom0 = new QAction(tr("Moment 0"), this);
 	actionShowMom0->setEnabled(false);
+	actionShowMom0->setIcon(iconImageXGeneric);
 	connect(actionShowMom0, SIGNAL(triggered()), this, SLOT(showMom0()));
 	
 	actionShowMom1 = new QAction(tr("Moment 1"), this);
 	actionShowMom1->setEnabled(false);
+	actionShowMom1->setIcon(iconImageXGeneric);
 	connect(actionShowMom1, SIGNAL(triggered()), this, SLOT(showMom1()));
 	
 	actionToolbar = new QAction(tr("Show Toolbar"), this);

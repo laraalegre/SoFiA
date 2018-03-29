@@ -213,7 +213,7 @@ private:
 	QIcon iconSoFiA;
 	QIcon iconDocumentNew;
 	QIcon iconDocumentOpen;
-	QIcon iconDocumentPreview;
+	QIcon iconTextCsv;
 	QIcon iconDocumentSave;
 	QIcon iconDocumentSaveAs;
 	QIcon iconApplicationExit;
@@ -230,6 +230,9 @@ private:
 	QIcon iconWhatsThis;
 	QIcon iconFullScreen;
 	QIcon iconFolderImage;
+	QIcon iconDrawRectangle;
+	QIcon iconDrawCube;
+	QIcon iconImageXGeneric;
 	
 	QMenu      *menuFile;
 	QMenu      *menuLoadParset;

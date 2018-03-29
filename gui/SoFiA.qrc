@@ -4,7 +4,7 @@
 	<qresource>
 		<file>icons/16/document-new.png</file>
 		<file>icons/16/document-open.png</file>
-		<file>icons/16/document-preview.png</file>
+		<file>icons/16/text-csv.png</file>
 		<file>icons/16/document-save.png</file>
 		<file>icons/16/document-save-as.png</file>
 		<file>icons/16/application-exit.png</file>
@@ -34,9 +34,12 @@
 		<file>icons/16/zoom-in.png</file>
 		<file>icons/16/zoom-out.png</file>
 		<file>icons/16/zoom-fit-best.png</file>
+		<file>icons/16/draw-rectangle.png</file>
+		<file>icons/16/draw-cube.png</file>
+		<file>icons/16/image-x-generic.png</file>
 		<file>icons/22/document-new.png</file>
 		<file>icons/22/document-open.png</file>
-		<file>icons/22/document-preview.png</file>
+		<file>icons/22/text-csv.png</file>
 		<file>icons/22/document-save.png</file>
 		<file>icons/22/document-save-as.png</file>
 		<file>icons/22/application-exit.png</file>
@@ -66,6 +69,9 @@
 		<file>icons/22/zoom-in.png</file>
 		<file>icons/22/zoom-out.png</file>
 		<file>icons/22/zoom-fit-best.png</file>
+		<file>icons/22/draw-rectangle.png</file>
+		<file>icons/22/draw-cube.png</file>
+		<file>icons/22/image-x-generic.png</file>
 		<file>icons/16/SoFiA.png</file>
 		<file>icons/22/SoFiA.png</file>
 		<file>icons/32/SoFiA.png</file>
