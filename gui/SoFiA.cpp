@@ -3160,7 +3160,7 @@ void SoFiA::createInterface()
 	// Set up menu
 	// -----------
 	
-	menuLoadParset = new QMenu(tr("&Parameter Sets"), this);
+	menuLoadParset = new QMenu(tr("Parameter Sets"), this);
 	menuLoadParset->setIcon(iconDocumentNew);
 	menuLoadParset->addAction(actionLoadParsetExtragalactic);
 	menuLoadParset->addAction(actionLoadParsetContinuum);
@@ -3183,7 +3183,7 @@ void SoFiA::createInterface()
 	menuPipeline->addAction(actionSaveLogAs);
 	menuPipeline->addAction(actionClearLog);
 	
-	menuShowImage = new QMenu(tr("&View Image"), this);
+	menuShowImage = new QMenu(tr("View Image"), this);
 	menuShowImage->setIcon(iconFolderImage);
 	menuShowImage->addAction(actionShowCube);
 	menuShowImage->addAction(actionShowFilteredCube);
