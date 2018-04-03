@@ -148,23 +148,23 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 			# Scale kernel size as requested by the user
 			# Note that the scale factor is squared because users are asked to give a factor to apply to sqrt(kernel)  
 			kernel *= scaleKernel**2
-			err.print_info('  Using kernel with shape of %s and size scaled by factor %.2f.' % (kernelType, scaleKernel))
-			err.print_info('  The sqrt(kernel) size is:')
-			err.print_info(np.sqrt(np.abs(kernel)))
+			err.print_message('  Using kernel with shape of %s and size scaled by factor %.2f.' % (kernelType, scaleKernel))
+			err.print_message('  The sqrt(kernel) size is:')
+			err.print_message(np.sqrt(np.abs(kernel)))
 		else:
 			# Scale kernel size to start the kernel-growing loop
 			# The scale factor for sqrt(kernel) is elevated to the power of 1.0 / len(parCol)
 			kernel *= ((negPerBin + kernelIter) / Nneg)**(2.0 / len(parCol))
-			err.print_info('  Will find the best kernel as a scaled version of the %s:' % kernelType)
-			err.print_info('  Starting from the kernel with sqrt(kernel) size:')
-			err.print_info('  ' + str(np.sqrt(np.abs(kernel))))
-			err.print_info('  Growing kernel...')
+			err.print_message('  Will find the best kernel as a scaled version of the %s:' % kernelType)
+			err.print_message('  Starting from the kernel with sqrt(kernel) size:')
+			err.print_message('  ' + str(np.sqrt(np.abs(kernel))))
+			err.print_message('  Growing kernel...')
 		
 		#deltOLD=-1e+9 # used to stop kernel growth if P-N stops moving closer to zero [NOT USED CURRENTLY]
 		if doskellam and makePlot: fig0 = plt.figure()
 	else:
-		err.print_info('  Using user-defined variance kernel with sqrt(kernel) size:') # Note that the user must give sigma, which then gets squared
-		err.print_info(np.array(kernel))
+		err.print_message('  Using user-defined variance kernel with sqrt(kernel) size:') # Note that the user must give sigma, which then gets squared
+		err.print_message(np.array(kernel))
 		kernel = np.identity(len(kernel)) * np.array(kernel)**2
 	
 	grow_kernel = 1 # set to 1 to start the kernel growing loop below;
@@ -175,7 +175,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 		### EVALUATE N-d RELIABILITY ###
 		################################
 		
-		if verb: err.print_info('   estimate normalised positive and negative density fields ...')
+		if verb: err.print_message('   estimate normalised positive and negative density fields ...')
 		
 		Np = gaussian_kde_set_covariance(pars[:,pos], kernel)
 		Nn = gaussian_kde_set_covariance(pars[:,neg], kernel)
@@ -216,13 +216,13 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 				plt.hist(delt / deltstd, bins=np.arange(deltmin / deltstd, max(5.1, deltmax / deltstd), 0.01), cumulative=True, histtype='step', color=(min(1, float(negPerBin + kernelIter) / Nneg), 0,0), normed=True)
 				deltplot.append([((negPerBin + kernelIter) / Nneg)**(1.0 / len(parCol)), deltmed / deltstd])
 			
-			err.print_info('  iteration, median, width, median/width = %3i, %9.2e, %9.2e, %9.2e' % (kernelIter, deltmed, deltstd, deltmed / deltstd))
+			err.print_message('  iteration, median, width, median/width = %3i, %9.2e, %9.2e, %9.2e' % (kernelIter, deltmed, deltstd, deltmed / deltstd))
 			
 			if scaleKernel: grow_kernel = 0
 			elif deltmed / deltstd > skellamTol or negPerBin + kernelIter >= Nneg:
 				grow_kernel = 0
-				err.print_info('  Found good kernel after %i kernel growth iterations. The sqrt(kernel) size is:' % kernelIter)
-				err.print_info(np.sqrt(np.abs(kernel)))
+				err.print_message('  Found good kernel after %i kernel growth iterations. The sqrt(kernel) size is:' % kernelIter)
+				err.print_message(np.sqrt(np.abs(kernel)))
 			elif deltmed / deltstd < 5 * skellamTol:
 				kernel *= (float(negPerBin + kernelIter + 20) / (negPerBin + kernelIter))**(2.0 / len(parCol)) 
 				kernelIter += 20

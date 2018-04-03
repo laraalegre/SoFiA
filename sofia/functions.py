@@ -91,9 +91,9 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 	x0, x1 = int(math.ceil((1 - 1.0 / zoomx) * cube.shape[2] / 2)), int(math.floor((1 + 1.0 / zoomx) * cube.shape[2] / 2)) + 1
 	y0, y1 = int(math.ceil((1 - 1.0 / zoomy) * cube.shape[1] / 2)), int(math.floor((1 + 1.0 / zoomy) * cube.shape[1] / 2)) + 1
 	z0, z1 = int(math.ceil((1 - 1.0 / zoomz) * cube.shape[0] / 2)), int(math.floor((1 + 1.0 / zoomz) * cube.shape[0] / 2)) + 1
-	err.print_info("    Estimating rms on subcube (x,y,z zoom = %.0f,%.0f,%.0f) ..." % (zoomx, zoomy, zoomz), verbose)
-	err.print_info("    Estimating rms on subcube sampling every %i voxels ..." % (sample), verbose)
-	err.print_info("    ... Subcube shape is " + str(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample].shape) + " ...", verbose)
+	err.print_message("    Estimating rms on subcube (x,y,z zoom = %.0f,%.0f,%.0f) ..." % (zoomx, zoomy, zoomz), verbose)
+	err.print_message("    Estimating rms on subcube sampling every %i voxels ..." % (sample), verbose)
+	err.print_message("    ... Subcube shape is " + str(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample].shape) + " ...", verbose)
 	
 	
 	# Check if only negative or positive pixels are to be used:
@@ -167,7 +167,7 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 		counter = 0
 		while mom2 < 5.0 * binWidth and counter < 2:
 			counter += 1
-			err.print_info("Increasing number of bins by factor of " + str(int(20.0 * binWidth / mom2)) + " for Gaussian fit.")
+			err.print_message("Increasing number of bins by factor of " + str(int(20.0 * binWidth / mom2)) + " for Gaussian fit.")
 			nBins = int(nBins * 20.0 * binWidth / mom2)
 			binWidth = (dataMax - dataMin) / float(nBins)
 			binCtr = (bins[:-1] + bins[1:]) / 2.0
@@ -184,14 +184,14 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 			# NOTE: Here we assume that the median of the data is zero!
 			rms = 1.4826 * nanmedian(abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample]), axis=None)
 			if twoPass:
-				err.print_info("Repeating noise estimation with 5-sigma clip.", verbose)
+				err.print_message("Repeating noise estimation with 5-sigma clip.", verbose)
 				with np.errstate(invalid="ignore"):
 					rms = 1.4826 * nanmedian(abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample][abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample]) < 5.0 * rms]), axis=None)
 		else:
 			# NOTE: Here we assume that the median of the data is zero! There are no more NaNs in halfCube.
 			rms = 1.4826 * np.median(abs(halfCube), axis=None)
 			if twoPass:
-				err.print_info("Repeating noise estimation with 5-sigma clip.", verbose)
+				err.print_message("Repeating noise estimation with 5-sigma clip.", verbose)
 				rms = 1.4826 * np.median(abs(halfCube[abs(halfCube) < 5.0 * rms]), axis=None)
 	
 	# STANDARD DEVIATION
@@ -200,17 +200,17 @@ def GetRMS(cube, rmsMode="negative", fluxRange="all", zoomx=1, zoomy=1, zoomz=1,
 			# NOTE: Here we assume that the mean of the data is zero!
 			rms = nan_standard_deviation(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample])
 			if twoPass:
-				err.print_info("Repeating noise estimation with 5-sigma clip.", verbose)
+				err.print_message("Repeating noise estimation with 5-sigma clip.", verbose)
 				with np.errstate(invalid="ignore"):
 					rms = nan_standard_deviation(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample][abs(cube[z0:z1:sample, y0:y1:sample, x0:x1:sample]) < 5.0 * rms])
 		else:
 			# NOTE: Here we assume that the mean of the data is zero! There are no more NaNs in halfCube.
 			rms = standard_deviation(halfCube)
 			if twoPass:
-				err.print_info("Repeating noise estimation with 5-sigma clip.", verbose)
+				err.print_message("Repeating noise estimation with 5-sigma clip.", verbose)
 				rms = standard_deviation(halfCube[abs(halfCube) < 5.0 * rms])
 	
-	err.print_info("    ... %s rms = %.2e (data units)" % (rmsMode, rms), verbose)
+	err.print_message("    ... %s rms = %.2e (data units)" % (rmsMode, rms), verbose)
 	
 	return rms
 
