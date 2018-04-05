@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-# import default python libraries
+# import default Python libraries
 import numpy as np
 import sys, os
 import string
@@ -9,8 +9,8 @@ from time import time
 from scipy import __version__ as scipy_version
 from astropy import __version__ as astropy_version
 
-# import source finding modules
-sys.path.insert(0, os.environ['SOFIA_MODULE_PATH'])
+# Import source finding modules
+sys.path.insert(0, os.environ["SOFIA_MODULE_PATH"])
 from sofia import functions
 from sofia import readoptions
 from sofia import import_data
@@ -40,37 +40,27 @@ from sofia import error as err
 # --------------------------------------
 
 def checkOverwrite(path):
-	if os.path.exists(path):
-		if os.path.isfile(path):
-			err.error(
-				"Failed to create the output file:\n\n"
-				"  " + str(path) + "\n\n"
-				"The file already exists. You can do one of the following:\n\n"
-				"1) Enable automatic overwrite in the GUI or parameter file\n"
-				"2) Change base name and/or output directory in the GUI or\n"
-				"   parameter file\n"
-				"3) Delete or rename the existing file", fatal=True, border=True)
-		elif os.path.isdir(path) and os.listdir(path):
-			err.error(
-				"Failed to create the output directory:\n\n"
-				"  " + str(path) + "\n\n"
-				"The directory already exists and is not empty. You can do one\n"
-				"of the following:\n\n"
-				"1) Enable automatic overwrite in the GUI or parameter file\n"
-				"2) Change base name and/or output directory in the GUI or\n"
-				"   parameter file\n"
-				"3) Delete or rename the existing directory", fatal=True, border=True)
-	return
-
-
-
-# --------------------------------------------
-# ---- FUNCTION TO PRINT PROGRESS MESSAGE ----
-# --------------------------------------------
-
-def printProgressMessage(message):
-	err.message("\n--- %.3f seconds since start" % (time() - t0))
-	err.message("--- %s: %s" % (version.getVersion(full=True), message))
+	if not os.path.exists(path): return
+	
+	if os.path.isfile(path):
+		err.error(
+			"Failed to create the output file:\n\n"
+			"  " + str(path) + "\n\n"
+			"The file already exists. You can do one of the following:\n\n"
+			"1) Enable automatic overwrite in the GUI or parameter file\n"
+			"2) Change base name and/or output directory in the GUI or\n"
+			"   parameter file\n"
+			"3) Delete or rename the existing file", fatal=True, border=True)
+	elif os.path.isdir(path) and os.listdir(path):
+		err.error(
+			"Failed to create the output directory:\n\n"
+			"  " + str(path) + "\n\n"
+			"The directory already exists and is not empty. You can do one\n"
+			"of the following:\n\n"
+			"1) Enable automatic overwrite in the GUI or parameter file\n"
+			"2) Change base name and/or output directory in the GUI or\n"
+			"   parameter file\n"
+			"3) Delete or rename the existing directory", fatal=True, border=True)
 	return
 
 
@@ -81,6 +71,17 @@ def printProgressMessage(message):
 
 def printProgressTime():
 	err.message("\n--- %.3f seconds since start" % (time() - t0))
+	return
+
+
+
+# --------------------------------------------
+# ---- FUNCTION TO PRINT PROGRESS MESSAGE ----
+# --------------------------------------------
+
+def printProgressMessage(message):
+	printProgressTime()
+	err.message("--- %s: %s\n" % (version.getVersion(full=True), message))
 	return
 
 
@@ -151,23 +152,23 @@ for task in iter(User_Parameters):
 
 # Define the base and output directory name used for output files (defaults to input file 
 # name if writeCat.basename is found to be invalid):
-outputBase = Parameters['writeCat']['basename']
-outputDir  = Parameters['writeCat']['outputDir']
+outputBase = Parameters["writeCat"]["basename"]
+outputDir  = Parameters["writeCat"]["outputDir"]
 
 if outputDir and not os.path.isdir(outputDir):
 	err.error("The specified output directory does not exist:\n%s" % outputDir)
 
 if not outputBase or outputBase.isspace() or "/" in outputBase or "\\" in outputBase or outputBase == "." or outputBase == "..":
-	outroot = Parameters['import']['inFile'].split('/')[-1]
+	outroot = Parameters["import"]["inFile"].split("/")[-1]
 	if (outroot.lower()).endswith(".fits") and len(outroot) > 5:
 		outroot = outroot[0:-5]
 else:
 	outroot = outputBase
 
 if not outputDir or not os.path.isdir(outputDir) or outputDir.isspace():
-	outroot = Parameters['import']['inFile'][0:len(Parameters['import']['inFile']) - len(Parameters['import']['inFile'].split('/')[-1])] + outroot
+	outroot = Parameters["import"]["inFile"][0:len(Parameters["import"]["inFile"]) - len(Parameters["import"]["inFile"].split("/")[-1])] + outroot
 else:
-	if outputDir[-1] != '/': outputDir += '/'
+	if outputDir[-1] != "/": outputDir += "/"
 	outroot = outputDir + outroot
 
 
@@ -177,81 +178,85 @@ else:
 # -------------------------------------------
 
 
-outputFilteredCube  = '%s_filtered.fits' % outroot
-outputNoiseCube     = '%s_noise.fits' % outroot
-outputSkellamPDF    = '%s_skel.pdf' % outroot
-outputScatterPDF    = '%s_scat.pdf' % outroot
-outputContoursPDF   = '%s_cont.pdf' % outroot
-outputMaskCube      = '%s_mask.fits' % outroot
-outputMom0Image     = '%s_mom0.fits' % outroot
-outputNrchImage     = '%s_nrch.fits' % outroot
-outputMom1Image     = '%s_mom1.fits' % outroot
-outputCubeletsDir   = '%s_cubelets/' % outroot
-outputCatXml        = '%s_cat.xml' % outroot
-outputCatAscii      = '%s_cat.ascii' % outroot
-outputCatSQL        = '%s_cat.sql' % outroot
-outputCatAsciiDebug = '%s_cat.debug.ascii' % outroot
+outputFilteredCube  = "%s_filtered.fits" % outroot
+outputNoiseCube     = "%s_noise.fits" % outroot
+outputSkellamPDF    = "%s_skel.pdf" % outroot
+outputScatterPDF    = "%s_scat.pdf" % outroot
+outputContoursPDF   = "%s_cont.pdf" % outroot
+outputMaskCube      = "%s_mask.fits" % outroot
+outputMom0Image     = "%s_mom0.fits" % outroot
+outputNrchImage     = "%s_nrch.fits" % outroot
+outputMom1Image     = "%s_mom1.fits" % outroot
+outputCubeletsDir   = "%s_cubelets/" % outroot
+outputCatXml        = "%s_cat.xml" % outroot
+outputCatAscii      = "%s_cat.ascii" % outroot
+outputCatSQL        = "%s_cat.sql" % outroot
+outputCatAsciiDebug = "%s_cat.debug.ascii" % outroot
 
-if not Parameters['writeCat']['overwrite']:
-	# Output filtered cube
-	if Parameters['steps']['doWriteFilteredCube'] and (Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']):
+if not Parameters["writeCat"]["overwrite"]:
+	# Filtered cube
+	if Parameters["steps"]["doWriteFilteredCube"] and (Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["steps"]["doWavelet"]):
 		checkOverwrite(outputFilteredCube)
 	
 	# Noise cube
-	if Parameters['steps']['doWriteNoiseCube'] and Parameters['steps']['doScaleNoise']:
+	if Parameters["steps"]["doWriteNoiseCube"] and Parameters["steps"]["doScaleNoise"]:
 		checkOverwrite(outputNoiseCube)
 	
 	# Reliability plots
-	if Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and Parameters['reliability']['makePlot']:
+	if Parameters["steps"]["doReliability"] and Parameters["steps"]["doMerge"] and Parameters["reliability"]["makePlot"]:
 		checkOverwrite(outputSkellamPDF)
 		checkOverwrite(outputScatterPDF)
 		checkOverwrite(outputContoursPDF)
 	
-	# Output mask
-	if Parameters['steps']['doWriteMask']:
+	# Mask
+	if Parameters["steps"]["doWriteMask"]:
 		checkOverwrite(outputMaskCube)
 		
-	# Moment images
-	if Parameters['steps']['doMom0']:
+	# Moment maps
+	if Parameters["steps"]["doMom0"]:
 		checkOverwrite(outputMom0Image)
 		checkOverwrite(outputNrchImage)
-	if Parameters['steps']['doMom1']:
+	if Parameters["steps"]["doMom1"]:
 		checkOverwrite(outputMom1Image)
 	
 	# Cubelet directory
-	if Parameters['steps']['doCubelets'] and Parameters['steps']['doMerge']:
+	if Parameters["steps"]["doCubelets"] and Parameters["steps"]["doMerge"]:
 		print outputCubeletsDir
 		checkOverwrite(outputCubeletsDir)
 	
-	# Output catalogues
-	if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge'] and Parameters['writeCat']['writeXML']:
+	# Catalogues
+	if Parameters["steps"]["doWriteCat"] and Parameters["steps"]["doMerge"] and Parameters["writeCat"]["writeXML"]:
 		checkOverwrite(outputCatXml)
-	if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge'] and Parameters['writeCat']['writeASCII']:
+	if Parameters["steps"]["doWriteCat"] and Parameters["steps"]["doMerge"] and Parameters["writeCat"]["writeASCII"]:
 		checkOverwrite(outputCatAscii)
 
 
 
 # --------------------------------------------------------------
-# ---- DEFINE LINKER'S OUTPUT AND CHECK RELIBILITY SETTINGS ----
+# ---- DEFINE LINKER"S OUTPUT AND CHECK RELIBILITY SETTINGS ----
 # --------------------------------------------------------------
 
-if Parameters['steps']['doMerge']:
+if Parameters["steps"]["doMerge"]:
 	# Define parameters returned by the linker module
-	catParNames = ('id', 'x_geo', 'y_geo', 'z_geo', 'x', 'y', 'z', 'x_min', 'x_max', 'y_min', 'y_max', 'z_min', 'z_max', 'n_pix', 'snr_min', 'snr_max', 'snr_sum', 'x_p', 'y_p', 'z_p', 'x_n', 'y_n', 'z_n', 'snr_sum_p', 'snr_sum_n', 'snr_mean', 'snr_std', 'snr_rms', 'w20', 'w50', 'w20_cfd', 'w50_cfd', 'n_x', 'n_y', 'n_chan', 'n_los')
-	catParUnits = ('-', 'pix', 'pix', 'chan', 'pix', 'pix', 'chan', 'pix', 'pix', 'pix', 'pix', 'chan', 'chan', '-', '-', '-', '-', 'pix', 'pix', 'chan', 'pix', 'pix', 'chan', '-', '-', '-', '-', '-', 'chan', 'chan', 'chan', 'chan', 'pix', 'pix', 'chan', '-')
-	catParFormt = ('%10i', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%7i', '%7i', '%7i', '%7i', '%7i', '%7i', '%8i', '%12.3e', '%12.3e', '%12.3e', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%12.3e', '%12.3e', '%12.3e', '%12.3e', '%12.3e', '%10.3f', '%10.3f', '%10.3f', '%10.3f', '%7i', '%7i', '%7i', '%7i')
+	catParNames = ("id", "x_geo", "y_geo", "z_geo", "x", "y", "z", "x_min", "x_max", "y_min", "y_max", "z_min", "z_max", "n_pix", "snr_min", "snr_max", "snr_sum", "x_p", "y_p", "z_p", "x_n", "y_n", "z_n", "snr_sum_p", "snr_sum_n", "snr_mean", "snr_std", "snr_rms", "w20", "w50", "w20_cfd", "w50_cfd", "n_x", "n_y", "n_chan", "n_los")
+	catParUnits = ("-", "pix", "pix", "chan", "pix", "pix", "chan", "pix", "pix", "pix", "pix", "chan", "chan", "-", "-", "-", "-", "pix", "pix", "chan", "pix", "pix", "chan", "-", "-", "-", "-", "-", "chan", "chan", "chan", "chan", "pix", "pix", "chan", "-")
+	catParFormt = ("%10i", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%7i", "%7i", "%7i", "%7i", "%7i", "%7i", "%8i", "%12.3e", "%12.3e", "%12.3e", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%12.3e", "%12.3e", "%12.3e", "%12.3e", "%12.3e", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%7i", "%7i", "%7i", "%7i")
 	
-	if Parameters['steps']['doReliability']:
-		# Check that the parameters to be used for the reliability calculation are included in catParNames
-		for pp in Parameters['reliability']['parSpace']:
+	# Check that the parameters to be used for the reliability calculation are included in catParNames
+	if Parameters["steps"]["doReliability"]:
+		for pp in Parameters["reliability"]["parSpace"]:
 			if pp not in catParNames:
-				sys.stderr.write("ERROR: You asked to calculate the sources' reliability in the parameter space:\n")
-				sys.stderr.write("       " + str(Parameters['reliability']['parSpace']) + "\n")
-				sys.stderr.write("       Unfortunately, the parameter %s is not recognised by SoFiA.\n" % (pp))
-				sys.stderr.write("       The allowed parameter names are:\n")
-				for allowedPar in catParNames: sys.stderr.write("         %s\n" % allowedPar)
-				sys.stderr.write("       Please use parameter names from the above list and try again.\n")
-				sys.exit(1)
+				message =  "You requested reliability calculation in the parameter space:\n\n"
+				message += "  " + str(Parameters["reliability"]["parSpace"]) + "\n\n"
+				message += "However, the parameter " + str(pp) + " is not recognised by SoFiA.\n"
+				message += "Allowed parameter names are:\n\n  "
+				for i in range(len(catParNames)):
+					message += "%s" % catParNames[i]
+					if i < len(catParNames) - 1:
+						if (i + 1) % 6 == 0: message += ",\n  "
+						else: message += ", "
+				message += "\n\nPlease use parameter names from the above list and try again."
+				err.error(message, fatal=True, border=True)
 
 
 
@@ -260,57 +265,57 @@ if Parameters['steps']['doMerge']:
 # ---------------------
 
 printProgressMessage("Reading data cube(s)")
-kwargs = Parameters['import'].copy()
-kwargs.update({'doFlag':Parameters['steps']['doFlag'],'flagRegions':Parameters['flag']['regions'],'flagFile':Parameters['flag']['file']})
-np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters['steps']['doSubcube'], **kwargs)
+kwargs = Parameters["import"].copy()
+kwargs.update({"doFlag":Parameters["steps"]["doFlag"],"flagRegions":Parameters["flag"]["regions"],"flagFile":Parameters["flag"]["file"]})
+np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters["steps"]["doSubcube"], **kwargs)
 
 
 # -------------------------
 # ---- PRECONDITIONING ----
 # -------------------------
 
-if Parameters['steps']['doFlag'] or Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']:
+if Parameters["steps"]["doFlag"] or Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["steps"]["doWavelet"]:
 	printProgressMessage("Running input filters")
 
 ## ---- FLAGGING ----
-#if Parameters['steps']['doFlag']:
-	#np_Cube = flag_cube.flag(np_Cube,**Parameters['flag'])
+#if Parameters["steps"]["doFlag"]:
+	#np_Cube = flag_cube.flag(np_Cube,**Parameters["flag"])
 
 # ---- SMOOTHING ----
-if Parameters['steps']['doSmooth']:
-	np_Cube = smooth_cube.smooth(np_Cube, **Parameters['smooth'])
+if Parameters["steps"]["doSmooth"]:
+	np_Cube = smooth_cube.smooth(np_Cube, **Parameters["smooth"])
 
 # ---- SIGMA CUBE ----
-if Parameters['steps']['doScaleNoise']:
-	np_Cube, noise_cube = sigma_cube.sigma_scale(np_Cube, **Parameters['scaleNoise'])
+if Parameters["steps"]["doScaleNoise"]:
+	np_Cube, noise_cube = sigma_cube.sigma_scale(np_Cube, **Parameters["scaleNoise"])
 
 # --- WAVELET ---
-if Parameters['steps']['doWavelet']:
-	print ('Running wavelet filter')
+if Parameters["steps"]["doWavelet"]:
+	err.message("Running wavelet filter")
 	# WARNING: There is a lot of time and memory overhead from transposing the cube forth and back!
 	# WARNING: This will need to be addressed in the future.
 	np_Cube = np.transpose(np_Cube, axes=[2, 1, 0])
-	np_Cube = wavelet_finder.denoise_2d1d(np_Cube, **Parameters['wavelet'])
+	np_Cube = wavelet_finder.denoise_2d1d(np_Cube, **Parameters["wavelet"])
 	np_Cube = np.transpose(np_Cube, axes=[2, 1, 0])
 	np_Cube = np_Cube.copy()
 
 
 # --- WRITE FILTERED CUBE ---
-if Parameters['steps']['doWriteFilteredCube'] and (Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']):
-	print ('Writing filtered cube')
-	write_filtered_cube.writeFilteredCube(np_Cube, dict_Header, Parameters, outputFilteredCube, Parameters['writeCat']['compress'])
+if Parameters["steps"]["doWriteFilteredCube"] and (Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["steps"]["doWavelet"]):
+	err.message("Writing filtered cube")
+	write_filtered_cube.writeFilteredCube(np_Cube, dict_Header, Parameters, outputFilteredCube, Parameters["writeCat"]["compress"])
 
 # --- WRITE NOISE CUBE ---
-if Parameters['steps']['doWriteNoiseCube'] and Parameters['steps']['doScaleNoise']:
-	print ('Writing noise cube')
-	write_filtered_cube.writeFilteredCube(noise_cube, dict_Header, Parameters, outputNoiseCube, Parameters['writeCat']['compress'])
+if Parameters["steps"]["doWriteNoiseCube"] and Parameters["steps"]["doScaleNoise"]:
+	err.message("Writing noise cube")
+	write_filtered_cube.writeFilteredCube(noise_cube, dict_Header, Parameters, outputNoiseCube, Parameters["writeCat"]["compress"])
 
 # Delete noise cube again to release memory
-if Parameters['steps']['doScaleNoise']:
+if Parameters["steps"]["doScaleNoise"]:
 	del noise_cube
 
-if Parameters['steps']['doFlag'] or Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']:
-	print ("Filtering complete")
+if Parameters["steps"]["doFlag"] or Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["steps"]["doWavelet"]:
+	err.message("Filtering complete")
 
 
 
@@ -323,24 +328,24 @@ printProgressMessage("Running source finder")
 # Apply the different filters that each create a mask.
 
 # --- PYFIND ---
-if Parameters['steps']['doSCfind']:
-	print ('Running S+C filter')
-	mask |= pyfind.SCfinder_mem(np_Cube, dict_Header, t0, **Parameters['SCfind'])
+if Parameters["steps"]["doSCfind"]:
+	err.message("Running S+C filter")
+	mask |= pyfind.SCfinder_mem(np_Cube, dict_Header, t0, **Parameters["SCfind"])
 
 # --- CNHI ---	
-if Parameters['steps']['doCNHI']:
-	print ('Running CNHI filter')
-	mask = mask + CNHI.find_sources(np_Cube, mask, **Parameters['CNHI'])
+if Parameters["steps"]["doCNHI"]:
+	err.message("Running CNHI filter")
+	mask = mask + CNHI.find_sources(np_Cube, mask, **Parameters["CNHI"])
  
 # --- THRESHOLD ---	
-if Parameters['steps']['doThreshold']:
-	print ('Running threshold filter')
-	threshold_filter.filter(mask, np_Cube, dict_Header, **Parameters['threshold'])
+if Parameters["steps"]["doThreshold"]:
+	err.message("Running threshold filter")
+	threshold_filter.filter(mask, np_Cube, dict_Header, **Parameters["threshold"])
 
-print ('Source finding complete.')
+err.message("Source finding complete.")
 
 # Check whether positivity flag is set; if so, remove negative pixels from mask:
-if Parameters['merge']['positivity']:
+if Parameters["merge"]["positivity"]:
 	err.warning(
 		"Enabling mask.positivity is dangerous and will render some of SoFiA's\n"
 		"most  powerful  algorithms useless,  including mask  optimisation and\n"
@@ -351,10 +356,9 @@ if Parameters['merge']['positivity']:
 # Check whether any voxel is detected
 NRdet = (mask > 0).sum()
 if not NRdet:
-	sys.stderr.write("WARNING: No voxels detected and included in the mask yet! Exiting pipeline.\n")
-	sys.exit()
+	err.error("No pixels detected. Exiting pipeline.", fatal=True)
 else:
-	print (str(NRdet) +  ' of ' + str(np.array(mask.shape).prod()) + ' pixels detected (' + str(100.0 * float(NRdet) / float(np.array(mask.shape).prod())) + "%)")
+	err.message(str(NRdet) +  " of " + str(np.array(mask.shape).prod()) + " pixels detected (" + str(100.0 * float(NRdet) / float(np.array(mask.shape).prod())) + "%)")
 
 
 
@@ -362,21 +366,22 @@ else:
 # ---- MERGING ----
 # -----------------
 
-if Parameters['steps']['doMerge'] and NRdet:
+if Parameters["steps"]["doMerge"] and NRdet:
 	printProgressMessage("Merging detections")
 	objects = []
-	objects, mask = linker.link_objects(np_Cube, objects, mask, Parameters['merge']['radiusX'], Parameters['merge']['radiusY'], Parameters['merge']['radiusZ'], Parameters['merge']['minSizeX'], Parameters['merge']['minSizeY'], Parameters['merge']['minSizeZ'])
-	if not objects:
-		sys.stderr.write("WARNING: No objects remain after merging. Exiting pipeline.\n")
-		sys.exit()
+	objects, mask = linker.link_objects(np_Cube, objects, mask, Parameters["merge"]["radiusX"], Parameters["merge"]["radiusY"], Parameters["merge"]["radiusZ"], Parameters["merge"]["minSizeX"], Parameters["merge"]["minSizeY"], Parameters["merge"]["minSizeZ"])
+	
+	if not objects: err.error("No objects remain after merging. Exiting pipeline.", fatal=True)
+	
 	objects = np.array(objects)
-	print ('Merging complete')
+	err.message("Merging complete")
 	NRdet = len(objects)
 	NRdetNeg = (np.array(objects)[:,16] < 0).sum()
-	print (str(NRdet) + ' sources detected: ' + str(NRdet - NRdetNeg) + ' positive, ' + str(NRdetNeg) + ' negative.')
+	err.message(str(NRdet) + " sources detected: " + str(NRdet - NRdetNeg) + " positive, " + str(NRdetNeg) + " negative.")
+	
 	# Set catalogue header
-	if 'bunit' in dict_Header: dunits = dict_Header['bunit']
-	else: dunits = '-'
+	if "bunit" in dict_Header: dunits = dict_Header["bunit"]
+	else: dunits = "-"
 
 
 
@@ -384,16 +389,16 @@ if Parameters['steps']['doMerge'] and NRdet:
 # ---- OUTPUT FOR DEBUGGING (MASK) ----
 # -------------------------------------
 
-if Parameters['steps']['doDebug'] and NRdet:
+if Parameters["steps"]["doDebug"] and NRdet:
 	printProgressMessage("Writing all-source mask cube for debugging")
-	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_all.fits' % outroot, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
+	writemask.writeMask(mask, dict_Header, Parameters, "%s_mask.debug_all.fits" % outroot, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"])
 
 
 # ----------------------------------------------------
 # ---- ESTIMATE RELIABILITY FROM NEGATIVE SOURCES ----
 # ----------------------------------------------------
 
-if Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and NRdet and not NRdetNeg:
+if Parameters["steps"]["doReliability"] and Parameters["steps"]["doMerge"] and NRdet and not NRdetNeg:
 	printProgressTime()
 	err.error(
 		"You asked SoFiA to calculate the reliability of the detected\n"
@@ -407,34 +412,34 @@ if Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and N
 		"(2) Modify the source-finding and/or filtering settings in\n"
 		"    order to detect negative sources.", fatal=True, border=True)
 
-elif Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and NRdet and NRdetNeg:
+elif Parameters["steps"]["doReliability"] and Parameters["steps"]["doMerge"] and NRdet and NRdetNeg:
 	# ---- MEASURE GLOBAL SIGMA AND NORMALISE PARAMETERS----
 	printProgressMessage("Measuring cube noise to divide flux parameters by global rms")
 	maxNrVox = 1e+6 # maximum nr of voxels over which to calculate the global RMS. Sampling below is set accordingly.
 	sampleRms = max(1, int((float(np.array(np_Cube.shape).prod()) / maxNrVox)**(1.0 / min(3, len(np_Cube.shape)))))
-	globalrms = functions.GetRMS(np_Cube, rmsMode='negative', zoomx=1, zoomy=1, zoomz=1, verbose=True, sample=sampleRms)
+	globalrms = functions.GetRMS(np_Cube, rmsMode="negative", zoomx=1, zoomy=1, zoomz=1, verbose=True, sample=sampleRms)
 	printProgressTime()
 
 	# normalise flux parameters to global rms
 	# (this is done also if weights were applied, in case they are prop. to 1/sigma but not exactly = 1/sigma)
 	objects = np.array(objects)
-	objects[:,catParNames.index('snr_min')] /= globalrms
-	objects[:,catParNames.index('snr_max')] /= globalrms
-	objects[:,catParNames.index('snr_sum')] /= globalrms
+	objects[:,catParNames.index("snr_min")] /= globalrms
+	objects[:,catParNames.index("snr_max")] /= globalrms
+	objects[:,catParNames.index("snr_sum")] /= globalrms
 	objects = [list(item) for item in list(objects)]
 
 	# ---- CALCULATE RELIABILITY ----
 	printProgressMessage("Determining reliability")
-	objects, reliable = addrel.EstimateRel(np.array(objects), outroot, catParNames, **Parameters['reliability'])
-	print ('The following sources have been detected: ' + str(reliable))
-	catParNames = tuple(list(catParNames) + ['n_pos',  'n_neg',  'rel'])
-	catParUnits = tuple(list(catParUnits) + ['-',      '-',      '-'])
-	catParFormt = tuple(list(catParFormt) + ['%12.3e', '%12.3e', '%12.6f'])
+	objects, reliable = addrel.EstimateRel(np.array(objects), outroot, catParNames, **Parameters["reliability"])
+	err.message("The following sources have been detected: " + str(reliable))
+	catParNames = tuple(list(catParNames) + ["n_pos",  "n_neg",  "rel"])
+	catParUnits = tuple(list(catParUnits) + ["-",      "-",      "-"])
+	catParFormt = tuple(list(catParFormt) + ["%12.3e", "%12.3e", "%12.6f"])
 
-elif Parameters['steps']['doMerge'] and NRdet:
+elif Parameters["steps"]["doMerge"] and NRdet:
 	printProgressTime()
 	reliable = list(np.array(objects)[np.array(objects)[:,16] > 0,0].astype(int)) # select all positive sources
-	print ('The following sources have been detected: ' + str(reliable))
+	err.message("The following sources have been detected: " + str(reliable))
 
 else:
 	printProgressTime()
@@ -446,9 +451,9 @@ else:
 # ---- OUTPUT FOR DEBUGGING (CATALOGUE) ----
 # ------------------------------------------
 
-if Parameters['steps']['doDebug']:
+if Parameters["steps"]["doDebug"]:
 	printProgressMessage("Writing all-source debugging catalogue including all parameters relevant for the reliability calculation")
-	write_catalog.write_catalog_from_array('ASCII', objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatAsciiDebug, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'], Parameters['parameters']['getUncertainties'])
+	write_catalog.write_catalog_from_array("ASCII", objects, catParNames, catParUnits, catParFormt, Parameters["writeCat"]["parameters"], outputCatAsciiDebug, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"], Parameters["parameters"]["getUncertainties"])
 
 
 
@@ -456,9 +461,9 @@ if Parameters['steps']['doDebug']:
 # ---- REMOVE UNNECESSARY PARAMETERS FROM CATALOGUE ----
 # ------------------------------------------------------
 
-if Parameters['steps']['doMerge'] and NRdet:
+if Parameters["steps"]["doMerge"] and NRdet:
 	objects, catParNames, catParUnits, catParFormt = np.array(objects), list(catParNames), list(catParUnits), list(catParFormt)
-	removecols = ['snr_min', 'snr_max', 'snr_sum', 'x_p', 'y_p', 'z_p', 'x_n', 'y_n', 'z_n', 'snr_sum_p', 'snr_sum_n', 'snr_mean', 'snr_std', 'snr_rms', 'w20', 'w50', 'w20_cfd', 'w50_cfd', 'n_pos', 'n_neg', 'n_x', 'n_y']
+	removecols = ["snr_min", "snr_max", "snr_sum", "x_p", "y_p", "z_p", "x_n", "y_n", "z_n", "snr_sum_p", "snr_sum_n", "snr_mean", "snr_std", "snr_rms", "w20", "w50", "w20_cfd", "w50_cfd", "n_pos", "n_neg", "n_x", "n_y"]
 	for remcol in removecols:
 		if remcol in catParNames:
 			index = catParNames.index(remcol)
@@ -474,7 +479,7 @@ if Parameters['steps']['doMerge'] and NRdet:
 # ---- REMOVE NON RELIABLE AND NEGATIVE SOURCES ----
 # --------------------------------------------------
 
-if Parameters['steps']['doMerge'] and NRdet:
+if Parameters["steps"]["doMerge"] and NRdet:
 	printProgressMessage("Removing unreliable sources")
 
 	# make sure that reliable is sorted
@@ -490,7 +495,7 @@ if Parameters['steps']['doMerge'] and NRdet:
 	objects = relObjects
 
 	tmpCatParNames = list(catParNames);
-	#tmpCatParNames[0] = 'id_old'   WARNING: This is fatal, because it implicitly assumes that the first entry is 'id'!!!
+	#tmpCatParNames[0] = "id_old"   WARNING: This is fatal, because it implicitly assumes that the first entry is "id"!!!
 	#                                        New items must always be INSERTED at a particular position without ever 
 	#                                        OVERWRITING existing items in the list!
 	# Better:
@@ -511,12 +516,12 @@ if Parameters['steps']['doMerge'] and NRdet:
 	catParNames = np.array(catParNames)
 	for rr in reliable:
 		objrr = objects[objects[:,1] == rr][0]
-		Xmin  = int(objrr[catParNames == 'x_min'])
-		Ymin  = int(objrr[catParNames == 'y_min'])
-		Zmin  = int(objrr[catParNames == 'z_min'])
-		Xmax  = int(objrr[catParNames == 'x_max'])
-		Ymax  = int(objrr[catParNames == 'y_max'])
-		Zmax  = int(objrr[catParNames == 'z_max'])
+		Xmin  = int(objrr[catParNames == "x_min"])
+		Ymin  = int(objrr[catParNames == "y_min"])
+		Zmin  = int(objrr[catParNames == "z_min"])
+		Xmax  = int(objrr[catParNames == "x_max"])
+		Ymax  = int(objrr[catParNames == "y_max"])
+		Zmax  = int(objrr[catParNames == "z_max"])
 		mask[Zmin:Zmax+1, Ymin:Ymax+1, Xmin:Xmax+1][mask[Zmin:Zmax+1, Ymin:Ymax+1, Xmin:Xmax+1] == -rr] = index
 		index += 1
 	mask[mask < 0] = 0
@@ -535,11 +540,11 @@ if Parameters['steps']['doMerge'] and NRdet:
 # ---- RELOAD ORIGINAL DATA CUBE FOR PARAMETERISATION IF IT HAS BEEN CHANGED ----
 # -------------------------------------------------------------------------------
 
-if Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['import']['weightsFile'] or Parameters['import']['weightsFunction']:
+if Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["import"]["weightsFile"] or Parameters["import"]["weightsFunction"]:
 	del np_Cube, dict_Header
-	kwargs = Parameters['import'].copy()
-	kwargs.update({'cubeOnly':True})
-	np_Cube, dict_Header = import_data.read_data(Parameters['steps']['doSubcube'], **kwargs)
+	kwargs = Parameters["import"].copy()
+	kwargs.update({"cubeOnly":True})
+	np_Cube, dict_Header = import_data.read_data(Parameters["steps"]["doSubcube"], **kwargs)
 
 
 
@@ -547,12 +552,12 @@ if Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Par
 # ---- OUTPUT FOR DEBUGGING (MOMENTS) ----
 # ----------------------------------------
 
-if Parameters['steps']['doDebug'] and NRdet:
+if Parameters["steps"]["doDebug"] and NRdet:
 	printProgressMessage("Writing pre-optimisation mask and moment maps for debugging")
 	debug = 1
-	#writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_rel.fits'%outroot,Parameters['writeCat']['compress'])
-	#mom0_Image = writemoment2.writeMoment0(np_Cube, mask, outroot, debug, dict_Header,Parameters['writeCat']['compress'])
-	#writemoment2.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image,Parameters['writeCat']['compress'])
+	#writemask.writeMask(mask, dict_Header, Parameters, "%s_mask.debug_rel.fits"%outroot,Parameters["writeCat"]["compress"])
+	#mom0_Image = writemoment2.writeMoment0(np_Cube, mask, outroot, debug, dict_Header,Parameters["writeCat"]["compress"])
+	#writemoment2.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image,Parameters["writeCat"]["compress"])
 
 
 
@@ -560,11 +565,11 @@ if Parameters['steps']['doDebug'] and NRdet:
 # ---- PARAMETERISE ----
 # ----------------------
 
-if Parameters['steps']['doParameterise'] and Parameters['steps']['doMerge'] and NRdet:
+if Parameters["steps"]["doParameterise"] and Parameters["steps"]["doMerge"] and NRdet:
 	printProgressMessage("Parameterising sources")
 	
 	# Print warning message about statistical uncertainties
-	if Parameters['parameters']['getUncertainties']:
+	if Parameters["parameters"]["getUncertainties"]:
 		err.warning(
 			"   You have requested statistical uncertainties for\n"
 			"several source parameters. Please be aware that the\n"
@@ -574,13 +579,13 @@ if Parameters['steps']['doParameterise'] and Parameters['steps']['doMerge'] and 
 			"the true uncertainties of those parameters, in par-\n"
 			"ticular in the presence of systematic errors.", border=True)
 	
-	if Parameters['parameters']['dilateMask']: mask = parametrisation.dilate(np_Cube, mask, objects, catParNames, Parameters)
+	if Parameters["parameters"]["dilateMask"]: mask = parametrisation.dilate(np_Cube, mask, objects, catParNames, Parameters)
 	np_Cube, mask, objects, catParNames, catParFormt, catParUnits = parametrisation.parametrise(np_Cube, mask, objects, catParNames, catParFormt, catParUnits, Parameters, dunits)
 	catParNames = tuple(catParNames)
 	catParUnits = tuple(catParUnits)
 	catParFormt = tuple(catParFormt)
 
-	print ('Parameterisation complete')
+	err.message("Parameterisation complete")
 
 
 
@@ -588,9 +593,9 @@ if Parameters['steps']['doParameterise'] and Parameters['steps']['doMerge'] and 
 # ---- WRITE MASK ----
 # --------------------
 
-if Parameters['steps']['doWriteMask'] and NRdet:
+if Parameters["steps"]["doWriteMask"] and NRdet:
 	printProgressMessage("Writing mask cube")
-	writemask.writeMask(mask, dict_Header, Parameters, outputMaskCube, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
+	writemask.writeMask(mask, dict_Header, Parameters, outputMaskCube, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"])
 
 
 	
@@ -598,37 +603,37 @@ if Parameters['steps']['doWriteMask'] and NRdet:
 # ---- STORE CUBELETS ----
 # ------------------------
 
-if Parameters['steps']['doCubelets'] and Parameters['steps']['doMerge'] and NRdet:
+if Parameters["steps"]["doCubelets"] and Parameters["steps"]["doMerge"] and NRdet:
 	printProgressMessage("Writing cubelets")
 	objects = np.array(objects)
 	cathead = np.array(catParNames)
-	cubelets.writeSubcube(np_Cube, dict_Header, mask, objects, cathead, outroot, outputCubeletsDir, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
+	cubelets.writeSubcube(np_Cube, dict_Header, mask, objects, cathead, outroot, outputCubeletsDir, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"])
 
 
 # ----------------------------
 # ---- MAKE MOM0 and MOM1 ----
 # ----------------------------
 
-if (Parameters['steps']['doMom0'] or Parameters['steps']['doMom1']) and NRdet:
+if (Parameters["steps"]["doMom0"] or Parameters["steps"]["doMom1"]) and NRdet:
 	printProgressMessage("Writing moment maps")
 	debug = 0
-	writemoment2.writeMoments(np_Cube, mask, outroot, debug, dict_Header,Parameters['writeCat']['compress'], Parameters['steps']['doMom0'], Parameters['steps']['doMom1'], Parameters['writeCat']['overwrite'])
+	writemoment2.writeMoments(np_Cube, mask, outroot, debug, dict_Header,Parameters["writeCat"]["compress"], Parameters["steps"]["doMom0"], Parameters["steps"]["doMom1"], Parameters["writeCat"]["overwrite"])
 
 	## read the original data cube again if it is needed for further steps
 	#print "\n--- SoFiA: Reloading original data cube ---"
-	#np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters['steps']['doSubcube'], **Parameters['import'])
+	#np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters["steps"]["doSubcube"], **Parameters["import"])
 
 
 # ----------------------------------------------------
 # ---- CORRECT COORDINATES IF WORKING ON SUBCUBES ----
 # ----------------------------------------------------
 
-if len(subcube) and Parameters['steps']['doMerge'] and NRdet:
+if len(subcube) and Parameters["steps"]["doMerge"] and NRdet:
 	printProgressMessage("Correcting parameters for sub-cube offset")
 	# list of parameters to correct for X, Y and Z offset
-	corrX=['x_geo', 'x', 'x_min', 'x_max']
-	corrY=['y_geo', 'y', 'y_min', 'y_max']
-	corrZ=['z_geo', 'z', 'z_min', 'z_max', 'bf_z']
+	corrX=["x_geo", "x", "x_min", "x_max"]
+	corrY=["y_geo", "y", "y_min", "y_max"]
+	corrZ=["z_geo", "z", "z_min", "z_max", "bf_z"]
 
 	if subcube[0]:
 		for pp in corrX:
@@ -646,7 +651,7 @@ if len(subcube) and Parameters['steps']['doMerge'] and NRdet:
 # ---- APPEND PARAMETER VALUES IN PHYSICAL UNITS ----
 # ---------------------------------------------------
 
-if Parameters['steps']['doMerge'] and NRdet and Parameters['steps']['doWriteCat']:
+if Parameters["steps"]["doMerge"] and NRdet and Parameters["steps"]["doWriteCat"]:
 	printProgressMessage("Adding WCS position to catalogue")
 	objects, catParNames, catParFormt, catParUnits = wcs_coordinates.add_wcs_coordinates(objects, catParNames, catParFormt, catParUnits, Parameters)
 
@@ -656,22 +661,22 @@ if Parameters['steps']['doMerge'] and NRdet and Parameters['steps']['doWriteCat'
 # ---- STORE DATA ----
 # --------------------
 
-if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge'] and NRdet:
+if Parameters["steps"]["doWriteCat"] and Parameters["steps"]["doMerge"] and NRdet:
 	printProgressMessage("Writing output catalogue")
 
-	if 'rms' in catParNames:
+	if "rms" in catParNames:
 		catParFormt=list(catParFormt)
-		catParFormt[list(catParNames).index('rms')] = '%12.4e'
+		catParFormt[list(catParNames).index("rms")] = "%12.4e"
 		catParFormt=tuple(catParFormt)
 
-	if Parameters['writeCat']['writeXML'] and Parameters['steps']['doMerge'] and NRdet:
-		write_catalog.write_catalog_from_array('XML', objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatXml, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'], Parameters['parameters']['getUncertainties'])
+	if Parameters["writeCat"]["writeXML"] and Parameters["steps"]["doMerge"] and NRdet:
+		write_catalog.write_catalog_from_array("XML", objects, catParNames, catParUnits, catParFormt, Parameters["writeCat"]["parameters"], outputCatXml, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"], Parameters["parameters"]["getUncertainties"])
 
-	if Parameters['writeCat']['writeASCII'] and Parameters['steps']['doMerge'] and NRdet:
-		write_catalog.write_catalog_from_array('ASCII', objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatAscii, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'], Parameters['parameters']['getUncertainties'])
+	if Parameters["writeCat"]["writeASCII"] and Parameters["steps"]["doMerge"] and NRdet:
+		write_catalog.write_catalog_from_array("ASCII", objects, catParNames, catParUnits, catParFormt, Parameters["writeCat"]["parameters"], outputCatAscii, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"], Parameters["parameters"]["getUncertainties"])
 
-	if Parameters['writeCat']['writeSQL'] and Parameters['steps']['doMerge'] and NRdet:
-		write_catalog.write_catalog_from_array('SQL', objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatSQL, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'], Parameters['parameters']['getUncertainties'])
+	if Parameters["writeCat"]["writeSQL"] and Parameters["steps"]["doMerge"] and NRdet:
+		write_catalog.write_catalog_from_array("SQL", objects, catParNames, catParUnits, catParFormt, Parameters["writeCat"]["parameters"], outputCatSQL, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"], Parameters["parameters"]["getUncertainties"])
 
 
 
