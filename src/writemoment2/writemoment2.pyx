@@ -3,6 +3,7 @@ import astropy.io.fits as pyfits
 import os
 import numpy as np
 cimport numpy as np
+import scipy.constants
 from libc.math cimport isnan
 import sys
 from .version import *
@@ -37,7 +38,7 @@ def regridMaskedChannels(datacube,maskcube,header):
 	z=(np.arange(1.0, header['naxis3'] + 1) - header['crpix3']) * header['cdelt3'] + header['crval3']
 	
 	if header['ctype3'] == 'VELO-HEL':
-		pixscale=(1 - header['crval3'] / 2.99792458e+8) / (1 - z / 2.99792458e+8)
+		pixscale=(1 - header['crval3'] / scipy.constants.c) / (1 - z / scipy.constants.c)
 	else:
 		sys.stderr.write("WARNING: Cannot convert axis3 coordinates to frequency. Will ignore the effect of CELLSCAL = 1/F.\n")
 		pixscale = np.ones((header['naxis3']))
@@ -83,9 +84,9 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 	else:
 		hdu.writeto(name, output_verify='warn', clobber=True)
 	
-	sys.stderr.write('WARNING: The generation of moment maps will mask the copy of the data cube held\n')
-	sys.stderr.write('         in memory by SoFiA. If you wish to use the original data cube after\n')
-	sys.stderr.write('         this point, please reload it first.\n')
+	# WARNING: The generation of moment maps will mask the copy of the data cube held
+	#         in memory by SoFiA. If you wish to use the original data cube after
+	#         this point, please reload it first!
 	datacube[maskcube == 0] = 0
 	
 	if 'cellscal' in header:

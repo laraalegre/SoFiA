@@ -50,7 +50,7 @@ def checkOverwrite(path):
 			"1) Enable automatic overwrite in the GUI or parameter file\n"
 			"2) Change base name and/or output directory in the GUI or\n"
 			"   parameter file\n"
-			"3) Delete or rename the existing file", fatal=True, border=True)
+			"3) Delete or rename the existing file", fatal=True, frame=True)
 	elif os.path.isdir(path) and os.listdir(path):
 		err.error(
 			"Failed to create the output directory:\n\n"
@@ -60,7 +60,7 @@ def checkOverwrite(path):
 			"1) Enable automatic overwrite in the GUI or parameter file\n"
 			"2) Change base name and/or output directory in the GUI or\n"
 			"   parameter file\n"
-			"3) Delete or rename the existing directory", fatal=True, border=True)
+			"3) Delete or rename the existing directory", fatal=True, frame=True)
 	return
 
 
@@ -256,7 +256,7 @@ if Parameters["steps"]["doMerge"]:
 						if (i + 1) % 6 == 0: message += ",\n  "
 						else: message += ", "
 				message += "\n\nPlease use parameter names from the above list and try again."
-				err.error(message, fatal=True, border=True)
+				err.error(message, fatal=True, frame=True)
 
 
 
@@ -350,10 +350,10 @@ if Parameters["merge"]["positivity"]:
 		"Enabling mask.positivity is dangerous and will render some of SoFiA's\n"
 		"most  powerful  algorithms useless,  including mask  optimisation and\n"
 		"reliability calculation.  Only use this option if you are fully aware\n"
-		"of its risks and consequences!", border=True)
+		"of its risks and consequences!", frame=True)
 	mask = np.bitwise_and(np.greater(mask, 0), np.greater(np_Cube, 0))
 
-# Check whether any voxel is detected
+# Check whether any pixels are detected
 NRdet = (mask > 0).sum()
 if not NRdet:
 	err.error("No pixels detected. Exiting pipeline.", fatal=True)
@@ -410,12 +410,12 @@ if Parameters["steps"]["doReliability"] and Parameters["steps"]["doMerge"] and N
 		"You can do one of the following:\n"
 		"(1) Switch off the reliability calculation.\n"
 		"(2) Modify the source-finding and/or filtering settings in\n"
-		"    order to detect negative sources.", fatal=True, border=True)
+		"    order to detect negative sources.", fatal=True, frame=True)
 
 elif Parameters["steps"]["doReliability"] and Parameters["steps"]["doMerge"] and NRdet and NRdetNeg:
 	# ---- MEASURE GLOBAL SIGMA AND NORMALISE PARAMETERS----
-	printProgressMessage("Measuring cube noise to divide flux parameters by global rms")
-	maxNrVox = 1e+6 # maximum nr of voxels over which to calculate the global RMS. Sampling below is set accordingly.
+	printProgressMessage("Measuring noise to divide flux parameters by global RMS")
+	maxNrVox = 1e+6 # maximum number of pixels over which to calculate the global RMS. Sampling below is set accordingly.
 	sampleRms = max(1, int((float(np.array(np_Cube.shape).prod()) / maxNrVox)**(1.0 / min(3, len(np_Cube.shape)))))
 	globalrms = functions.GetRMS(np_Cube, rmsMode="negative", zoomx=1, zoomy=1, zoomz=1, verbose=True, sample=sampleRms)
 	printProgressTime()
@@ -443,7 +443,7 @@ elif Parameters["steps"]["doMerge"] and NRdet:
 
 else:
 	printProgressTime()
-	reliable = [1,] # if not merging, all detected voxels have ID = 1 and here they are set to be reliable
+	reliable = [1,] # if not merging, all detected pixels have ID = 1 and here they are set to be reliable
 
 
 
@@ -577,7 +577,7 @@ if Parameters["steps"]["doParameterise"] and Parameters["steps"]["doMerge"] and 
 			"a number of assumptions that may not be met. Hence,\n"
 			"the resulting numbers  may not be representative of\n"
 			"the true uncertainties of those parameters, in par-\n"
-			"ticular in the presence of systematic errors.", border=True)
+			"ticular in the presence of systematic errors.", frame=True)
 	
 	if Parameters["parameters"]["dilateMask"]: mask = parametrisation.dilate(np_Cube, mask, objects, catParNames, Parameters)
 	np_Cube, mask, objects, catParNames, catParFormt, catParUnits = parametrisation.parametrise(np_Cube, mask, objects, catParNames, catParFormt, catParUnits, Parameters, dunits)

@@ -127,7 +127,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 				"derived from " + str(pars[:,neg].shape[1]) + " negative sources cannot be inverted.\n"
 				"This is likely due to an insufficient number of negative sources.\n"
 				"Try to increase the number of negative sources by changing the source\n"
-				"finding and/or filtering settings.", fatal=True, border=True)
+				"finding and/or filtering settings.", fatal=True, frame=True)
 		
 		if np.isnan(kernel).sum():
 			err.error(
@@ -136,7 +136,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 				"A good kernel is required to calculate the density field of positive\n"
 				"and negative sources in parameter space.\n"
 				"Try to increase the number of negative sources by changing the source\n"
-				"finding and/or filtering settings.", fatal=True, border=True)
+				"finding and/or filtering settings.", fatal=True, frame=True)
 		
 		if not usecov:
 			kernel = np.diag(np.diag(kernel))
@@ -198,7 +198,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 		Rs = (Nps - Nns) / Nps
 		
 		# The reliability must be <= 1. If not, something is wrong.
-		err.ensure(Rs.max() <= 1, "Maximum reliability greater than 1; something is wrong.\nPlease ensure that enough negative sources are detected\nand decrease your source finding threshold if necessary.", border=True)
+		err.ensure(Rs.max() <= 1, "Maximum reliability greater than 1; something is wrong.\nPlease ensure that enough negative sources are detected\nand decrease your source finding threshold if necessary.", frame=True)
 		
 		# Find pseudo-reliable sources (taking maximum(Rs, 0) in order to include objects with Rs < 0
 		# if threshold == 0; Rs may be < 0 because of insufficient statistics)
@@ -330,7 +330,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 					"smoothing kernel.  This is likely due to an insufficient number\n"
 					"of negative detections. Please review your filtering and source\n"
 					"finding settings to ensure that a sufficient number of negative\n"
-					"detections is found.", fatal=True, border=True)
+					"detections is found.", fatal=True, frame=True)
 			
 			# Evaluate density fields on grid on current projection
 			g = np.transpose(np.transpose(np.mgrid[slice(g1[0], g1[1], g1[2]), slice(g2[0], g2[1], g2[2])]).reshape(-1, 2))

@@ -16,11 +16,11 @@ def message(message, verbose=True):
 # FUNCTION: Print warning message
 # -------------------------------
 
-def warning(message, border=False):
+def warning(message, frame=False):
 	message = message.replace("\n", "\n         ")
-	separator(border)
+	separator(frame)
 	sys.stderr.write("WARNING: " + str(message) + "\n")
-	separator(border)
+	separator(frame)
 	return
 
 
@@ -28,18 +28,18 @@ def warning(message, border=False):
 # FUNCTION: Print error message
 # -----------------------------
 
-def error(message, fatal=True, border=False):
+def error(message, fatal=True, frame=False):
 	if fatal:
 		message = message.replace("\n", "\n             ")
-		separator(border)
+		separator(frame)
 		sys.stderr.write("FATAL ERROR: " + str(message) + "\n")
-		separator(border)
+		separator(frame)
 		sys.exit(1)
 	else:
 		message = message.replace("\n", "\n       ")
-		separator(border)
+		separator(frame)
 		sys.stderr.write("ERROR: " + str(message) + "\n")
-		separator(border)
+		separator(frame)
 	return
 
 
@@ -47,8 +47,8 @@ def error(message, fatal=True, border=False):
 # FUNCTION: Check condition and exit with signal 1 if false
 # ---------------------------------------------------------
 
-def ensure(condition, message, fatal=True, border=False):
-	if not condition: print_error(message, fatal=fatal, border=border)
+def ensure(condition, message, fatal=True, frame=False):
+	if not condition: error(message, fatal=fatal, frame=frame)
 	return
 
 
@@ -56,6 +56,6 @@ def ensure(condition, message, fatal=True, border=False):
 # FUNCTION: Print separator line
 # ------------------------------
 
-def separator(border = True):
-	if border: sys.stderr.write("______________________________________________________________________________\n\n")
+def separator(frame = True):
+	if frame: sys.stderr.write("______________________________________________________________________________\n\n")
 	return
