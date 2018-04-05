@@ -28,13 +28,13 @@ Parameters
 
 def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0, edgeZ=0, statistic="mad", fluxRange="all", method="global", windowSpatial=20, windowSpectral=20, gridSpatial=0, gridSpectral=0, interpolation="none"):
 	# Print some informational messages
-	err.print_message("Generating noise-scaled data cube:")
-	err.print_message("  Selecting " + str(method) + " noise measurement method.")
+	err.message("Generating noise-scaled data cube:")
+	err.message("  Selecting " + str(method) + " noise measurement method.")
 	
-	if statistic == "mad": err.print_message("  Applying median absolute deviation to " + str(fluxRange) + " pixels.")
-	if statistic == "std": err.print_message("  Applying standard deviation to " + str(fluxRange) + " pixels.")
-	if statistic == "gauss": err.print_message("  Applying Gaussian fit to " + str(fluxRange) + " pixels.")
-	if statistic == "negative": err.print_message("  Applying Gaussian fit to negative pixels.")
+	if statistic == "mad": err.message("  Applying median absolute deviation to " + str(fluxRange) + " pixels.")
+	if statistic == "std": err.message("  Applying standard deviation to " + str(fluxRange) + " pixels.")
+	if statistic == "gauss": err.message("  Applying Gaussian fit to " + str(fluxRange) + " pixels.")
+	if statistic == "negative": err.message("  Applying Gaussian fit to negative pixels.")
 	sys.stdout.flush()
 	
 	# Check the dimensions of the cube (could be obtained from header information)
@@ -63,8 +63,8 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 		gridSpectral += (1 - gridSpectral % 2)
 		
 		# Print grid and window sizes adopted
-		err.print_message("  Using grid size of [" + str(gridSpatial) + ", " + str(gridSpectral) + "]")
-		err.print_message("  and window size of [" + str(windowSpatial) + ", " + str(windowSpectral) + "].")
+		err.message("  Using grid size of [" + str(gridSpatial) + ", " + str(gridSpectral) + "]")
+		err.message("  and window size of [" + str(windowSpatial) + ", " + str(windowSpectral) + "].")
 		
 		# Generate grid points to be used
 		gridPointsZ = np.arange((dimensions[0] - gridSpectral * (int(math.ceil(float(dimensions[0]) / float(gridSpectral))) - 1)) // 2, dimensions[0], gridSpectral)
@@ -98,7 +98,7 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 		
 		# Carry out interpolation if requested, taking NaNs into account
 		if interpolation == "linear" or interpolation == "cubic":
-			err.print_message("  Interpolating in between grid points (" + str(interpolation) + ").")
+			err.message("  Interpolating in between grid points (" + str(interpolation) + ").")
 			
 			# First across each spatial plane
 			if gridSpatial > 1:
@@ -200,6 +200,6 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 						rms_cube[:, :, i] *= rms
 						cube[:, :, i] /= rms
 	
-	err.print_message("Noise-scaled data cube generated.\n")
+	err.message("Noise-scaled data cube generated.\n")
 	
 	return cube, rms_cube

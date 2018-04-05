@@ -31,6 +31,7 @@ from sofia import wcs_coordinates
 from sofia import flag_cube
 from sofia import CNHI
 from sofia import version
+from sofia import error as err
 
 
 
@@ -38,21 +39,27 @@ from sofia import version
 # ---- FUNCTION TO CHECK OVERWRITES ----
 # --------------------------------------
 
-def checkOverwrite(outputFile, isFile=True, isDir=False):
-	if isFile and os.path.exists(outputFile):
-		sys.stderr.write("ERROR: SoFiA tried to create the output file %s, but that file already exists.\n" % outputFile)
-		sys.stderr.write("       You can do one of the following:\n")
-		sys.stderr.write("       1) enable overwrite in GUI or parameter file\n")
-		sys.stderr.write("       2) rename existing file\n")
-		sys.stderr.write("       3) change base name and/or output directory in GUI or parameter file\n")
-		sys.exit(1)
-	elif isDir and os.path.exists(outputFile) and os.listdir(outputFile) != []:
-		sys.stderr.write("ERROR: SoFiA tried to create the output directory %s, but that directory already exists and is not empty.\n" % outputFile)
-		sys.stderr.write("       You can do one of the following:\n")
-		sys.stderr.write("       1) enable overwrite in GUI or parameter file\n")
-		sys.stderr.write("       2) rename existing directory\n")
-		sys.stderr.write("       3) change base name and/or output directory in GUI or parameter file\n")
-		sys.exit(1)
+def checkOverwrite(path):
+	if os.path.exists(path):
+		if os.path.isfile(path):
+			err.error(
+				"Failed to create the output file:\n\n"
+				"  " + str(path) + "\n\n"
+				"The file already exists. You can do one of the following:\n\n"
+				"1) Enable automatic overwrite in the GUI or parameter file\n"
+				"2) Change base name and/or output directory in the GUI or\n"
+				"   parameter file\n"
+				"3) Delete or rename the existing file", fatal=True, border=True)
+		elif os.path.isdir(path) and os.listdir(path):
+			err.error(
+				"Failed to create the output directory:\n\n"
+				"  " + str(path) + "\n\n"
+				"The directory already exists and is not empty. You can do one\n"
+				"of the following:\n\n"
+				"1) Enable automatic overwrite in the GUI or parameter file\n"
+				"2) Change base name and/or output directory in the GUI or\n"
+				"   parameter file\n"
+				"3) Delete or rename the existing directory", fatal=True, border=True)
 	return
 
 
@@ -62,9 +69,8 @@ def checkOverwrite(outputFile, isFile=True, isDir=False):
 # --------------------------------------------
 
 def printProgressMessage(message):
-	print ("\n--- %.3f seconds since start" % (time() - t0))
-	print ("--- %s: %s" % (version.getVersion(full=True), message))
-	sys.stdout.flush()
+	err.message("\n--- %.3f seconds since start" % (time() - t0))
+	err.message("--- %s: %s" % (version.getVersion(full=True), message))
 	return
 
 
@@ -74,8 +80,7 @@ def printProgressMessage(message):
 # --------------------------------------
 
 def printProgressTime():
-	print ("\n--- %.3f seconds since start" % (time() - t0))
-	sys.stdout.flush()
+	err.message("\n--- %.3f seconds since start" % (time() - t0))
 	return
 
 
@@ -85,7 +90,7 @@ def printProgressTime():
 # -----------------------------------------------
 
 if len(sys.argv) != 2:
-	sys.stderr.write("\n\033[1;4mUsage:\033[24m sofia_pipeline.py \033[3m<filename>\033[0m\n\nThe filename of a valid SoFiA parameter file must be specified. Please\nadd the full path if the file is not located in the current directory.\n\n")
+	err.message("\n\033[1;4mUsage:\033[24m sofia_pipeline.py \033[3m<filename>\033[0m\n\nThe filename of a valid SoFiA parameter file must be specified. Please\nadd the full path if the file is not located in the current directory.\n\n")
 	sys.exit(1)
 
 
@@ -94,15 +99,16 @@ if len(sys.argv) != 2:
 # ---- Print some initial status information ----
 # -----------------------------------------------
 
-print ("--------------------------")
-print ("Running the SoFiA pipeline")
-print ("--------------------------")
-print ("Using  SoFiA   " + version.getVersion())
-print ("       Python  " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + "." + str(sys.version_info[2]))
-print ("       NumPy   " + np.__version__)
-print ("       SciPy   " + scipy_version)
-print ("       Astropy " + astropy_version)
-print ("--------------------------")
+err.message(
+	"__________________________\n\n"
+	"Running the SoFiA pipeline\n"
+	"__________________________\n\n"
+	"Using: SoFiA   " + version.getVersion() + "\n"
+	"       Python  " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + "." + str(sys.version_info[2]) + "\n"
+	"       NumPy   " + np.__version__ + "\n"
+	"       SciPy   " + scipy_version + "\n"
+	"       Astropy " + astropy_version + "\n"
+	"__________________________\n\n")
 
 
 
@@ -119,7 +125,7 @@ t0 = time()
 # ---------------------------------
 
 printProgressMessage("Reading default parameters")
-default_file = os.getenv('SOFIA_PIPELINE_PATH').replace('sofia_pipeline.py', 'SoFiA_default_input.txt')
+default_file = os.getenv("SOFIA_PIPELINE_PATH").replace("sofia_pipeline.py", "SoFiA_default_input.txt")
 Parameters = readoptions.readPipelineOptions(default_file)
 
 
@@ -132,13 +138,9 @@ printProgressMessage("Reading user parameters")
 
 # This reads in a file with parameters and creates a dictionary:
 parameter_file = sys.argv[1]
-print ('Parameters extracted from: ' + parameter_file)
-print
-sys.stdout.flush()
+err.message("Parameters extracted from: " + str(parameter_file))
 User_Parameters = readoptions.readPipelineOptions(parameter_file)
-if not User_Parameters:
-	sys.stderr.write("ERROR: No valid parameter settings found in parameter file.\n\n")
-	sys.exit(1)
+if not User_Parameters: err.error("No valid parameter settings found in parameter file.", fatal=True)
 
 # Overwrite default parameters with user parameters (if exist):
 for task in iter(User_Parameters):
@@ -153,9 +155,7 @@ outputBase = Parameters['writeCat']['basename']
 outputDir  = Parameters['writeCat']['outputDir']
 
 if outputDir and not os.path.isdir(outputDir):
-	sys.stderr.write("ERROR: The specified output directory does not exist:\n")
-	sys.stderr.write("       %s\n" % outputDir)
-	sys.exit(1)
+	err.error("The specified output directory does not exist:\n%s" % outputDir)
 
 if not outputBase or outputBase.isspace() or "/" in outputBase or "\\" in outputBase or outputBase == "." or outputBase == "..":
 	outroot = Parameters['import']['inFile'].split('/')[-1]
@@ -186,7 +186,7 @@ outputMaskCube      = '%s_mask.fits' % outroot
 outputMom0Image     = '%s_mom0.fits' % outroot
 outputNrchImage     = '%s_nrch.fits' % outroot
 outputMom1Image     = '%s_mom1.fits' % outroot
-outputCubeletsDir   = '%s/objects/' % outroot
+outputCubeletsDir   = '%s_cubelets/' % outroot
 outputCatXml        = '%s_cat.xml' % outroot
 outputCatAscii      = '%s_cat.ascii' % outroot
 outputCatSQL        = '%s_cat.sql' % outroot
@@ -196,16 +196,17 @@ if not Parameters['writeCat']['overwrite']:
 	# Output filtered cube
 	if Parameters['steps']['doWriteFilteredCube'] and (Parameters['steps']['doSmooth'] or Parameters['steps']['doScaleNoise'] or Parameters['steps']['doWavelet']):
 		checkOverwrite(outputFilteredCube)
-
+	
+	# Noise cube
 	if Parameters['steps']['doWriteNoiseCube'] and Parameters['steps']['doScaleNoise']:
 		checkOverwrite(outputNoiseCube)
-
+	
 	# Reliability plots
 	if Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and Parameters['reliability']['makePlot']:
 		checkOverwrite(outputSkellamPDF)
 		checkOverwrite(outputScatterPDF)
 		checkOverwrite(outputContoursPDF)
-
+	
 	# Output mask
 	if Parameters['steps']['doWriteMask']:
 		checkOverwrite(outputMaskCube)
@@ -216,11 +217,12 @@ if not Parameters['writeCat']['overwrite']:
 		checkOverwrite(outputNrchImage)
 	if Parameters['steps']['doMom1']:
 		checkOverwrite(outputMom1Image)
-
+	
 	# Cubelet directory
 	if Parameters['steps']['doCubelets'] and Parameters['steps']['doMerge']:
-		checkOverwrite(outputCubeletsDir, isFile=False, isDir=True)
-
+		print outputCubeletsDir
+		checkOverwrite(outputCubeletsDir)
+	
 	# Output catalogues
 	if Parameters['steps']['doWriteCat'] and Parameters['steps']['doMerge'] and Parameters['writeCat']['writeXML']:
 		checkOverwrite(outputCatXml)
@@ -339,12 +341,11 @@ print ('Source finding complete.')
 
 # Check whether positivity flag is set; if so, remove negative pixels from mask:
 if Parameters['merge']['positivity']:
-	sys.stderr.write("------------------------------------------------------------------------------\n")
-	sys.stderr.write("WARNING: Enabling mask.positivity is dangerous and will render some of SoFiA's\n")
-	sys.stderr.write("         most  powerful  algorithms useless,  including mask  optimisation and\n")
-	sys.stderr.write("         reliability calculation.  Only use this option if you are fully aware\n")
-	sys.stderr.write("         of its risks and consequences!\n")
-	sys.stderr.write("------------------------------------------------------------------------------\n")
+	err.warning(
+		"Enabling mask.positivity is dangerous and will render some of SoFiA's\n"
+		"most  powerful  algorithms useless,  including mask  optimisation and\n"
+		"reliability calculation.  Only use this option if you are fully aware\n"
+		"of its risks and consequences!", border=True)
 	mask = np.bitwise_and(np.greater(mask, 0), np.greater(np_Cube, 0))
 
 # Check whether any voxel is detected
@@ -394,18 +395,17 @@ if Parameters['steps']['doDebug'] and NRdet:
 
 if Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and NRdet and not NRdetNeg:
 	printProgressTime()
-	sys.stderr.write("------------------------------------------------------------------------------\n")
-	sys.stderr.write("ERROR: You asked SoFiA to calculate  the reliability  of the detected sources.\n")
-	sys.stderr.write("       Unfortunately,  this calculation  cannot be done  because there  are no\n")
-	sys.stderr.write("       negative sources in the catalogue of detections. This may occur because\n")
-	sys.stderr.write("       of your source-finding and/or filtering settings.\n")
-	sys.stderr.write("       Negative sources  are strictly necessary  to calculate the reliability.\n")
-	sys.stderr.write("       You can do one of the following:\n")
-	sys.stderr.write("       (1) Switch off the reliability calculation.\n")
-	sys.stderr.write("       (2) Modify the source-finding and/or filtering settings in order to de-\n")
-	sys.stderr.write("           tect negative sources.\n")
-	sys.stderr.write("------------------------------------------------------------------------------\n")
-	sys.exit(1)
+	err.error(
+		"You asked SoFiA to calculate the reliability of the detected\n"
+		"sources.  Unfortunately, this calculation cannot be done be-\n"
+		"cause there are no negative sources  in the catalogue of de-\n"
+		"tections.  This could be due  to your source-finding  and/or\n"
+		"filtering settings.  Negative sources are strictly necessary\n"
+		"to calculate the reliability.\n"
+		"You can do one of the following:\n"
+		"(1) Switch off the reliability calculation.\n"
+		"(2) Modify the source-finding and/or filtering settings in\n"
+		"    order to detect negative sources.", fatal=True, border=True)
 
 elif Parameters['steps']['doReliability'] and Parameters['steps']['doMerge'] and NRdet and NRdetNeg:
 	# ---- MEASURE GLOBAL SIGMA AND NORMALISE PARAMETERS----
@@ -565,15 +565,14 @@ if Parameters['steps']['doParameterise'] and Parameters['steps']['doMerge'] and 
 	
 	# Print warning message about statistical uncertainties
 	if Parameters['parameters']['getUncertainties']:
-		sys.stderr.write("------------------------------------------------------------\n")
-		sys.stderr.write("WARNING:    You have requested statistical uncertainties for\n")
-		sys.stderr.write("         several source parameters. Please be aware that the\n")
-		sys.stderr.write("         calculation of statistical uncertainties depends on\n")
-		sys.stderr.write("         a number of assumptions that may not be met. Hence,\n")
-		sys.stderr.write("         the resulting numbers  may not be representative of\n")
-		sys.stderr.write("         the true uncertainties of those parameters, in par-\n")
-		sys.stderr.write("         ticular in the presence of systematic errors.\n")
-		sys.stderr.write("------------------------------------------------------------\n")
+		err.warning(
+			"   You have requested statistical uncertainties for\n"
+			"several source parameters. Please be aware that the\n"
+			"calculation of statistical uncertainties depends on\n"
+			"a number of assumptions that may not be met. Hence,\n"
+			"the resulting numbers  may not be representative of\n"
+			"the true uncertainties of those parameters, in par-\n"
+			"ticular in the presence of systematic errors.", border=True)
 	
 	if Parameters['parameters']['dilateMask']: mask = parametrisation.dilate(np_Cube, mask, objects, catParNames, Parameters)
 	np_Cube, mask, objects, catParNames, catParFormt, catParUnits = parametrisation.parametrise(np_Cube, mask, objects, catParNames, catParFormt, catParUnits, Parameters, dunits)
@@ -603,7 +602,7 @@ if Parameters['steps']['doCubelets'] and Parameters['steps']['doMerge'] and NRde
 	printProgressMessage("Writing cubelets")
 	objects = np.array(objects)
 	cathead = np.array(catParNames)
-	cubelets.writeSubcube(np_Cube, dict_Header, mask, objects, cathead, outroot, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
+	cubelets.writeSubcube(np_Cube, dict_Header, mask, objects, cathead, outroot, outputCubeletsDir, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
 
 
 # ----------------------------

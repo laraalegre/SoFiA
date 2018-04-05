@@ -9,7 +9,10 @@ import numpy as np
 from itertools import combinations
 from sofia import error as err
 
-# Define class of gaussian_kde with user-defined covariance matrix
+# -----------------------------------------------------------------------
+# CLASS: Define class of gaussian_kde with user-defined covariance matrix
+# -----------------------------------------------------------------------
+
 class gaussian_kde_set_covariance(stats.gaussian_kde):
 	def __init__(self, dataset, covariance):
 		self.covariance = covariance
@@ -18,47 +21,51 @@ class gaussian_kde_set_covariance(stats.gaussian_kde):
 		self.inv_cov = np.linalg.inv(self.covariance)
 		self._norm_factor = np.sqrt(np.linalg.det(2 * np.pi * self.covariance)) * self.n
 
-def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_pix'], logPars=[1, 1, 1], autoKernel=True, scaleKernel=1, negPerBin=1, skellamTol=-0.5, kernel=[0.15, 0.05, 0.1], usecov=False, doscatter=1, docontour=1, doskellam=1, dostats=0, saverel=1, threshold=0.99, fMin=0, verb=0, makePlot=False):
-	# Matplotlib stuff
+
+# ------------------------------------------------
+# FUNCTION: Estimate the reliability of detections
+# ------------------------------------------------
+
+def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_pix"], logPars=[1, 1, 1], autoKernel=True, scaleKernel=1, negPerBin=1, skellamTol=-0.5, kernel=[0.15, 0.05, 0.1], usecov=False, doscatter=1, docontour=1, doskellam=1, dostats=0, saverel=1, threshold=0.99, fMin=0, verb=0, makePlot=False):
+	# Import Matplotlib if diagnostic plots requested
 	if makePlot:
 		import matplotlib
-		# the following line is necessary to run SoFiA remotely
-		matplotlib.use('Agg')
+		# The following line is necessary to run SoFiA remotely
+		matplotlib.use("Agg")
 		import matplotlib.pyplot as plt
 	
-	########################################
-	### BUILD ARRAY OF SOURCE PARAMETERS ###
-	########################################
+	# --------------------------------
+	# Build array of source parameters
+	# --------------------------------
 	
-	idCOL   = parNames.index('id')
-	ftotCOL = parNames.index('snr_sum')
-	fmaxCOL = parNames.index('snr_max')
-	fminCOL = parNames.index('snr_min')
+	idCOL   = parNames.index("id")
+	ftotCOL = parNames.index("snr_sum")
+	fmaxCOL = parNames.index("snr_max")
+	fminCOL = parNames.index("snr_min")
 	
 	# Get columns of requested parameters
 	parCol = []
 	for ii in range(len(parSpace)): parCol.append(parNames.index(parSpace[ii]))
 	
 	# Get position and number of positive and negative sources
-	pos  = data[:,ftotCOL] >  0
-	neg  = data[:,ftotCOL] <= 0
+	pos  = data[:, ftotCOL] >  0
+	neg  = data[:, ftotCOL] <= 0
 	Npos = pos.sum()
 	Nneg = neg.sum()
 	
 	err.ensure(Npos, "No positive sources found; cannot proceed.")
 	err.ensure(Nneg, "No negative sources found; cannot proceed.")
 	
-	# Get array of relevant source parameters (and take log of them is requested)
+	# Get array of relevant source parameters (and take log of them if requested)
 	ids = data[:,idCOL]
-	sys.stdout.write('  Working in parameter space [')
 	pars = np.empty((data.shape[0], 0))
+	
 	for ii in range(len(parSpace)):
-		sys.stdout.write(' ' + str(parSpace[ii]) + ' ')
-		if parSpace[ii] == 'snr_max':
+		if parSpace[ii] == "snr_max":
 			parsTmp = data[:,fmaxCOL] * pos - data[:,fminCOL] * neg
 			if logPars[ii]: parsTmp = np.log10(parsTmp)
 			pars = np.concatenate((pars, parsTmp.reshape(-1, 1)), axis=1)
-		elif parSpace[ii] == 'snr_sum':
+		elif parSpace[ii] == "snr_sum":
 			parsTmp = abs(data[:,parCol[ii]].reshape(-1, 1))
 			if logPars[ii]: parsTmp = np.log10(parsTmp)
 			pars = np.concatenate((pars, parsTmp), axis=1)
@@ -66,22 +73,21 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 			parsTmp = data[:,parCol[ii]].reshape(-1, 1)
 			if logPars[ii]: parsTmp = np.log10(parsTmp)
 			pars = np.concatenate((pars, parsTmp), axis=1)
-	sys.stdout.write(']\n')
-	sys.stdout.flush()
+	
+	err.message("  Working in parameter space " + str(parSpace))
 	pars = np.transpose(pars)
 	
 	
-	#################################################################
-	### SET PARAMETERS TO WORK WITH AND GRIDDING/PLOTTNG FOR EACH ###
-	#################################################################
+	# ----------------------------------------------------------
+	# Set parameters to work with and gridding/plotting for each
+	# ----------------------------------------------------------
 	
 	# Axis labels when plotting
 	labs = []
 	for ii in range(len(parSpace)):
-		labs.append('')
-		if logPars[ii]: labs[ii] += 'log '
+		labs.append("")
+		if logPars[ii]: labs[ii] += "log "
 		labs[ii] += parSpace[ii]
-	
 	
 	# Axis limits when plotting
 	pmin, pmax = pars.min(axis=1), pars.max(axis=1)
@@ -97,48 +103,44 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 	nc = int(np.ceil(float(len(projections)) / nr))
 	
 	
-	###############################################
-	### SET SMOOTHING KERNEL IN PARAMETER SPACE ###
-	###############################################
+	# ---------------------------------------
+	# Set smoothing kernel in parameter space
+	# ---------------------------------------
 	
-	# If autoKernel is True the initial kernel is taken as a scaled version of the covariance matrix of the negative sources.
-	# The kernel size along each axis is such that the number of sources per kernel width (sigma**2) is equal to 'negPerBin'.
-	# Optionally, the user can decide to use only the diagonal terms of the covariance matrix.
-	# The kernel is then grown until convergence is reached on the Skellam plot.
-	# If autoKernel is False, use the kernel given by 'kernel' parameter (argument of EstimateRel); this is sigma, and is
-	# squared to be consistent with the auto kernel above.
+	# If autoKernel is True, then the initial kernel is taken as a scaled version of the covariance matrix
+	# of the negative sources. The kernel size along each axis is such that the number of sources per kernel
+	# width (sigma**2) is equal to "negPerBin". Optionally, the user can decide to use only the diagonal
+	# terms of the covariance matrix. The kernel is then grown until convergence is reached on the Skellam
+	# plot. If autoKernel is False, then use the kernel given by "kernel" parameter (argument of EstimateRel);
+	# this is sigma, and is squared to be consistent with the auto kernel above.
 	
 	if autoKernel:
 		# Set the kernel shape to that of the variance or covariance matrix
 		kernel = np.cov(pars[:,neg])
-		kernelType = 'covariance'
+		kernelType = "covariance"
 		# Check if kernel matrix can be inverted
 		try:
 			np.linalg.inv(kernel)
 		except:
-			sys.stderr.write("----------------------------------------------------------------------------\n")
-			sys.stderr.write("ERROR: The reliability cannot be calculated because the smoothing kernel\n")
-			sys.stderr.write("       derived from %i negative sources cannot be inverted.\n" % pars[:,neg].shape[1])
-			sys.stderr.write("       This is likely due to an insufficient number of negative sources.\n")
-			sys.stderr.write("       Try to increase the number of negative sources by changing the source\n")
-			sys.stderr.write("       finding and/or filtering settings.\n")
-			sys.stderr.write("----------------------------------------------------------------------------\n")
-			raise SystemExit(1)
+			err.error(
+				"The reliability cannot be calculated because the smoothing kernel\n"
+				"derived from " + str(pars[:,neg].shape[1]) + " negative sources cannot be inverted.\n"
+				"This is likely due to an insufficient number of negative sources.\n"
+				"Try to increase the number of negative sources by changing the source\n"
+				"finding and/or filtering settings.", fatal=True, border=True)
 		
 		if np.isnan(kernel).sum():
-			sys.stderr.write("----------------------------------------------------------------------------\n")
-			sys.stderr.write("ERROR: The reliability cannot be calculated because the smoothing kernel\n")
-			sys.stderr.write("       derived from %i negative sources contains NaNs.\n" % pars[:,neg].shape[1])
-			sys.stderr.write("       A good kernel is required to calculate the density field of positive\n")
-			sys.stderr.write("       and negative sources in parameter space.\n")
-			sys.stderr.write("       Try to increase the number of negative sources by changing the source\n")
-			sys.stderr.write("       finding and/or filtering settings.\n")
-			sys.stderr.write("----------------------------------------------------------------------------\n")
-			raise SystemExit(1)
+			err.error(
+				"The reliability cannot be calculated because the smoothing kernel\n"
+				"derived from " + str(pars[:,neg].shape[1]) + " negative sources contains NaNs.\n"
+				"A good kernel is required to calculate the density field of positive\n"
+				"and negative sources in parameter space.\n"
+				"Try to increase the number of negative sources by changing the source\n"
+				"finding and/or filtering settings.", fatal=True, border=True)
 		
 		if not usecov:
 			kernel = np.diag(np.diag(kernel))
-			kernelType = 'variance'
+			kernelType = "variance"
 		
 		kernelIter = 0.0
 		deltplot = []
@@ -146,36 +148,40 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 		# Scale the kernel size as requested by the user or by the auto-scale algorithm (scaleKernel > 0)
 		if scaleKernel:
 			# Scale kernel size as requested by the user
-			# Note that the scale factor is squared because users are asked to give a factor to apply to sqrt(kernel)  
+			# Note that the scale factor is squared because users are asked to give a factor to apply to sqrt(kernel)
 			kernel *= scaleKernel**2
-			err.print_message('  Using kernel with shape of %s and size scaled by factor %.2f.' % (kernelType, scaleKernel))
-			err.print_message('  The sqrt(kernel) size is:')
-			err.print_message(np.sqrt(np.abs(kernel)))
+			err.message("  Using kernel with shape of %s and size scaled by factor %.2f." % (kernelType, scaleKernel))
+			err.message("  The sqrt(kernel) size is:")
+			err.message(str(np.sqrt(np.abs(kernel))))
 		else:
 			# Scale kernel size to start the kernel-growing loop
 			# The scale factor for sqrt(kernel) is elevated to the power of 1.0 / len(parCol)
 			kernel *= ((negPerBin + kernelIter) / Nneg)**(2.0 / len(parCol))
-			err.print_message('  Will find the best kernel as a scaled version of the %s:' % kernelType)
-			err.print_message('  Starting from the kernel with sqrt(kernel) size:')
-			err.print_message('  ' + str(np.sqrt(np.abs(kernel))))
-			err.print_message('  Growing kernel...')
+			err.message("  Will find the best kernel as a scaled version of the %s:" % kernelType)
+			err.message("  Starting from the kernel with sqrt(kernel) size:")
+			err.message("  " + str(np.sqrt(np.abs(kernel))))
+			err.message("  Growing kernel...")
 		
-		#deltOLD=-1e+9 # used to stop kernel growth if P-N stops moving closer to zero [NOT USED CURRENTLY]
+		#deltOLD=-1e+9 # Used to stop kernel growth if P-N stops moving closer to zero [NOT USED CURRENTLY]
 		if doskellam and makePlot: fig0 = plt.figure()
 	else:
-		err.print_message('  Using user-defined variance kernel with sqrt(kernel) size:') # Note that the user must give sigma, which then gets squared
-		err.print_message(np.array(kernel))
+		# Note that the user must give sigma, which then gets squared
+		err.message("  Using user-defined variance kernel with sqrt(kernel) size:")
+		err.message(str(np.array(kernel)))
 		kernel = np.identity(len(kernel)) * np.array(kernel)**2
 	
-	grow_kernel = 1 # set to 1 to start the kernel growing loop below;
-	                # this loop will estimate the reliability, check whether the kernel is large enough, and if not pick a larger kernel;
-	                # if autoKernel=0 or scaleKernel=0 will do just one pass (i.e., will not grow the kernel)
+	# Set grow_kernel to 1 to start the kernel growing loop below.
+	grow_kernel = 1
+	
+	# This loop will estimate the reliability, check whether the kernel is large enough,
+	# and if not pick a larger kernel. If autoKernel = 0 or scaleKernel = 0, we will do
+	# just one pass (i.e., we will not grow the kernel).
 	while grow_kernel:
-		################################
-		### EVALUATE N-d RELIABILITY ###
-		################################
+		# ------------------------
+		# Evaluate N-d reliability
+		# ------------------------
 		
-		if verb: err.print_message('   estimate normalised positive and negative density fields ...')
+		if verb: err.message("   estimate normalised positive and negative density fields ...")
 		
 		Np = gaussian_kde_set_covariance(pars[:,pos], kernel)
 		Nn = gaussian_kde_set_covariance(pars[:,neg], kernel)
@@ -192,12 +198,12 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 		Rs = (Nps - Nns) / Nps
 		
 		# The reliability must be <= 1. If not, something is wrong.
-		err.ensure(Rs.max() <= 1, "Maximum reliability greater than 1; something is wrong.\n")
+		err.ensure(Rs.max() <= 1, "Maximum reliability greater than 1; something is wrong.\nPlease ensure that enough negative sources are detected\nand decrease your source finding threshold if necessary.", border=True)
 		
 		# Find pseudo-reliable sources (taking maximum(Rs, 0) in order to include objects with Rs < 0
 		# if threshold == 0; Rs may be < 0 because of insufficient statistics)
-		pseudoreliable = np.maximum(Rs, 0) >= threshold
 		# These are called pseudo-reliable because some objects may be discarded later based on additional criteria below
+		pseudoreliable = np.maximum(Rs, 0) >= threshold
 
 		# Find reliable sources (taking maximum(Rs, 0) in order to include objects with Rs < 0 if
 		# threshold == 0; Rs may be < 0 because of insufficient statistics)
@@ -213,16 +219,16 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 			deltmax = delt.max()
 			
 			if deltmed / deltstd > -100 and doskellam and makePlot:
-				plt.hist(delt / deltstd, bins=np.arange(deltmin / deltstd, max(5.1, deltmax / deltstd), 0.01), cumulative=True, histtype='step', color=(min(1, float(negPerBin + kernelIter) / Nneg), 0,0), normed=True)
+				plt.hist(delt / deltstd, bins=np.arange(deltmin / deltstd, max(5.1, deltmax / deltstd), 0.01), cumulative=True, histtype="step", color=(min(1, float(negPerBin + kernelIter) / Nneg), 0,0), normed=True)
 				deltplot.append([((negPerBin + kernelIter) / Nneg)**(1.0 / len(parCol)), deltmed / deltstd])
 			
-			err.print_message('  iteration, median, width, median/width = %3i, %9.2e, %9.2e, %9.2e' % (kernelIter, deltmed, deltstd, deltmed / deltstd))
+			err.message("  iteration, median, width, median/width = %3i, %9.2e, %9.2e, %9.2e" % (kernelIter, deltmed, deltstd, deltmed / deltstd))
 			
 			if scaleKernel: grow_kernel = 0
 			elif deltmed / deltstd > skellamTol or negPerBin + kernelIter >= Nneg:
 				grow_kernel = 0
-				err.print_message('  Found good kernel after %i kernel growth iterations. The sqrt(kernel) size is:' % kernelIter)
-				err.print_message(np.sqrt(np.abs(kernel)))
+				err.message("  Found good kernel after %i kernel growth iterations. The sqrt(kernel) size is:" % kernelIter)
+				err.message(np.sqrt(np.abs(kernel)))
 			elif deltmed / deltstd < 5 * skellamTol:
 				kernel *= (float(negPerBin + kernelIter + 20) / (negPerBin + kernelIter))**(2.0 / len(parCol)) 
 				kernelIter += 20
@@ -239,71 +245,71 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 			grow_kernel = 0
 	
 	
-	####################
-	### SKELLAM PLOT ###
-	####################
+	# ------------
+	# Skellam plot
+	# ------------
 	
 	if deltmed / deltstd > -100 and autoKernel and doskellam and makePlot:
-		plt.plot(np.arange(-10, 10, 0.01), stats.norm().cdf(np.arange(-10, 10, 0.01)), 'k-')
-		plt.plot(np.arange(-10, 10, 0.01), stats.norm(scale=0.4).cdf(np.arange(-10, 10, 0.01)), 'k:')
-		plt.legend(('Gaussian (sigma=1)', 'Gaussian (sigma=0.4)'), loc='lower right', prop={'size':13})
-		plt.hist(delt / deltstd, bins=np.arange(deltmin / deltstd, max(5.1, deltmax / deltstd), 0.01), cumulative=True, histtype='step', color='r', normed=True)
+		plt.plot(np.arange(-10, 10, 0.01), stats.norm().cdf(np.arange(-10, 10, 0.01)), "k-")
+		plt.plot(np.arange(-10, 10, 0.01), stats.norm(scale=0.4).cdf(np.arange(-10, 10, 0.01)), "k:")
+		plt.legend(("Gaussian (sigma=1)", "Gaussian (sigma=0.4)"), loc="lower right", prop={"size":13})
+		plt.hist(delt / deltstd, bins=np.arange(deltmin / deltstd, max(5.1, deltmax / deltstd), 0.01), cumulative=True, histtype="step", color="r", normed=True)
 		plt.xlim(-5, 5)
 		plt.ylim(0, 1)
-		plt.xlabel('(P-N)/sqrt(N+P)')
-		plt.ylabel('cumulative distribution')
-		plt.plot([0, 0], [0, 1], 'k--')
-		fig0.savefig('%s_skel.pdf' % pdfoutname, rasterized=True)
+		plt.xlabel("(P-N)/sqrt(N+P)")
+		plt.ylabel("cumulative distribution")
+		plt.plot([0, 0], [0, 1], "k--")
+		fig0.savefig("%s_skel.pdf" % pdfoutname, rasterized=True)
 		
 		if not scaleKernel:
 			fig3 = plt.figure()
 			deltplot = np.array(deltplot)
-			plt.plot(deltplot[:,0], deltplot[:,1], 'ko-')
-			plt.xlabel('kernel size (1D-sigma, aribtrary units)')
-			plt.ylabel('median/std of (P-N)/sqrt(P+N)')
-			plt.axhline(y=skellamTol, linestyle='--', color='r')
-			fig3.savefig('%s_delt.pdf' % pdfoutname, rasterized=True)
+			plt.plot(deltplot[:,0], deltplot[:,1], "ko-")
+			plt.xlabel("kernel size (1D-sigma, aribtrary units)")
+			plt.ylabel("median/std of (P-N)/sqrt(P+N)")
+			plt.axhline(y=skellamTol, linestyle="--", color="r")
+			fig3.savefig("%s_delt.pdf" % pdfoutname, rasterized=True)
 	
 	
-	############################
-	### SCATTER PLOT SOURCES ###
-	############################
+	# -----------------------
+	# Scatter plot of sources
+	# -----------------------
 	
 	specialids = []
 	
 	if doscatter and makePlot:
-		if verb: print ('  plotting sources ...')
+		if verb: err.message("  plotting sources ...")
 		fig1 = plt.figure(figsize=(18, 4.5 * nr))
 		plt.subplots_adjust(left=0.06, bottom=0.15/nr, right = 0.97, top=1-0.08/nr, wspace=0.35, hspace=0.25)
 		
 		n_p = 0
 		for jj in projections:
-			if verb: print ('    projection %i/%i' % (projections.index(jj) + 1, len(projections)))
+			if verb: err.message("    projection %i/%i" % (projections.index(jj) + 1, len(projections)))
 			n_p, p1, p2 = n_p + 1, jj[0], jj[1]
 			plt.subplot(nr, nc, n_p)
-			plt.scatter(pars[p1,pos], pars[p2,pos], marker='o', c='b', s=10, edgecolor='face', alpha=0.5)
-			plt.scatter(pars[p1,neg], pars[p2,neg], marker='o', c='r', s=10, edgecolor='face', alpha=0.5)
-			for si in specialids: plt.plot(pars[p1,ids==si], pars[p2,ids==si], 'kd', zorder=10000, ms=7, mfc='none', mew=2)
+			plt.scatter(pars[p1,pos], pars[p2,pos], marker="o", c="b", s=10, edgecolor="face", alpha=0.5)
+			plt.scatter(pars[p1,neg], pars[p2,neg], marker="o", c="r", s=10, edgecolor="face", alpha=0.5)
+			for si in specialids: plt.plot(pars[p1, ids==si], pars[p2, ids==si], "kd", zorder=10000, ms=7, mfc="none", mew=2)
 			plt.xlim(lims[p1][0], lims[p1][1])
 			plt.ylim(lims[p2][0], lims[p2][1])
 			plt.xlabel(labs[p1])
 			plt.ylabel(labs[p2])
-		fig1.savefig('%s_scat.pdf' % pdfoutname, rasterized=True)
+		fig1.savefig("%s_scat.pdf" % pdfoutname, rasterized=True)
 	
 	
-	#####################
-	### PLOT CONTOURS ###
-	#####################
+	# -------------
+	# Plot contours
+	# -------------
 	
 	if docontour and makePlot:
 		levs = 10**np.arange(-1.5, 2, 0.5)
 		
-		if verb: print ('  plotting contours ...')
+		if verb: err.message("  plotting contours ...")
 		fig2 = plt.figure(figsize=(18, 4.5 * nr))
 		plt.subplots_adjust(left=0.06, bottom=0.15/nr, right=0.97, top=1-0.08/nr, wspace=0.35, hspace=0.25)
 		n_p = 0
 		for jj in projections:
-			if verb: print ('    projection %i/%i' % (projections.index(jj) + 1, len(projections)))
+			if verb: err.message("    projection %i/%i" % (projections.index(jj) + 1, len(projections)))
 			n_p, p1, p2 = n_p + 1, jj[0], jj[1]
 			g1, g2 = grid[p1], grid[p2]
 			x1 = np.arange(g1[0], g1[1], g1[2])
@@ -319,13 +325,12 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 				Np = gaussian_kde_set_covariance(parsp[:,pos], setcov)
 				Nn = gaussian_kde_set_covariance(parsp[:,neg], setcov)
 			except:
-				sys.stderr.write("----------------------------------------------------------------------------\n")
-				sys.stderr.write("ERROR: Reliability determination failed because of issues with the smoothing\n")
-				sys.stderr.write("       kernel.  This is likely due to an insufficient number of negative de-\n")
-				sys.stderr.write("       tections. Please review your filtering and source finding settings to\n")
-				sys.stderr.write("       ensure that a sufficient number of negative detections is found.\n")
-				sys.stderr.write("----------------------------------------------------------------------------\n")
-				raise SystemExit(1)
+				err.error(
+					"Reliability  determination  failed  because of issues  with the\n"
+					"smoothing kernel.  This is likely due to an insufficient number\n"
+					"of negative detections. Please review your filtering and source\n"
+					"finding settings to ensure that a sufficient number of negative\n"
+					"detections is found.", fatal=True, border=True)
 			
 			# Evaluate density fields on grid on current projection
 			g = np.transpose(np.transpose(np.mgrid[slice(g1[0], g1[1], g1[2]), slice(g2[0], g2[1], g2[2])]).reshape(-1, 2))
@@ -336,22 +341,22 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 			Np.resize(pshape)
 			Nn.resize(pshape)
 			plt.subplot(nr, nc, n_p)
-			plt.contour(x1, x2, Np, origin='lower', colors='b', levels=levs, zorder=2)
-			plt.contour(x1, x2, Nn, origin='lower', colors='r', levels=levs, zorder=1)
+			plt.contour(x1, x2, Np, origin="lower", colors="b", levels=levs, zorder=2)
+			plt.contour(x1, x2, Nn, origin="lower", colors="r", levels=levs, zorder=1)
 			
-			if reliable.sum(): plt.scatter(pars[p1,pos][reliable], pars[p2,pos][reliable], marker='o', s=10, edgecolor='k', facecolor='k', zorder=4)
-			if (pseudoreliable * (reliable == False)).sum(): plt.scatter(pars[p1,pos][pseudoreliable * (reliable == False)], pars[p2,pos][pseudoreliable * (reliable == False)], marker='x', s=40, edgecolor='0.5', facecolor='0.5', zorder=3)
-			for si in specialids: plt.plot(pars[p1,ids==si], pars[p2,ids==si], 'kd', zorder=10000, ms=7, mfc='none', mew=2)
+			if reliable.sum(): plt.scatter(pars[p1,pos][reliable], pars[p2,pos][reliable], marker="o", s=10, edgecolor="k", facecolor="k", zorder=4)
+			if (pseudoreliable * (reliable == False)).sum(): plt.scatter(pars[p1,pos][pseudoreliable * (reliable == False)], pars[p2,pos][pseudoreliable * (reliable == False)], marker="x", s=40, edgecolor="0.5", facecolor="0.5", zorder=3)
+			for si in specialids: plt.plot(pars[p1,ids==si], pars[p2,ids==si], "kd", zorder=10000, ms=7, mfc="none", mew=2)
 			plt.xlim(lims[p1][0], lims[p1][1])
 			plt.ylim(lims[p2][0], lims[p2][1])
 			plt.xlabel(labs[p1])
 			plt.ylabel(labs[p2])
-		fig2.savefig('%s_cont.pdf' % pdfoutname, rasterized=True)
+		fig2.savefig("%s_cont.pdf" % pdfoutname, rasterized=True)
 	
 	
-	#################################
-	### ADD Np, Nn AND R TO TABLE ###
-	#################################
+	# -------------------------
+	# Add Np, Nn and R to table
+	# -------------------------
 	
 	# This allows me not to calculate R every time I want to do some plot analysis,
 	# but just read it from the file
@@ -364,7 +369,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=['snr_sum', 'snr_max', 'n_p
 		Nn = np.zeros((data.shape[0],))
 		Nn[pos] = Nns
 		R = -np.ones((data.shape[0],)) # R will be -1 for negative sources
-		# Set R to zero for positive sources if R<0 because of Nn>Np
+		# Set R to zero for positive sources if R < 0 because of Nn > Np
 		R[pos] = np.maximum(0, (Np[pos] - Nn[pos]) / Np[pos])
 		data = np.concatenate((data, Np.reshape(-1, 1), Nn.reshape(-1, 1), R.reshape(-1, 1)), axis=1)
 	

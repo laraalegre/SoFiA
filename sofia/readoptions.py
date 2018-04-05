@@ -23,7 +23,7 @@ def readPipelineOptions(filename = "pipeline.options"):
 	try:
 		f = open(filename, "r")
 	except IOError as e:
-		err.print_error("Failed to read parameter file: " + str(filename) + "\n" + str(e), fatal=True)
+		err.error("Failed to read parameter file: " + str(filename) + "\n" + str(e), fatal=True)
 	
 	# Extract lines from parameter file
 	lines = f.readlines()
@@ -46,18 +46,18 @@ def readPipelineOptions(filename = "pipeline.options"):
 			value = value.split("#")[0].strip()
 			module, parname = tuple(parameter.split(".", 1))
 		except:
-			err.print_error("Failed to read parameter: " + str(line) + "\nExpected format: module.parameter = value", fatal=True)
+			err.error("Failed to read parameter: " + str(line) + "\nExpected format: module.parameter = value", fatal=True)
 		
 		# Ensure that module and parameter names are not empty
 		if len(module) < 1 or len(parname) < 1:
-			err.print_error("Failed to read parameter: " + str(line) + "\nExpected format: module.parameter = value", fatal=True)
+			err.error("Failed to read parameter: " + str(line) + "\nExpected format: module.parameter = value", fatal=True)
 		
 		subtasks = tasks
 		if module not in subtasks: subtasks[module] = {}
 		subtasks = subtasks[module]
 		
 		if parname in subtasks:
-			err.print_warning("Multiple definitions of parameter " + str(parameter) + " encountered.\nIgnoring all additional definitions.")
+			err.warning("Multiple definitions of parameter " + str(parameter) + " encountered.\nIgnoring all additional definitions.")
 			continue
 		
 		if parameter in datatypes:
@@ -68,9 +68,9 @@ def readPipelineOptions(filename = "pipeline.options"):
 				elif datatypes[parameter] == "array": subtasks[parname] = ast.literal_eval(value)
 				else: subtasks[parname] = str(value)
 			except:
-				err.print_error("Failed to parse parameter value:\n" + str(line) + "\nExpected data type: " + str(datatypes[parameter]), fatal=True)
+				err.error("Failed to parse parameter value:\n" + str(line) + "\nExpected data type: " + str(datatypes[parameter]), fatal=True)
 		else:
-			err.print_warning("Ignoring unknown parameter: " + str(parameter) + " = " + str(value))
+			err.warning("Ignoring unknown parameter: " + str(parameter) + " = " + str(value))
 			continue
 	
 	return tasks
