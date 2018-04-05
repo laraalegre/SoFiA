@@ -70,7 +70,7 @@ def checkOverwrite(path):
 # --------------------------------------
 
 def printProgressTime():
-	err.message("\n--- %.3f seconds since start" % (time() - t0))
+	err.message("    %.2f seconds since start\n" % (time() - t0))
 	return
 
 
@@ -80,8 +80,10 @@ def printProgressTime():
 # --------------------------------------------
 
 def printProgressMessage(message):
+	message = "--- %s: %s " % (version.getVersion(full=True), message)
+	message = message.ljust(78, "-")
+	err.message("\n" + message)
 	printProgressTime()
-	err.message("--- %s: %s\n" % (version.getVersion(full=True), message))
 	return
 
 
@@ -101,15 +103,12 @@ if len(sys.argv) != 2:
 # -----------------------------------------------
 
 err.message(
-	"__________________________\n\n"
-	"Running the SoFiA pipeline\n"
-	"__________________________\n\n"
-	"Using: SoFiA   " + version.getVersion() + "\n"
-	"       Python  " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + "." + str(sys.version_info[2]) + "\n"
-	"       NumPy   " + np.__version__ + "\n"
-	"       SciPy   " + scipy_version + "\n"
-	"       Astropy " + astropy_version + "\n"
-	"__________________________\n\n")
+	"\n--- Running the SoFiA pipeline -----------------------------------------------\n\n"
+	"    Using: SoFiA   " + version.getVersion() + "\n"
+	"           Python  " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + "." + str(sys.version_info[2]) + "\n"
+	"           NumPy   " + np.__version__ + "\n"
+	"           SciPy   " + scipy_version + "\n"
+	"           Astropy " + astropy_version + "\n")
 
 
 
