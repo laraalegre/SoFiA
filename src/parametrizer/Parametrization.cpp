@@ -67,10 +67,9 @@ Parametrization::Parametrization()
 	busyFunctionFpeak    = 0.0;
 	busyFunctionFint     = 0.0;
 	
-	for(size_t i = 0; i < 2 * BUSYFIT_FREE_PARAM + 1; i++)
-	{
-		busyFitParameters[i]    = 0.0;
+	for(size_t i = 0; i < 2 * BUSYFIT_FREE_PARAM + 1; i++) {
 		//busyFitUncertainties[i] = 0.0;
+		busyFitParameters[i]    = 0.0;
 	}
 	
 	return;
@@ -86,53 +85,43 @@ int Parametrization::parametrize(DataCube<float> *d, DataCube<short> *m, Source 
 {
 	doBusyFunction = doBF;
 	
-	if(loadData(d, m, s) != 0)
-	{
+	if(loadData(d, m, s) != 0) {
 		std::cerr << "Error (Parametrization): No data found; source parametrisation failed.\n";
 		return 1;
 	}
 	
-	if(createIntegratedSpectrum() != 0)
-	{
+	if(createIntegratedSpectrum() != 0) {
 		std::cerr << "Error (Parametrization): Failed to create integrated spectrum.\n";
 		return 1;
 	}
 	
-	if(measureCentroid() != 0)
-	{
+	if(measureCentroid() != 0) {
 		std::cerr << "Warning (Parametrization): Failed to measure source centroid.\n";
 	}
 	
-	if(measureFlux() != 0)
-	{
+	if(measureFlux() != 0) {
 		std::cerr << "Warning (Parametrization): Source flux measurement failed.\n";
 	}
 	
-	if(measureLineWidth() != 0)
-	{
+	if(measureLineWidth() != 0) {
 		std::cerr << "Warning (Parametrization): Failed to measure source line width.\n";
 	}
 	
-	if(fitEllipse() != 0)
-	{
+	if(fitEllipse() != 0) {
 		std::cerr << "Warning (Parametrization): Ellipse fit failed.\n";
 	}
 	
-	if(kinematicMajorAxis() != 0)
-	{
+	if(kinematicMajorAxis() != 0) {
 		std::cerr << "Warning (Parametrization): Measurement of kinematic PA failed.\n";
 	}
 	
-	if(doBusyFunction)
-	{
-		if(fitBusyFunction() != 0)
-		{
+	if(doBusyFunction) {
+		if(fitBusyFunction() != 0) {
 			std::cerr << "Warning (Parametrization): Failed to fit Busy Function.\n";
 		}
 	}
 	
-	if(writeParameters() != 0)
-	{
+	if(writeParameters() != 0) {
 		std::cerr << "Error (Parametrization): Failed to write parameters to source.\n";
 		return 1;
 	}
@@ -154,20 +143,17 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 	
 	//data.clear();            // Clear all previously defined data.
 	
-	if(d == 0 or m == 0 or s == 0)
-	{
+	if(d == 0 or m == 0 or s == 0) {
 		std::cerr << "Error (Parametrization): Cannot load data; invalid pointer provided.\n";
 		return 1;
 	}
 	
-	if(!d->isDefined() or !m->isDefined() or !s->isDefined())
-	{
+	if(!d->isDefined() or !m->isDefined() or !s->isDefined()) {
 		std::cerr << "Error (Parametrization): Cannot load data; source or data cube undefined.\n";
 		return 1;
 	}
 	
-	if(d->getSize(0) != m->getSize(0) or d->getSize(1) != m->getSize(1) or d->getSize(2) != m->getSize(2))
-	{
+	if(d->getSize(0) != m->getSize(0) or d->getSize(1) != m->getSize(1) or d->getSize(2) != m->getSize(2)) {
 		std::cerr << "Error (Parametrization): Mask and data cube have different sizes.\n";
 		return 1;
 	}
@@ -176,8 +162,7 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 	double posY = s->getParameter("y");
 	double posZ = s->getParameter("z");
 	
-	if(posX < 0.0 or posY < 0.0 or posZ < 0.0 or posX >= static_cast<double>(d->getSize(0)) or posY >= static_cast<double>(d->getSize(1)) or posZ >= static_cast<double>(d->getSize(2)))
-	{
+	if(posX < 0.0 or posY < 0.0 or posZ < 0.0 or posX >= static_cast<double>(d->getSize(0)) or posY >= static_cast<double>(d->getSize(1)) or posZ >= static_cast<double>(d->getSize(2))) {
 		std::cerr << "Error (Parametrization): Source position outside cube range.\n";
 		return 1;
 	}
@@ -188,82 +173,56 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 	
 	// Define sub-region to operate on:
 	
-	if(source->parameterDefined("x_min") and source->parameterDefined("x_max"))
-	{
+	if(source->parameterDefined("x_min") and source->parameterDefined("x_max")) {
 		searchRadiusX = static_cast<long>(source->getParameter("x_max") - source->getParameter("x_min"));
 	}
-	else
-	{
+	else {
 		searchRadiusX = PARAMETRIZATION_DEFAULT_SPATIAL_RADIUS;
-		std::cerr << "Warning (MaskOptimization): No bounding box defined; using default search radius\n";
-		std::cerr << "                            in the spatial domain instead.\n";
+		std::cerr << "Warning (Parametrization): No bounding box defined; using default search radius\n";
+		std::cerr << "                           in the spatial domain instead.\n";
 	}
 	
-	if(source->parameterDefined("y_min") and source->parameterDefined("y_max"))
-	{
+	if(source->parameterDefined("y_min") and source->parameterDefined("y_max")) {
 		searchRadiusY = static_cast<long>(source->getParameter("y_max") - source->getParameter("y_min"));
 	}
-	else
-	{
+	else {
 		searchRadiusY = PARAMETRIZATION_DEFAULT_SPATIAL_RADIUS;
-		std::cerr << "Warning (MaskOptimization): No bounding box defined; using default search radius\n";
-		std::cerr << "                            in the spatial domain instead.\n";
+		std::cerr << "Warning (Parametrization): No bounding box defined; using default search radius\n";
+		std::cerr << "                           in the spatial domain instead.\n";
 	}
 	
-	if(source->parameterDefined("z_min") and source->parameterDefined("z_max"))
-	{
+	if(source->parameterDefined("z_min") and source->parameterDefined("z_max")) {
 		searchRadiusZ = static_cast<long>(0.6 * (source->getParameter("z_max") - source->getParameter("z_min")));
 	}
-	else
-	{
+	else {
 		searchRadiusZ = PARAMETRIZATION_DEFAULT_SPECTRAL_RADIUS;
-		std::cerr << "Warning (MaskOptimization): No bounding box defined; using default search radius\n";
-		std::cerr << "                            in the spectral domain instead.\n";
+		std::cerr << "Warning (Parametrization): No bounding box defined; using default search radius\n";
+		std::cerr << "                           in the spectral domain instead.\n";
 	}
 	
-	subRegionX1 = static_cast<long>(posX) - searchRadiusX;
-	subRegionX2 = static_cast<long>(posX) + searchRadiusX;
-	subRegionY1 = static_cast<long>(posY) - searchRadiusY;
-	subRegionY2 = static_cast<long>(posY) + searchRadiusY;
-	subRegionZ1 = static_cast<long>(posZ) - searchRadiusZ;
-	subRegionZ2 = static_cast<long>(posZ) + searchRadiusZ;
+	subRegionX1 = std::max(static_cast<long>(posX) - searchRadiusX, 0L);
+	subRegionX2 = std::min(static_cast<long>(posX) + searchRadiusX, dataCube->getSize(0) - 1L);
+	subRegionY1 = std::max(static_cast<long>(posY) - searchRadiusY, 0L);
+	subRegionY2 = std::min(static_cast<long>(posY) + searchRadiusY, dataCube->getSize(1) - 1L);
+	subRegionZ1 = std::max(static_cast<long>(posZ) - searchRadiusZ, 0L);
+	subRegionZ2 = std::min(static_cast<long>(posZ) + searchRadiusZ, dataCube->getSize(2) - 1L);
 	
-	if(subRegionX1 < 0L) subRegionX1 = 0L;
-	if(subRegionY1 < 0L) subRegionY1 = 0L;
-	if(subRegionZ1 < 0L) subRegionZ1 = 0L;
-	if(subRegionX2 >= dataCube->getSize(0)) subRegionX2 = dataCube->getSize(0) - 1L;
-	if(subRegionY2 >= dataCube->getSize(1)) subRegionY2 = dataCube->getSize(1) - 1L;
-	if(subRegionZ2 >= dataCube->getSize(2)) subRegionZ2 = dataCube->getSize(2) - 1L;
-	
-	// Extract all pixels belonging to the source and calculate local noise:
+	// Extract all pixels that are not part of a source and calculate local noise level:
 	dataSize = 0;
 	noiseSubCube = 0.0;
 	std::vector<double> rmsMad;
 	
 	SOURCE_LOOP_START ++dataSize;
-	else if(maskCube->getData(x, y, z) == 0 and not std::isnan(fluxValue)) rmsMad.push_back(static_cast<double>(fluxValue));
+	else if(maskCube->getData(x, y, z) == 0 and std::isfinite(fluxValue)) rmsMad.push_back(static_cast<double>(fluxValue));
 	SOURCE_LOOP_END
 	
-	if(dataSize == 0)
-	{
+	if(dataSize == 0) {
 		std::cerr << "Error (Parametrization): No data found for source " << source->getSourceID() << ".\n";
 		return 1;
 	}
 	
-	if(rmsMad.size() == 0)
-	{
-		std::cerr << "Warning (Parametrization): Noise calculation failed for source " << source->getSourceID() << ".\n";
-	}
-	else
-	{
-		// Calculate the rms via the median absolute deviation (MAD):
-		double m = median(rmsMad);
-		for(size_t i = 0; i < rmsMad.size(); ++i) rmsMad[i] = fabs(rmsMad[i] - m);
-		noiseSubCube = 1.4826 * median(rmsMad);
-		// NOTE: The factor of 1.4826 above is the approximate theoretical conversion factor
-		//       between the MAD and the standard deviation under the assumption that the 
-		//       data samples follow a normal distribution.
-	}
+	if(rmsMad.size() == 0) std::cerr << "Warning (Parametrization): Noise calculation failed for source " << source->getSourceID() << ".\n";
+	else noiseSubCube = 1.4826 * median_absolute_deviation(rmsMad);
 	
 	return 0;
 }
@@ -276,12 +235,6 @@ int Parametrization::loadData(DataCube<float> *d, DataCube<short> *m, Source *s)
 
 int Parametrization::measureCentroid()
 {
-	if(dataSize == 0)
-	{
-		std::cerr << "Error (Parametrization): No valid data found.\n";
-		return 1;
-	}
-	
 	double sum   = 0.0;
 	centroidX    = 0.0;
 	centroidY    = 0.0;
@@ -291,10 +244,9 @@ int Parametrization::measureCentroid()
 	errCentroidZ = 0.0;
 	
 	// Centroid:
-	SOURCE_LOOP_START
-	{
-		if(fluxValue > 0.0)                // NOTE: Only positive pixels considered here!
-		{
+	SOURCE_LOOP_START {
+		if(fluxValue > 0.0) {
+			// NOTE: Only positive pixels considered here!
 			centroidX += fluxValue * static_cast<double>(x);
 			centroidY += fluxValue * static_cast<double>(y);
 			centroidZ += fluxValue * static_cast<double>(z);
@@ -307,10 +259,9 @@ int Parametrization::measureCentroid()
 	centroidZ /= sum;
 	
 	// Uncertainties:
-	SOURCE_LOOP_START
-	{
-		if(fluxValue > 0.0)                // NOTE: Only positive pixels considered here!
-		{
+	SOURCE_LOOP_START {
+		if(fluxValue > 0.0) {
+			// NOTE: Only positive pixels considered here!
 			errCentroidX += (static_cast<double>(x) - centroidX) * (static_cast<double>(x) - centroidX);
 			errCentroidY += (static_cast<double>(y) - centroidY) * (static_cast<double>(y) - centroidY);
 			errCentroidZ += (static_cast<double>(z) - centroidZ) * (static_cast<double>(z) - centroidZ);
@@ -332,20 +283,13 @@ int Parametrization::measureCentroid()
 
 int Parametrization::measureFlux()
 {
-	if(dataSize == 0)
-	{
-		std::cerr << "Error (Parametrization): No valid data found.\n";
-		return 1;
-	}
-	
 	totalFlux = 0.0;
 	peakFlux  = -std::numeric_limits<double>::max();
 	
 	// Sum over all pixels (including negative ones):
-	SOURCE_LOOP_START
-	{
+	SOURCE_LOOP_START {
 		totalFlux += fluxValue;
-		if(peakFlux < fluxValue) peakFlux = fluxValue;
+		peakFlux = std::max(peakFlux, fluxValue);
 	} SOURCE_LOOP_END
 	
 	// Calculate integrated SNR:
@@ -368,14 +312,7 @@ int Parametrization::fitEllipse()
 {
 	// (1) Fitting ellipse to intensity-weighted image:
 	
-	if(dataSize == 0)
-	{
-		std::cerr << "Error (Parametrization): No valid data found.\n";
-		return 1;
-	}
-	
-	if(totalFlux <= 0.0)
-	{
+	if(totalFlux <= 0.0) {
 		std::cerr << "Error (Parametrization): Cannot fit ellipse, source flux <= 0.\n";
 		return 1;
 	}
@@ -385,10 +322,9 @@ int Parametrization::fitEllipse()
 	double momXY = 0.0;
 	double sum   = 0.0;
 	
-	SOURCE_LOOP_START
-	{
-		if(fluxValue > 0.0)            // NOTE: Only positive pixels considered here!
-		{
+	SOURCE_LOOP_START {
+		if(fluxValue > 0.0) {
+			// NOTE: Only positive pixels considered here!
 			momX  += static_cast<double>((x - source->getParameter("x")) * (x - source->getParameter("x"))) * fluxValue;
 			momY  += static_cast<double>((y - source->getParameter("y")) * (y - source->getParameter("y"))) * fluxValue;
 			momXY += static_cast<double>((x - source->getParameter("x")) * (y - source->getParameter("y"))) * fluxValue;
@@ -404,13 +340,13 @@ int Parametrization::fitEllipse()
 	ellMaj = sqrt(2.0 * (momX + momY + sqrt((momX - momY) * (momX - momY) + 4.0 * momXY * momXY)));
 	ellMin = sqrt(2.0 * (momX + momY - sqrt((momX - momY) * (momX - momY) + 4.0 * momXY * momXY)));
 	
-	// WARNING: Converting PA from rad to deg:
+	// WARNING: Converting PA from rad to deg!
 	ellPA *= 180.0 / M_PI;
 	
 	// WARNING: Subtracting 90° from PA here, because astronomers like to have 0° pointing up.
 	//          This means that PA will no longer have the mathematically correct orientation!
 	ellPA -= 90.0;
-	if(ellPA < -90.0) ellPA += 180;
+	while(ellPA < -90.0) ellPA += 180.0;
 	// NOTE:    PA should now be between -90° and +90°.
 	//          Note that the PA is relative to the pixel grid, not the coordinate system!
 	
@@ -424,36 +360,30 @@ int Parametrization::fitEllipse()
 	double *momentMap;
 	long   *maskMap;
 	
-	try
-	{
+	try {
 		momentMap = new double[sizeX * sizeY];
 		maskMap   = new long[sizeX * sizeY];
 	}
-	catch(std::bad_alloc &badAlloc)
-	{
+	catch(std::bad_alloc &badAlloc) {
 		std::cerr << "Error (Parametrization): Memory allocation failed: " << badAlloc.what() << '\n';
 		return 1;
 	}
 	
-	for(size_t i = 0; i < sizeX * sizeY; ++i)
-	{
+	for(size_t i = 0; i < sizeX * sizeY; ++i) {
 		momentMap[i] = 0.0;
 		maskMap[i] = 0;
 	}
 	
-	SOURCE_LOOP_START
-	{
-		momentMap[x - subRegionX1 + sizeX * (y - subRegionY1)] += fluxValue;
-		maskMap[x - subRegionX1 + sizeX * (y - subRegionY1)] += 1;
+	SOURCE_LOOP_START {
+		size_t index = x - subRegionX1 + sizeX * (y - subRegionY1);
+		momentMap[index] += fluxValue;
+		maskMap[index] += 1;
 	} SOURCE_LOOP_END
 	
-	for(size_t x = 0; x < sizeX; ++x)
-	{
-		for(size_t y = 0; y < sizeY; ++y)
-		{
+	for(size_t x = 0; x < sizeX; ++x) {
+		for(size_t y = 0; y < sizeY; ++y) {
 			// Mask all valid pixels above 3 × RMS:
-			if(maskMap[x + sizeX * y] > 0)
-			{
+			if(maskMap[x + sizeX * y] > 0) {
 				if(momentMap[x + sizeX * y] / (sqrt(static_cast<double>(maskMap[x + sizeX * y])) * noiseSubCube) > 3.0) maskMap[x + sizeX * y] = 1;
 				else maskMap[x + sizeX * y] = 0;
 			}
@@ -469,10 +399,8 @@ int Parametrization::fitEllipse()
 	
 	// Determine ellipse parameters on mask (where all pixels > 3 sigma have been
 	// set to 1, all other pixels to 0):
-	for(size_t x = 0; x < sizeX; ++x)
-	{
-		for(size_t y = 0; y < sizeY; ++y)
-		{
+	for(size_t x = 0; x < sizeX; ++x) {
+		for(size_t y = 0; y < sizeY; ++y) {
 			momX  += static_cast<double>((x - source->getParameter("x") + subRegionX1) * (x - source->getParameter("x") + subRegionX1) * maskMap[x + sizeX * y]);
 			momY  += static_cast<double>((y - source->getParameter("y") + subRegionY1) * (y - source->getParameter("y") + subRegionY1) * maskMap[x + sizeX * y]);
 			momXY += static_cast<double>((x - source->getParameter("x") + subRegionX1) * (y - source->getParameter("y") + subRegionY1) * maskMap[x + sizeX * y]);
@@ -496,7 +424,7 @@ int Parametrization::fitEllipse()
 	// WARNING: Subtracting 90° from PA here, because astronomers like to have 0° pointing up.
 	//          This means that PA will no longer have the mathematically correct orientation!
 	ell3sPA -= 90.0;
-	if(ell3sPA < -90.0) ell3sPA += 180;
+	while(ell3sPA < -90.0) ell3sPA += 180.0;
 	// NOTE:    PA should now be between -90° and +90°.
 	//          Note that the PA is relative to the pixel grid, not the coordinate system!
 	
@@ -511,12 +439,6 @@ int Parametrization::fitEllipse()
 
 int Parametrization::kinematicMajorAxis()
 {
-	if(dataSize == 0)
-	{
-		std::cerr << "Error (Parametrization): No valid data found.\n";
-		return 1;
-	}
-	
 	// Determine the flux-weighted centroid in each channel:
 	size_t size = subRegionZ2 - subRegionZ1 + 1;
 	std::vector <double> cenX(size, 0.0);
@@ -525,10 +447,9 @@ int Parametrization::kinematicMajorAxis()
 	size_t firstPoint = size;
 	size_t lastPoint  = 0;
 	
-	SOURCE_LOOP_START
-	{
-		if(fluxValue > 3.0 * noiseSubCube)       // NOTE: Only values > 3 sigma considered here!
-		{
+	SOURCE_LOOP_START {
+		if(fluxValue > 3.0 * noiseSubCube) {
+			// NOTE: Only values > 3 sigma considered here!
 			cenX[z - subRegionZ1] += fluxValue * static_cast<double>(x);
 			cenY[z - subRegionZ1] += fluxValue * static_cast<double>(y);
 			sum [z - subRegionZ1] += fluxValue;
@@ -537,10 +458,8 @@ int Parametrization::kinematicMajorAxis()
 	
 	unsigned int counter = 0;
 	
-	for(size_t i = 0; i < size; ++i)
-	{
-		if(sum[i] > 0.0)
-		{
+	for(size_t i = 0; i < size; ++i) {
+		if(sum[i] > 0.0) {
 			cenX[i] /= sum[i];
 			cenY[i] /= sum[i];
 			++counter;
@@ -550,14 +469,12 @@ int Parametrization::kinematicMajorAxis()
 		}
 	}
 	
-	if(counter < 2)
-	{
+	if(counter < 2) {
 		std::cerr << "Warning (Parametrization): Cannot determine kinematic major axis. Source too faint.\n";
 		flagKinematicPA = true;
 		return 1;
 	}
-	else if(counter == 2)
-	{
+	else if(counter == 2) {
 		std::cerr << "Warning (Parametrization): Kinematic major axis derived from just 2 data points.\n";
 		flagKinematicPA = true;
 	}
@@ -571,30 +488,9 @@ int Parametrization::kinematicMajorAxis()
 	double sumXY  = 0.0;
 	double weight = 1.0;
 	
-	// Using linear regression:
-	/*for(size_t i = 0; i < size; ++i)
-	{
-		if(sum[i] > 0.0)
-		{
-			// Set the desired weights here (defaults to 1 otherwise):
-			//weight = sum[i];
-			
-			sumW  += weight;
-			sumX  += weight * cenX[i];
-			sumY  += weight * cenY[i];
-			sumXX += weight * cenX[i] * cenX[i];
-			sumXY += weight * cenX[i] * cenY[i];
-		}
-	}
-	
-	double slope = (sumW * sumXY  - sumX * sumY)  / (sumW * sumXX - sumX * sumX);
-	//double inter = (sumXX * sumY - sumX * sumXY) / (sum * sumXX - sumX * sumX);*/
-	
 	// Using Deming (orthogonal) regression:
-	for(size_t i = 0; i < size; ++i)
-	{
-		if(sum[i] > 0.0)
-		{
+	for(size_t i = 0; i < size; ++i) {
+		if(sum[i] > 0.0) {
 			// Set the desired weights here (defaults to 1 otherwise):
 			weight = sum[i] * sum[i];
 			
@@ -607,10 +503,8 @@ int Parametrization::kinematicMajorAxis()
 	sumX /= sumW;
 	sumY /= sumW;
 	
-	for(size_t i = 0; i < size; ++i)
-	{
-		if(sum[i] > 0.0)
-		{
+	for(size_t i = 0; i < size; ++i) {
+		if(sum[i] > 0.0) {
 			// Set the desired weights here (defaults to 1 otherwise):
 			weight = sum[i] * sum[i];
 			
@@ -631,8 +525,7 @@ int Parametrization::kinematicMajorAxis()
 	
 	// Correct for full angle and astronomers' favourite definition of PA:
 	double difference = fabs(atan2(sin(fullAngle) * cos(kinematicPA) - cos(fullAngle) * sin(kinematicPA), cos(fullAngle) * cos(kinematicPA) + sin(fullAngle) * sin(kinematicPA)));
-	if(difference > M_PI / 2.0)
-	{
+	if(difference > M_PI / 2.0) {
 		kinematicPA += M_PI;
 		difference  -= M_PI;
 	}
@@ -657,17 +550,10 @@ int Parametrization::kinematicMajorAxis()
 
 int Parametrization::createIntegratedSpectrum()
 {
-	if(dataSize == 0)
-	{
-		std::cerr << "Error (Parametrization): No valid data found.\n";
-		return 1;
-	}
-	
 	spectrum.clear();
 	noiseSpectrum.clear();
 	
-	for(long i = 0; i <= subRegionZ2 - subRegionZ1; ++i)
-	{
+	for(long i = 0; i <= subRegionZ2 - subRegionZ1; ++i) {
 		spectrum.push_back(0.0);
 		noiseSpectrum.push_back(0.0);
 	}
@@ -675,8 +561,7 @@ int Parametrization::createIntegratedSpectrum()
 	std::vector<size_t> counter(spectrum.size(), 0);
 	
 	// Extract spectrum...
-	SOURCE_LOOP_START
-	{
+	SOURCE_LOOP_START {
 		spectrum[z - subRegionZ1] += fluxValue;
 		counter [z - subRegionZ1] += 1;
 	} SOURCE_LOOP_END
@@ -689,14 +574,18 @@ int Parametrization::createIntegratedSpectrum()
 	// WARNING: spatially correlated!
 	peakFluxSpec = 0.0;
 	noiseSpectrumMax = 0.0;
-	for(size_t i = 0; i < noiseSpectrum.size(); ++i)
-	{
+	for(size_t i = 0; i < noiseSpectrum.size(); ++i) {
 		if(counter[i] > 0) noiseSpectrum[i] = sqrt(static_cast<double>(counter[i])) * noiseSubCube;
 		else noiseSpectrum[i] = std::numeric_limits<double>::infinity();
 		
 		// Record peak flux density and maximum noise level:
 		if(std::isfinite(spectrum[i]) and peakFluxSpec < spectrum[i]) peakFluxSpec = spectrum[i];
 		if(std::isfinite(noiseSpectrum[i]) and noiseSpectrumMax < noiseSpectrum[i]) noiseSpectrumMax = noiseSpectrum[i];
+	}
+	
+	if(spectrum.empty()) {
+		std::cerr << "Error (Parametrization): No valid data found in spectrum.\n";
+		return 1;
 	}
 	
 	return 0;
@@ -710,19 +599,9 @@ int Parametrization::createIntegratedSpectrum()
 
 int Parametrization::measureLineWidth()
 {
-	if(dataSize == 0 or spectrum.empty())
-	{
-		std::cerr << "Error (Parametrization): No valid data found.\n";
-		return 1;
-	}
-	
 	// Determine maximum:
 	double specMax = 0.0;    // WARNING: This assumes that sources are always positive!
-	
-	for(size_t i = 0; i < spectrum.size(); ++i)
-	{
-		if(spectrum[i] > specMax) specMax = spectrum[i];
-	}
+	for(size_t i = 0; i < spectrum.size(); ++i) specMax = std::max(spectrum[i], specMax);
 	
 	
 	
@@ -732,8 +611,7 @@ int Parametrization::measureLineWidth()
 	
 	while(i < spectrum.size() and spectrum[i] < specMax / 2.0) ++i;
 	
-	if(i >= spectrum.size())
-	{
+	if(i >= spectrum.size()) {
 		std::cerr << "Error (Parametrization): Calculation of W50 failed (1).\n";
 		lineWidthW50 = 0.0;
 		return 1;
@@ -746,8 +624,7 @@ int Parametrization::measureLineWidth()
 	
 	while(i >= 0 and spectrum[i] < specMax / 2.0) --i;
 	
-	if(i < 0)
-	{
+	if(i < 0) {
 		std::cerr << "Error (Parametrization): Calculation of W50 failed (2).\n";
 		lineWidthW50 = 0.0;
 		return 1;
@@ -756,8 +633,7 @@ int Parametrization::measureLineWidth()
 	lineWidthW50 = static_cast<double>(i) - lineWidthW50;
 	if(i < spectrum.size() - 1) lineWidthW50 += (spectrum[i] - specMax / 2.0) / (spectrum[i] - spectrum[i + 1]);  // Interpolate if not at edge.
 	
-	if(lineWidthW50 <= 0.0)
-	{
+	if(lineWidthW50 <= 0.0) {
 		std::cerr << "Error (Parametrization): Calculation of W50 failed (3).\n";
 		lineWidthW50 = 0.0;
 		return 1;
@@ -779,8 +655,7 @@ int Parametrization::measureLineWidth()
 	
 	while(i < spectrum.size() and spectrum[i] < specMax / 5.0) ++i;
 	
-	if(i >= spectrum.size())
-	{
+	if(i >= spectrum.size()) {
 		std::cerr << "Error (Parametrization): Calculation of W20 failed (1).\n";
 		lineWidthW20 = 0.0;
 		return 1;
@@ -793,8 +668,7 @@ int Parametrization::measureLineWidth()
 	
 	while(i >= 0 and spectrum[i] < specMax / 5.0) --i;
 	
-	if(i < 0)
-	{
+	if(i < 0) {
 		std::cerr << "Error (Parametrization): Calculation of W20 failed (2).\n";
 		lineWidthW20 = 0.0;
 		return 1;
@@ -803,8 +677,7 @@ int Parametrization::measureLineWidth()
 	lineWidthW20 = static_cast<double>(i) - lineWidthW20;
 	if(i < spectrum.size() - 1) lineWidthW20 += (spectrum[i] - specMax / 5.0) / (spectrum[i] - spectrum[i + 1]);  // Interpolate if not at edge.
 	
-	if(lineWidthW20 <= 0.0)
-	{
+	if(lineWidthW20 <= 0.0) {
 		std::cerr << "Error (Parametrization): Calculation of W20 failed (3).\n";
 		lineWidthW20 = 0.0;
 		return 1;
@@ -825,14 +698,12 @@ int Parametrization::measureLineWidth()
 	meanFluxWm50 = 0.0;
 	i = 0;
 	
-	while(sum < 0.05 * totalFlux and i < spectrum.size())
-	{
+	while(sum < 0.05 * totalFlux and i < spectrum.size()) {
 		sum += spectrum[i];
 		++i;
 	}
 	
-	if(i >= spectrum.size())
-	{
+	if(i >= spectrum.size()) {
 		std::cerr << "Error (Parametrization): Calculation of Wm50 failed (1).\n";
 		return 1;
 	}
@@ -845,14 +716,12 @@ int Parametrization::measureLineWidth()
 	i = spectrum.size() - 1;
 	sum = 0.0;
 	
-	while(sum < 0.05 * totalFlux and i >= 0)
-	{
+	while(sum < 0.05 * totalFlux and i >= 0) {
 		sum += spectrum[i];
 		--i;
 	}
 	
-	if(i < 0)
-	{
+	if(i < 0) {
 		std::cerr << "Error (Parametrization): Calculation of Wm50 failed (2).\n";
 		return 1;
 	}
@@ -864,8 +733,7 @@ int Parametrization::measureLineWidth()
 	
 	meanFluxWm50 = 0.9 * totalFlux / (bound90r - bound90l);
 	
-	if(meanFluxWm50 <= 0)
-	{
+	if(meanFluxWm50 <= 0) {
 		std::cerr << "Error (Parametrization): Calculation of Wm50 failed (3).\n";
 		meanFluxWm50 = 0.0;
 		return 1;
@@ -875,8 +743,7 @@ int Parametrization::measureLineWidth()
 	
 	while(spectrum[i] < 0.5 * meanFluxWm50 and i < spectrum.size()) ++i;
 	
-	if(i >= spectrum.size())
-	{
+	if(i >= spectrum.size()) {
 		std::cerr << "Error (Parametrization): Calculation of Wm50 failed (4).\n";
 		meanFluxWm50 = 0.0;
 		return 1;
@@ -889,8 +756,7 @@ int Parametrization::measureLineWidth()
 	
 	while(spectrum[i] < 0.5 * meanFluxWm50 and i >= 0) --i;
 	
-	if(i < 0)
-	{
+	if(i < 0) {
 		std::cerr << "Error (Parametrization): Calculation of Wm50 failed (5).\n";
 		lineWidthWm50 = 0.0;
 		meanFluxWm50 = 0.0;
@@ -900,8 +766,7 @@ int Parametrization::measureLineWidth()
 	lineWidthWm50 = static_cast<double>(i) - lineWidthWm50;
 	if(i < spectrum.size() - 1) lineWidthWm50 += (spectrum[i] - 0.5 * meanFluxWm50) / (spectrum[i] - spectrum[i + 1]);   // Interpolate if not at edge.
 	
-	if(lineWidthWm50 <= 0)
-	{
+	if(lineWidthWm50 <= 0) {
 		std::cerr << "Error (Parametrization): Calculation of Wm50 failed (6).\n";
 		lineWidthWm50 = 0.0;
 		meanFluxWm50 = 0.0;
@@ -919,12 +784,6 @@ int Parametrization::measureLineWidth()
 
 int Parametrization::fitBusyFunction()
 {
-	if(dataSize == 0 or spectrum.empty())
-	{
-		std::cerr << "Error (Parametrization): No valid data found.\n";
-		return 1;
-	}
-	
 	// Create spectral axis:
 	std::vector<double> channels;
 	for(size_t i = 0; i < spectrum.size(); ++i) channels.push_back(static_cast<double>(i));
@@ -957,7 +816,7 @@ int Parametrization::fitBusyFunction()
 	busyFunctionFpeak    = tmpObsVals[0][1];
 	busyFunctionW50      = tmpObsVals[0][3];
 	busyFunctionW20      = tmpObsVals[0][5];
-	busyFunctionCentroid = 0.0; // ALERT: Russell's code does not calculate centroid!
+	busyFunctionCentroid = 0.0; // ALERT: Russell's code does not calculate the centroid!
 	
 	// Delete temporary variables again:
 	delete[] tmpPar[0];
@@ -973,14 +832,6 @@ int Parametrization::fitBusyFunction()
 	// Extract chi^2:
 	busyFunctionChi2 = busyFitParameters[2 * BUSYFIT_FREE_PARAM];
 	
-	//BusyFit busyFit;
-	//busyFit.setup(spectrum.size(), &spectrum[0], &noiseSpectrum[0], 2, true, false);
-	
-	//busyFitSuccess = busyFit.fit();
-	
-	//busyFit.getResult(&busyFitParameters[0], &busyFitUncertainties[0], busyFunctionChi2);
-	//busyFit.getParameters(busyFunctionCentroid, busyFunctionW50, busyFunctionW20, busyFunctionFpeak, busyFunctionFint);
-	
 	// Correct spectral parameters for the shift caused by operating on a sub-cube:
 	busyFitParameters[2] += subRegionZ1;
 	busyFitParameters[4] += subRegionZ1;
@@ -989,30 +840,6 @@ int Parametrization::fitBusyFunction()
 	
 	return 0;
 }
-
-/*int Parametrization::fitBusyFunction()
-{
-	if(dataSize == 0 or spectrum.empty())
-	{
-		std::cerr << "Error (Parametrization): No valid data found.\n";
-		return 1;
-	}
-	
-	BusyFit busyFit;
-	busyFit.setup(spectrum.size(), &spectrum[0], &noiseSpectrum[0], 2, true, false);
-	
-	busyFitSuccess = busyFit.fit();
-	
-	busyFit.getResult(&busyFitParameters[0], &busyFitUncertainties[0], busyFunctionChi2);
-	busyFit.getParameters(busyFunctionCentroid, busyFunctionW50, busyFunctionW20, busyFunctionFpeak, busyFunctionFint);
-	
-	// Correct spectral parameters for the shift caused by operating on a sub-cube:
-	busyFitParameters[4] += subRegionZ1;
-	busyFitParameters[5] += subRegionZ1;
-	busyFunctionCentroid += subRegionZ1;
-	
-	return 0;
-}*/
 
 
 
@@ -1050,8 +877,7 @@ int Parametrization::writeParameters()
 	
 	source->setParameter("rms",       noiseSubCube);
 	
-	if(doBusyFunction)
-	{
+	if(doBusyFunction) {
 		source->setParameter("bf_flag",   busyFitSuccess);
 		source->setParameter("bf_chi2",   busyFunctionChi2);
 		source->setParameter("bf_a",      busyFitParameters[0]);

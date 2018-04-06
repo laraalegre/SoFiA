@@ -214,7 +214,7 @@ long mathRound(double value)
 
 // Calculate median of vector of double values:
 
-double median(std::vector<double> &values)
+/*double median(std::vector<double> &values)
 {
 	size_t sampleSize = values.size();
 	
@@ -235,4 +235,39 @@ double median(std::vector<double> &values)
 			if(sampleSize % 2 == 1) return values[sampleSize / 2];
 			else return (values[sampleSize / 2 - 1] + values[sampleSize / 2]) / 2.0;
 	}
+}*/
+
+// ===================================================================================
+// Median
+// ===================================================================================
+// This implementation uses partial sorting such that the central element of the array
+// is in the correct position and all elements below or above are <= or >= the central
+// element. For odd arrays the central element itself is returned as the median, while
+// for even arrays the value of (max(low) + mid) / 2 is returned.
+// ===================================================================================
+double median(const std::vector <double> array){return median(&array[0], array.size());}
+double median(const double *array, const size_t size)
+{
+	if(size == 0) return std::numeric_limits<double>::quiet_NaN();
+	std::vector <double> aux_array(array, array + size);
+	std::nth_element(aux_array.begin(), aux_array.begin() + (size / 2), aux_array.end());
+	if(size % 2) return aux_array[size / 2];
+	return (*std::max_element(aux_array.begin(), aux_array.begin() + (size / 2)) + aux_array[size / 2]) / 2.0;
+}
+
+
+// ===================================================================================
+// Median absolute deviation (MAD)
+// ===================================================================================
+// This function derives the median absolute deviation about either the median or a
+// user-specified value.
+// ===================================================================================
+double median_absolute_deviation(const std::vector <double> array, double value){return median_absolute_deviation(&array[0], array.size(), value);}
+double median_absolute_deviation(const double *array, const size_t size, double value)
+{
+	if(size == 0) return std::numeric_limits<double>::quiet_NaN();
+	if(std::isnan(value)) value = median(array, size);
+	std::vector <double> aux_array(array, array + size);
+	for(size_t i = 0; i < size; ++i) aux_array[i] = std::abs(aux_array[i] - value);
+	return median(aux_array);
 }

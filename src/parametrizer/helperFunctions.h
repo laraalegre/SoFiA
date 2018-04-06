@@ -41,8 +41,11 @@ double mathAbs(double value);
 long mathRound(float value);
 long mathRound(double value);
 
-double median(std::vector<double> &values);
-
+//double median(std::vector<double> &values);
+double median(const double *array, const size_t size);
+double median(const std::vector <double> array);
+double median_absolute_deviation(const double *array, const size_t size, double value = std::numeric_limits<double>::quiet_NaN());
+double median_absolute_deviation(const std::vector <double> array, double value = std::numeric_limits<double>::quiet_NaN());
 
 
 // String-number conversion templates:
