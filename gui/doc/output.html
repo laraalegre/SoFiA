@@ -25,6 +25,10 @@
       SoFiA provides a large range of different output products as detailed below. All products will be saved either to the directory containing the input data cube or a specific output directory provided by the user. The user can also choose whether existing output files should automatically be overwritten or not.
     </p>
     
+    <p>
+      All output file names will be of the form <code>&lt;basename&gt;_&lt;product&gt;.&lt;type&gt;</code>, where <code>&lt;basename&gt;</code> is the base name for all output files (either explicitly set by the user or otherwise defaulting to be the input data file name), <code>&lt;product&gt;</code> is a label reflecting the type of the data product (e.g. <code>cat</code> for catalogues or <code>mask</code> for mask cubes, etc.), and <code>&lt;type&gt;</code> reflects the file type (e.g. <code>fits</code> for data cubes and images or <code>ascii</code> and <code>xml</code> for catalogues in plain text and VO table format, respectively).
+    </p>
+    
     <h2>Catalogues</h2>
     
     <p>
@@ -48,7 +52,7 @@
       <li>A <strong>mask cube</strong> in FITS format that contains a pixel mask of all sources identified by SoFiA. The mask contains integer numbers that are equal to the unique source identification number. Mask files can also be read into SoFiA again to facilitate the parameterisation of sources that were detected in a previous source finding run.</li>
       <li>Maps of the <strong>0<sup>th</sup></strong> and <strong>1<sup>st</sup> moment</strong> of all detections in FITS format. These are integrated across all pixels masked as part of a source.</li>
       <li>A map showing the total number of detected <strong>channels</strong> for each spatial pixel. (Note that this cannot currently be selected, but is automatically created whenever a moment-0 or 1 map is requested.)</li>
-      <li>Small subcubes, so-called <strong>cubelets</strong>, of each individual source detected by SoFiA. This also includes <strong>0<sup>th</sup></strong>, <strong>1<sup>st</sup></strong> and <strong>2<sup>nd</sup> moment</strong> maps created from the cubelet, a <strong>position&ndash;velocity diagram</strong> along the kinematical major axis of each source, and an <strong>integrated spectrum</strong> of the source. All these individual products will be stored in a separate sub-folder named <code>objects</code>. Maps and cubes are stored in FITS format, while the integrated spectrum is stored as a plain text file.</li>
+      <li>Small subcubes, so-called <strong>cubelets</strong>, of each individual source detected by SoFiA. This also includes <strong>0<sup>th</sup></strong>, <strong>1<sup>st</sup></strong> and <strong>2<sup>nd</sup> moment</strong> maps created from the cubelet, a <strong>position&ndash;velocity diagram</strong> along the kinematical major axis of each source, and an <strong>integrated spectrum</strong> of the source. All of these individual products will be stored in a separate sub-folder named <code>&lt;basename&gt;_cubelets</code>. Maps and cubes are stored in FITS format, while the integrated spectrum is stored as a plain text file.</li>
     </ul>
     
     <p>

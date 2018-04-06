@@ -2615,9 +2615,12 @@ void SoFiA::createInterface()
 	tabMergingLabelWarning = new QLabel(tabMergingGroupBox2);
 	tabMergingLabelWarning->setText(tr("<p><strong>Warning:</strong> Enabling positivity is dangerous and will render some of SoFiA&rsquo;s most powerful algorithms useless, including mask optimisation and reliability calculation. It can also create biases in certain source parameters measured by SoFiA.</p><p>This option should only be activated by expert users who are fully aware of the risks and consequences of discarding negative signals.</p>"));
 	tabMergingLabelWarning->setWordWrap(true);
+	tabMergingLabelWarning->setContentsMargins(0, 0, 0, 0);
+	tabMergingLabelWarning->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+	tabMergingLabelWarning->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
 	
 	tabMergingForm2->addRow(tr("Positivity:"), tabMergingButtonPositivity);
-	tabMergingForm2->addRow(tabMergingLabelWarning);
+	tabMergingForm2->addRow(tr(""), tabMergingLabelWarning);
 	tabMergingGroupBox2->setLayout(tabMergingForm2);
 	
 	
