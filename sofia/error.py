@@ -16,11 +16,12 @@ def message(message, verbose=True):
 # FUNCTION: Print warning message
 # -------------------------------
 
-def warning(message, frame=False):
+def warning(message, fatal=False, frame=False):
 	message = message.replace("\n", "\n         ")
 	separator(frame)
 	sys.stderr.write("WARNING: " + str(message) + "\n")
 	separator(frame)
+	if fatal: sys.exit(0)
 	return
 
 

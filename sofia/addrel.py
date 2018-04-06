@@ -116,7 +116,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 	
 	if autoKernel:
 		# Set the kernel shape to that of the variance or covariance matrix
-		kernel = np.cov(pars[:,neg])
+		kernel = np.cov(pars[:, neg])
 		kernelType = "covariance"
 		# Check if kernel matrix can be inverted
 		try:
@@ -259,7 +259,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 		plt.xlabel("(P-N)/sqrt(N+P)")
 		plt.ylabel("cumulative distribution")
 		plt.plot([0, 0], [0, 1], "k--")
-		fig0.savefig("%s_skel.pdf" % pdfoutname, rasterized=True)
+		fig0.savefig("%s_rel_skellam.pdf" % pdfoutname, rasterized=True)
 		
 		if not scaleKernel:
 			fig3 = plt.figure()
@@ -268,7 +268,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 			plt.xlabel("kernel size (1D-sigma, aribtrary units)")
 			plt.ylabel("median/std of (P-N)/sqrt(P+N)")
 			plt.axhline(y=skellamTol, linestyle="--", color="r")
-			fig3.savefig("%s_delt.pdf" % pdfoutname, rasterized=True)
+			fig3.savefig("%s_rel_delt.pdf" % pdfoutname, rasterized=True)
 	
 	
 	# -----------------------
@@ -294,7 +294,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 			plt.ylim(lims[p2][0], lims[p2][1])
 			plt.xlabel(labs[p1])
 			plt.ylabel(labs[p2])
-		fig1.savefig("%s_scat.pdf" % pdfoutname, rasterized=True)
+		fig1.savefig("%s_rel_scatter.pdf" % pdfoutname, rasterized=True)
 	
 	
 	# -------------
@@ -351,7 +351,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 			plt.ylim(lims[p2][0], lims[p2][1])
 			plt.xlabel(labs[p1])
 			plt.ylabel(labs[p2])
-		fig2.savefig("%s_cont.pdf" % pdfoutname, rasterized=True)
+		fig2.savefig("%s_rel_contour.pdf" % pdfoutname, rasterized=True)
 	
 	
 	# -------------------------
