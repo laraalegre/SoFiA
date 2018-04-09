@@ -386,6 +386,16 @@ if Parameters["steps"]["doMerge"] and NRdet:
 
 
 
+# -------------------------------------
+# ---- OUTPUT FOR DEBUGGING (MASK) ----
+# -------------------------------------
+
+if Parameters['steps']['doDebug'] and NRdet:
+	printProgressMessage("Writing all-source mask cube for debugging")
+	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_all.fits' % outroot, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
+
+
+
 # ----------------------------------------------------
 # ---- ESTIMATE RELIABILITY FROM NEGATIVE SOURCES ----
 # ----------------------------------------------------
@@ -459,6 +469,16 @@ if Parameters["steps"]["doMerge"] and NRdet:
 
 
 
+# ------------------------------------------
+# ---- OUTPUT FOR DEBUGGING (CATALOGUE) ----
+# ------------------------------------------
+
+if Parameters['steps']['doDebug']:
+	printProgressMessage("Writing all-source debugging catalogue including all parameters relevant for the reliability calculation")
+	write_catalog.write_catalog_from_array('ASCII', objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatAsciiDebug, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'], Parameters['parameters']['getUncertainties'])
+
+
+
 # --------------------------------------------------
 # ---- REMOVE NON RELIABLE AND NEGATIVE SOURCES ----
 # --------------------------------------------------
@@ -524,6 +544,19 @@ if Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Par
 	kwargs = Parameters["import"].copy()
 	kwargs.update({"cubeOnly":True})
 	np_Cube, dict_Header = import_data.read_data(Parameters["steps"]["doSubcube"], **kwargs)
+
+
+
+# ----------------------------------------
+# ---- OUTPUT FOR DEBUGGING (MOMENTS) ----
+# ----------------------------------------
+
+if Parameters['steps']['doDebug'] and NRdet:
+	printProgressMessage("Writing pre-optimisation mask and moment maps for debugging")
+	debug = 1
+	#writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_rel.fits'%outroot,Parameters['writeCat']['compress'])
+	#mom0_Image = writemoment2.writeMoment0(np_Cube, mask, outroot, debug, dict_Header,Parameters['writeCat']['compress'])
+	#writemoment2.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image,Parameters['writeCat']['compress'])
 
 
 
