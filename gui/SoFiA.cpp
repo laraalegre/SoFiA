@@ -3163,7 +3163,7 @@ void SoFiA::createInterface()
 	// Set up menu
 	// -----------
 	
-	menuLoadParset = new QMenu(tr("Parameter Sets"), this);
+	menuLoadParset = new QMenu(tr("Presets"), this);
 	menuLoadParset->setIcon(iconDocumentNew);
 	menuLoadParset->addAction(actionLoadParsetExtragalactic);
 	menuLoadParset->addAction(actionLoadParsetContinuum);
