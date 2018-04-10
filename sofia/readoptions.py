@@ -3,7 +3,9 @@ import re
 import sys
 import traceback
 import ast
+from distutils.version import StrictVersion
 from sofia import error as err
+from sofia import version
 
 
 # -----------------------------------------
@@ -28,6 +30,18 @@ def readPipelineOptions(filename = "pipeline.options"):
 	# Extract lines from parameter file
 	lines = f.readlines()
 	f.close()
+	
+	# Check for version number
+	for line in lines:
+		if "# Creator: SoFiA" in line:
+			par_file_version = line[17:22]
+			sof_file_version = (version.getVersion())[0:5]
+			if par_file_version != sof_file_version:
+				err.warning(
+					"The parameter file was created with a different version of SoFiA\n"
+					"(" + str(par_file_version) + ") than the one you are currently using (" + str(sof_file_version) + ").\n"
+					"Some settings defined in the parameter file may not be recognised\n"
+					"by SoFiA, which could lead to unexpected results.", frame=True)
 	
 	# Remove leading/trailing whitespace, empty lines and comments
 	lines = [line.strip() for line in lines]
