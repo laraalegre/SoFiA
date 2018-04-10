@@ -36,6 +36,8 @@ def readPipelineOptions(filename = "pipeline.options"):
 	# Some additional setup
 	datatypes = allowedDataTypes()
 	tasks = {}
+	pedantic = True     # Controls whether to exit on unrecognised or redefined parameters
+	pedantic_counter = 0
 	
 	# Loop over all lines:
 	for line in lines:
@@ -58,6 +60,7 @@ def readPipelineOptions(filename = "pipeline.options"):
 		
 		if parname in subtasks:
 			err.warning("Multiple definitions of parameter " + str(parameter) + " encountered.\nIgnoring all additional definitions.")
+			pedantic_counter += 1
 			continue
 		
 		if parameter in datatypes:
@@ -69,9 +72,14 @@ def readPipelineOptions(filename = "pipeline.options"):
 				else: subtasks[parname] = str(value)
 			except:
 				err.error("Failed to parse parameter value:\n" + str(line) + "\nExpected data type: " + str(datatypes[parameter]), fatal=True)
+			if parameter == "pipeline.pedantic": pedantic = subtasks[parname]  # Update 'pedantic' setting
 		else:
 			err.warning("Ignoring unknown parameter: " + str(parameter) + " = " + str(value))
+			pedantic_counter += 1
 			continue
+	
+	if pedantic and pedantic_counter:
+		err.error("Multiply-defined or unrecognised parameter(s) encountered.\nPlease check your parameter file or set pipeline.pedantic = false\nto ignore unknown or already defined parameters.", fatal=True)
 	
 	return tasks
 
@@ -85,7 +93,8 @@ def allowedDataTypes():
 	# convert the input values into the correct data type.
 	# Ensure that all new parameters get added to this list!
 	# Parameters not listed here will be ignored by the parser!
-	return {"steps.doSubcube": "bool", \
+	return {"pipeline.pedantic": "bool", \
+	        "steps.doSubcube": "bool", \
 	        "steps.doFlag": "bool", \
 	        "steps.doSmooth": "bool", \
 	        "steps.doScaleNoise": "bool", \

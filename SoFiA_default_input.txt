@@ -1,6 +1,12 @@
 # SoFiA default settings
 # Do not modify this file!
 
+
+# General pipeline settings
+
+pipeline.pedantic               =       true
+
+
 # Pipeline modules
 
 steps.doSubcube                 =       false
@@ -23,6 +29,7 @@ steps.doMom1                    =       false
 steps.doCubelets                =       false
 steps.doDebug                   =       false
 steps.doOptical                 =       false
+
 
 # Import module
 
@@ -97,6 +104,7 @@ SCfind.kernels                  =       [[0, 0, 0, 'b'], [0, 0, 3, 'b'], [0, 0, 
 SCfind.kernelUnit               =       pixel
 SCfind.verbose                  =       true
 
+
 # CNHI finder module
 
 CNHI.pReq                       =       1e-5
@@ -105,6 +113,7 @@ CNHI.minScale                   =       5
 CNHI.maxScale                   =       -1
 CNHI.medianTest                 =       true
 CNHI.verbose                    =       1
+
 
 # Threshold finder module
 

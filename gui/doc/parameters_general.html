@@ -1,0 +1,56 @@
+<html>
+	<head>
+		<title>SoFiA User Manual - Parameters: General</title>
+		
+		<style>
+			body     {margin:5px;}
+			table    {margin:10px 0px; border:2px solid #FFFFFF; border-collapse:collapse; empty-cells:show;}
+			td       {margin:0px; padding:2px 5px; vertical-align:top; border:2px solid #FFFFFF;}
+			td.head	 {background-color:#406080; color:#D0E0F0; font-weight:bold;}
+			td.head2 {background-color:#806040; color:#F0E0D0; font-weight:bold;}
+			td.body  {background-color:#F0F0F0; color:#000000;}
+			td.body2 {background-color:#F0F0F0; color:#406080; font-weight:bold;}
+			td.body3 {background-color:#F0F0F0; color:#806040; font-weight:bold;}
+			code     {color:#800000;}
+			h1       {color:#406080;}
+			h2       {color:#406080;}
+			h3       {color:#406080;}
+		</style>
+	</head>
+	
+	<body>
+		<h1>Parameters</h1>
+		
+		<h2>General</h2>
+		
+		<p>
+			This module provides general settings that affect how the pipeline is run. Currently, only one setting is available to control how SoFiA reacts to unrecognised or multiply-defined parameters when reading in a user parameter file.
+		</p>
+		
+		<h3>Pipeline Settings</h3>
+		
+		<table id="pipeline.pedantic">
+			<tr>
+				<td class="head2">Parameter:</td><td class="body3">pipeline.pedantic</td>
+			</tr>
+			<tr>
+				<td class="head2">Type:</td><td class="body"><code>bool</code></td>
+			</tr>
+			<tr>
+				<td class="head2">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+			</tr>
+			<tr>
+				<td class="head2">Default:</td><td class="body"><code>true</code></td>
+			</tr>
+			<tr>
+				<td class="head2">Description:</td><td class="body">If set to <code>true</code> (default), SoFiA will exit with an error message whenever unrecognised or multiply-defined parameters are encountered in the parameter file. If set to <code>false</code>, SoFiA will ignore all unknown and redefined parameter settings and print a warning message for each case. This is a <em>hidden option</em> not available in the GUI.</td>
+			</tr>
+		</table>
+		
+		<p align="center">
+			<a href="parameters.html">&larr;&nbsp;Previous</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="parameters.html">&uarr;&nbsp;Up</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="parameters_input.html">Next&nbsp;&rarr;</a>
+		</p>
+		
+		<p>&nbsp;</p>
+	</body>
+</html>
