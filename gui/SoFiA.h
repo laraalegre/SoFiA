@@ -65,6 +65,7 @@
 #include <QtCore/QString>
 #include <QtCore/QMimeData>
 #include <QtCore/QVariant>
+#include <QtCore/QRegExp>
 
 #include <QtGui/QCloseEvent>
 #include <QtGui/QDropEvent>

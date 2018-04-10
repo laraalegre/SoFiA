@@ -19,7 +19,7 @@ def message(message, verbose=True):
 def warning(message, fatal=False, frame=False):
 	message = message.replace("\n", "\n         ")
 	separator(frame)
-	sys.stderr.write("WARNING: " + str(message) + "\n")
+	sys.stderr.write("\033[33mWARNING: " + str(message) + "\033[0m\n")
 	separator(frame)
 	if fatal: sys.exit(0)
 	return
@@ -33,13 +33,13 @@ def error(message, fatal=True, frame=False):
 	if fatal:
 		message = message.replace("\n", "\n             ")
 		separator(frame)
-		sys.stderr.write("FATAL ERROR: " + str(message) + "\n")
+		sys.stderr.write("\033[35mFATAL ERROR: " + str(message) + "\033[0m\n")
 		separator(frame)
 		sys.exit(1)
 	else:
 		message = message.replace("\n", "\n       ")
 		separator(frame)
-		sys.stderr.write("ERROR: " + str(message) + "\n")
+		sys.stderr.write("\033[31mERROR: " + str(message) + "\033[0m\n")
 		separator(frame)
 	return
 

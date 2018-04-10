@@ -1220,7 +1220,9 @@ void SoFiA::pipelineProcessReadErr()
 	QByteArray output = pipelineProcess->readAllStandardError();
 	QString    outputErr(output);
 	
-	outputErr.remove(QChar('\r'));       // Get rid of carriage returns in the output
+	outputErr.remove(QChar('\r'));                         // Get rid of carriage returns in the output
+	//outputErr.remove(QRegExp("\x1b\[[0-9;]*m"));           // Get rid of ANSI escape sequences
+	outputErr.remove(QRegExp("\x1B\[[0-?]*[ -/]*[@-~]"));  // Get rid of ANSI escape sequences
 	
 	if(not outputErr.isEmpty())
 	{
