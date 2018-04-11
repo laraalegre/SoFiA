@@ -7,6 +7,7 @@ import scipy.constants
 from libc.math cimport isnan
 import sys
 from .version import *
+from sofia import error as err
 
 
 def removeOptions(dictionary):
@@ -40,7 +41,7 @@ def regridMaskedChannels(datacube,maskcube,header):
 	if header['ctype3'] == 'VELO-HEL':
 		pixscale=(1 - header['crval3'] / scipy.constants.c) / (1 - z / scipy.constants.c)
 	else:
-		sys.stderr.write("WARNING: Cannot convert axis3 coordinates to frequency. Will ignore the effect of CELLSCAL = 1/F.\n")
+		err.warning("Cannot convert 3rd axis coordinates to frequency. Ignoring the effect of CELLSCAL = 1/F.")
 		pixscale = np.ones((header['naxis3']))
 	
 	x0, y0 = header['crpix1'] - 1, header['crpix2'] - 1
@@ -80,7 +81,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 	
 	# Check for overwrite flag:
 	if not flagOverwrite and os.path.exists(name):
-		sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
+		err.error("Output file exists: " + str(name) + ".", fatal=False)
 	else:
 		hdu.writeto(name, output_verify='warn', clobber=True)
 	
@@ -91,8 +92,9 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 	
 	if 'cellscal' in header:
 		if header['cellscal'] == '1/F':
-			sys.stderr.write('WARNING: CELLSCAL keyword with value 1/F found.\n')
-			sys.stderr.write('         Will regrid masked cube before making moment images.\n')
+			err.warning(
+				"CELLSCAL keyword with value of 1/F found.\n"
+				"Will regrid masked cube before making moment images.")
 			datacube = regridMaskedChannels(datacube, maskcube, header)
 	
 	datacube = np.array(datacube, dtype=np.single)
@@ -154,7 +156,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 			
 			# Check for overwrite flag:
 			if not flagOverwrite and os.path.exists(name):
-				sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
+				err.error("Output file exists: " + str(name) + ".", fatal=False)
 			else:
 				hdu.writeto(name, output_verify='warn', clobber=True)
 	
@@ -200,7 +202,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 			
 			# Check for overwrite flag:
 			if not flagOverwrite and os.path.exists(name):
-				sys.stderr.write("ERROR: Output file exists: " + name + ".\n")
+				err.error("Output file exists: " + str(name) + ".", fatal=False)
 			else:
 				hdu.writeto(name, output_verify='warn', clobber=True)
 

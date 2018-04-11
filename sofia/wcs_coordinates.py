@@ -5,6 +5,9 @@
 # GIPSY header repaired following this description:
 # http://www.astro.rug.nl/software/kapteyn/spectralbackground.html#a-recipe-for-modification-of-nmap-gipsy-fits-data
 
+from sofia import error as err
+
+
 # -------------------------------------
 # ---- FUNCTION TO IMPLEMENT SGN() ----
 # -------------------------------------
@@ -50,7 +53,7 @@ def fix_gipsy_header(header_orig):
 					elif unit.lower()!='m/s':
 						break
 			except:
-				sys.stderr.write("WARNING: Problem with reference velocity.\n")
+				err.warning("Problem with reference velocity.")
 				break
 			
 			## Convert reference frequency to Hz
@@ -63,7 +66,7 @@ def fix_gipsy_header(header_orig):
 				freq  *= 10**j
 				dfreq *= 10**j
 			except:
-				sys.stderr.write("WARNING: Problem with reference frequency.\n")
+				err.warning("Problem with reference frequency.")
 				break
 			
 			## Need rest frequency for conversion
@@ -78,7 +81,7 @@ def fix_gipsy_header(header_orig):
 				header['RESTFRQ'] = freq0
 				#foundFreq0
 			except:
-				sys.stderr.write("WARNING: Rest frequency not found.\n")
+				err.warning("Rest frequency not found.")
 				break
 			
 			## calculate reference frequency in the barycentric system
@@ -127,7 +130,7 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 			# Fix headers where "per second" is written "/S" instead of "/s"
 			# (assuming they mean "per second" and not "per Siemens").
 			if 'cunit3' in header and '/S' in header['cunit3']:
-				sys.stderr.write('WARNING: Converting "/S" to "/s" in CUNIT3.\n')
+				err.warning('Converting "/S" to "/s" in CUNIT3.')
 				header['cunit3']=header['cunit3'].replace('/S','/s')
 			
 			## check if there is a Nmap/GIPSY FITS header keyword value present
@@ -156,10 +159,10 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 						break
 				if rafound:
 					if header['crval%i'%(kk + 1)] < 0:
-						sys.stderr.write("WARNING: adding 360 deg to RA reference value.\n")
+						err.warning("Adding 360 deg to RA reference value.")
 						header['crval%i'%(kk + 1)] += 360
 					elif header['crval%i'%(kk + 1)] > 360:
-						sys.stderr.write("WARNING: subtracting 360 deg from RA reference value.\n")
+						err.warning("Subtracting 360 deg from RA reference value.")
 						header['crval%i'%(kk + 1)] -= 360
 				
 				#if header['naxis'] == 4: wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL,wcs.WCSSUB_STOKES])
@@ -167,15 +170,16 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 				wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL])
 				xyz = objects[:,catParNames.index('x'):catParNames.index('x')+3].astype(float)
 				if 'cellscal' in header and header['cellscal'] == '1/F':
-					sys.stderr.write('WARNING: CELLSCAL keyword with value 1/F found.\n')
-					sys.stderr.write('         Will account for varying pixel scale in WCS coordinate calculation.\n')
+					err.warning(
+						"CELLSCAL keyword with value of 1/F found.\n"
+						"Will account for varying pixel scale in WCS coordinate calculation.")
 					x0, y0 = header['crpix1'] - 1, header['crpix2'] - 1
 					# Will calculate the pixscale factor of each channel as:
 					# pixscale = ref_frequency / frequency
 					if header['ctype3'] == 'VELO-HEL':
 						pixscale = (1 - header['crval3'] / c) / (1 - (((xyz[:,2] + 1) - header['crpix3']) * header['cdelt3'] + header['crval3']) / c)
 					else:
-						sys.stderr.write("WARNING: Cannot convert 3rd axis coordinates to frequency. Will ignore the effect of CELLSCAL = 1/F.\n")
+						err.warning("Cannot convert 3rd axis coordinates to frequency. Ignoring the effect of CELLSCAL = 1/F.")
 						pixscale = 1.
 					xyz[:,0] = (xyz[:,0] - x0) * pixscale + x0
 					xyz[:,1] = (xyz[:,1] - y0) * pixscale + y0
@@ -253,6 +257,6 @@ def add_wcs_coordinates(objects,catParNames,catParFormt,catParUnits,Parameters):
 			catParFormt = tuple(list(catParFormt) + ["%30s"])
 		
 		except:
-			sys.stderr.write("WARNING: WCS conversion of parameters failed.\n")
+			err.warning("WCS conversion of parameters failed.")
 	
 	return(objects, catParNames, catParFormt, catParUnits)

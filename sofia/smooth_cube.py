@@ -1,49 +1,61 @@
 #! /usr/bin/env python
 
-import sys                       # system (sys.exit)
-import numpy
-from numpy import *
+import numpy as np
 from scipy import ndimage
-
+from sofia import error as err
 
 
 def smooth(indata, kernel, edgeMode, kernelX, kernelY, kernelZ):
-	# indata: the input data
-	# type: the smoothing type, gaussian (g), boxcar (b), or median (m)
-	# edgeMOde: the "mode" parameter which determines how borders are handled: reflect, constant, nearest, mirror or wrap
+	"""
+	Smooth a data cube with the specified kernel type and size.
 	
-	print ('Start smoothing cube')
+	Arguments:
+	  indata:       The input data cube.
+	  kernel:       The smoothing kernel; "gaussian", "boxcar" or "median".
+	  edgeMode:     Determines how borders are handled; "reflect", "constant", "nearest", "mirror" or "wrap".
+	  kernelX/Y/Z:  Size of the kernel (standard deviation in the case of a Gaussian kernel).
 	
-	if (kernelX + kernelY + kernelZ) == 0:
-		sys.stderr.write("WARNING: All the smoothing kernels are set to zero; no smoothing is applied.\n")
-		outdata = indata
-	else:
-		found_nan=numpy.isnan(indata).sum()
-		outdata = indata*1
-		if found_nan: outdata=numpy.nan_to_num(outdata)
-		if type == "g" or kernel == "gaussian":
-			print ('The smoothing type is: Gaussian')
-			print ('The standard deviation for the Gaussian kernel (x,y,z) is: ' + str(kernelX) + ' ' +  str(kernelY) + ' ' + str(kernelZ))
-			print ('The edge is handled as: ' + str(edgeMode))
-			outdata = ndimage.filters.gaussian_filter(outdata, sigma=(kernelZ,kernelX,kernelY), mode=edgeMode)
-		elif type == "b" or kernel == "boxcar":
-			print ('The smoothing type is: Boxcar')
-			print ('The size of the uniform filter is (x,y,z) is: ' + str(kernelX) + ' ' +  str(kernelY) + ' ' + str(kernelZ))
-			print ('The edge is handled as: ' + str(edgeMode))
-			outdata = ndimage.filters.uniform_filter(outdata, size=(kernelZ,kernelX,kernelY), mode=edgeMode)
-		elif type == "m" or kernel == "median":
-			if kernelX == 0 or kernelY == 0 or kernelZ == 0:
-				sys.stderr.write("WARNING: cannot determine median over kernel length zero; no smoothing is applied.\n")
-				#outdata = indata
-			else:
-				print ('The smoothing type is: Median')
-				print ('The size of the filter (x,y,z) is: ' + str(kernelX) + ' ' +  str(kernelY) + ' ' + str(kernelZ))
-				print ('The edge is handled as: ' + str(edgeMode))
-				outdata = ndimage.filters.median_filter(outdata, size=(kernelZ,kernelX,kernelY), mode=edgeMode)
-		else:
-			sys.stderr.write("ERROR: Smoothing type not recognised.\n")
-			sys.stderr.write("       The program continues without applying any smoothing.\n")
-			#outdata = indata
-		if found_nan: outdata[numpy.isnan(indata)] = numpy.nan
+	Returns:
+	  Smoothed copy of the data cube.
+	"""
+	
+	err.message("Smoothing data cube")
+	
+	# Sanity checks of user input
+	err.ensure(
+		kernel in {"gaussian", "boxcar", "median"},
+		"Smoothing failed. Unrecognised smoothing type: '" + str(kernel) + "'.")
+	err.ensure(
+		edgeMode in {"reflect", "constant", "nearest", "mirror", "wrap"},
+		"Smoothing failed. Unrecognised edge mode: '" + str(edgeMode) + "'.")
+	err.ensure(
+		kernelX or kernelY or kernelZ,
+		"Smoothing failed. All smoothing kernels set to zero.")
+	err.ensure(
+		kernel != "median" or (kernelX and kernelY and kernelZ),
+		"Smoothing failed. Cannot determine median for kernel size of zero.")
+	
+	# Print some information
+	err.message("  Kernel type: " + str(kernel).title())
+	err.message("  Kernel size: [" + str(kernelX) + ", " +  str(kernelY) + ", " + str(kernelZ) + "]")
+	err.message("  Edge mode:   " + str(edgeMode))
+	
+	# Create copy of input cube to be smoothed
+	outdata = np.copy(indata)
+	
+	# Remove NaNs if necessary
+	found_nan = np.isnan(indata).sum()
+	if found_nan: outdata = np.nan_to_num(outdata, copy=False)
+	
+	# Smooth with the selected kernel
+	if kernel == "gaussian":
+		outdata = ndimage.filters.gaussian_filter(outdata, sigma=(kernelZ, kernelX, kernelY), mode=edgeMode)
+	elif kernel == "boxcar":
+		outdata = ndimage.filters.uniform_filter(outdata, size=(kernelZ, kernelX, kernelY), mode=edgeMode)
+	else: # kernel == "median"
+		outdata = ndimage.filters.median_filter(outdata, size=(kernelZ, kernelX, kernelY), mode=edgeMode)
+	
+	# Put NaNs back in if necessary
+	if found_nan: outdata[np.isnan(indata)] = np.nan
 	
 	return outdata
