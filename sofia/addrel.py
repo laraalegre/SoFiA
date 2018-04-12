@@ -1,11 +1,8 @@
 #! /usr/bin/env python
 
 # IMPORT PYTHON MODULES
-import sys
-import string
-import scipy.stats as stats
-from os import path
 import numpy as np
+import scipy.stats as stats
 from itertools import combinations
 from sofia import error as err
 

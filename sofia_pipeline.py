@@ -1,10 +1,11 @@
 #! /usr/bin/env python
 
 # import default Python libraries
-import numpy as np
-import sys, os
+import sys
+import os
 import string
 from time import time
+import numpy as np
 
 from scipy import __version__ as scipy_version
 from astropy import __version__ as astropy_version

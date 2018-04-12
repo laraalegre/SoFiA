@@ -44,6 +44,7 @@ parameters.dilateThreshold	=	0.02
 parameters.fitBusyFunction	=	false
 parameters.getUncertainties	=	false
 parameters.optimiseMask	=	false
+pipeline.pedantic	=	true
 reliability.autoKernel	=	true
 reliability.fMin	=	10.0
 reliability.kernel	=	[0.15, 0.05, 0.1]

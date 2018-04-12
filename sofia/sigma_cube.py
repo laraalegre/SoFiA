@@ -1,10 +1,9 @@
 #! /usr/bin/env python
 
+import math
 import numpy as np
 from scipy.interpolate import InterpolatedUnivariateSpline
-from .functions import *
-import sys
-import math
+from sofia.functions import GetRMS
 from sofia import error as err
 
 """
@@ -35,7 +34,6 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 	if statistic == "std": err.message("  Applying standard deviation to " + str(fluxRange) + " pixels.")
 	if statistic == "gauss": err.message("  Applying Gaussian fit to " + str(fluxRange) + " pixels.")
 	if statistic == "negative": err.message("  Applying Gaussian fit to negative pixels.")
-	sys.stdout.flush()
 	
 	# Check the dimensions of the cube (could be obtained from header information)
 	dimensions = np.shape(cube)

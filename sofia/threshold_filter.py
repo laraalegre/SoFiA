@@ -2,33 +2,34 @@
 
 # import default python libraries
 import numpy as np
-import os
-from .functions import *
+from sofia.functions import GetRMS
+from sofia import error as err
 
 # Run a simple threshold filter and write out mask:
 
 def filter(mask, cube, header, clipMethod, threshold, rmsMode, fluxRange, verbose):
-	if clipMethod == 'relative':
-		# Determine the clip level
-		# Measure noise in original cube
-		rms = GetRMS(cube, rmsMode=rmsMode, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=verbose)
-		print ('Estimated rms = ' + str(rms))
-		clip = threshold * rms
-	if clipMethod == 'absolute':
-		clip = threshold
-	print ('Using clip threshold: ' + str(clip))
-
-	# Check whether there are NaNs:
-	nan_mask = np.isnan(cube)
-	found_nan = nan_mask.sum()
+	err.message("Running threshold finder.")
 	
-	# Set NaNs to zero (and INFs to a finite number) if necessary:
-	if found_nan: cube = np.nan_to_num(cube)
+	# Sanity checks of user input
+	err.ensure(
+		clipMethod in {"absolute", "relative"},
+		"Threshold finder failed. Illegal clip method: '" + str(clipMethod) + "'.")
+	err.ensure(
+		rmsMode in {"std", "mad", "gauss", "negative"},
+		"Threshold finder failed. Illegal RMS mode: '" + str(rmsMode) + "'.")
+	err.ensure(
+		fluxRange in {"positive", "negative", "all"},
+		"Threshold finder failed. Illegal flux range: '" + str(fluxRange) + "'.")
 	
-	# Run the threshold finder, setting bit 1 of the mask for |cube| > clip:
-	np.bitwise_or(mask, np.greater_equal(np.absolute(cube), clip), mask)
+	# Scale threshold by RMS if requested
+	if clipMethod == "relative":
+		threshold *= GetRMS(cube, rmsMode=rmsMode, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=verbose)
 	
-	# Put NaNs (but not INFs) back into the data cube:
-	if found_nan: cube[nan_mask] = np.nan
+	# Print some information and check sign of threshold
+	err.message("  Using threshold of " + str(threshold) + ".")
+	err.ensure(threshold >= 0.0, "Threshold finder failed. Threshold value is negative.")
+	
+	# Run the threshold finder, setting bit 1 of the mask for |cube| >= |threshold|:
+	np.bitwise_or(mask, np.greater_equal(np.absolute(cube), threshold), out=mask)
 	
 	return

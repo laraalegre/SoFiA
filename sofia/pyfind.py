@@ -1,24 +1,17 @@
 #! /usr/bin/env python
 
-import astropy.io.fits as pf
-import numpy as np
-import math as mt
-import scipy
-from scipy import optimize
-import scipy.ndimage as nd
-from sys import argv
-import string
-from os import path
-import sys
-from .functions import *
+import math
 from time import time
+import numpy as np
+from scipy import ndimage
+from sofia.functions import GetRMS
 from sofia import error as err
 
 
 def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.5, sizeFilter=0, maskScaleXY=2.0, maskScaleZ=2.0, kernelUnit="pixel", edgeMode="constant", rmsMode="negative", fluxRange="all", verbose=0):
 	# Define a few constants
-	FWHM_CONST    = 2.0 * math.sqrt(2.0 * math.log(2.0)) # Conversion between sigma and FWHM of Gaussian function
-	MAX_PIX_CONST = 1e+6                                 # Maximum number of pixels for noise calculation; sampling is set accordingly
+	FWHM_CONST    = 2.0 * math.sqrt(2.0 * math.log(2.0))   # Conversion between sigma and FWHM of Gaussian function
+	MAX_PIX_CONST = 1e+6                                   # Maximum number of pixels for noise calculation; sampling is set accordingly
 	
 	# Create binary mask array
 	msk = np.zeros(cube.shape, np.bool)
@@ -42,8 +35,8 @@ def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.5, siz
 			ky = abs(float(ky) / header["CDELT2"])
 			kz = abs(float(kz) / header["CDELT3"])
 		if kt == "b":
-			if kz != int(mt.ceil(kz)) and verbose: err.warning("Rounding width of boxcar z kernel to next integer.")
-			kz = int(mt.ceil(kz))
+			if kz != int(math.ceil(kz)) and verbose: err.warning("Rounding width of boxcar z kernel to next integer.")
+			kz = int(math.ceil(kz))
 		
 		# Create a copy of the original cube:
 		smoothedCube = np.copy(cube)
@@ -56,12 +49,12 @@ def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.5, siz
 		
 		# Spatial smoothing:
 		if kx + ky:
-			smoothedCube = nd.filters.gaussian_filter(smoothedCube, [0, ky / FWHM_CONST, kx / FWHM_CONST], mode=edgeMode)
+			smoothedCube = ndimage.filters.gaussian_filter(smoothedCube, [0, ky / FWHM_CONST, kx / FWHM_CONST], mode=edgeMode)
 		
 		# Spectral smoothing:
 		if kz:
-			if   kt == "b": smoothedCube = nd.filters.uniform_filter1d(smoothedCube, kz, axis=0, mode=edgeMode)
-			elif kt == "g": smoothedCube = nd.filters.gaussian_filter1d(smoothedCube, kz / FWHM_CONST, axis=0, mode=edgeMode)
+			if   kt == "b": smoothedCube = ndimage.filters.uniform_filter1d(smoothedCube, kz, axis=0, mode=edgeMode)
+			elif kt == "g": smoothedCube = ndimage.filters.gaussian_filter1d(smoothedCube, kz / FWHM_CONST, axis=0, mode=edgeMode)
 		
 		# Re-insert the NaNs (but not the INFs) taken out earlier:
 		if found_nan: smoothedCube[np.isnan(cube)] = np.nan

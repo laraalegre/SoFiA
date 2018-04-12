@@ -24,13 +24,13 @@ def smooth(indata, kernel, edgeMode, kernelX, kernelY, kernelZ):
 	# Sanity checks of user input
 	err.ensure(
 		kernel in {"gaussian", "boxcar", "median"},
-		"Smoothing failed. Unrecognised smoothing type: '" + str(kernel) + "'.")
+		"Smoothing failed. Illegal smoothing type: '" + str(kernel) + "'.")
 	err.ensure(
 		edgeMode in {"reflect", "constant", "nearest", "mirror", "wrap"},
-		"Smoothing failed. Unrecognised edge mode: '" + str(edgeMode) + "'.")
+		"Smoothing failed. Illegal edge mode: '" + str(edgeMode) + "'.")
 	err.ensure(
 		kernelX or kernelY or kernelZ,
-		"Smoothing failed. All smoothing kernels set to zero.")
+		"Smoothing failed. All smoothing kernels are zero.")
 	err.ensure(
 		kernel != "median" or (kernelX and kernelY and kernelZ),
 		"Smoothing failed. Cannot determine median for kernel size of zero.")
@@ -43,7 +43,7 @@ def smooth(indata, kernel, edgeMode, kernelX, kernelY, kernelZ):
 	# Create copy of input cube to be smoothed
 	outdata = np.copy(indata)
 	
-	# Remove NaNs if necessary
+	# Remove NaNs (and INFs) if necessary
 	found_nan = np.isnan(indata).sum()
 	if found_nan: outdata = np.nan_to_num(outdata, copy=False)
 	

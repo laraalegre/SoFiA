@@ -1,14 +1,12 @@
 #! /usr/bin/env python
-import numpy as np
-from astropy.io import fits
 import os
-import sys
-from sofia import writemoment
 import math
+import numpy as np
+import scipy.constants
 from scipy import interpolate
 from scipy.ndimage import map_coordinates
-import scipy.constants
-from .version import *
+from astropy.io import fits
+from sofia.version import getVersion
 from sofia import error as err
 
 

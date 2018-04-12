@@ -7,7 +7,7 @@ from sofia import wavelet as wv
 b3spline = np.array([1.0, 4.0, 6.0, 4.0, 1.0]) / 16.0
 
 # Try to use MUCH faster median implementation
-# from bottleck, else fallback to numpy.median
+# from bottleneck, else fallback to numpy.median
 try:
 	from bottleneck import median as the_median
 except ImportError:

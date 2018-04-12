@@ -1,11 +1,7 @@
 #! /usr/bin/env python
-import re
-import sys
-import traceback
-import ast
-from distutils.version import StrictVersion
+from ast import literal_eval
 from sofia import error as err
-from sofia import version
+from sofia.version import getVersion
 
 
 # -----------------------------------------
@@ -35,7 +31,7 @@ def readPipelineOptions(filename = "pipeline.options"):
 	for line in lines:
 		if "# Creator: SoFiA" in line:
 			par_file_version = line[17:22]
-			sof_file_version = (version.getVersion())[0:5]
+			sof_file_version = (getVersion())[0:5]
 			if par_file_version != sof_file_version:
 				err.warning(
 					"The parameter file was created with a different version of SoFiA\n"
@@ -82,7 +78,7 @@ def readPipelineOptions(filename = "pipeline.options"):
 				if datatypes[parameter]   == "bool":  subtasks[parname] = str2bool(value)
 				elif datatypes[parameter] == "float": subtasks[parname] = float(value)
 				elif datatypes[parameter] == "int":   subtasks[parname] = int(value)
-				elif datatypes[parameter] == "array": subtasks[parname] = ast.literal_eval(value)
+				elif datatypes[parameter] == "array": subtasks[parname] = literal_eval(value)
 				else: subtasks[parname] = str(value)
 			except:
 				err.error("Failed to parse parameter value:\n" + str(line) + "\nExpected data type: " + str(datatypes[parameter]), fatal=True)
