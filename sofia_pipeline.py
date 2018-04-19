@@ -14,7 +14,7 @@ from astropy import __version__ as astropy_version
 sys.path.insert(0, os.environ["SOFIA_MODULE_PATH"])
 from sofia import functions
 from sofia import readoptions
-from sofia import import_data
+from sofia import import_data_2
 from sofia import sigma_cube
 from sofia import pyfind
 from sofia import wavelet_finder
@@ -29,7 +29,6 @@ from sofia import linker
 from sofia import cubelets
 from sofia import parametrisation
 from sofia import wcs_coordinates
-from sofia import flag_cube
 from sofia import CNHI
 from sofia import version
 from sofia import error as err
@@ -235,7 +234,7 @@ if not Parameters["writeCat"]["overwrite"]:
 
 
 # --------------------------------------------------------------
-# ---- DEFINE LINKER"S OUTPUT AND CHECK RELIBILITY SETTINGS ----
+# ---- DEFINE LINKER'S OUTPUT AND CHECK RELIBILITY SETTINGS ----
 # --------------------------------------------------------------
 
 if Parameters["steps"]["doMerge"]:
@@ -266,28 +265,26 @@ if Parameters["steps"]["doMerge"]:
 # ---- IMPORT DATA ----
 # ---------------------
 
-printProgressMessage("Reading data cube(s)")
+printProgressMessage("Loading data cube(s).")
 kwargs = Parameters["import"].copy()
 kwargs.update({"doFlag":Parameters["steps"]["doFlag"],"flagRegions":Parameters["flag"]["regions"],"flagFile":Parameters["flag"]["file"]})
-np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters["steps"]["doSubcube"], **kwargs)
+#np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters["steps"]["doSubcube"], **kwargs)
+np_Cube, dict_Header, mask, subcube = import_data_2.import_data(Parameters["steps"]["doSubcube"], **kwargs)
+err.message("Data cube(s) loaded.")
 
 
 # -------------------------
 # ---- PRECONDITIONING ----
 # -------------------------
 
-if Parameters["steps"]["doFlag"] or Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["steps"]["doWavelet"]:
-	printProgressMessage("Running input filters")
-
-## ---- FLAGGING ----
-#if Parameters["steps"]["doFlag"]:
-	#np_Cube = flag_cube.flag(np_Cube,**Parameters["flag"])
+if Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["steps"]["doWavelet"]:
+	printProgressMessage("Applying input filters.")
 
 # ---- SMOOTHING ----
 if Parameters["steps"]["doSmooth"]:
 	np_Cube = smooth_cube.smooth(np_Cube, **Parameters["smooth"])
 
-# ---- SIGMA CUBE ----
+# ---- NOISE SCALING ----
 if Parameters["steps"]["doScaleNoise"]:
 	np_Cube, noise_cube = sigma_cube.sigma_scale(np_Cube, **Parameters["scaleNoise"])
 
@@ -316,8 +313,8 @@ if Parameters["steps"]["doWriteNoiseCube"] and Parameters["steps"]["doScaleNoise
 if Parameters["steps"]["doScaleNoise"]:
 	del noise_cube
 
-if Parameters["steps"]["doFlag"] or Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["steps"]["doWavelet"]:
-	err.message("Filtering complete")
+if Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["steps"]["doWavelet"]:
+	err.message("Input filters applied.")
 
 
 
@@ -544,7 +541,8 @@ if Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Par
 	del np_Cube, dict_Header
 	kwargs = Parameters["import"].copy()
 	kwargs.update({"cubeOnly":True})
-	np_Cube, dict_Header = import_data.read_data(Parameters["steps"]["doSubcube"], **kwargs)
+	#np_Cube, dict_Header = import_data.read_data(Parameters["steps"]["doSubcube"], **kwargs)
+	np_Cube, dict_Header = import_data_2.import_data(Parameters["steps"]["doSubcube"], **kwargs)
 
 
 
@@ -624,7 +622,8 @@ if (Parameters["steps"]["doMom0"] or Parameters["steps"]["doMom1"]) and NRdet:
 	#          Read the original data cube again if needed for further
 	#          processing beyond this point:
 	#printProgressMessage("Reloading original data cube")
-	#np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters["steps"]["doSubcube"], **Parameters["import"])
+	##np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters["steps"]["doSubcube"], **Parameters["import"])
+	#np_Cube, dict_Header, mask, subcube = import_data_2.import_data(Parameters["steps"]["doSubcube"], **Parameters["import"])
 
 
 

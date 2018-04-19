@@ -134,7 +134,8 @@ SoFiA::SoFiA(int argc, char *argv[])
 			fileName.prepend(QDir::currentPath());
 		}
 		
-		if(loadFile(fileName))
+		QString version;
+		if(loadFile(fileName, version))
 		{
 			QString messageText = tr("<p>Failed to read input file %1.</p>").arg(fileName.section('/', -1));
 			QString statusText  = tr("Failed to read input file %1.").arg(fileName.section('/', -1));
@@ -212,8 +213,9 @@ int SoFiA::loadSession()
 		// Yes, there is one, so let’s load it to continue where we previously stopped:
 		QString sessionFileName  = SOFIA_TEMP_FILE;
 		QString originalFileName = currentFileName;        // Remember original current file name, if any
+		QString version;
 		
-		if(loadFile(sessionFileName))
+		if(loadFile(sessionFileName, version))
 		{
 			QString messageText = tr("<p>Failed to read previous session file.</p>");
 			QString statusText = tr("Failed to read previous session file.");
@@ -221,12 +223,26 @@ int SoFiA::loadSession()
 			return 1;
 		}
 		
-		currentFileName = originalFileName;                // Revert current file name to original again
-		updateWindowTitle();
-		
-		QString messageText = QString("Parameter settings from a previous SoFiA session were discovered in this directory and will be automatically restored.");
+		QString messageText = tr("Parameter settings from a previous SoFiA session were discovered in this directory and will be automatically restored.");
 		QString statusText = tr("Previous session restored.");
 		showMessage(MESSAGE_INFO, messageText, statusText);
+		
+		// Check version number
+		if(version.isEmpty())
+		{
+			QString messageText = tr("<p>No SoFiA version number found in session file. This could indicate that the file was manipulated by hand or created with an outdated version of SoFiA.</p>").arg(version).arg(QString(SOFIA_VERSION_NUMBER));
+			QString statusText = tr("No version number found in session file.");
+			showMessage(MESSAGE_WARNING, messageText, statusText);
+		}
+		else if(version != QString(SOFIA_VERSION_NUMBER))
+		{
+			QString messageText = tr("<p>The session file was written by a different version of SoFiA (%1) than the one you are currently using (%2).</p><p>This could result in unexpected effects, as some parameter names may have changed. It is advisable to check all parameter settings.</p>").arg(version).arg(QString(SOFIA_VERSION_NUMBER));
+			QString statusText = tr("Session file version differs from current SoFiA version.");
+			showMessage(MESSAGE_WARNING, messageText, statusText);
+		}
+		
+		currentFileName = originalFileName;                // Revert current file name to original again
+		updateWindowTitle();
 	}
 	
 	return 0;
@@ -311,7 +327,8 @@ int SoFiA::selectFile(QLineEdit *target, bool isDirectory)
 
 int SoFiA::setDefaults(const QString &fileName)
 {
-	if(loadFile(fileName))
+	QString version;
+	if(loadFile(fileName, version))
 	{
 		QString messageText = tr("<p>Failed to load default parameters.</p><p>Please close the programme and check your installation. SoFiA will not function properly without the default parameters.</p>");
 		QString statusText = tr("Failed to load default parameters.");
@@ -529,8 +546,9 @@ void SoFiA::loadSettings()
 		}
 		
 		setDefaults();       // Load default settings first. This ensures that unset parameters will assume their default value.
+		QString version;
 		
-		if(loadFile(newFileName))
+		if(loadFile(newFileName, version))
 		{
 			QString messageText = tr("<p>Failed to read input file %1.</p>").arg(newFileName.section('/', -1));
 			QString statusText = tr("Failed to read input file %1.").arg(newFileName.section('/', -1));
@@ -547,7 +565,7 @@ void SoFiA::loadSettings()
 // Function to load file
 // ---------------------
 
-int SoFiA::loadFile(const QString &fileName)
+int SoFiA::loadFile(const QString &fileName, QString &version)
 {
 	if(fileName.isEmpty()) return 0;
 	
@@ -564,6 +582,9 @@ int SoFiA::loadFile(const QString &fileName)
 	while(not inStream.atEnd())
 	{
 		QString line = inStream.readLine().trimmed();
+		
+		// Extract version number if present
+		if(line.contains("# Creator: SoFiA")) version = line.mid(17);
 		
 		if(not line.isEmpty() and not line.startsWith("#"))
 		{
@@ -659,7 +680,7 @@ void SoFiA::saveSettings()
 		// Write some header information first:
 		time_t currentTime = time(0);
 		outStream << "# SoFiA parameter file\n";
-		outStream << "# Creator: SoFiA 1.2.0-beta\n";
+		outStream << "# Creator: SoFiA " << SOFIA_VERSION_NUMBER << '\n';
 		outStream << "# Date:    " << ctime(&currentTime) << '\n';
 		
 		// Then write the actual parameter settings:
@@ -1141,7 +1162,7 @@ void SoFiA::showHandbook(const QString &page)
 
 void SoFiA::aboutSoFiA()
 {
-	QString messageText = tr("<h3>About SoFiA</h3><p>Version 1.2.0-beta (using Qt %1)</p><p>SoFiA, the <b>Source Finding Application</b>, is a 3D source finding pipeline designed to detect and parameterise galaxies in HI data cubes. The acronym SoFiA is based on the Greek word %2, which means wisdom.</p><p>SoFiA is free software: you can redistribute it and/or modify it under the terms of the <b>GNU General Public License</b> as published by the Free Software Foundation, either version 3 of the licence, or (at your option) any later version.</p><p>SoFiA is distributed in the hope that it will be useful, but <b>without any warranty</b>; without even the implied warranty of merchantability or fitness for a particular purpose. See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with SoFiA. If not, see <a href=\"http://www.gnu.org/licenses/\">http://www.gnu.org/licenses/</a>.</p><p>SoFiA uses the Oxygen icon set which is licensed under version&nbsp;3 of the <a href=\"http://www.gnu.org/licenses/lgpl-3.0.txt\">GNU Lesser General Public License</a>. For more details please see the Oxygen section on <a href=\"https://techbase.kde.org/Projects/Oxygen/Licensing\">KDE TechBase</a> or the <a href=\"http://www.kde.org/\">KDE website</a>.</p><p>&copy; 2018 The SoFiA Authors</p>").arg(QString(qVersion())).arg(QString::fromUtf8("σοφία"));
+	QString messageText = tr("<h3>About SoFiA</h3><p>Version %1 (using Qt %2)</p><p>SoFiA, the <b>Source Finding Application</b>, is a 3D source finding pipeline designed to detect and parameterise galaxies in HI data cubes. The acronym SoFiA is based on the Greek word %3, which means wisdom.</p><p>SoFiA is free software: you can redistribute it and/or modify it under the terms of the <b>GNU General Public License</b> as published by the Free Software Foundation, either version 3 of the licence, or (at your option) any later version.</p><p>SoFiA is distributed in the hope that it will be useful, but <b>without any warranty</b>; without even the implied warranty of merchantability or fitness for a particular purpose. See the GNU General Public License for more details.</p><p>You should have received a copy of the GNU General Public License along with SoFiA. If not, see <a href=\"http://www.gnu.org/licenses/\">http://www.gnu.org/licenses/</a>.</p><p>SoFiA uses the Oxygen icon set which is licensed under version&nbsp;3 of the <a href=\"http://www.gnu.org/licenses/lgpl-3.0.txt\">GNU Lesser General Public License</a>. For more details please see the Oxygen section on <a href=\"https://techbase.kde.org/Projects/Oxygen/Licensing\">KDE TechBase</a> or the <a href=\"http://www.kde.org/\">KDE website</a>.</p><p>&copy; 2018 The SoFiA Authors</p>").arg(QString(SOFIA_VERSION_NUMBER)).arg(QString(qVersion())).arg(QString::fromUtf8("σοφία"));
 	QString statusText = QString("");
 	showMessage(MESSAGE_INFO, messageText, statusText);
 	
@@ -3376,7 +3397,8 @@ void SoFiA::dropEvent(QDropEvent *event)
 		{
 			path.append(urlList.at(0).toLocalFile());
 			
-			this->loadFile(path);
+			QString version;
+			this->loadFile(path, version);
 		}
 	}
 	

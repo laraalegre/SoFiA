@@ -27,11 +27,14 @@ def readPipelineOptions(filename = "pipeline.options"):
 	lines = f.readlines()
 	f.close()
 	
+	# Remove leading/trailing whitespace and empty lines
+	lines = [line.strip() for line in lines]
+	
 	# Check for version number
 	for line in lines:
 		if "# Creator: SoFiA" in line:
-			par_file_version = line[17:22]
-			sof_file_version = (getVersion())[0:5]
+			par_file_version = line[17:]
+			sof_file_version = getVersion()
 			if par_file_version != sof_file_version:
 				err.warning(
 					"The parameter file was created with a different version of SoFiA\n"
@@ -39,8 +42,7 @@ def readPipelineOptions(filename = "pipeline.options"):
 					"Some settings defined in the parameter file may not be recognised\n"
 					"by SoFiA, which could lead to unexpected results.", frame=True)
 	
-	# Remove leading/trailing whitespace, empty lines and comments
-	lines = [line.strip() for line in lines]
+	# Remove comments
 	lines = [line for line in lines if len(line) > 0 and line[0] != "#"]
 	
 	# Some additional setup

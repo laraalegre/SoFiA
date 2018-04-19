@@ -32,6 +32,8 @@
 #ifndef PIPELINEINTERFACE_H
 #define PIPELINEINTERFACE_H
 
+#define SOFIA_VERSION_NUMBER "1.2.0-beta"
+
 #define SOFIA_DEFAULT_SETTINGS ":/SoFiA_default_input.txt"
 #define SOFIA_PARSET_EXTRAGALACTIC ":/parsets/SoFiA_parset_extragalactic.par"
 #define SOFIA_PARSET_CONTINUUM ":/parsets/SoFiA_parset_continuum.par"
@@ -198,7 +200,7 @@ private:
 	WidgetSpreadsheet *spreadsheet;
 	
 	int  selectFile(QLineEdit *target, bool isDirectory = false);
-	int  loadFile(const QString &fileName);
+	int  loadFile(const QString &fileName, QString &version);
 	int  updateVariables();
 	int  setFields();
 	int  setDefaults(const QString &fileName = QString::fromUtf8(SOFIA_DEFAULT_SETTINGS));

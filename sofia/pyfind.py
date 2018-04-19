@@ -68,7 +68,8 @@ def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.5, siz
 		#       Hence, NaN pixels will never be included in the mask below.
 		
 		# Add pixels above threshold to mask by setting bit 1:
-		msk = np.bitwise_or(msk, np.greater_equal(np.absolute(smoothedCube), threshold * smoothedrms))
+		with np.errstate(invalid="ignore"):
+			msk = np.bitwise_or(msk, np.greater_equal(np.absolute(smoothedCube), threshold * smoothedrms))
 		
 		# Delete smoothed cube again:
 		del(smoothedCube)
