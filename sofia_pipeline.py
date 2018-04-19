@@ -14,7 +14,8 @@ from astropy import __version__ as astropy_version
 sys.path.insert(0, os.environ["SOFIA_MODULE_PATH"])
 from sofia import functions
 from sofia import readoptions
-from sofia import import_data_2
+from sofia import import_data
+#from sofia import import_data_2
 from sofia import sigma_cube
 from sofia import pyfind
 from sofia import wavelet_finder
@@ -268,8 +269,8 @@ if Parameters["steps"]["doMerge"]:
 printProgressMessage("Loading data cube(s).")
 kwargs = Parameters["import"].copy()
 kwargs.update({"doFlag":Parameters["steps"]["doFlag"],"flagRegions":Parameters["flag"]["regions"],"flagFile":Parameters["flag"]["file"]})
-#np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters["steps"]["doSubcube"], **kwargs)
-np_Cube, dict_Header, mask, subcube = import_data_2.import_data(Parameters["steps"]["doSubcube"], **kwargs)
+np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters["steps"]["doSubcube"], **kwargs)
+#np_Cube, dict_Header, mask, subcube = import_data_2.import_data(Parameters["steps"]["doSubcube"], **kwargs)
 err.message("Data cube(s) loaded.")
 
 
@@ -541,8 +542,8 @@ if Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Par
 	del np_Cube, dict_Header
 	kwargs = Parameters["import"].copy()
 	kwargs.update({"cubeOnly":True})
-	#np_Cube, dict_Header = import_data.read_data(Parameters["steps"]["doSubcube"], **kwargs)
-	np_Cube, dict_Header = import_data_2.import_data(Parameters["steps"]["doSubcube"], **kwargs)
+	np_Cube, dict_Header = import_data.read_data(Parameters["steps"]["doSubcube"], **kwargs)
+	#np_Cube, dict_Header = import_data_2.import_data(Parameters["steps"]["doSubcube"], **kwargs)
 
 
 
