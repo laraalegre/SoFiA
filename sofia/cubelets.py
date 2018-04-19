@@ -16,20 +16,21 @@ from sofia import error as err
 
 def regridMaskedChannels(datacube, maskcube, header):
 	maskcubeFlt = maskcube.astype("float")
-	maskcubeFlt[maskcubeFlt > 1] = 1
+	maskcubeFlt[maskcube > 1] = 1.0
 	
 	err.message("Regridding...")
-	z = (np.arange(1., header["naxis3"] + 1) - header["CRPIX3"]) * header["CDELT3"] + header["CRVAL3"]
+	z = (np.arange(1.0, header["NAXIS3"] + 1) - header["CRPIX3"]) * header["CDELT3"] + header["CRVAL3"]
 	if "vopt" in header["CTYPE3"].lower() or "vrad" in header["CTYPE3"].lower() or "velo" in header["CTYPE3"].lower() or "felo" in header["CTYPE3"].lower():
-		pixscale=(1 - header["CRVAL3"] / scipy.constants.c) / (1 - z / scipy.constants.c)
+		pixscale = (1.0 - header["CRVAL3"] / scipy.constants.c) / (1.0 - z / scipy.constants.c)
 		# WARNING: Strictly correct only for the radio velocity definition!
 	elif "freq" in header["CTYPE3"].lower():
 		pixscale = header["CRVAL3"] / z
 	else:
-		err.warning("Cannot convert 3rd axis coordinates to frequency. Will ignore the effect of CELLSCAL = 1/F.")
+		err.warning("Cannot convert 3rd axis coordinates to frequency.\nWill ignore the effect of CELLSCAL = 1/F.")
 		pixscale = np.ones((header["naxis3"]))
 	
-	x0, y0 = header["crpix1"] - 1, header["crpix2"] - 1
+	x0 = header["CRPIX1"] - 1
+	y0 = header["CRPIX2"] - 1
 	xs = np.arange(datacube.shape[2], dtype=float) - x0
 	ys = np.arange(datacube.shape[1], dtype=float) - y0
 	
@@ -263,9 +264,9 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 		moments = [None, None, None]
 		with np.errstate(invalid="ignore"):
 			moments[0] = np.nansum(subcubeCopy, axis=0)
-			tmp = ((np.arange(subcubeCopy.shape[0]).reshape((subcubeCopy.shape[0], 1, 1)) * np.ones(subcubeCopy.shape) - headerCubelets["CRPIX3"] + 1) * headerCubelets["CDELT3"] + headerCubelets["CRVAL3"]) * scalemom12
+			tmp = ((np.arange(subcubeCopy.shape[0]).reshape((subcubeCopy.shape[0], 1, 1)) - headerCubelets["CRPIX3"] + 1) * headerCubelets["CDELT3"] + headerCubelets["CRVAL3"]) * scalemom12
 			moments[1] = np.divide(np.nansum(tmp * subcubeCopy, axis=0), moments[0])
-			tmp -= moments[1]
+			tmp = tmp * np.ones(subcubeCopy.shape) - moments[1]
 			moments[2] = np.sqrt(np.divide(np.nansum(tmp * tmp * subcubeCopy, axis=0), moments[0]))
 		
 		moments[0] *= dkms
