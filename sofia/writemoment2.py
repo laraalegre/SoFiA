@@ -1,11 +1,10 @@
 #!/usr/bin/env python
-import astropy.io.fits as pyfits
 import os
 import numpy as np
-cimport numpy as np
 import scipy.constants
 from scipy import interpolate
-from libc.math cimport isnan
+import astropy.io.fits as pyfits
+from sofia import global_settings as glob
 from sofia import version
 from sofia import error as err
 
@@ -35,7 +34,7 @@ def regridMaskedChannels(datacube,maskcube,header):
 		regrid_channel_mask = interpolate.RectBivariateSpline(ys * pixscale[zz], xs * pixscale[zz], maskcubeFlt[zz])
 		maskcubeFlt[zz] = regrid_channel_mask(ys, xs)
 	
-	datacube[abs(maskcubeFlt) <= abs(maskcubeFlt.min())] = 0.0
+	datacube[abs(maskcubeFlt) <= abs(np.nanmin(maskcubeFlt))] = 0.0
 	del maskcubeFlt
 	
 	return datacube
@@ -46,15 +45,15 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 	# Number of detected channels
 	# ---------------------------
 	nrdetchan = (maskcube > 0).sum(axis=0)
-	if nrdetchan.max() < 65535:
+	if np.nanmax(nrdetchan) < 65535:
 		nrdetchan = nrdetchan.astype("int16")
 	else:
 		nrdetchan = nrdetchan.astype("int32")
 	
 	hdu = pyfits.PrimaryHDU(data=nrdetchan, header=header)
 	hdu.header["BUNIT"] = "Nchan"
-	hdu.header["DATAMIN"] = nrdetchan.min()
-	hdu.header["DATAMAX"] = nrdetchan.max()
+	hdu.header["DATAMIN"] = np.nanmin(nrdetchan)
+	hdu.header["DATAMAX"] = np.nanmax(nrdetchan)
 	hdu.header["ORIGIN"] = version.getVersion(full=True)
 	del(hdu.header["CRPIX3"])
 	del(hdu.header["CRVAL3"])
@@ -83,25 +82,18 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 	
 	datacube = np.array(datacube, dtype=np.single)
 	
-	# Calculate moment 0
-	#if domom0 or domom1: m0 = mom0(datacube)
-	# NOTE: Shouldn't the following be a lot faster? This uses built-in NumPy routines
-	#       which are written in plain C and probably as fast as it can get.
-	# NOTE: I ran a few tests which suggest that calling the np.nansum() function is
-	#       almost three times as fast as the mom0() function on the test data cube!
-	#       Results: 0.013 seconds with np.nansum()
-	#                0.033 seconds with mom0()
-	if domom0 or domom1:
-		m0 = np.nansum(datacube, axis=0)
-	
 	# --------------
 	# Moment 0 image
 	# --------------
+	if domom0 or domom1:
+		# Calculate moment 0
+		m0 = np.nansum(datacube, axis=0)
+	
 	if domom0:
 		err.message("Writing moment-0") # in units of header["bunit"]*header["CDELT3"]
 		
 		# Velocity
-		if "vopt" in header["CTYPE3"].lower() or "vrad" in header["CTYPE3"].lower() or "velo" in header["CTYPE3"].lower() or "felo" in header["CTYPE3"].lower():
+		if glob.check_values(glob.KEYWORDS_VELO, header["CTYPE3"]):
 			if not "CUNIT3" in header or header["CUNIT3"].lower() == "m/s":
 				# Converting (assumed) m/s to km/s
 				dkms = abs(header["CDELT3"]) / 1e+3
@@ -119,7 +111,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 				bunitExt = "." + header["CUNIT3"]
 		
 		# Frequency
-		elif "freq" in header["CTYPE3"].lower():
+		elif glob.check_values(glob.KEYWORDS_FREQ, header["CTYPE3"]):
 			if not "CUNIT3" in header or header["CUNIT3"].lower() == "hz":
 				# Using (or assuming) Hz
 				dkms = abs(header["CDELT3"])
@@ -138,8 +130,8 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 		
 		hdu = pyfits.PrimaryHDU(data=m0*dkms, header=header)
 		hdu.header["BUNIT"] += bunitExt
-		hdu.header["DATAMIN"] = (m0 * dkms).min()
-		hdu.header["DATAMAX"] = (m0 * dkms).max()
+		hdu.header["DATAMIN"] = np.nanmin(m0 * dkms)
+		hdu.header["DATAMAX"] = np.nanmax(m0 * dkms)
 		hdu.header["ORIGIN"] = version.getVersion(full=True)
 		del(hdu.header["CRPIX3"])
 		del(hdu.header["CRVAL3"])
@@ -166,18 +158,12 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 		err.message("Writing moment-1")
 		
 		# Calculate moment 1
-		#m1 = mom1(datacube, m0, header["CRPIX3"], header["CRVAL3"], header["CDELT3"])
-		# NOTE: Again, NumPy is a lot faster than the user-defined mom1() function!
-		#       Tests on the SoFiA test data cube yield:
-		#       Results: 0.039 seconds with mom1()
-		#                0.023 seconds with NumPy
-		tmp = ((np.arange(datacube.shape[0]) + 1.0 - header["CRPIX3"]) * header["CDELT3"] + header["CRVAL3"]).reshape((datacube.shape[0], 1, 1))
+		velArr = ((np.arange(datacube.shape[0]) + 1.0 - header["CRPIX3"]) * header["CDELT3"] + header["CRVAL3"]).reshape((datacube.shape[0], 1, 1))
 		with np.errstate(invalid="ignore"):
-			m1 = np.divide(np.nansum(datacube * tmp, axis=0), m0)
-		
+			m1 = np.divide(np.nansum(velArr * datacube, axis=0), m0)
 		
 		# Velocity
-		if "vopt" in header["CTYPE3"].lower() or "vrad" in header["CTYPE3"].lower() or "velo" in header["CTYPE3"].lower() or "felo" in header["CTYPE3"].lower():
+		if glob.check_values(glob.KEYWORDS_VELO, header["CTYPE3"]):
 			if not "CUNIT3" in header:
 				m1 /= 1e+3 # Assuming m/s
 				bunitExt = "km/s"
@@ -187,7 +173,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 				bunitExt = header["CUNIT3"]
 		
 		# Frequency
-		elif "freq" in header["CTYPE3"].lower():
+		elif glob.check_values(glob.KEYWORDS_FREQ, header["CTYPE3"]):
 			if not "CUNIT3" in header or header["CUNIT3"].lower() == "hz":
 				bunitExt = "Hz"
 			else:
@@ -216,41 +202,3 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 				err.error("Output file exists: " + str(name) + ".", fatal=False)
 			else:
 				hdu.writeto(name, output_verify="warn", clobber=True)
-
-
-#def mom0(cube1):
-#	cdef:
-#		int i, j, k
-#		double[:,:] mom0 = np.zeros((cube1.shape[1], cube1.shape[2]))
-#		float[:,:,:] cube = cube1
-#		
-#	for j in range(cube.shape[1]):
-#		for k in range(cube.shape[2]):
-#			for i in range(cube.shape[0]):
-#				if not isnan(cube[i, j, k]):
-#					mom0[j, k] += cube[i, j, k]
-#	
-#	return np.array(mom0)
-
-
-#def mom1(cube1, cube2, int cpx, float cval, float cdelt):
-#	cdef:
-#		int i, j, k
-#		double sum
-#		double[:,:] mom1 = np.zeros((cube1.shape[1], cube1.shape[2]))
-#		float[:,:,:] cube = cube1
-#		double[:,:] mom0 = cube2
-#	
-#	for j in range(cube.shape[1]):
-#		for k in range(cube.shape[2]):
-#			sum = 0
-#			for i in range(cube.shape[0]):
-#				if not isnan(cube[i, j, k]):
-#					sum += cube[i, j, k] * ((i + 1 - cpx) * cdelt + cval)
-#			
-#			if mom0[j, k] != 0 and not isnan(mom0[j, k]):
-#				mom1[j, k] = sum / mom0[j, k]
-#			else:
-#				mom1[j, k] = np.nan
-#	
-#	return np.array(mom1)
