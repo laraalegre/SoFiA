@@ -6,7 +6,7 @@
 
 # FITS header keywords and values
 
-KEYWORDS_VELO = ["VOPT", "VRAD", "VELO", "FELO"]  # NOTE: "felo" is not a valid FITS coordinate code!
+KEYWORDS_VELO = ["VOPT", "VRAD", "VELO", "FELO"]  # NOTE: "felo" is not a valid FITS coordinate type!
 KEYWORDS_FREQ = ["FREQ"]
 
 def check_header_keywords(values, keyword):

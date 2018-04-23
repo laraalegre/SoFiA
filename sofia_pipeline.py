@@ -183,7 +183,7 @@ outputNoiseCube     = str(outroot) + "_noise.fits"
 outputSkellamPDF    = str(outroot) + "_rel_skellam.pdf"
 outputScatterPDF    = str(outroot) + "_rel_scatter.pdf"
 outputContoursPDF   = str(outroot) + "_rel_contour.pdf"
-outputDeltPDF       = str(outroot) + "_rel_delt.pdf"
+outputDeltaPDF      = str(outroot) + "_rel_skellam-delta.pdf"
 outputMaskCube      = str(outroot) + "_mask.fits"
 outputMom0Image     = str(outroot) + "_mom0.fits"
 outputNrchImage     = str(outroot) + "_nrch.fits"
@@ -208,7 +208,7 @@ if not Parameters["writeCat"]["overwrite"]:
 		checkOverwrite(outputSkellamPDF)
 		checkOverwrite(outputScatterPDF)
 		checkOverwrite(outputContoursPDF)
-		checkOverwrite(outputDeltPDF)
+		checkOverwrite(outputDeltaPDF)
 	
 	# Mask
 	if Parameters["steps"]["doWriteMask"]:

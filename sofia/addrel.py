@@ -1,14 +1,13 @@
 #! /usr/bin/env python
 
-# IMPORT PYTHON MODULES
 import numpy as np
 import scipy.stats as stats
 from itertools import combinations
 from sofia import error as err
 
-# -----------------------------------------------------------------------
+# =======================================================================
 # CLASS: Define class of gaussian_kde with user-defined covariance matrix
-# -----------------------------------------------------------------------
+# =======================================================================
 
 class gaussian_kde_set_covariance(stats.gaussian_kde):
 	def __init__(self, dataset, covariance):
@@ -19,9 +18,9 @@ class gaussian_kde_set_covariance(stats.gaussian_kde):
 		self._norm_factor = np.sqrt(np.linalg.det(2 * np.pi * self.covariance)) * self.n
 
 
-# ------------------------------------------------
+# ================================================
 # FUNCTION: Estimate the reliability of detections
-# ------------------------------------------------
+# ================================================
 
 def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_pix"], logPars=[1, 1, 1], autoKernel=True, scaleKernel=1, negPerBin=1, skellamTol=-0.5, kernel=[0.15, 0.05, 0.1], usecov=False, doscatter=1, docontour=1, doskellam=1, dostats=0, saverel=1, threshold=0.99, fMin=0, verb=0, makePlot=False):
 	# Import Matplotlib if diagnostic plots requested
@@ -265,7 +264,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 			plt.xlabel("kernel size (1D-sigma, aribtrary units)")
 			plt.ylabel("median/std of (P-N)/sqrt(P+N)")
 			plt.axhline(y=skellamTol, linestyle="--", color="r")
-			fig3.savefig("%s_rel_delt.pdf" % pdfoutname, rasterized=True)
+			fig3.savefig("%s_rel_skellam-delta.pdf" % pdfoutname, rasterized=True)
 	
 	
 	# -----------------------

@@ -14,21 +14,21 @@ from sofia import error as err
 # FUNCTION: Regrid data cube
 # ==========================
 
-def regridMaskedChannels(datacube,maskcube,header):
+def regridMaskedChannels(datacube, maskcube, header):
 	maskcubeFlt = maskcube.astype("float")
 	maskcubeFlt[maskcube > 1] = 1.0
 	
 	err.message("Regridding...")
-	z = (np.arange(1.0, header["naxis3"] + 1) - header["CRPIX3"]) * header["CDELT3"] + header["CRVAL3"]
+	z = (np.arange(1.0, header["NAXIS3"] + 1) - header["CRPIX3"]) * header["CDELT3"] + header["CRVAL3"]
 	
 	if header["CTYPE3"] == "VELO-HEL":
 		pixscale = (1.0 - header["CRVAL3"] / scipy.constants.c) / (1.0 - z / scipy.constants.c)
 	else:
 		err.warning("Cannot convert 3rd axis coordinates to frequency.\nIgnoring the effect of CELLSCAL = 1/F.")
-		pixscale = np.ones((header["naxis3"]))
+		pixscale = np.ones((header["NAXIS3"]))
 	
-	x0 = header["crpix1"] - 1
-	y0 = header["crpix2"] - 1
+	x0 = header["CRPIX1"] - 1
+	y0 = header["CRPIX2"] - 1
 	xs = np.arange(datacube.shape[2], dtype=float) - x0
 	ys = np.arange(datacube.shape[1], dtype=float) - y0
 	
