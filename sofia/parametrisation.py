@@ -43,17 +43,16 @@ def dilate(cube, mask, objects, cathead, Parameters):
 			sys.stderr.write('WARNING: Object %i has possible overlapping objects within %i pix, %i chan.\n' % (mm, dilatePixMax, dilateChan))
 			objcube[(allmask > 0) * (allmask != mm)] = 0
 		fluxes = []
-                reachedMax = False
 		for dil in range(dilatePixMax + 1):
 			dd = dil * 2 + 1
 			dilstruct = (np.sqrt(((np.indices((dd, dd)) - dil)**2).sum(axis=0)) <= dil).astype(int)
 			dilstruct.resize((1, dilstruct.shape[0], dilstruct.shape[1]))
 			dilstruct = dilstruct.repeat(dilateChan * 2 + 1, axis=0)
 			fluxes.append(objcube[nd.morphology.binary_dilation(objmask==mm, structure=dilstruct)].sum())
-			if dil > 0 and (fluxes[-1] - fluxes[-2]) / fluxes[-1] < dilateThreshold: break
-                        elif dil == dilatePixMax and (fluxes[-1] - fluxes[-2]) / fluxes[-1] >= dilateThreshold: reachedMax = True
+			if dil > 0 and (fluxes[-1] - fluxes[-2]) / fluxes[-1] < dilateThreshold:
+				dil -= 1
+				break
 		# pick the best dilation kernel for current object and update mask
-		if not reachedMax: dil -= 1
 		print ('Mask dilation of source %i by %i pix and %i chan' % (mm, dil, dilateChan))
 		sys.stdout.flush()
 		dd = dil * 2 + 1
