@@ -21,10 +21,10 @@ def regridMaskedChannels(datacube, maskcube, header):
 	
 	err.message("Regridding...")
 	z = (np.arange(1.0, header["NAXIS3"] + 1) - header["CRPIX3"]) * header["CDELT3"] + header["CRVAL3"]
-	if glob.check_values(glob.KEYWORDS_VELO, header["CTYPE3"]):
+	if glob.check_header_keywords(glob.KEYWORDS_VELO, header["CTYPE3"]):
 		pixscale = (1.0 - header["CRVAL3"] / scipy.constants.c) / (1.0 - z / scipy.constants.c)
 		# WARNING: Strictly correct only for the radio velocity definition!
-	elif glob.check_values(glob.KEYWORDS_FREQ, header["CTYPE3"]):
+	elif glob.check_header_keywords(glob.KEYWORDS_FREQ, header["CTYPE3"]):
 		pixscale = header["CRVAL3"] / z
 	else:
 		err.warning("Cannot convert 3rd axis coordinates to frequency.\nWill ignore the effect of CELLSCAL = 1/F.")
@@ -212,11 +212,11 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 		
 		# Units of moment images
 		# Velocity
-		if glob.check_values(glob.KEYWORDS_VELO, headerCubelets["CTYPE3"]):
+		if glob.check_header_keywords(glob.KEYWORDS_VELO, headerCubelets["CTYPE3"]):
 			if not "CUNIT3" in headerCubelets or headerCubelets["CUNIT3"].lower() == "m/s":
 				# Converting m/s to km/s
-				dkms = abs(headerCubelets["CDELT3"]) / 1e+3
-				scalemom12 = 1.0 / 1e+3
+				dkms = abs(headerCubelets["CDELT3"]) * 1e-3
+				scalemom12 = 1e-3
 				bunitExt = ".km/s"
 			elif headerCubelets["CUNIT3"].lower() == "km/s":
 				dkms = abs(headerCubelets["CDELT3"])
@@ -228,7 +228,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 				scalemom12 = 1.0
 				bunitExt = "." + headerCubelets["CUNIT3"]
 		# Frequency
-		elif glob.check_values(glob.KEYWORDS_FREQ, headerCubelets["CTYPE3"]):
+		elif glob.check_header_keywords(glob.KEYWORDS_FREQ, headerCubelets["CTYPE3"]):
 			if not "CUNIT3" in headerCubelets or headerCubelets["CUNIT3"].lower() == "hz":
 				dkms = abs(headerCubelets["CDELT3"])
 				scalemom12 = 1.0
