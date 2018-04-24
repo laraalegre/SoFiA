@@ -7,7 +7,7 @@ from astropy.io import fits
 from sofia import global_settings as glob
 from sofia import error as err
 from sofia import __version_full__ as sofia_version_full
-from sofia import __astropy_arg_overwrite__ as astropy_arg_overwrite
+from sofia import __astropy_arg_overwrite__
 
 
 # ------------------------------------------------------
@@ -110,7 +110,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 		if compress: name += ".gz"
 		
 		# Check for overwrite flag:
-		if check_overwrite(name, flagOverwrite): hdulist.writeto(name, output_verify="warn", **{astropy_arg_overwrite : True})
+		if check_overwrite(name, flagOverwrite): hdulist.writeto(name, output_verify="warn", **__astropy_arg_overwrite__)
 		
 		hdulist.close()
 		
@@ -152,7 +152,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 			if compress: name += ".gz"
 			
 			# Check for overwrite flag:
-			if check_overwrite(name, flagOverwrite): hdulist.writeto(name,output_verify="warn", **{astropy_arg_overwrite : True})
+			if check_overwrite(name, flagOverwrite): hdulist.writeto(name,output_verify="warn", **__astropy_arg_overwrite__)
 			hdulist.close()
 		
 		# Remove all other sources from the mask
@@ -171,7 +171,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 		if compress: name += ".gz"
 		
 		# Check for overwrite flag:
-		if check_overwrite(name, flagOverwrite): hdulist.writeto(name, output_verify="warn", **{astropy_arg_overwrite : True})
+		if check_overwrite(name, flagOverwrite): hdulist.writeto(name, output_verify="warn", **__astropy_arg_overwrite__)
 		hdulist.close()
 		
 		# Units of moment images
@@ -255,7 +255,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 			hdu.header["ORIGIN"]  = sofia_version_full
 			filename = outputDir + cubename + "_{0:d}_mom{1:d}.fits".format(int(obj[0]), i)
 			if compress: filename += ".gz"
-			if check_overwrite(filename, flagOverwrite): hdu.writeto(filename, output_verify="warn", **{astropy_arg_overwrite : True})
+			if check_overwrite(filename, flagOverwrite): hdu.writeto(filename, output_verify="warn", **__astropy_arg_overwrite__)
 		
 		
 		# -------------------

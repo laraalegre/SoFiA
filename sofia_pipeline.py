@@ -24,7 +24,7 @@ from sofia import threshold_filter
 from sofia import smooth_cube
 from sofia import write_filtered_cube
 from sofia import writemask
-from sofia import writemoment2
+from sofia import writemoment
 from sofia import write_catalog
 from sofia import linker
 from sofia import cubelets
@@ -556,8 +556,8 @@ if Parameters['steps']['doDebug'] and NRdet:
 	printProgressMessage("Writing pre-optimisation mask and moment maps for debugging")
 	debug = 1
 	#writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_rel.fits'%outroot,Parameters['writeCat']['compress'])
-	#mom0_Image = writemoment2.writeMoment0(np_Cube, mask, outroot, debug, dict_Header,Parameters['writeCat']['compress'])
-	#writemoment2.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image,Parameters['writeCat']['compress'])
+	#mom0_Image = writemoment.writeMoment0(np_Cube, mask, outroot, debug, dict_Header,Parameters['writeCat']['compress'])
+	#writemoment.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image,Parameters['writeCat']['compress'])
 
 
 
@@ -619,7 +619,7 @@ if (Parameters["steps"]["doMom0"] or Parameters["steps"]["doMom1"]) and NRdet:
 	printProgressMessage("Writing moment maps")
 	debug = 0
 	write_mom = [Parameters["steps"]["doMom0"], Parameters["steps"]["doMom1"], False]
-	writemoment2.writeMoments(np_Cube, mask, outroot, debug, dict_Header, Parameters["writeCat"]["compress"], write_mom, Parameters["writeCat"]["overwrite"])
+	writemoment.writeMoments(np_Cube, mask, outroot, debug, dict_Header, Parameters["writeCat"]["compress"], write_mom, Parameters["writeCat"]["overwrite"])
 	
 	# WARNING: This will regrid and hence alter the data cube!
 	#          Read the original data cube again if needed for further

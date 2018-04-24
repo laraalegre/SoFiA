@@ -8,7 +8,7 @@ from scipy import interpolate
 from libc.math cimport isnan
 from sofia import error as err
 from sofia import __version_full__ as sofia_version_full
-from sofia import __astropy_arg_overwrite__ as astropy_arg_overwrite
+from sofia import __astropy_arg_overwrite__
 
 
 
@@ -69,7 +69,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 	if not flagOverwrite and os.path.exists(name):
 		err.error("Output file exists: " + str(name) + ".", fatal=False)
 	else:
-		hdu.writeto(name, output_verify="warn", **{astropy_arg_overwrite : True})
+		hdu.writeto(name, output_verify="warn", **__astropy_arg_overwrite__)
 	
 	# WARNING: The generation of moment maps will mask the copy of the data cube held
 	#          in memory by SoFiA. If you wish to use the original data cube after
@@ -149,7 +149,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 		hdu.header["CELLSCAL"] = "constant"
 		
 		if debug:
-			hdu.writeto("%s_mom0.debug.fits" % filename, output_verify="warn", **{astropy_arg_overwrite : True})
+			hdu.writeto("%s_mom0.debug.fits" % filename, output_verify="warn", **__astropy_arg_overwrite__)
 		else:
 			name = "%s_mom0.fits" % filename
 			if compress: name += ".gz"
@@ -158,7 +158,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 			if not flagOverwrite and os.path.exists(name):
 				err.error("Output file exists: " + str(name) + ".", fatal=False)
 			else:
-				hdu.writeto(name, output_verify="warn", **{astropy_arg_overwrite : True})
+				hdu.writeto(name, output_verify="warn", **__astropy_arg_overwrite__)
 	
 	# --------------
 	# Moment 1 image
@@ -207,7 +207,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 		hdu.header["CELLSCAL"] = "constant"
 		
 		if debug:
-			hdu.writeto("%s_mom1.debug.fits" % filename, output_verify="warn", **{astropy_arg_overwrite : True})
+			hdu.writeto("%s_mom1.debug.fits" % filename, output_verify="warn", **__astropy_arg_overwrite__)
 		else:
 			name = "%s_mom1.fits" % filename
 			if compress: name += ".gz"
@@ -216,7 +216,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 			if not flagOverwrite and os.path.exists(name):
 				err.error("Output file exists: " + str(name) + ".", fatal=False)
 			else:
-				hdu.writeto(name, output_verify="warn", **{astropy_arg_overwrite : True})
+				hdu.writeto(name, output_verify="warn", **__astropy_arg_overwrite__)
 
 
 #def mom0(cube1):
