@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+
 import os
 import math
 import numpy as np
@@ -10,9 +11,9 @@ from sofia import __version_full__ as sofia_version_full
 from sofia import __astropy_arg_overwrite__
 
 
-# ------------------------------------------------------
+# ======================================================
 # FUNCTION: Create various data products for each source
-# ------------------------------------------------------
+# ======================================================
 
 def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compress, flagOverwrite):
 	# Strip path variable to get the file name and the directory separately
@@ -147,7 +148,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 			hdulist[0].header["CRVAL2"] = hdulist[0].header["CRVAL3"]
 			hdulist[0].header["CRPIX2"] = hdulist[0].header["CRPIX3"]
 			hdulist[0].header["ORIGIN"] = sofia_version_full
-			delete_3rd_axis(hdulist[0].header)
+			glob.delete_3rd_axis(hdulist[0].header)
 			name = outputDir + cubename + "_" + str(int(obj[0])) + "_pv.fits"
 			if compress: name += ".gz"
 			
@@ -248,7 +249,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 		
 		for i in range(3):
 			hdu = fits.PrimaryHDU(data=moments[i], header=headerCubelets)
-			delete_3rd_axis(hdu.header)
+			glob.delete_3rd_axis(hdu.header)
 			hdu.header["BUNIT"]   = units[i]
 			hdu.header["DATAMIN"] = np.nanmin(moments[i])
 			hdu.header["DATAMAX"] = np.nanmax(moments[i])
@@ -304,36 +305,12 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 			f.close()
 
 
-# -------------------------------------
+# =====================================
 # FUNCTION: Check file overwrite status
-# -------------------------------------
+# =====================================
 
 def check_overwrite(filename, flagOverwrite, fatal=False):
 	if not flagOverwrite and os.path.exists(filename):
 		err.error("Output file exists: " + filename + ".", fatal=fatal)
 		return False
 	return True
-
-
-# -----------------------------------------
-# FUNCTION: Delete header element if exists
-# -----------------------------------------
-
-def delete_header(header, element):
-	if element in header:
-		del(header[element])
-		return True
-	return False
-
-
-# ---------------------------------------------
-# FUNCTION: Delete 3rd-axis WCS header elements
-# ---------------------------------------------
-
-def delete_3rd_axis(header):
-	delete_header(header, "CRPIX3")
-	delete_header(header, "CRVAL3")
-	delete_header(header, "CDELT3")
-	delete_header(header, "CTYPE3")
-	delete_header(header, "CUNIT3")
-	return

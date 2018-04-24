@@ -7,7 +7,7 @@ import string
 from time import time
 import numpy as np
 
-# Import version numbers
+# Import library version numbers
 from scipy import __version__ as scipy_version
 from astropy import __version__ as astropy_version
 

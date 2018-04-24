@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+
 import os
 from astropy.io import fits
 from sofia import error as err
@@ -32,22 +33,23 @@ def writeMask(cube, header, dictionary, filename, compress, flagOverwrite):
 	dictionary = removeOptions(dictionary)
 	recursion(dictionary,optionsList,optionsDepth)
 	headerList = []
+	
 	for i in range(0, len(optionsList)):
 		if len(optionsList[i].split("=")) > 1:
 			tmpString = optionsList[i]
 			depthNumber = optionsDepth[i]
 			j = i - 1
+			
 			while depthNumber > 0:
 				if optionsDepth[i] > optionsDepth[j]:
 					tmpString = optionsList[j] + "." + tmpString
 					depthNumber = optionsDepth[j]
-				#end if
 				j -= 1
-			#end while
+			
 			headerList.append(tmpString)
-		#end if
-	#end for
-	for option in headerList: header.add_history(option)
+	
+	for option in headerList:
+		header.add_history(option)
 	if cube.max() < 32767: cube=cube.astype("int16")
 	
 	# add axes required to make the shape of the mask cube equal to the shape of the input datacube

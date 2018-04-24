@@ -3,32 +3,58 @@
 # The purpose of this file is to define global constants and functions
 # that are needed across modules.
 
-import numpy as np
-from sofia import error as err
 
 
-
-# ===============================
-# FITS header keywords and values
-# ===============================
+# =========================================
+# SETTINGS: FITS header keywords and values
+# =========================================
 
 KEYWORDS_VELO = ["VOPT", "VRAD", "VELO", "FELO"]  # NOTE: "FELO" is not a valid FITS coordinate type!
 KEYWORDS_FREQ = ["FREQ"]
 
-# Check if keyword contains any from the list of values
+
+
+# ===============================================================
+# FUNCTION: Check if keyword contains any from the list of values
+# ===============================================================
+
 def check_header_keywords(values, keyword):
 	for value in values:
 		if value in keyword.upper(): return True
 	return False
 
-# Check existence of header keyword before deleting
-def delete_header(keyword, header):
+
+
+# =====================================================
+# FUNCTION: Delete header keywords with existence check
+# =====================================================
+
+def delete_header(header, keyword):
 	if keyword in header:
 		del header[keyword]
 		return True
 	return False
 
-# Ensure that basic WCS axis descriptors are present
+
+
+# =============================================
+# FUNCTION: Delete 3rd-axis WCS header elements
+# =============================================
+
+def delete_3rd_axis(header):
+	delete_header(header, "CTYPE3")
+	delete_header(header, "CRPIX3")
+	delete_header(header, "CRVAL3")
+	delete_header(header, "CDELT3")
+	delete_header(header, "CUNIT3")
+	return
+
+
+
+# ============================================================
+# FUNCTION: Ensure that basic WCS axis descriptors are present
+# ============================================================
+
 def check_wcs_info(header, spatial=False):
 	if spatial: return "CTYPE3" in header and "CDELT3" in header and "CRPIX3" in header and "CRVAL3" in header \
 		and "CTYPE2" in header and "CDELT2" in header and "CRPIX2" in header and "CRVAL2" in header \
@@ -42,8 +68,10 @@ def check_wcs_info(header, spatial=False):
 # ==========================
 
 def regridMaskedChannels(datacube, maskcube, header):
+	import numpy as np
 	import scipy.constants
 	from scipy import interpolate
+	from sofia import error as err
 	
 	if not check_wcs_info(header, spatial=True):
 		err.warning("Axis descriptors missing from FITS file header.\nIgnoring the effect of CELLSCAL = 1/F.")

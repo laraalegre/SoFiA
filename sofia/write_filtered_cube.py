@@ -1,8 +1,11 @@
 #! /usr/bin/env python
+
+import numpy as np
 from astropy.io import fits
-from numpy import nanmin, nanmax
 from sofia import __version_full__ as sofia_version_full
 from sofia import __astropy_arg_overwrite__
+
+
 
 def removeOptions(dictionary):
 	modDictionary = dictionary
@@ -10,6 +13,7 @@ def removeOptions(dictionary):
 		if modDictionary["steps"][key] == "False":
 			modDictionary.pop(key.split("do")[1].lower(), None)
 	return modDictionary
+
 
 
 def recursion(dictionary, optionsList, optionsDepth, counter=0):
@@ -22,6 +26,11 @@ def recursion(dictionary, optionsList, optionsDepth, counter=0):
 		optionsList[len(optionsList) - 1] += "=" + str(dictionary)
 		counter = 0
 
+
+
+# =====================================
+# FUNCTION: Write filtered cube to disk
+# =====================================
 
 def writeFilteredCube(cube, header, dictionary, filename, compress):
 	optionsList = []
@@ -44,8 +53,8 @@ def writeFilteredCube(cube, header, dictionary, filename, compress):
 	for option in headerList: header.add_history(option)
 	
 	hdu = fits.PrimaryHDU(data = cube, header = header)
-	hdu.header["DATAMIN"] = nanmin(cube)
-	hdu.header["DATAMAX"] = nanmax(cube)
+	hdu.header["DATAMIN"] = np.nanmin(cube)
+	hdu.header["DATAMAX"] = np.nanmax(cube)
 	hdu.header["ORIGIN"] = sofia_version_full
 	
 	if compress: filename += ".gz"

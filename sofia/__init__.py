@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 # ===========================
 # Define SoFiA version number
 # ===========================

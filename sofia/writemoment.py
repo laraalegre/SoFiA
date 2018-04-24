@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 import os
 import numpy as np
 import astropy.io.fits as pyfits
@@ -9,9 +10,9 @@ from sofia import __astropy_arg_overwrite__
 
 
 
-# ===========================================
-# FUNCTION: Create nr-of-chan and moment maps
-# ===========================================
+# ======================================
+# FUNCTION: Create Nchan and moment maps
+# ======================================
 
 def writeMoments(datacube, maskcube, filename, debug, header, compress, write_mom, flagOverwrite):
 	# Exit if nothing is to be done
@@ -33,10 +34,10 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, write_mo
 	hdu.header["DATAMIN"] = np.nanmin(nrdetchan)
 	hdu.header["DATAMAX"] = np.nanmax(nrdetchan)
 	hdu.header["ORIGIN"] = sofia_version_full
-	glob.delete_header("CTYPE3", hdu.header)
-	glob.delete_header("CRPIX3", hdu.header)
-	glob.delete_header("CRVAL3", hdu.header)
-	glob.delete_header("CDELT3", hdu.header)
+	glob.delete_header(hdu.header, "CTYPE3")
+	glob.delete_header(hdu.header, "CRPIX3")
+	glob.delete_header(hdu.header, "CRVAL3")
+	glob.delete_header(hdu.header, "CDELT3")
 	
 	name = str(filename) + "_nrch.fits"
 	if compress: name += ".gz"
@@ -153,10 +154,10 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, write_mo
 			hdu.header["DATAMAX"] = np.nanmax(moments[i])
 			hdu.header["ORIGIN"] = sofia_version_full
 			hdu.header["CELLSCAL"] = "CONSTANT"
-			glob.delete_header("CRPIX3", hdu.header)
-			glob.delete_header("CRVAL3", hdu.header)
-			glob.delete_header("CDELT3", hdu.header)
-			glob.delete_header("CTYPE3", hdu.header)
+			glob.delete_header(hdu.header, "CRPIX3")
+			glob.delete_header(hdu.header, "CRVAL3")
+			glob.delete_header(hdu.header, "CDELT3")
+			glob.delete_header(hdu.header, "CTYPE3")
 			
 			if debug:
 				hdu.writeto(str(filename) + "_mom{0:d}.debug.fits".format(i), output_verify="warn", **__astropy_arg_overwrite__)

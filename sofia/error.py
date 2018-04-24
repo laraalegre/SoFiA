@@ -1,6 +1,18 @@
+#! /usr/bin/env python
+
 import sys
 from time import time
 from sofia import __version_full__ as sofia_version_full
+
+
+# ==================================
+# SETTINGS: Terminal colour settings
+# ==================================
+
+TERM_COL_RESET = "\x1B[0m"
+TERM_COL_WARN  = "\x1B[33m"
+TERM_COL_ERROR = "\x1B[31m"
+TERM_COL_FATAL = "\x1B[35m"
 
 
 # =====================================
@@ -20,9 +32,7 @@ def message(message, verbose=True):
 
 def warning(message, fatal=False, frame=False):
 	message = message.replace("\n", "\n         ")
-	separator(frame)
-	sys.stderr.write("\x1B[33mWARNING: " + str(message) + "\x1B[0m\n")
-	separator(frame)
+	sys.stderr.write(TERM_COL_WARN + separator(frame) + "WARNING: " + str(message) + "\n" + separator(frame) + TERM_COL_RESET)
 	if fatal: sys.exit(0)
 	return
 
@@ -34,15 +44,11 @@ def warning(message, fatal=False, frame=False):
 def error(message, fatal=True, frame=False):
 	if fatal:
 		message = message.replace("\n", "\n             ")
-		separator(frame)
-		sys.stderr.write("\x1B[35mFATAL ERROR: " + str(message) + "\x1B[0m\n")
-		separator(frame)
+		sys.stderr.write(TERM_COL_FATAL + separator(frame) + "FATAL ERROR: " + str(message) + "\n" + separator(frame) + TERM_COL_RESET)
 		sys.exit(1)
 	else:
 		message = message.replace("\n", "\n       ")
-		separator(frame)
-		sys.stderr.write("\x1B[31mERROR: " + str(message) + "\x1B[0m\n")
-		separator(frame)
+		sys.stderr.write(TERM_COL_ERROR + separator(frame) + "ERROR: " + str(message) + "\n" + separator(frame) + TERM_COL_RESET)
 	return
 
 
@@ -55,13 +61,13 @@ def ensure(condition, message, fatal=True, frame=False):
 	return
 
 
-# ==============================
-# FUNCTION: Print separator line
-# ==============================
+# ===============================
+# FUNCTION: Return separator line
+# ===============================
 
 def separator(frame = True):
-	if frame: sys.stderr.write("______________________________________________________________________________\n\n")
-	return
+	if frame: return("______________________________________________________________________________\n\n")
+	return ""
 
 
 # ==========================
