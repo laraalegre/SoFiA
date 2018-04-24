@@ -1,8 +1,9 @@
 #! /usr/bin/env python
 import os
 from astropy.io import fits
-from sofia.version import getVersion
 from sofia import error as err
+from sofia import __version_full__ as sofia_version_full
+from sofia import __astropy_arg_overwrite__ as astropy_arg_overwrite
 
 def removeOptions(dictionary):
 	modDictionary = dictionary
@@ -56,7 +57,7 @@ def writeMask(cube, header, dictionary, filename, compress, flagOverwrite):
 	hdu.header["BUNIT"] = "source_ID"
 	hdu.header["DATAMIN"] = cube.min()
 	hdu.header["DATAMAX"] = cube.max()
-	hdu.header["ORIGIN"] = getVersion(full=True)
+	hdu.header["ORIGIN"] = sofia_version_full
 	
 	name = filename
 	if compress: name += ".gz"
@@ -66,6 +67,6 @@ def writeMask(cube, header, dictionary, filename, compress, flagOverwrite):
 		err.error("Output file exists: " + name + ".", fatal=False)
 		return
 	else:
-		hdu.writeto(name, output_verify="warn", clobber=True)
+		hdu.writeto(name, output_verify="warn", **{astropy_arg_overwrite : True})
 	
 	return

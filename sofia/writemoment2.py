@@ -1,47 +1,11 @@
 #!/usr/bin/env python
 import os
 import numpy as np
-import scipy.constants
-from scipy import interpolate
 import astropy.io.fits as pyfits
 from sofia import global_settings as glob
-from sofia import version
 from sofia import error as err
-
-
-
-# ==========================
-# FUNCTION: Regrid data cube
-# ==========================
-
-def regridMaskedChannels(datacube, maskcube, header):
-	maskcubeFlt = maskcube.astype("float")
-	maskcubeFlt[maskcube > 1] = 1.0
-	
-	err.message("Regridding...")
-	z = (np.arange(1.0, header["NAXIS3"] + 1) - header["CRPIX3"]) * header["CDELT3"] + header["CRVAL3"]
-	
-	if header["CTYPE3"] == "VELO-HEL":
-		pixscale = (1.0 - header["CRVAL3"] / scipy.constants.c) / (1.0 - z / scipy.constants.c)
-	else:
-		err.warning("Cannot convert 3rd axis coordinates to frequency.\nIgnoring the effect of CELLSCAL = 1/F.")
-		pixscale = np.ones((header["NAXIS3"]))
-	
-	x0 = header["CRPIX1"] - 1
-	y0 = header["CRPIX2"] - 1
-	xs = np.arange(datacube.shape[2], dtype=float) - x0
-	ys = np.arange(datacube.shape[1], dtype=float) - y0
-	
-	for zz in range(datacube.shape[0]):
-		regrid_channel = interpolate.RectBivariateSpline(ys * pixscale[zz], xs * pixscale[zz], datacube[zz])
-		datacube[zz] = regrid_channel(ys, xs)
-		regrid_channel_mask = interpolate.RectBivariateSpline(ys * pixscale[zz], xs * pixscale[zz], maskcubeFlt[zz])
-		maskcubeFlt[zz] = regrid_channel_mask(ys, xs)
-	
-	datacube[abs(maskcubeFlt) <= abs(np.nanmin(maskcubeFlt))] = 0.0
-	del maskcubeFlt
-	
-	return datacube
+from sofia import __version_full__ as sofia_version_full
+from sofia import __astropy_arg_overwrite__ as astropy_arg_overwrite
 
 
 
@@ -49,12 +13,9 @@ def regridMaskedChannels(datacube, maskcube, header):
 # FUNCTION: Create nr-of-chan and moment maps
 # ===========================================
 
-def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, domom1, flagOverwrite):
-	# Disable moment 2 for now
-	domom2 = False
-	
-	# Exit if nothing to be done
-	if not (domom0 or domom1 or domom2):
+def writeMoments(datacube, maskcube, filename, debug, header, compress, write_mom, flagOverwrite):
+	# Exit if nothing is to be done
+	if not any(write_mom):
 		err.warning("No moment maps requested; skipping moment map generation.")
 		return
 	
@@ -71,11 +32,11 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 	hdu.header["BUNIT"] = "Nchan"
 	hdu.header["DATAMIN"] = np.nanmin(nrdetchan)
 	hdu.header["DATAMAX"] = np.nanmax(nrdetchan)
-	hdu.header["ORIGIN"] = version.getVersion(full=True)
-	del(hdu.header["CRPIX3"])
-	del(hdu.header["CRVAL3"])
-	del(hdu.header["CDELT3"])
-	del(hdu.header["CTYPE3"])
+	hdu.header["ORIGIN"] = sofia_version_full
+	glob.delete_header("CTYPE3", hdu.header)
+	glob.delete_header("CRPIX3", hdu.header)
+	glob.delete_header("CRVAL3", hdu.header)
+	glob.delete_header("CDELT3", hdu.header)
 	
 	name = str(filename) + "_nrch.fits"
 	if compress: name += ".gz"
@@ -84,7 +45,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 	if not flagOverwrite and os.path.exists(name):
 		err.error("Output file exists: " + str(name) + ".", fatal=False)
 	else:
-		hdu.writeto(name, output_verify="warn", clobber=True)
+		hdu.writeto(name, output_verify="warn", **{astropy_arg_overwrite : True})
 	
 	# ----------------------
 	# Moment 0, 1 and 2 maps
@@ -98,14 +59,14 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 	if "CELLSCAL" in header and header["CELLSCAL"] == "1/F":
 		err.warning(
 			"CELLSCAL keyword with value of 1/F found.\n"
-			"Will regrid masked cube before making moment images.")
-		datacube = regridMaskedChannels(datacube, maskcube, header)
+			"Will regrid data cube before creating moment images.")
+		datacube = glob.regridMaskedChannels(datacube, maskcube, header)
 	
 	# ALERT: Why are we doing this?
 	#datacube = np.array(datacube, dtype=np.single)
 	
 	# Extract relevant WCS parameters
-	if "CTYPE3" in header and "CDELT3" in header and "CRPIX3" in header and "CRVAL3" in header:
+	if glob.check_wcs_info(header):
 		width = header["CDELT3"]
 		chan0 = header["CRPIX3"]
 		freq0 = header["CRVAL3"]
@@ -136,7 +97,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 				# Working with whatever frequency units the cube has
 				unit_spec = str(header["CUNIT3"])
 	else:
-		err.warning("Axis descriptors for kinematic axis missing from header.\nMoment maps will not be scaled!")
+		err.warning("Axis descriptors missing from FITS file header.\nMoment maps will not be scaled!")
 		width = 1.0
 		chan0 = 0.0
 		freq0 = 0.0
@@ -148,16 +109,16 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 	#       having to cast array sizes to the full 3-D data cube size!
 	moments = [None, None, None]
 	with np.errstate(invalid="ignore"):
-		if domom0 or domom1 or domom2:
+		if any(write_mom):
 			# Definition of moment 0
 			moments[0] = np.nansum(datacube, axis=0)
 		
-		if domom1 or domom2:
+		if write_mom[1] or write_mom[2]:
 			# Definition of moment 1
 			velArr = ((np.arange(datacube.shape[0]) + 1.0 - chan0) * width + freq0).reshape((datacube.shape[0], 1, 1))
 			moments[1] = np.divide(np.nansum(velArr * datacube, axis=0), moments[0])
 		
-		if domom2:
+		if write_mom[2]:
 			# Definition of moment 2
 			velArr = velArr - moments[1]
 			moments[2] = np.sqrt(np.divide(np.nansum(velArr * velArr * datacube, axis=0), moments[0]))
@@ -176,28 +137,29 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 		else:
 			unit_flux += "." + unit_spec
 	else:
+		err.warning("Cannot determine flux unit; BUNIT missing from header.")
 		unit_flux = ""
 	unit_mom = [unit_flux, unit_spec, unit_spec]
 	
 	# Writing moment maps to disk
 	for i in range(3):
-		if moments[i] is not None:
-			err.message("  Writing moment {0:d} image.".format(i))
+		if write_mom[i] and moments[i] is not None:
+			err.message("Writing moment {0:d} image.".format(i))
 			moments[i] *= mom_scale_factor
 			
 			hdu = pyfits.PrimaryHDU(data=moments[i], header=header)
 			hdu.header["BUNIT"] = unit_mom[i]
 			hdu.header["DATAMIN"] = np.nanmin(moments[i])
 			hdu.header["DATAMAX"] = np.nanmax(moments[i])
-			hdu.header["ORIGIN"] = version.getVersion(full=True)
+			hdu.header["ORIGIN"] = sofia_version_full
 			hdu.header["CELLSCAL"] = "CONSTANT"
-			del(hdu.header["CRPIX3"])
-			del(hdu.header["CRVAL3"])
-			del(hdu.header["CDELT3"])
-			del(hdu.header["CTYPE3"])
+			glob.delete_header("CRPIX3", hdu.header)
+			glob.delete_header("CRVAL3", hdu.header)
+			glob.delete_header("CDELT3", hdu.header)
+			glob.delete_header("CTYPE3", hdu.header)
 			
 			if debug:
-				hdu.writeto(str(filename) + "_mom{0:d}.debug.fits".format(i), output_verify="warn", clobber=True)
+				hdu.writeto(str(filename) + "_mom{0:d}.debug.fits".format(i), output_verify="warn", **{astropy_arg_overwrite : True})
 			else:
 				name = str(filename) + "_mom{0:d}.fits".format(i)
 				if compress: name += ".gz"
@@ -206,6 +168,6 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 				if not flagOverwrite and os.path.exists(name):
 					err.error("Output file exists: " + str(name) + ".", fatal=False)
 				else:
-					hdu.writeto(name, output_verify="warn", clobber=True)
+					hdu.writeto(name, output_verify="warn", **{astropy_arg_overwrite : True})
 	
 	return

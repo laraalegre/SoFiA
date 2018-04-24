@@ -6,8 +6,9 @@ cimport numpy as np
 import scipy.constants
 from scipy import interpolate
 from libc.math cimport isnan
-from sofia import version
 from sofia import error as err
+from sofia import __version_full__ as sofia_version_full
+from sofia import __astropy_arg_overwrite__ as astropy_arg_overwrite
 
 
 
@@ -55,7 +56,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 	hdu.header["BUNIT"] = "Nchan"
 	hdu.header["DATAMIN"] = nrdetchan.min()
 	hdu.header["DATAMAX"] = nrdetchan.max()
-	hdu.header["ORIGIN"] = version.getVersion(full=True)
+	hdu.header["ORIGIN"] = sofia_version_full
 	del(hdu.header["CRPIX3"])
 	del(hdu.header["CRVAL3"])
 	del(hdu.header["CDELT3"])
@@ -68,7 +69,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 	if not flagOverwrite and os.path.exists(name):
 		err.error("Output file exists: " + str(name) + ".", fatal=False)
 	else:
-		hdu.writeto(name, output_verify="warn", clobber=True)
+		hdu.writeto(name, output_verify="warn", **{astropy_arg_overwrite : True})
 	
 	# WARNING: The generation of moment maps will mask the copy of the data cube held
 	#          in memory by SoFiA. If you wish to use the original data cube after
@@ -140,7 +141,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 		hdu.header["BUNIT"] += bunitExt
 		hdu.header["DATAMIN"] = (m0 * dkms).min()
 		hdu.header["DATAMAX"] = (m0 * dkms).max()
-		hdu.header["ORIGIN"] = version.getVersion(full=True)
+		hdu.header["ORIGIN"] = sofia_version_full
 		del(hdu.header["CRPIX3"])
 		del(hdu.header["CRVAL3"])
 		del(hdu.header["CDELT3"])
@@ -148,7 +149,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 		hdu.header["CELLSCAL"] = "constant"
 		
 		if debug:
-			hdu.writeto("%s_mom0.debug.fits" % filename, output_verify="warn", clobber=True)
+			hdu.writeto("%s_mom0.debug.fits" % filename, output_verify="warn", **{astropy_arg_overwrite : True})
 		else:
 			name = "%s_mom0.fits" % filename
 			if compress: name += ".gz"
@@ -157,7 +158,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 			if not flagOverwrite and os.path.exists(name):
 				err.error("Output file exists: " + str(name) + ".", fatal=False)
 			else:
-				hdu.writeto(name, output_verify="warn", clobber=True)
+				hdu.writeto(name, output_verify="warn", **{astropy_arg_overwrite : True})
 	
 	# --------------
 	# Moment 1 image
@@ -198,7 +199,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 		hdu.header["BUNIT"] = bunitExt
 		hdu.header["DATAMIN"] = np.nanmin(m1)
 		hdu.header["DATAMAX"] = np.nanmax(m1)
-		hdu.header["ORIGIN"] = version.getVersion(full=True)
+		hdu.header["ORIGIN"] = sofia_version_full
 		del(hdu.header["CRPIX3"])
 		del(hdu.header["CRVAL3"])
 		del(hdu.header["CDELT3"])
@@ -206,7 +207,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 		hdu.header["CELLSCAL"] = "constant"
 		
 		if debug:
-			hdu.writeto("%s_mom1.debug.fits" % filename, output_verify="warn", clobber=True)
+			hdu.writeto("%s_mom1.debug.fits" % filename, output_verify="warn", **{astropy_arg_overwrite : True})
 		else:
 			name = "%s_mom1.fits" % filename
 			if compress: name += ".gz"
@@ -215,7 +216,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 			if not flagOverwrite and os.path.exists(name):
 				err.error("Output file exists: " + str(name) + ".", fatal=False)
 			else:
-				hdu.writeto(name, output_verify="warn", clobber=True)
+				hdu.writeto(name, output_verify="warn", **{astropy_arg_overwrite : True})
 
 
 #def mom0(cube1):

@@ -6,8 +6,8 @@ import numpy as np
 from xml.etree.ElementTree import Element, SubElement, tostring
 from xml.dom import minidom
 from gzip import open as gzopen
-from sofia.version import getVersion
 from sofia import error as err
+from sofia import __version__ as sofia_version
 
 
 # --------------------------------
@@ -92,9 +92,9 @@ def write_catalog_from_array(mode, objects, catHeader, catUnits, catFormat, parL
 	if mode == "XML":
 		# Define basic XML header information
 		votable          = Element("VOTABLE")
-		resource         = SubElement(votable, "RESOURCE", name="SoFiA catalogue (version %s)" % getVersion())
+		resource         = SubElement(votable, "RESOURCE", name="SoFiA catalogue (version %s)" % sofia_version)
 		description      = SubElement(resource, "DESCRIPTION")
-		description.text = "Source catalogue from the Source Finding Application (SoFiA) version %s" % getVersion()
+		description.text = "Source catalogue from the Source Finding Application (SoFiA) version %s" % sofia_version
 		coosys           = SubElement(resource, "COOSYS", ID="J2000")
 		table            = SubElement(resource, "TABLE", ID="sofia_cat", name="sofia_cat")
 		
@@ -148,7 +148,7 @@ def write_catalog_from_array(mode, objects, catHeader, catUnits, catFormat, parL
 		noID = "id" not in parList
 		
 		# Write some header information:
-		content = "-- SoFiA catalogue (version %s)\n\nSET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";\n\n" % getVersion()
+		content = "-- SoFiA catalogue (version %s)\n\nSET SQL_MODE = \"NO_AUTO_VALUE_ON_ZERO\";\n\n" % sofia_version
 		
 		# Construct and write table structure:
 		flagProgress = False
@@ -209,7 +209,7 @@ def write_catalog_from_array(mode, objects, catHeader, catUnits, catFormat, parL
 		headerCol  = ""
 		outFormat  = ""
 		colCount   =  0
-		header     = "SoFiA catalogue (version %s)\n" % getVersion()
+		header     = "SoFiA catalogue (version %s)\n" % sofia_version
 		
 		for par in parList:
 			index = list(catHeader).index(par)

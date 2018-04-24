@@ -2,48 +2,12 @@
 import os
 import math
 import numpy as np
-import scipy.constants
-from scipy import interpolate
 from scipy.ndimage import map_coordinates
 from astropy.io import fits
 from sofia import global_settings as glob
-from sofia import version
 from sofia import error as err
-
-
-# -----------------------------------------------------
-# FUNCTION: Regrid data cube for moment map calculation
-# -----------------------------------------------------
-
-def regridMaskedChannels(datacube, maskcube, header):
-	maskcubeFlt = maskcube.astype("float")
-	maskcubeFlt[maskcube > 1] = 1.0
-	
-	err.message("Regridding...")
-	z = (np.arange(1.0, header["NAXIS3"] + 1) - header["CRPIX3"]) * header["CDELT3"] + header["CRVAL3"]
-	if glob.check_header_keywords(glob.KEYWORDS_VELO, header["CTYPE3"]):
-		pixscale = (1.0 - header["CRVAL3"] / scipy.constants.c) / (1.0 - z / scipy.constants.c)
-		# WARNING: Strictly correct only for the radio velocity definition!
-	elif glob.check_header_keywords(glob.KEYWORDS_FREQ, header["CTYPE3"]):
-		pixscale = header["CRVAL3"] / z
-	else:
-		err.warning("Cannot convert 3rd axis coordinates to frequency.\nWill ignore the effect of CELLSCAL = 1/F.")
-		pixscale = np.ones((header["naxis3"]))
-	
-	x0 = header["CRPIX1"] - 1
-	y0 = header["CRPIX2"] - 1
-	xs = np.arange(datacube.shape[2], dtype=float) - x0
-	ys = np.arange(datacube.shape[1], dtype=float) - y0
-	
-	for zz in range(datacube.shape[0]):
-		regrid_channel = interpolate.RectBivariateSpline(ys * pixscale[zz], xs * pixscale[zz], datacube[zz])
-		datacube[zz] = regrid_channel(ys, xs)
-		regrid_channel_mask = interpolate.RectBivariateSpline(ys * pixscale[zz], xs * pixscale[zz], maskcubeFlt[zz])
-		maskcubeFlt[zz] = regrid_channel_mask(ys, xs)
-	
-	datacube[abs(maskcubeFlt) <= abs(np.nanmin(maskcubeFlt))] = np.nan
-	del maskcubeFlt
-	return datacube
+from sofia import __version_full__ as sofia_version_full
+from sofia import __astropy_arg_overwrite__ as astropy_arg_overwrite
 
 
 # ------------------------------------------------------
@@ -137,7 +101,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 		headerCubelets["NAXIS2"] = subcube.shape[1]
 		headerCubelets["NAXIS3"] = subcube.shape[0]
 		
-		headerCubelets["ORIGIN"] = version.getVersion(full=True)
+		headerCubelets["ORIGIN"] = sofia_version_full
 		
 		# Write the cubelet
 		hdu = fits.PrimaryHDU(data=subcube, header=headerCubelets)
@@ -146,7 +110,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 		if compress: name += ".gz"
 		
 		# Check for overwrite flag:
-		if check_overwrite(name, flagOverwrite): hdulist.writeto(name, output_verify="warn", clobber=True)
+		if check_overwrite(name, flagOverwrite): hdulist.writeto(name, output_verify="warn", **{astropy_arg_overwrite : True})
 		
 		hdulist.close()
 		
@@ -182,13 +146,13 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 			hdulist[0].header["CDELT2"] = hdulist[0].header["CDELT3"]
 			hdulist[0].header["CRVAL2"] = hdulist[0].header["CRVAL3"]
 			hdulist[0].header["CRPIX2"] = hdulist[0].header["CRPIX3"]
-			hdulist[0].header["ORIGIN"] = version.getVersion(full=True)
+			hdulist[0].header["ORIGIN"] = sofia_version_full
 			delete_3rd_axis(hdulist[0].header)
 			name = outputDir + cubename + "_" + str(int(obj[0])) + "_pv.fits"
 			if compress: name += ".gz"
 			
 			# Check for overwrite flag:
-			if check_overwrite(name, flagOverwrite): hdulist.writeto(name,output_verify="warn", clobber=True)
+			if check_overwrite(name, flagOverwrite): hdulist.writeto(name,output_verify="warn", **{astropy_arg_overwrite : True})
 			hdulist.close()
 		
 		# Remove all other sources from the mask
@@ -201,13 +165,13 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 		hdu.header["BUNIT"] = "Source-ID"
 		hdu.header["DATAMIN"] = np.nanmin(submask)
 		hdu.header["DATAMAX"] = np.nanmax(submask)
-		hdu.header["ORIGIN"] = version.getVersion(full=True)
+		hdu.header["ORIGIN"] = sofia_version_full
 		hdulist = fits.HDUList([hdu])
 		name = outputDir + cubename + "_" + str(int(obj[0])) + "_mask.fits"
 		if compress: name += ".gz"
 		
 		# Check for overwrite flag:
-		if check_overwrite(name, flagOverwrite): hdulist.writeto(name, output_verify="warn", clobber=True)
+		if check_overwrite(name, flagOverwrite): hdulist.writeto(name, output_verify="warn", **{astropy_arg_overwrite : True})
 		hdulist.close()
 		
 		# Units of moment images
@@ -255,7 +219,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 		subcubeCopy = subcube.copy()
 		subcubeCopy[submask == 0] = 0
 		if "cellscal" in headerCubelets:
-			if headerCubelets["cellscal"] == "1/F": subcubeCopy = regridMaskedChannels(subcubeCopy, submask, headerCubelets)
+			if headerCubelets["cellscal"] == "1/F": subcubeCopy = glob.regridMaskedChannels(subcubeCopy, submask, headerCubelets)
 		
 		
 		# ------------------
@@ -268,16 +232,16 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 			moments[0] = np.nansum(subcubeCopy, axis=0)
 			
 			# Definition of moment 1
-			# NOTE: Here we make use of array broadcasting in NumPy, but we need to reshape the velocity array
-			# from [nz] to [nz, 1, 1] for this to work, so that [nz, 1, 1] * [nz, ny, nx] --> [nz, ny, nx].
 			velArr = ((np.arange(subcubeCopy.shape[0]).reshape((subcubeCopy.shape[0], 1, 1)) + 1.0 - headerCubelets["CRPIX3"]) * headerCubelets["CDELT3"] + headerCubelets["CRVAL3"]) * scalemom12
 			moments[1] = np.divide(np.nansum(velArr * subcubeCopy, axis=0), moments[0])
+			# NOTE: Here we make use of array broadcasting in NumPy, but we need to reshape the velocity array
+			# from [nz] to [nz, 1, 1] for this to work, so that [nz, 1, 1] * [nz, ny, nx] --> [nz, ny, nx].
 			
 			# Definition of moment 2
-			# NOTE: The following works due to array broadcasting in NumPy and despite different array dimensions.
-			#       [nz, 1, 1] - [ny, nx] --> [nz, ny, nx] according to NumPy's broadcasting rules.
 			velArr = velArr - moments[1]
 			moments[2] = np.sqrt(np.divide(np.nansum(velArr * velArr * subcubeCopy, axis=0), moments[0]))
+			# NOTE: The above works due to array broadcasting in NumPy and despite different array dimensions.
+			#       [nz, 1, 1] - [ny, nx] --> [nz, ny, nx] according to NumPy's broadcasting rules.
 		
 		moments[0] *= dkms
 		units = [headerCubelets["BUNIT"] + bunitExt, bunitExt[1:], bunitExt[1:]]
@@ -288,10 +252,10 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 			hdu.header["BUNIT"]   = units[i]
 			hdu.header["DATAMIN"] = np.nanmin(moments[i])
 			hdu.header["DATAMAX"] = np.nanmax(moments[i])
-			hdu.header["ORIGIN"]  = version.getVersion(full=True)
-			filename = outputDir + cubename + "_" + str(int(obj[0])) + "_mom" + str(i) + ".fits"
+			hdu.header["ORIGIN"]  = sofia_version_full
+			filename = outputDir + cubename + "_{0:d}_mom{1:d}.fits".format(int(obj[0]), i)
 			if compress: filename += ".gz"
-			if check_overwrite(filename, flagOverwrite): hdu.writeto(filename, output_verify="warn", clobber=True)
+			if check_overwrite(filename, flagOverwrite): hdu.writeto(filename, output_verify="warn", **{astropy_arg_overwrite : True})
 		
 		
 		# -------------------
@@ -312,7 +276,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 				f = open(name, "w")
 			
 			f.write("# Integrated source spectrum\n")
-			f.write("# Creator: %s\n#\n" % version.getVersion(full=True))
+			f.write("# Creator: %s\n#\n" % sofia_version_full)
 			f.write("# Description of columns:\n")
 			f.write("# - Chan      Channel number.\n")
 			f.write("# - Spectral  Associated value of the spectral coordinate according to\n")

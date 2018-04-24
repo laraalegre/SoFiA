@@ -31,8 +31,9 @@ from sofia import cubelets
 from sofia import parametrisation
 from sofia import wcs_coordinates
 from sofia import CNHI
-from sofia import version
 from sofia import error as err
+from sofia import __version__ as sofia_version
+from sofia import __version_full__ as sofia_version_full
 
 
 
@@ -81,7 +82,7 @@ def printProgressTime():
 # --------------------------------------------
 
 def printProgressMessage(message):
-	message = "--- {0:}: {1:} ".format(version.getVersion(full=True), message)
+	message = "--- {0:}: {1:} ".format(sofia_version_full, message)
 	message = message.ljust(78, "-")
 	err.message("\n" + message)
 	printProgressTime()
@@ -105,7 +106,7 @@ if len(sys.argv) != 2:
 
 err.message(
 	"\n--- Running the SoFiA pipeline -----------------------------------------------\n\n"
-	"    Using: SoFiA   " + version.getVersion() + "\n"
+	"    Using: SoFiA   " + sofia_version + "\n"
 	"           Python  " + str(sys.version_info[0]) + "." + str(sys.version_info[1]) + "." + str(sys.version_info[2]) + "\n"
 	"           NumPy   " + np.__version__ + "\n"
 	"           SciPy   " + scipy_version + "\n"
@@ -617,7 +618,8 @@ if Parameters["steps"]["doCubelets"] and Parameters["steps"]["doMerge"] and NRde
 if (Parameters["steps"]["doMom0"] or Parameters["steps"]["doMom1"]) and NRdet:
 	printProgressMessage("Writing moment maps")
 	debug = 0
-	writemoment2.writeMoments(np_Cube, mask, outroot, debug, dict_Header,Parameters["writeCat"]["compress"], Parameters["steps"]["doMom0"], Parameters["steps"]["doMom1"], Parameters["writeCat"]["overwrite"])
+	write_mom = [Parameters["steps"]["doMom0"], Parameters["steps"]["doMom1"], False]
+	writemoment2.writeMoments(np_Cube, mask, outroot, debug, dict_Header, Parameters["writeCat"]["compress"], write_mom, Parameters["writeCat"]["overwrite"])
 	
 	# WARNING: This will regrid and hence alter the data cube!
 	#          Read the original data cube again if needed for further

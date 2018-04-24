@@ -1,7 +1,8 @@
 #! /usr/bin/env python
 from astropy.io import fits
 from numpy import nanmin, nanmax
-from sofia.version import getVersion
+from sofia import __version_full__ as sofia_version_full
+from sofia import __astropy_arg_overwrite__ as astropy_arg_overwrite
 
 def removeOptions(dictionary):
 	modDictionary = dictionary
@@ -45,7 +46,7 @@ def writeFilteredCube(cube, header, dictionary, filename, compress):
 	hdu = fits.PrimaryHDU(data = cube, header = header)
 	hdu.header["DATAMIN"] = nanmin(cube)
 	hdu.header["DATAMAX"] = nanmax(cube)
-	hdu.header["ORIGIN"] = getVersion(full=True)
+	hdu.header["ORIGIN"] = sofia_version_full
 	
 	if compress: filename += ".gz"
-	hdu.writeto(filename,output_verify="warn", clobber=True)
+	hdu.writeto(filename,output_verify="warn", **{astropy_arg_overwrite : True})

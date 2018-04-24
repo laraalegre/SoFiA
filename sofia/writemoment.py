@@ -1,8 +1,9 @@
 #! /usr/bin/env python
-import astropy.io.fits as pyfits
 import os
 import numpy as np
-from .version import *
+import astropy.io.fits as pyfits
+from sofia import __version_full__ as sofia_version_full
+from sofia import __astropy_arg_overwrite__ as astropy_arg_overwrite
 
 def removeOptions(dictionary):
 	modDictionary = dictionary
@@ -44,18 +45,18 @@ def writeMoment0(datacube,maskcube,filename,debug,header,compress):
 	hdu.header['bunit'] += '.km/s'
 	hdu.header['datamin'] = (m0 * dkms).min()
 	hdu.header['datamax'] = (m0 * dkms).max()
-	hdu.header['ORIGIN'] = getVersion(full=True)
+	hdu.header['ORIGIN'] = sofia_version_full
 	del(hdu.header['crpix3'])
 	del(hdu.header['crval3'])
 	del(hdu.header['cdelt3'])
 	del(hdu.header['ctype3'])
 	
 	if debug:
-		hdu.writeto('%s_mom0.debug.fits' % filename, output_verify='warn', clobber=True)
+		hdu.writeto('%s_mom0.debug.fits' % filename, output_verify='warn', **{astropy_arg_overwrite : True})
 	else: 
 		name = '%s_mom0.fits' % filename
 		if compress: name += '.gz'
-		hdu.writeto(name, output_verify='warn', clobber=True)
+		hdu.writeto(name, output_verify='warn', **{astropy_arg_overwrite : True})
 	return m0
 
 def writeMoment1(datacube, maskcube, filename, debug, header, m0, compress):
@@ -78,15 +79,15 @@ def writeMoment1(datacube, maskcube, filename, debug, header, m0, compress):
 	hdu.header['bunit'] = 'km/s'
 	hdu.header['datamin'] = np.nanmin(m1)
 	hdu.header['datamax'] = np.nanmax(m1)
-	hdu.header['ORIGIN'] = getVersion(full=True)
+	hdu.header['ORIGIN'] = sofia_version_full
 	del(hdu.header['crpix3'])
 	del(hdu.header['crval3'])
 	del(hdu.header['cdelt3'])
 	del(hdu.header['ctype3'])
 	
 	if debug:
-		hdu.writeto('%s_mom1.debug.fits' % filename, output_verify='warn', clobber=True)
+		hdu.writeto('%s_mom1.debug.fits' % filename, output_verify='warn', **{astropy_arg_overwrite : True})
 	else:
 		name = '%s_mom1.fits' % filename
 		if compress: name += '.gz'
-		hdu.writeto(name, output_verify='warn', clobber=True)
+		hdu.writeto(name, output_verify='warn', **{astropy_arg_overwrite : True})
