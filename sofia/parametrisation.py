@@ -49,9 +49,10 @@ def dilate(cube, mask, objects, cathead, Parameters):
 			dilstruct.resize((1, dilstruct.shape[0], dilstruct.shape[1]))
 			dilstruct = dilstruct.repeat(dilateChan * 2 + 1, axis=0)
 			fluxes.append(objcube[nd.morphology.binary_dilation(objmask==mm, structure=dilstruct)].sum())
-			if dil > 0 and (fluxes[-1] - fluxes[-2]) / fluxes[-1] < dilateThreshold: break
+			if dil > 0 and (fluxes[-1] - fluxes[-2]) / fluxes[-1] < dilateThreshold:
+				dil -= 1
+				break
 		# pick the best dilation kernel for current object and update mask
-		dil -= 1
 		print ('Mask dilation of source %i by %i pix and %i chan' % (mm, dil, dilateChan))
 		sys.stdout.flush()
 		dd = dil * 2 + 1
