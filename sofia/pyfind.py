@@ -27,7 +27,8 @@ def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.5, siz
 	for kernel in kernels:
 		[kx, ky, kz, kt] = kernel
 		if verbose:
-			err.message("\n--- %.3f seconds since start" % (time() - t0))
+			err.linebreak()
+			err.print_progress_time(t0)
 			err.message("    Filter %s %s %s %s ..." % (kx, ky, kz, kt))
 		if kernelUnit == "world" or kernelUnit == "w":
 			if verbose: err.message("    Converting filter size to pixels ...")
