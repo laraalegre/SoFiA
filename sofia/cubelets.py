@@ -121,10 +121,11 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 		# -------------------------
 		
 		if "kin_pa" in cathead:
+			kin_pa = math.radians(float(obj[cathead == "kin_pa"][0]))
 			pv_sampling = 10
 			pv_r = np.arange(-max(subcube.shape[1:]), max(subcube.shape[1:]) - 1 + 1.0 / pv_sampling, 1.0 / pv_sampling)
-			pv_y = Yc - float(YminNew) + pv_r * math.cos(float(obj[cathead == "kin_pa"][0]) / 180 * math.pi)
-			pv_x = Xc - float(XminNew) - pv_r * math.sin(float(obj[cathead == "kin_pa"][0]) / 180 * math.pi)
+			pv_y = Yc - float(YminNew) + pv_r * math.cos(kin_pa)
+			pv_x = Xc - float(XminNew) - pv_r * math.sin(kin_pa)
 			pv_x, pv_y = pv_x[(pv_x >= 0) * (pv_x <= subcube.shape[2] - 1)], pv_y[(pv_x >= 0) * (pv_x <= subcube.shape[2] - 1)]
 			pv_x, pv_y = pv_x[(pv_y >= 0) * (pv_y <= subcube.shape[1] - 1)], pv_y[(pv_y >= 0) * (pv_y <= subcube.shape[1] - 1)]
 			pv_x.resize((1, pv_x.shape[0]))
@@ -156,6 +157,11 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 			if check_overwrite(name, flagOverwrite): hdulist.writeto(name,output_verify="warn", **__astropy_arg_overwrite__)
 			hdulist.close()
 		
+		
+		# -------------
+		# Mask cubelets
+		# -------------
+		
 		# Remove all other sources from the mask
 		submask = mask[ZminNew:ZmaxNew + 1, YminNew:YmaxNew + 1, XminNew:XmaxNew + 1].astype("int")
 		submask[submask != obj[0]] = 0
@@ -174,6 +180,11 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 		# Check for overwrite flag:
 		if check_overwrite(name, flagOverwrite): hdulist.writeto(name, output_verify="warn", **__astropy_arg_overwrite__)
 		hdulist.close()
+		
+		
+		# ------------------
+		# Moments 0, 1 and 2
+		# ------------------
 		
 		# Units of moment images
 		# Velocity
@@ -221,11 +232,6 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 		subcubeCopy[submask == 0] = 0
 		if "cellscal" in headerCubelets:
 			if headerCubelets["cellscal"] == "1/F": subcubeCopy = glob.regridMaskedChannels(subcubeCopy, submask, headerCubelets)
-		
-		
-		# ------------------
-		# Moments 0, 1 and 2
-		# ------------------
 		
 		moments = [None, None, None]
 		with np.errstate(invalid="ignore"):

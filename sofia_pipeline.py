@@ -563,7 +563,7 @@ if Parameters["steps"]["doParameterise"] and Parameters["steps"]["doMerge"] and 
 	catParUnits = tuple(catParUnits)
 	catParFormt = tuple(catParFormt)
 	
-	err.message("Parameterisation complete")
+	err.message("Parameterisation complete.")
 
 
 
