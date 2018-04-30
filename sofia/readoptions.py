@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 from ast import literal_eval
 from sofia import error as err
-from sofia.version import getVersion
+from sofia import __version__ as sofia_version
 
 
 # -----------------------------------------
@@ -34,8 +34,7 @@ def readPipelineOptions(filename = "pipeline.options"):
 	for line in lines:
 		if "# Creator: SoFiA" in line:
 			par_file_version = line[17:]
-			sof_file_version = getVersion()
-			if par_file_version != sof_file_version:
+			if par_file_version != sofia_version:
 				err.warning(
 					"The parameter file was created with a different version of SoFiA\n"
 					"(" + str(par_file_version) + ") than the one you are currently using (" + str(sof_file_version) + ").\n"

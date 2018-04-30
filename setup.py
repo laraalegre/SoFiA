@@ -105,11 +105,11 @@ CNHI_src_files = [
 CNHI_src = [CNHI_src_base + f for f in CNHI_src_files]
 
 # Moment output module
-#writemoment2_src_base = 'src/writemoment2/'
-#writemoment2_src_files = [
-#	'writemoment2.c'
-#	]
-#writemoment2_src = [writemoment2_src_base + f for f in writemoment2_src_files]
+writemoment2_src_base = 'src/writemoment2/'
+writemoment2_src_files = [
+	'writemoment2.c'
+	]
+writemoment2_src = [writemoment2_src_base + f for f in writemoment2_src_files]
 
 # Interface to the parametrization code
 parametrizer_src_base = 'src/parametrizer/'
@@ -149,11 +149,11 @@ setup(
 			CNHI_src,
 			extra_compile_args=['-I. -O3'],
 			include_dirs=include_dirs),
-		#Extension(
-		#	'writemoment2',
-		#	writemoment2_src,
-		#	extra_compile_args=['-O3'],
-		#	include_dirs=include_dirs),
+		Extension(
+			'writemoment2',
+			writemoment2_src,
+			extra_compile_args=['-O3'],
+			include_dirs=include_dirs),
 		Extension(
 			'cparametrizer',
 			parametrizer_src,

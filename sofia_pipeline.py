@@ -25,7 +25,8 @@ from sofia import threshold_filter
 from sofia import smooth_cube
 from sofia import write_filtered_cube
 from sofia import writemask
-from sofia import writemoment
+from sofia import writemoment2
+#from sofia import writemoment
 from sofia import write_catalog
 from sofia import linker
 from sofia import cubelets
@@ -597,7 +598,8 @@ if (Parameters["steps"]["doMom0"] or Parameters["steps"]["doMom1"]) and NRdet:
 	err.print_progress_message("Writing moment maps", t0)
 	debug = 0
 	write_mom = [Parameters["steps"]["doMom0"], Parameters["steps"]["doMom1"], False]
-	writemoment.writeMoments(np_Cube, mask, outroot, debug, dict_Header, Parameters["writeCat"]["compress"], write_mom, Parameters["writeCat"]["overwrite"])
+	writemoment2.writeMoments(np_Cube, mask, outroot, debug, dict_Header, Parameters["writeCat"]["compress"], write_mom[0], write_mom[1], Parameters["writeCat"]["overwrite"])
+	#writemoment.writeMoments(np_Cube, mask, outroot, debug, dict_Header, Parameters["writeCat"]["compress"], write_mom, Parameters["writeCat"]["overwrite"])
 	
 	# WARNING: This will regrid and hence alter the data cube!
 	#          Read the original data cube again if needed for further
