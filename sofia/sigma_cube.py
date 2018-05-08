@@ -93,6 +93,7 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 						else:
 							# Fill entire grid cell
 							rms_cube[grid[0]:grid[1], grid[2]:grid[3], grid[4]:grid[5]] = GetRMS(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0)
+					del grid, window
 		
 		# Carry out interpolation if requested, taking NaNs into account
 		if interpolation == "linear" or interpolation == "cubic":
@@ -109,9 +110,13 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 							if interpolation == "cubic":
 								spline = InterpolatedUnivariateSpline(gridPointsX[not_nan], data_values[not_nan])
 								rms_cube[z, y, 0:dimensions[2]] = spline(interp_coords)
+								del spline
 							else:
 								interp_values = np.interp(interp_coords, gridPointsX[not_nan], data_values[not_nan])
 								rms_cube[z, y, 0:dimensions[2]] = interp_values
+								del interp_values
+							del interp_coords
+						del data_values, not_nan
 					for x in range(dimensions[2]):
 						data_values   = rms_cube[z, gridPointsY, x]
 						not_nan = np.logical_not(np.isnan(data_values))
@@ -120,9 +125,13 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 							if interpolation == "cubic":
 								spline = InterpolatedUnivariateSpline(gridPointsY[not_nan], data_values[not_nan])
 								rms_cube[z, 0:dimensions[1], x] = spline(interp_coords)
+								del spline
 							else:
 								interp_values = np.interp(interp_coords, gridPointsY[not_nan], data_values[not_nan])
 								rms_cube[z, 0:dimensions[1], x] = interp_values
+								del interp_values
+							del interp_coords
+						del data_values, not_nan
 					# Alternative option: 2-D spatial interpolation using SciPy's interp2d
 					#from scipy.interpolate import interp2d
 					#xx, yy = np.meshgrid(gridPointsX, gridPointsY)
@@ -143,9 +152,13 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 							if interpolation == "cubic":
 								spline = InterpolatedUnivariateSpline(gridPointsZ[not_nan], data_values[not_nan])
 								rms_cube[0:dimensions[0], y, x] = spline(interp_coords)
+								del spline
 							else:
 								interp_values = np.interp(interp_coords, gridPointsZ[not_nan], data_values[not_nan])
 								rms_cube[0:dimensions[0], y, x] = interp_values
+								del interp_values
+							del interp_coords
+						del data_values, not_nan
 		
 		# Replace any invalid RMS values with NaN
 		with np.errstate(invalid="ignore"):

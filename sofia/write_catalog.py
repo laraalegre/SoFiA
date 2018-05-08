@@ -6,6 +6,7 @@ import numpy as np
 from xml.etree.ElementTree import Element, SubElement, tostring
 from xml.dom import minidom
 from gzip import open as gzopen
+from sofia import functions as func
 from sofia import error as err
 from sofia import __version__ as sofia_version
 
@@ -65,10 +66,7 @@ def write_catalog_from_array(mode, objects, catHeader, catUnits, catFormat, parL
 	err.message("Writing " + availableModes[modeIndex] + " catalogue: " + outName + ".")
 	
 	# Exit if file exists and overwrite flag is set to false
-	if not flagOverwrite and os.path.exists(outName):
-		err.error("Output file exists: " + str(outName) + ".", fatal=False)
-		return
-	
+	func.check_overwrite(outName, flagOverwrite, fatal=True)
 	
 	# Do we need to write all parameters?
 	if parList == ["*"] or not parList: parList = list(catHeader)

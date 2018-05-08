@@ -122,8 +122,8 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 				"The reliability cannot be calculated because the smoothing kernel\n"
 				"derived from " + str(pars[:,neg].shape[1]) + " negative sources cannot be inverted.\n"
 				"This is likely due to an insufficient number of negative sources.\n"
-				"Try to increase the number of negative sources by changing the source\n"
-				"finding and/or filtering settings.", fatal=True, frame=True)
+				"Try to increase the number of negative sources by changing the\n"
+				"source finding and/or filtering settings.", fatal=True, frame=True)
 		
 		if np.isnan(kernel).sum():
 			err.error(
@@ -131,8 +131,8 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 				"derived from " + str(pars[:,neg].shape[1]) + " negative sources contains NaNs.\n"
 				"A good kernel is required to calculate the density field of positive\n"
 				"and negative sources in parameter space.\n"
-				"Try to increase the number of negative sources by changing the source\n"
-				"finding and/or filtering settings.", fatal=True, frame=True)
+				"Try to increase the number of negative sources by changing the\n"
+				"source finding and/or filtering settings.", fatal=True, frame=True)
 		
 		if not usecov:
 			kernel = np.diag(np.diag(kernel))

@@ -6,7 +6,7 @@ cimport numpy as np
 import scipy.constants
 from scipy import interpolate
 from libc.math cimport isnan
-from sofia import global_settings as glob
+from sofia import functions as func
 from sofia import error as err
 from sofia import __version_full__ as sofia_version_full
 from sofia import __astropy_arg_overwrite__
@@ -35,9 +35,10 @@ def regridMaskedChannels(datacube,maskcube,header):
 		regrid_channel = interpolate.RectBivariateSpline(ys * pixscale[zz], xs * pixscale[zz], datacube[zz])
 		datacube[zz] = regrid_channel(ys, xs)
 		regrid_channel_mask = interpolate.RectBivariateSpline(ys * pixscale[zz], xs * pixscale[zz], maskcubeFlt[zz])
-		maskcubeFlt[zz] = regrid_channel_mask(ys, xs)
+		maskcubeFlt[zz] = np.abs(regrid_channel_mask(ys, xs)) # maskcubeFlt[zz] = regrid_channel_mask(ys, xs)
 	
-	datacube[abs(maskcubeFlt) <= abs(maskcubeFlt.min())] = 0.0
+	regridThreshold = maskcubeFlt.min()
+	datacube[maskcubeFlt <= regridThreshold] = 0.0 # datacube[abs(maskcubeFlt) <= abs(maskcubeFlt.min())] = 0.0
 	del maskcubeFlt
 	
 	return datacube
@@ -58,18 +59,16 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 	hdu.header["DATAMIN"] = nrdetchan.min()
 	hdu.header["DATAMAX"] = nrdetchan.max()
 	hdu.header["ORIGIN"] = sofia_version_full
-	glob.delete_header(hdu.header, "CRPIX3")
-	glob.delete_header(hdu.header, "CRVAL3")
-	glob.delete_header(hdu.header, "CDELT3")
-	glob.delete_header(hdu.header, "CTYPE3")
+	func.delete_header(hdu.header, "CRPIX3")
+	func.delete_header(hdu.header, "CRVAL3")
+	func.delete_header(hdu.header, "CDELT3")
+	func.delete_header(hdu.header, "CTYPE3")
 	
 	name = "%s_nrch.fits" % filename
 	if compress: name += ".gz"
 	
 	# Check for overwrite flag
-	if not flagOverwrite and os.path.exists(name):
-		err.error("Output file exists: " + str(name) + ".", fatal=False)
-	else:
+	if func.check_overwrite(name, flagOverwrite):
 		hdu.writeto(name, output_verify="warn", **__astropy_arg_overwrite__)
 	
 	# WARNING: The generation of moment maps will mask the copy of the data cube held
@@ -145,10 +144,10 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 		hdu.header["DATAMAX"] = (m0 * dkms).max()
 		hdu.header["ORIGIN"] = sofia_version_full
 		hdu.header["CELLSCAL"] = "constant"
-		glob.delete_header(hdu.header, "CRPIX3")
-		glob.delete_header(hdu.header, "CRVAL3")
-		glob.delete_header(hdu.header, "CDELT3")
-		glob.delete_header(hdu.header, "CTYPE3")
+		func.delete_header(hdu.header, "CRPIX3")
+		func.delete_header(hdu.header, "CRVAL3")
+		func.delete_header(hdu.header, "CDELT3")
+		func.delete_header(hdu.header, "CTYPE3")
 		
 		if debug:
 			hdu.writeto("%s_mom0.debug.fits" % filename, output_verify="warn", **__astropy_arg_overwrite__)
@@ -157,9 +156,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 			if compress: name += ".gz"
 			
 			# Check for overwrite flag
-			if not flagOverwrite and os.path.exists(name):
-				err.error("Output file exists: " + str(name) + ".", fatal=False)
-			else:
+			if func.check_overwrite(name, flagOverwrite):
 				hdu.writeto(name, output_verify="warn", **__astropy_arg_overwrite__)
 	
 	# --------------
@@ -204,10 +201,10 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 		hdu.header["DATAMAX"] = np.nanmax(m1)
 		hdu.header["ORIGIN"] = sofia_version_full
 		hdu.header["CELLSCAL"] = "constant"
-		glob.delete_header(hdu.header, "CRPIX3")
-		glob.delete_header(hdu.header, "CRVAL3")
-		glob.delete_header(hdu.header, "CDELT3")
-		glob.delete_header(hdu.header, "CTYPE3")
+		func.delete_header(hdu.header, "CRPIX3")
+		func.delete_header(hdu.header, "CRVAL3")
+		func.delete_header(hdu.header, "CDELT3")
+		func.delete_header(hdu.header, "CTYPE3")
 		
 		if debug:
 			hdu.writeto("%s_mom1.debug.fits" % filename, output_verify="warn", **__astropy_arg_overwrite__)
@@ -216,9 +213,7 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 			if compress: name += ".gz"
 			
 			# Check for overwrite flag
-			if not flagOverwrite and os.path.exists(name):
-				err.error("Output file exists: " + str(name) + ".", fatal=False)
-			else:
+			if func.check_overwrite(name, flagOverwrite):
 				hdu.writeto(name, output_verify="warn", **__astropy_arg_overwrite__)
 
 
@@ -227,7 +222,7 @@ def mom0(cube1):
 		int i, j, k
 		double[:,:] mom0 = np.zeros((cube1.shape[1], cube1.shape[2]))
 		float[:,:,:] cube = cube1
-		
+	
 	for j in range(cube.shape[1]):
 		for k in range(cube.shape[2]):
 			for i in range(cube.shape[0]):

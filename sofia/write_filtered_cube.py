@@ -25,6 +25,7 @@ def recursion(dictionary, optionsList, optionsDepth, counter=0):
 	else:
 		optionsList[len(optionsList) - 1] += "=" + str(dictionary)
 		counter = 0
+	return
 
 
 
@@ -59,3 +60,5 @@ def writeFilteredCube(cube, header, dictionary, filename, compress):
 	
 	if compress: filename += ".gz"
 	hdu.writeto(filename,output_verify="warn", **__astropy_arg_overwrite__)
+	
+	return

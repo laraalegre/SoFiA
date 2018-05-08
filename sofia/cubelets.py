@@ -5,7 +5,7 @@ import math
 import numpy as np
 from scipy.ndimage import map_coordinates
 from astropy.io import fits
-from sofia import global_settings as glob
+from sofia import functions as func
 from sofia import error as err
 from sofia import __version_full__ as sofia_version_full
 from sofia import __astropy_arg_overwrite__
@@ -111,7 +111,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 		if compress: name += ".gz"
 		
 		# Check for overwrite flag:
-		if check_overwrite(name, flagOverwrite): hdulist.writeto(name, output_verify="warn", **__astropy_arg_overwrite__)
+		if func.check_overwrite(name, flagOverwrite): hdulist.writeto(name, output_verify="warn", **__astropy_arg_overwrite__)
 		
 		hdulist.close()
 		
@@ -149,12 +149,12 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 			hdulist[0].header["CRVAL2"] = hdulist[0].header["CRVAL3"]
 			hdulist[0].header["CRPIX2"] = hdulist[0].header["CRPIX3"]
 			hdulist[0].header["ORIGIN"] = sofia_version_full
-			glob.delete_3rd_axis(hdulist[0].header)
+			func.delete_3rd_axis(hdulist[0].header)
 			name = outputDir + cubename + "_" + str(int(obj[0])) + "_pv.fits"
 			if compress: name += ".gz"
 			
 			# Check for overwrite flag:
-			if check_overwrite(name, flagOverwrite): hdulist.writeto(name,output_verify="warn", **__astropy_arg_overwrite__)
+			if func.check_overwrite(name, flagOverwrite): hdulist.writeto(name,output_verify="warn", **__astropy_arg_overwrite__)
 			hdulist.close()
 		
 		
@@ -178,7 +178,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 		if compress: name += ".gz"
 		
 		# Check for overwrite flag:
-		if check_overwrite(name, flagOverwrite): hdulist.writeto(name, output_verify="warn", **__astropy_arg_overwrite__)
+		if func.check_overwrite(name, flagOverwrite): hdulist.writeto(name, output_verify="warn", **__astropy_arg_overwrite__)
 		hdulist.close()
 		
 		
@@ -188,7 +188,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 		
 		# Units of moment images
 		# Velocity
-		if glob.check_header_keywords(glob.KEYWORDS_VELO, headerCubelets["CTYPE3"]):
+		if func.check_header_keywords(func.KEYWORDS_VELO, headerCubelets["CTYPE3"]):
 			if not "CUNIT3" in headerCubelets or headerCubelets["CUNIT3"].lower() == "m/s":
 				# Converting m/s to km/s
 				dkms = abs(headerCubelets["CDELT3"]) * 1e-3
@@ -204,7 +204,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 				scalemom12 = 1.0
 				bunitExt = "." + headerCubelets["CUNIT3"]
 		# Frequency
-		elif glob.check_header_keywords(glob.KEYWORDS_FREQ, headerCubelets["CTYPE3"]):
+		elif func.check_header_keywords(func.KEYWORDS_FREQ, headerCubelets["CTYPE3"]):
 			if not "CUNIT3" in headerCubelets or headerCubelets["CUNIT3"].lower() == "hz":
 				dkms = abs(headerCubelets["CDELT3"])
 				scalemom12 = 1.0
@@ -231,7 +231,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 		subcubeCopy = subcube.copy()
 		subcubeCopy[submask == 0] = 0
 		if "cellscal" in headerCubelets:
-			if headerCubelets["cellscal"] == "1/F": subcubeCopy = glob.regridMaskedChannels(subcubeCopy, submask, headerCubelets)
+			if headerCubelets["cellscal"] == "1/F": subcubeCopy = func.regridMaskedChannels(subcubeCopy, submask, headerCubelets)
 		
 		moments = [None, None, None]
 		with np.errstate(invalid="ignore"):
@@ -255,14 +255,14 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 		
 		for i in range(3):
 			hdu = fits.PrimaryHDU(data=moments[i], header=headerCubelets)
-			glob.delete_3rd_axis(hdu.header)
+			func.delete_3rd_axis(hdu.header)
 			hdu.header["BUNIT"]   = units[i]
 			hdu.header["DATAMIN"] = np.nanmin(moments[i])
 			hdu.header["DATAMAX"] = np.nanmax(moments[i])
 			hdu.header["ORIGIN"]  = sofia_version_full
 			filename = outputDir + cubename + "_{0:d}_mom{1:d}.fits".format(int(obj[0]), i)
 			if compress: filename += ".gz"
-			if check_overwrite(filename, flagOverwrite): hdu.writeto(filename, output_verify="warn", **__astropy_arg_overwrite__)
+			if func.check_overwrite(filename, flagOverwrite): hdu.writeto(filename, output_verify="warn", **__astropy_arg_overwrite__)
 		
 		
 		# -------------------
@@ -275,7 +275,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 		if compress: name += ".gz"
 		
 		# Check for overwrite flag:
-		if check_overwrite(name, flagOverwrite):
+		if func.check_overwrite(name, flagOverwrite):
 			if compress:
 				import gzip
 				f = gzip.open(name, "wb")
@@ -309,14 +309,3 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 				f.write("%6d %15.6e %15.6e %7d\n" % (i + ZminNew, xspec, spec[i], nPix[i]))
 			
 			f.close()
-
-
-# =====================================
-# FUNCTION: Check file overwrite status
-# =====================================
-
-def check_overwrite(filename, flagOverwrite, fatal=False):
-	if not flagOverwrite and os.path.exists(filename):
-		err.error("Output file exists: " + filename + ".", fatal=fatal)
-		return False
-	return True

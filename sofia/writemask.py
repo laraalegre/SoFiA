@@ -2,6 +2,7 @@
 
 import os
 from astropy.io import fits
+from sofia import functions as func
 from sofia import error as err
 from sofia import __version_full__ as sofia_version_full
 from sofia import __astropy_arg_overwrite__
@@ -65,10 +66,7 @@ def writeMask(cube, header, dictionary, filename, compress, flagOverwrite):
 	if compress: name += ".gz"
 	
 	# Check for overwrite flag:
-	if not flagOverwrite and os.path.exists(name):
-		err.error("Output file exists: " + name + ".", fatal=False)
-		return
-	else:
+	if func.check_overwrite(name, flagOverwrite):
 		hdu.writeto(name, output_verify="warn", **__astropy_arg_overwrite__)
 	
 	return
