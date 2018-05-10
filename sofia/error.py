@@ -39,7 +39,7 @@ def warning(message, fatal=False, frame=False):
 
 # =============================
 # FUNCTION: Print error message
-# -============================
+# =============================
 
 def error(message, fatal=True, frame=False):
 	if fatal:
