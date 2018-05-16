@@ -31,14 +31,17 @@ def regridMaskedChannels(datacube,maskcube,header):
 	xs = np.arange(datacube.shape[2], dtype=float) - x0
 	ys = np.arange(datacube.shape[1], dtype=float) - y0
 	
+	regridThreshold=[]
 	for zz in range(datacube.shape[0]):
 		regrid_channel = interpolate.RectBivariateSpline(ys * pixscale[zz], xs * pixscale[zz], datacube[zz])
 		datacube[zz] = regrid_channel(ys, xs)
 		regrid_channel_mask = interpolate.RectBivariateSpline(ys * pixscale[zz], xs * pixscale[zz], maskcubeFlt[zz])
-		maskcubeFlt[zz] = np.abs(regrid_channel_mask(ys, xs)) # maskcubeFlt[zz] = regrid_channel_mask(ys, xs)
-	
-	regridThreshold = maskcubeFlt.min()
-	datacube[maskcubeFlt <= regridThreshold] = 0.0 # datacube[abs(maskcubeFlt) <= abs(maskcubeFlt.min())] = 0.0
+		maskcubeFlt[zz] = regrid_channel_mask(ys, xs)
+		regridThreshold.append(maskcubeFlt[zz].min())
+		maskcubeFlt[zz] = np.abs(maskcubeFlt[zz])
+
+	regridThreshold = abs(min(regridThreshold))
+	datacube[maskcubeFlt <= regridThreshold] = 0.0
 	del maskcubeFlt
 	
 	return datacube
