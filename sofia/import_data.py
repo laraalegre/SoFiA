@@ -485,6 +485,7 @@ def flag(cube, regions):
 			sys.stderr.write("ERROR: Flagging regions must be specified as nested lists\n")
 			sys.stderr.write("       of the form [[x1, x2, y1, y2, z1, z2], ...].\n")
 			raise SystemExit(1)
+		
 		try:
 			for i in range(0, len(region) / 2):
 				if region[2 * i + 1] == '':
