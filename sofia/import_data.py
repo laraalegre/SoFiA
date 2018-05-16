@@ -370,7 +370,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 					print ('Flag cube loaded and applied.')
 			# if flag regions if provided
 			if flagRegions:
-				np_Cube = flag(np_Cube, flagRegions)
+				flag(np_Cube, flagRegions)
 		
 		
 		if maskFile:
@@ -492,4 +492,4 @@ def flag(cube, regions):
 		except:
 			sys.stderr.write("WARNING: Flagging did not succeed. Please check the dimensions of your cube and filters.\n")
 	
-	return cube
+	return
