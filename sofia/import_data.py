@@ -475,21 +475,27 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 
 
 def flag(cube, regions):
-	if regions:
-		print ('Start flagging cube')
-		dim = len(cube.shape)
+	if not regions: return
+	
+	print ('Start flagging cube')
+	dim = len(cube.shape)
+	
+	for region in regions:
+		if not isinstance(region, list):
+			sys.stderr.write("ERROR: Flagging regions must be specified as nested lists\n")
+			sys.stderr.write("       of the form [[x1, x2, y1, y2, z1, z2], ...].\n")
+			raise SystemExit(1)
 		try:
-			for region in regions:
-				for i in range(0, len(region) / 2):
-					if region[2 * i + 1] == '':
-						region[2 * i + 1] = cube.shape[dim - i - 1]
-				if len(region) == 4:
-					cube[0, region[2]:region[3], region[0]:region[1]] = nan
-				else:
-					cube[region[4]:region[5], region[2]:region[3], region[0]:region[1]] = nan
-			print ('Cube has been flagged')
-		
+			for i in range(0, len(region) / 2):
+				if region[2 * i + 1] == '':
+					region[2 * i + 1] = cube.shape[dim - i - 1]
+			if len(region) == 4:
+				cube[0, region[2]:region[3], region[0]:region[1]] = nan
+			else:
+				cube[region[4]:region[5], region[2]:region[3], region[0]:region[1]] = nan
 		except:
 			sys.stderr.write("WARNING: Flagging did not succeed. Please check the dimensions of your cube and filters.\n")
+	
+	print ('Flagging complete')
 	
 	return
