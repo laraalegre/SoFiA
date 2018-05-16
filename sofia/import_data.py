@@ -211,8 +211,8 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 	f.close()
 	
 	if 'BSCALE' in dict_Header and 'BZERO' in dict_Header:
-		np_Cube *= dict_Header['BSCALE']
-		np_Cube += dict_Header['BZERO']
+		np_Cube *= array(dict_Header['BSCALE']).astype(np_Cube.dtype)
+		np_Cube += array(dict_Header['BZERO']).astype(np_Cube.dtype)
 	
 	
 	# check whether the axes are in the expected order:
