@@ -45,7 +45,7 @@ def smooth(indata, kernel, edgeMode, kernelX, kernelY, kernelZ):
 	
 	# Remove NaNs (and INFs) if necessary
 	found_nan = np.isnan(indata).sum()
-	if found_nan: outdata = np.nan_to_num(outdata, copy=False)
+	if found_nan: outdata = np.nan_to_num(outdata)
 	
 	# Smooth with the selected kernel
 	if kernel == "gaussian":
