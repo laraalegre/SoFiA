@@ -1,10 +1,9 @@
 #! /usr/bin/env python
 
+
 # Track memory usage?
 track_memory_usage = False
 
-if track_memory_usage:
-	import resource
 
 # Import default Python libraries
 import sys
@@ -50,15 +49,14 @@ from sofia import __version_full__ as sofia_version_full
 # --------------------------------
 
 if track_memory_usage:
-	TERM_COL_RESET = "\x1B[0m"
-	TERM_COL_MEM = "\x1B[36m"
+	import resource
 	
 	MEM_FACTOR = 1024.0
 	if sys.platform == "darwin":
 		MEM_FACTOR *= 1024.0
 	
 	def print_memory_usage(t0):
-		print(TERM_COL_MEM + "Peak memory usage: " + str(float(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) / MEM_FACTOR) + " MB at " + str(time() - t0) + " s" + TERM_COL_RESET)
+		print("\x1B[36m" + "Peak memory usage: " + str(float(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) / MEM_FACTOR) + " MB at " + str(time() - t0) + " s" + "\x1B[0m")
 		return
 
 
