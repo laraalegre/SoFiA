@@ -2,7 +2,7 @@
 
 
 # Track memory usage?
-track_memory_usage = False
+track_memory_usage = True
 
 
 # Import default Python libraries
@@ -56,7 +56,7 @@ if track_memory_usage:
 		MEM_FACTOR *= 1024.0
 	
 	def print_memory_usage(t0):
-		print("\x1B[36m" + "Peak memory usage: " + str(float(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) / MEM_FACTOR) + " MB at " + str(time() - t0) + " s" + "\x1B[0m")
+		err.message("\x1B[36mPeak memory usage: {0:.3f} MB at {1:.3f} s\x1B[0m".format(float(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) / MEM_FACTOR, time() - t0))
 		return
 
 

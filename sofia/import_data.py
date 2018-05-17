@@ -128,7 +128,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 	
 	# Open FITS file:
 	try:
-		f = fits.open(inFile, memmap=False, do_not_scale_image_data=True)
+		f = fits.open(inFile, memmap=False)
 		dict_Header = f[0].header
 	except:
 		sys.stderr.write("ERROR: Failed to load primary HDU of FITS file " + str(inFile) + "\n")
@@ -209,10 +209,6 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 		raise SystemExit(1)
 	
 	f.close()
-	
-	if 'BSCALE' in dict_Header and 'BZERO' in dict_Header:
-		np_Cube *= array(dict_Header['BSCALE']).astype(np_Cube.dtype)
-		np_Cube += array(dict_Header['BZERO']).astype(np_Cube.dtype)
 	
 	
 	# check whether the axes are in the expected order:
@@ -330,44 +326,42 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 					sys.stderr.write("ERROR: The defined flag cube does not exist.\n")
 					sys.stderr.write("       Cannot find: " + weightsFile + "\n")
 					raise SystemExit(1)
-				else:
-					# Scale the input cube with a weights cube
-					# load the weights cube and convert it into a 3D array to be applied to the data 3D array
-					# (note that the data has been converted into a 3D array above)
-					print ('Loading and applying flag cube: ' + flagFile)
-					f = fits.open(flagFile, memmap=False)
-					dict_Flag_header = f[0].header
-					if dict_Flag_header['NAXIS'] == 3:
-						if len(subcube) == 6:
-							flags = f[0].section[subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
-							np_Cube[isnan(flags)] = nan
-						else:
-							np_Cube[isnan(f[0].data)] = nan
-					elif dict_Flag_header['NAXIS'] == 4:
-						if dict_Flag_header['NAXIS4'] != 1:
-							sys.stderr.write("ERROR: The 4th dimension has more than 1 value.\n")
-							raise SystemExit(1)
-						else:
-							sys.stderr.write("WARNING: The flag cube has 4 axes; first axis ignored.\n")
-							if len(subcube) == 6:
-								flags = f[0].section[0, subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
-								np_Cube[isnan(flags)] = nan
-							else: np_Cube[isnan(f[0].section[0])] = nan
-					elif dict_Flag_header['NAXIS'] == 2:
-						sys.stderr.write("WARNING: The flag cube has 2 axes; third axis added.\n")
-						if len(subcube) == 6 or len(subcube) == 4: 
-							flags = f[0].section[subcube[2]:subcube[3], subcube[0]:subcube[1]]
-							for channel in range(np_Cube.shape[0]):
-								np_Cube[channel][isnan(flags)] = nan
-						else: 
-							for channel in range(np_Cube.shape[0]):
-								np_Cube[channel][isnan(f(0).data)] = nan
+				
+				# Loading and applying flag file
+				print ('Loading and applying flag cube: ' + flagFile)
+				f = fits.open(flagFile, memmap=False)
+				dict_Flag_header = f[0].header
+				if dict_Flag_header['NAXIS'] == 3:
+					if len(subcube) == 6:
+						flags = f[0].section[subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
+						np_Cube[isnan(flags)] = nan
 					else:
-						sys.stderr.write("ERROR: The weights cube has fewer than 1 or more than 4 dimensions.\n")
+						np_Cube[isnan(f[0].data)] = nan
+				elif dict_Flag_header['NAXIS'] == 4:
+					if dict_Flag_header['NAXIS4'] != 1:
+						sys.stderr.write("ERROR: The 4th dimension has more than 1 value.\n")
 						raise SystemExit(1)
-					
-					f.close()
-					print ('Flag cube loaded and applied.')
+					else:
+						sys.stderr.write("WARNING: The flag cube has 4 axes; first axis ignored.\n")
+						if len(subcube) == 6:
+							flags = f[0].section[0, subcube[4]:subcube[5], subcube[2]:subcube[3], subcube[0]:subcube[1]]
+							np_Cube[isnan(flags)] = nan
+						else: np_Cube[isnan(f[0].section[0])] = nan
+				elif dict_Flag_header['NAXIS'] == 2:
+					sys.stderr.write("WARNING: The flag cube has 2 axes; third axis added.\n")
+					if len(subcube) == 6 or len(subcube) == 4: 
+						flags = f[0].section[subcube[2]:subcube[3], subcube[0]:subcube[1]]
+						for channel in range(np_Cube.shape[0]):
+							np_Cube[channel][isnan(flags)] = nan
+					else: 
+						for channel in range(np_Cube.shape[0]):
+							np_Cube[channel][isnan(f(0).data)] = nan
+				else:
+					sys.stderr.write("ERROR: The weights cube has fewer than 1 or more than 4 dimensions.\n")
+					raise SystemExit(1)
+				
+				f.close()
+				print ('Flag cube loaded and applied.')
 			# if flag regions if provided
 			if flagRegions:
 				flag(np_Cube, flagRegions)
