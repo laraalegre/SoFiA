@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import sys
-from time import time, strftime
+from time import time
 from sofia import __version_full__ as sofia_version_full
 
 
@@ -84,7 +84,6 @@ def linebreak():
 # ==========================
 
 def print_progress_time(t0):
-	#message("    {0:.2f} seconds since start".format(time() - t0))
 	dt_m, dt_s = divmod(time() - t0, 60)
 	dt_h, dt_m = divmod(dt_m, 60)
 	message("    Elapsed time: {0:02d}:{1:02d}:{2:05.2f} h".format(int(dt_h), int(dt_m), dt_s))
