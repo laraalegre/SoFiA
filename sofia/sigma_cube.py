@@ -76,7 +76,7 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 		radiusWindowSpectral = windowSpectral // 2
 		
 		# Create empty cube (filled with NaN) to hold noise values
-		rms_cube = np.full(cube.shape, np.nan)
+		rms_cube = np.full(cube.shape, np.nan, dtype=cube.dtype)
 		
 		# Determine RMS across window centred on grid cell
 		for z in gridPointsZ:
