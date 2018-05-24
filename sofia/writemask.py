@@ -1,9 +1,7 @@
 #! /usr/bin/env python
 
-import os
 from astropy.io import fits
 from sofia import functions as func
-from sofia import error as err
 from sofia import __version_full__ as sofia_version_full
 from sofia import __astropy_arg_overwrite__
 

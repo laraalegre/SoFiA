@@ -1,9 +1,7 @@
 #!/usr/bin/python
 
-import sys
 import numpy as np
 import scipy.ndimage as nd
-from scipy.optimize import curve_fit
 from scipy.special import erf
 from sofia import cparametrizer as cp
 from sofia import error as err

@@ -1,5 +1,4 @@
 import numpy as np
-from scipy import ndimage as nd
 
 #from .pyudwt import Denoise2D1DHardMRS
 from sofia import wavelet as wv

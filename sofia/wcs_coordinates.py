@@ -73,7 +73,7 @@ def fix_gipsy_header(header_orig):
 				for key in freq0Names:
 					try:
 						freq0 = header[key]
-						foundFreq0 = 1
+						#foundFreq0 = 1
 					except:
 						pass
 				header["RESTFRQ"] = freq0

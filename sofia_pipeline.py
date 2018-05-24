@@ -8,7 +8,6 @@ track_memory_usage = False
 # Import default Python libraries
 import sys
 import os
-import string
 from time import time
 import numpy as np
 
@@ -40,7 +39,6 @@ from sofia import wcs_coordinates
 from sofia import CNHI
 from sofia import error as err
 from sofia import __version__ as sofia_version
-from sofia import __version_full__ as sofia_version_full
 
 
 

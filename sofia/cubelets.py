@@ -6,7 +6,6 @@ import numpy as np
 from scipy.ndimage import map_coordinates
 from astropy.io import fits
 from sofia import functions as func
-from sofia import error as err
 from sofia import __version_full__ as sofia_version_full
 from sofia import __astropy_arg_overwrite__
 
@@ -32,11 +31,11 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 	headerCubelets = header.copy()
 	
 	# Read all important information (central pixels & values, increments) from the header
-	dX    = headerCubelets["CDELT1"]
-	dY    = headerCubelets["CDELT2"]
+	#dX    = headerCubelets["CDELT1"]
+	#dY    = headerCubelets["CDELT2"]
 	dZ    = headerCubelets["CDELT3"]
-	cValX = headerCubelets["CRVAL1"]
-	cValY = headerCubelets["CRVAL2"]
+	#cValX = headerCubelets["CRVAL1"]
+	#cValY = headerCubelets["CRVAL2"]
 	cValZ = headerCubelets["CRVAL3"]
 	cPixX = headerCubelets["CRPIX1"] - 1
 	cPixY = headerCubelets["CRPIX2"] - 1

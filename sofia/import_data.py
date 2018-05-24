@@ -6,7 +6,6 @@ import os
 import sys
 from numpy import *
 import re
-import imp
 
 
 def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, subcube=[], subcubeMode='pixel', doFlag=False, flagRegions=False, flagFile='', cubeOnly=False):

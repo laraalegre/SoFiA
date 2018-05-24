@@ -5,7 +5,7 @@ import sys
 import math
 import numpy as np
 import scipy as sp
-from distutils.version import StrictVersion, LooseVersion
+from distutils.version import LooseVersion
 from sofia import error as err
 
 # Check numpy and scipy version numbers for the nanmedian function import
