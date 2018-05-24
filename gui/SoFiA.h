@@ -1,7 +1,7 @@
 /// ____________________________________________________________________ ///
 ///                                                                      ///
-/// SoFiA 1.1.0 (SoFiA.h) - Source Finding Application                   ///
-/// Copyright (C) 2013-2017 Tobias Westmeier                             ///
+/// SoFiA 1.2.0 (SoFiA.h) - Source Finding Application                   ///
+/// Copyright (C) 2013-2018 Tobias Westmeier                             ///
 /// ____________________________________________________________________ ///
 ///                                                                      ///
 /// Address:  Tobias Westmeier                                           ///
@@ -32,7 +32,7 @@
 #ifndef PIPELINEINTERFACE_H
 #define PIPELINEINTERFACE_H
 
-#define SOFIA_VERSION_NUMBER "1.2.0-beta"
+#define SOFIA_VERSION_NUMBER "1.2.0"
 
 #define SOFIA_DEFAULT_SETTINGS ":/SoFiA_default_input.txt"
 #define SOFIA_PARSET_EXTRAGALACTIC ":/parsets/SoFiA_parset_extragalactic.par"

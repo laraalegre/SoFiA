@@ -3,7 +3,7 @@
 # ===========================
 # Define SoFiA version number
 # ===========================
-__version__ = "1.2.0-beta"
+__version__ = "1.2.0"
 __version_full__ = "SoFiA " + __version__
 
 

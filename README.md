@@ -120,6 +120,19 @@ browser to open the index.html file located in the gui/doc/ sub-folder.
 Version history
 ---------------
 
+* SoFiA 1.2.0
+  * Released 24/05/2018
+  * Adds several new features, including better handling of reliability
+    calculation, the option to discard negative signals, and a new image
+    viewer built into the GUI that allows output data products from SoFiA
+    to be inspected in situ.
+  * Fixes a large number of bugs across the entire pipeline that have
+    led to frequent crashes in the past, including bugs in the linker
+    module, cubelet and moment map generation, and the handling of 4-D
+    FITS cubes.
+  * See release notes for details:
+    https://github.com/SoFiA-Admin/SoFiA/releases/tag/v1.2.0
+
 * SoFiA 1.1.0
   * Released 25/10/2017
   * Adds several new features, including better handling of reliability
@@ -213,7 +226,7 @@ SoFiA was created by the following people: Lars Flöer, Nadine Giese, Russell
 Jurek, Martin Meyer, Attila Popping, Paolo Serra, Tobias Westmeier, and 
 Benjamin Winkel.
 
-© 2017 The SoFiA Authors
+© 2018 The SoFiA Authors
 
 This programme is free software: you can redistribute it and/or modify it 
 under the terms of the GNU General Public License as published by the Free 
