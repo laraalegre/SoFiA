@@ -38,7 +38,8 @@ SoFiA:
   * Compiler:
     * Preferred: `GCC` (≥ 4.8; including `g++`)
     * Alternative: `Clang` (≥ 3.3; Xcode version ≥ 5.0.0 (clang-500.2.75))
-  * `zlib` (≥ 1.2.8; including dev package)
+  * `zlib` (≥ 1.2.8; including dev package; likely to be already installed;
+            the dev package is optional and only needed for the GUI)
   * `Qt` (≥ 4.7; including dev package and `qmake`; optional, needed for GUI)
 
 All of the above packages must be installed before SoFiA can be compiled and 
