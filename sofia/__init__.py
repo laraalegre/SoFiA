@@ -3,7 +3,7 @@
 # ===========================
 # Define SoFiA version number
 # ===========================
-__version__ = "1.2.0"
+__version__ = "1.2.1-beta"
 __version_full__ = "SoFiA " + __version__
 
 
@@ -15,7 +15,7 @@ __version_full__ = "SoFiA " + __version__
 #        hdu.writeto(filename, [other options], **__astropy_arg_overwrite__)
 import inspect
 from astropy.io.fits import writeto
-if "overwrite" in inspect.getargspec(writeto).args:
-	__astropy_arg_overwrite__ = {"overwrite" : True}
-else:
+if "clobber" in inspect.getargspec(writeto).args:
 	__astropy_arg_overwrite__ = {"clobber" : True}
+else:
+	__astropy_arg_overwrite__ = {"overwrite" : True}
