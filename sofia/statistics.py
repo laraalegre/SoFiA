@@ -16,9 +16,29 @@ _stat = ct.CDLL(os.environ["SOFIA_MODULE_PATH"] + "/sofia/_statistics.so")
 # Declare types of arguments and return values
 # ============================================
 
+# Check for NaN
+# -------------
+_stat.check_nan.argtypes = [ct.POINTER(ct.c_float), ct.c_size_t, ct.c_uint]
+_stat.check_nan.restype = ct.c_uint
+
+# Replace NaN
+# -----------
+_stat.replace_nan.argtypes = [ct.POINTER(ct.c_float), ct.POINTER(ct.c_float), ct.c_size_t, ct.c_float, ct.c_uint, ct.c_uint]
+_stat.replace_nan.restype = None
+
+# Set mask based on threshold
+# ---------------------------
+_stat.set_mask.argtypes = [ct.POINTER(ct.c_ubyte), ct.POINTER(ct.c_float), ct.c_size_t, ct.c_float, ct.c_uint]
+_stat.set_mask.restype = None
+
+# Standard deviation
+# ------------------
+_stat.standard_deviation.argtypes = [ct.POINTER(ct.c_float), ct.c_size_t, ct.c_size_t, ct.c_uint, ct.c_uint]
+_stat.standard_deviation.restype = ct.c_double
+
 # Summation
 # ---------
-_stat.sum.argtypes = [ct.POINTER(ct.c_double), ct.c_size_t]
+_stat.sum.argtypes = [ct.POINTER(ct.c_float), ct.c_size_t]
 _stat.sum.restype = ct.c_double
 
 # Moment map
@@ -37,13 +57,82 @@ _stat.free_memory.restype = None
 # Python function wrappers
 # ========================
 
+# Check for NaN
+# -------------
+def check_nan(data):
+	global _stat
+	
+	# Prepare arguments
+	ptr_data = data.ctypes.data_as(ct.POINTER(ct.c_float))
+	n        = ct.c_size_t(data.size)
+	bo       = ct.c_uint(get_byte_order(data))
+	
+	# Call sum function
+	return _stat.check_nan(ptr_data, n, bo)
+
+
+# Replace NaN
+# -----------
+def replace_nan(data, mask, value):
+	global _stat
+	
+	# Prepare arguments
+	ptr_data = data.ctypes.data_as(ct.POINTER(ct.c_float))
+	ptr_mask = mask.ctypes.data_as(ct.POINTER(ct.c_float))
+	n        = ct.c_size_t(data.size)
+	val      = ct.c_float(value)
+	bo_data  = ct.c_uint(get_byte_order(data))
+	bo_mask  = ct.c_uint(get_byte_order(mask))
+	
+	# Call sum function
+	return _stat.replace_nan(ptr_data, ptr_mask, n, val, bo_data, bo_mask)
+
+
+# Set mask based on threshold
+# ---------------------------
+def set_mask(mask, data, threshold):
+	global _stat
+	
+	# Prepare arguments
+	ptr_mask = mask.ctypes.data_as(ct.POINTER(ct.c_ubyte))
+	ptr_data = data.ctypes.data_as(ct.POINTER(ct.c_float))
+	n        = ct.c_size_t(data.size)
+	thresh   = ct.c_float(threshold)
+	bo       = ct.c_uint(get_byte_order(data))
+	
+	# Call sum function
+	return _stat.set_mask(ptr_mask, ptr_data, n, thresh, bo)
+
+
+# Standard deviation
+# ------------------
+def standard_deviation(data, flux_range, cadence):
+	global _stat
+	
+	# Define flux range and method values
+	flux_ranges = {
+		"all": 0,
+		"negative": 1,
+		"positive": 2}
+	
+	# Prepare arguments
+	arg_data    = data.ctypes.data_as(ct.POINTER(ct.c_float))
+	arg_size    = ct.c_size_t(data.size)
+	arg_cadence = ct.c_size_t(cadence)
+	arg_range   = ct.c_uint(flux_ranges[flux_range])
+	arg_bo      = ct.c_uint(get_byte_order(data))
+	
+	# Call C function	
+	return _stat.standard_deviation(arg_data, arg_size, arg_cadence, arg_range, arg_bo)
+
+
 # Summation
 # ---------
 def nansum(data):
 	global _stat
 	
 	# Prepare arguments
-	ptr_data = data.ctypes.data_as(ct.POINTER(ct.c_double))
+	ptr_data = data.ctypes.data_as(ct.POINTER(ct.c_float))
 	n = ct.c_size_t(data.size)
 	
 	# Call sum function
@@ -76,3 +165,13 @@ def moment(data, mom=0, mom0=None, mom1=None):
 	_stat.free_memory(ptr_moment_map)
 	
 	return moment_map
+
+
+# Determine byte order of data
+# ----------------------------
+
+def get_byte_order(data):
+	byte_order = 0
+	if(data.dtype.byteorder == ">"):
+		byte_order = 1
+	return byte_order

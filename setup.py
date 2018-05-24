@@ -146,7 +146,7 @@ setup(
 		Extension(
 			"_statistics",
 			statistics_src,
-			extra_compile_args = ["-O3"],
+			extra_compile_args = ["-O3", "-std=c99"],
 			include_dirs = include_dirs
 			),
 		Extension(
