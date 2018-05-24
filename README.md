@@ -38,7 +38,7 @@ SoFiA:
   * Compiler:
     * Preferred: `GCC` (≥ 4.8; including `g++`)
     * Alternative: `Clang` (≥ 3.3; Xcode version ≥ 5.0.0 (clang-500.2.75))
-  * Graphical user interface (optional):
+  * Graphical user interface (_optional_):
     * `zlib` (≥ 1.2.8; including dev package)
     * `Qt` (≥ 4.7; including dev packages and `qmake`)
 
