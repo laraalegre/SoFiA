@@ -37,7 +37,7 @@ def readPipelineOptions(filename = "pipeline.options"):
 			if par_file_version != sofia_version:
 				err.warning(
 					"The parameter file was created with a different version of SoFiA\n"
-					"(" + str(par_file_version) + ") than the one you are currently using (" + str(sof_file_version) + ").\n"
+					"(" + str(par_file_version) + ") than the one you are currently using (" + str(sofia_version) + ").\n"
 					"Some settings defined in the parameter file may not be recognised\n"
 					"by SoFiA, which could lead to unexpected results.", frame=True)
 	
