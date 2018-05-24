@@ -34,18 +34,23 @@ SoFiA:
   * `SciPy` (≥ 0.7)
   * `Astropy` (≥ 0.2.5)
   * `matplotlib` (≥ 1.1; optional, needed for reliability plots)
-* Packages (C++):
+* Packages (C/C++):
   * Compiler:
     * Preferred: `GCC` (≥ 4.8; including `g++`)
     * Alternative: `Clang` (≥ 3.3; Xcode version ≥ 5.0.0 (clang-500.2.75))
-  * `zlib` (≥ 1.2.8; including dev package; likely to be already installed;
-            the dev package is optional and only needed for the GUI)
-  * `Qt` (≥ 4.7; including dev package and `qmake`; optional, needed for GUI)
+  * Graphical user interface (optional):
+    * `zlib` (≥ 1.2.8; including dev package)
+    * `Qt` (≥ 4.7; including dev packages and `qmake`)
 
-All of the above packages must be installed before SoFiA can be compiled and 
-run. It is recommended that you install them through your operating system’s 
-package manager. Please ensure that the **development packages** of zlib and 
-the Qt library are installed as well.
+All of the above packages, unless marked as _optional_, must be installed 
+before SoFiA can be compiled and run. It is recommended that you install them 
+through your operating system’s package manager.
+
+Installation of the GUI, and hence of `zlib` and `Qt`, is optional and can be 
+disabled during installation using the `--no-gui=True` option (see below for 
+installation instructions). If you want the GUI to be installed, please ensure 
+that the **development packages** of zlib and the Qt library are installed as 
+well.
 
 _Just as an example, on an Ubuntu system with Qt4 the `zlib1g-dev`, 
 `libqt4-dev` and `qt4-qmake` packages must be installed as well._
