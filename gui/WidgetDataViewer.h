@@ -1,6 +1,6 @@
 /// ____________________________________________________________________ ///
 ///                                                                      ///
-/// SoFiA 1.2.0 (WidgetDataViewer.h) - Source Finding Application        ///
+/// SoFiA 1.2.1 (WidgetDataViewer.h) - Source Finding Application        ///
 /// Copyright (C) 2016-2018 Tobias Westmeier                             ///
 /// ____________________________________________________________________ ///
 ///                                                                      ///

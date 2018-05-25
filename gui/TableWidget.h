@@ -1,6 +1,6 @@
 /// ____________________________________________________________________ ///
 ///                                                                      ///
-/// SoFiA 1.2.0 (TableWidget.h) - Source Finding Application             ///
+/// SoFiA 1.2.1 (TableWidget.h) - Source Finding Application             ///
 /// Copyright (C) 2014-2018 Tobias Westmeier                             ///
 /// ____________________________________________________________________ ///
 ///                                                                      ///
