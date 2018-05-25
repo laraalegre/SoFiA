@@ -2,7 +2,7 @@
 
 
 # Track memory usage?
-track_memory_usage = False
+track_memory_usage = True
 
 
 # Import default Python libraries
@@ -270,7 +270,7 @@ if Parameters["steps"]["doMerge"]:
 
 err.print_progress_message("Loading data cube(s)", t0)
 kwargs = Parameters["import"].copy()
-kwargs.update({"doFlag":Parameters["steps"]["doFlag"],"flagRegions":Parameters["flag"]["regions"],"flagFile":Parameters["flag"]["file"]})
+kwargs.update({"doFlag": Parameters["steps"]["doFlag"], "flagRegions": Parameters["flag"]["regions"], "flagFile": Parameters["flag"]["file"]})
 np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters["steps"]["doSubcube"], **kwargs)
 #np_Cube, dict_Header, mask, subcube = import_data_2.import_data(Parameters["steps"]["doSubcube"], **kwargs)
 err.message("Data cube(s) loaded.")
