@@ -341,13 +341,13 @@ err.print_progress_message("Running source finder", t0)
 # --- PYFIND (S+C) ---
 if Parameters["steps"]["doSCfind"]:
 	err.message("Running S+C filter")
-	mask |= pyfind.SCfinder_mem(np_Cube, dict_Header, t0, **Parameters["SCfind"])
+	pyfind.SCfinder_mem(np_Cube, mask, dict_Header, t0, **Parameters["SCfind"])
 	if track_memory_usage: print_memory_usage(t0)
 
 # --- CNHI ---	
 if Parameters["steps"]["doCNHI"]:
 	err.message("Running CNHI filter")
-	mask = mask + CNHI.find_sources(np_Cube, mask, **Parameters["CNHI"])
+	mask += CNHI.find_sources(np_Cube, mask, **Parameters["CNHI"])
 	if track_memory_usage: print_memory_usage(t0)
  
 # --- THRESHOLD ---	

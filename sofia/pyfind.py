@@ -13,13 +13,13 @@ from sofia import error as err
 # FUNCTION: Implementation of the S+C finder
 # ==========================================
 
-def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.5, sizeFilter=0, maskScaleXY=2.0, maskScaleZ=2.0, kernelUnit="pixel", edgeMode="constant", rmsMode="negative", fluxRange="all", verbose=0):
+def SCfinder_mem(cube, mask, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.5, sizeFilter=0, maskScaleXY=2.0, maskScaleZ=2.0, kernelUnit="pixel", edgeMode="constant", rmsMode="negative", fluxRange="all", verbose=0):
 	# Define a few constants
 	FWHM_CONST    = 2.0 * math.sqrt(2.0 * math.log(2.0))   # Conversion between sigma and FWHM of Gaussian function
 	MAX_PIX_CONST = 1.0e+6                                 # Maximum number of pixels for noise calculation; sampling is set accordingly
 	
 	# Create binary mask array
-	mask = np.zeros(cube.shape, dtype=np.bool)
+	#mask = np.zeros(cube.shape, dtype=np.bool)
 	found_nan = np.isnan(cube).any()
 	#found_nan = stat.check_nan(cube)
 	
@@ -77,10 +77,10 @@ def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.5, siz
 		
 		# Add pixels above threshold to mask by setting bit 1
 		with np.errstate(invalid="ignore"):
-			#mask |= (np.absolute(cube_smooth) > threshold * rms_smooth)
-			mask = np.bitwise_or(mask, np.greater_equal(np.absolute(cube_smooth), threshold * rms_smooth))
+			mask |= (np.absolute(cube_smooth) > threshold * rms_smooth)
+			#mask = np.bitwise_or(mask, np.greater_equal(np.absolute(cube_smooth), threshold * rms_smooth))
 			#stat.set_mask(mask, cube_smooth, threshold * rms_smooth)
 		
 		# Delete smoothed cube again
 		del cube_smooth
-	return mask
+	return
