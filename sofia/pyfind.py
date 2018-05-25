@@ -19,7 +19,7 @@ def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.5, siz
 	MAX_PIX_CONST = 1.0e+6                                 # Maximum number of pixels for noise calculation; sampling is set accordingly
 	
 	# Create binary mask array
-	mask = np.zeros(cube.shape, dtype=np.uint8)
+	mask = np.zeros(cube.shape, dtype=np.bool)
 	found_nan = np.isnan(cube).any()
 	#found_nan = stat.check_nan(cube)
 	
@@ -77,8 +77,8 @@ def SCfinder_mem(cube, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.5, siz
 		
 		# Add pixels above threshold to mask by setting bit 1
 		with np.errstate(invalid="ignore"):
-			mask |= (np.absolute(cube_smooth) > threshold * rms_smooth)
-			#mask = np.bitwise_or(mask, np.greater_equal(np.absolute(cube_smooth), threshold * rms_smooth))
+			#mask |= (np.absolute(cube_smooth) > threshold * rms_smooth)
+			mask = np.bitwise_or(mask, np.greater_equal(np.absolute(cube_smooth), threshold * rms_smooth))
 			#stat.set_mask(mask, cube_smooth, threshold * rms_smooth)
 		
 		# Delete smoothed cube again
