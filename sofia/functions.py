@@ -147,7 +147,7 @@ def Gaussian(x, A, sigma):
 # ========================================================
 def moment2(x, y):
 	err.ensure(x.size == y.size, "Incompatible array sizes encountered in moment calculation.")
-	return np.sqrt(np.sum(x * x * y) / np.sum(y))
+	return np.sqrt(np.sum(x * x * y, dtype=np.float64) / np.sum(y, dtype=np.float64))
 
 
 # ================================================
@@ -155,7 +155,7 @@ def moment2(x, y):
 # ================================================
 def standard_deviation(x):
 	err.ensure(x.size > 0, "Array size of 0 encountered in calculation of std. dev.")
-	return np.sqrt(np.sum(x * x) / x.size)
+	return np.sqrt(np.sum(x * x, dtype=np.float64) / x.size)
 
 
 # ====================================================================
@@ -164,7 +164,7 @@ def standard_deviation(x):
 def nan_standard_deviation(x):
 	y = x[~np.isnan(x)]
 	err.ensure(y.size > 0, "Array size of 0 encountered in calculation of std. dev.")
-	return np.sqrt(np.sum(y * y) / y.size)
+	return np.sqrt(np.sum(y * y, dtype=np.float64) / y.size)
 
 
 # ===================================
