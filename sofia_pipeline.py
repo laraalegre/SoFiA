@@ -616,6 +616,14 @@ if Parameters["steps"]["doParameterise"]:
 	err.message("Parameterisation complete.")
 	if track_memory_usage: print_memory_usage(t0)
 
+# ---------------------------------------
+# ---- CHECK IF OBJECTS ARRAY EXISTS ----
+# ---------------------------------------
+
+if 'objects' in locals():
+	objArray = True
+else:
+	objArray = False
 
 
 # --------------------
@@ -633,7 +641,7 @@ if Parameters["steps"]["doWriteMask"] and NRdet:
 # ---- STORE CUBELETS ----
 # ------------------------
 
-if Parameters["steps"]["doCubelets"] and NRdet:
+if Parameters["steps"]["doCubelets"] and objArray:
 	err.print_progress_message("Writing cubelets", t0)
 	objects = np.array(objects)
 	cathead = np.array(catParNames)
@@ -667,7 +675,7 @@ if (Parameters["steps"]["doMom0"] or Parameters["steps"]["doMom1"]) and NRdet:
 # ---- CORRECT COORDINATES IF WORKING ON SUBCUBES ----
 # ----------------------------------------------------
 
-if len(subcube) and NRdet:
+if len(subcube) and objArray:
 	err.print_progress_message("Correcting parameters for sub-cube offset", t0)
 	# List of parameters to correct for X, Y and Z offset
 	corrX = ["x_geo", "x", "x_min", "x_max"]
@@ -690,7 +698,7 @@ if len(subcube) and NRdet:
 # ---- APPEND PARAMETER VALUES IN PHYSICAL UNITS ----
 # ---------------------------------------------------
 
-if NRdet and Parameters["steps"]["doWriteCat"]:
+if Parameters["steps"]["doWriteCat"] and objArray:
 	err.print_progress_message("Adding WCS position to catalogue", t0)
 	objects, catParNames, catParFormt, catParUnits = wcs_coordinates.add_wcs_coordinates(objects, catParNames, catParFormt, catParUnits, Parameters)
 
@@ -700,7 +708,7 @@ if NRdet and Parameters["steps"]["doWriteCat"]:
 # ---- STORE CATALOGUES ----
 # --------------------------
 
-if Parameters["steps"]["doWriteCat"] and NRdet:
+if Parameters["steps"]["doWriteCat"] and objArray:
 	err.print_progress_message("Writing output catalogue", t0)
 	
 	if "rms" in catParNames:
@@ -708,13 +716,13 @@ if Parameters["steps"]["doWriteCat"] and NRdet:
 		catParFormt[list(catParNames).index("rms")] = "%12.4e"
 		catParFormt=tuple(catParFormt)
 	
-	if Parameters["writeCat"]["writeXML"] and NRdet:
+	if Parameters["writeCat"]["writeXML"]:
 		write_catalog.write_catalog_from_array("XML", objects, catParNames, catParUnits, catParFormt, Parameters["writeCat"]["parameters"], outputCatXml, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"], Parameters["parameters"]["getUncertainties"])
 	
-	if Parameters["writeCat"]["writeASCII"] and NRdet:
+	if Parameters["writeCat"]["writeASCII"]:
 		write_catalog.write_catalog_from_array("ASCII", objects, catParNames, catParUnits, catParFormt, Parameters["writeCat"]["parameters"], outputCatAscii, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"], Parameters["parameters"]["getUncertainties"])
 	
-	if Parameters["writeCat"]["writeSQL"] and NRdet:
+	if Parameters["writeCat"]["writeSQL"]:
 		write_catalog.write_catalog_from_array("SQL", objects, catParNames, catParUnits, catParFormt, Parameters["writeCat"]["parameters"], outputCatSQL, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"], Parameters["parameters"]["getUncertainties"])
 	if track_memory_usage: print_memory_usage(t0)
 
