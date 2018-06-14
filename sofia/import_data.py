@@ -451,11 +451,11 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 				else:
 					sys.stderr.write("ERROR: The mask cube has fewer than 1 or more than 4 dimensions.\n")
 					raise SystemExit(1)
-				mask[mask > 0] = 1
+				#mask[mask > 0] = 1
 				g.close()
 				print ('Mask cube loaded.')
 			# In all cases, convert mask to Boolean with masked pixels set to 1.
-			mask = (mask > 0).astype(bool)
+			#mask = (mask > 0).astype(bool)
 		else:
 			# Create an empty mask if none is provided.
 			mask = zeros(np_Cube.shape, dtype=bool)

@@ -591,7 +591,9 @@ if Parameters['steps']['doDebug'] and NRdet:
 # ---- PARAMETERISE ----
 # ----------------------
 
-if Parameters["steps"]["doParameterise"] and Parameters["steps"]["doMerge"] and NRdet:
+if Parameters["steps"]["doParameterise"]:
+	if not (Parameters["steps"]["doMerge"] and NRdet):
+		NRdet, catParNames, catParUnits, catParFormt, objects, dunits = parametrisation.parameters_from_mask(dict_Header, mask)
 	err.print_progress_message("Parameterising sources", t0)
 	
 	# Print warning message about statistical uncertainties
@@ -631,7 +633,7 @@ if Parameters["steps"]["doWriteMask"] and NRdet:
 # ---- STORE CUBELETS ----
 # ------------------------
 
-if Parameters["steps"]["doCubelets"] and Parameters["steps"]["doMerge"] and NRdet:
+if Parameters["steps"]["doCubelets"] and NRdet:
 	err.print_progress_message("Writing cubelets", t0)
 	objects = np.array(objects)
 	cathead = np.array(catParNames)
@@ -665,7 +667,7 @@ if (Parameters["steps"]["doMom0"] or Parameters["steps"]["doMom1"]) and NRdet:
 # ---- CORRECT COORDINATES IF WORKING ON SUBCUBES ----
 # ----------------------------------------------------
 
-if len(subcube) and Parameters["steps"]["doMerge"] and NRdet:
+if len(subcube) and NRdet:
 	err.print_progress_message("Correcting parameters for sub-cube offset", t0)
 	# List of parameters to correct for X, Y and Z offset
 	corrX = ["x_geo", "x", "x_min", "x_max"]
@@ -688,7 +690,7 @@ if len(subcube) and Parameters["steps"]["doMerge"] and NRdet:
 # ---- APPEND PARAMETER VALUES IN PHYSICAL UNITS ----
 # ---------------------------------------------------
 
-if Parameters["steps"]["doMerge"] and NRdet and Parameters["steps"]["doWriteCat"]:
+if NRdet and Parameters["steps"]["doWriteCat"]:
 	err.print_progress_message("Adding WCS position to catalogue", t0)
 	objects, catParNames, catParFormt, catParUnits = wcs_coordinates.add_wcs_coordinates(objects, catParNames, catParFormt, catParUnits, Parameters)
 
@@ -698,7 +700,7 @@ if Parameters["steps"]["doMerge"] and NRdet and Parameters["steps"]["doWriteCat"
 # ---- STORE CATALOGUES ----
 # --------------------------
 
-if Parameters["steps"]["doWriteCat"] and Parameters["steps"]["doMerge"] and NRdet:
+if Parameters["steps"]["doWriteCat"] and NRdet:
 	err.print_progress_message("Writing output catalogue", t0)
 	
 	if "rms" in catParNames:
@@ -706,13 +708,13 @@ if Parameters["steps"]["doWriteCat"] and Parameters["steps"]["doMerge"] and NRde
 		catParFormt[list(catParNames).index("rms")] = "%12.4e"
 		catParFormt=tuple(catParFormt)
 	
-	if Parameters["writeCat"]["writeXML"] and Parameters["steps"]["doMerge"] and NRdet:
+	if Parameters["writeCat"]["writeXML"] and NRdet:
 		write_catalog.write_catalog_from_array("XML", objects, catParNames, catParUnits, catParFormt, Parameters["writeCat"]["parameters"], outputCatXml, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"], Parameters["parameters"]["getUncertainties"])
 	
-	if Parameters["writeCat"]["writeASCII"] and Parameters["steps"]["doMerge"] and NRdet:
+	if Parameters["writeCat"]["writeASCII"] and NRdet:
 		write_catalog.write_catalog_from_array("ASCII", objects, catParNames, catParUnits, catParFormt, Parameters["writeCat"]["parameters"], outputCatAscii, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"], Parameters["parameters"]["getUncertainties"])
 	
-	if Parameters["writeCat"]["writeSQL"] and Parameters["steps"]["doMerge"] and NRdet:
+	if Parameters["writeCat"]["writeSQL"] and NRdet:
 		write_catalog.write_catalog_from_array("SQL", objects, catParNames, catParUnits, catParFormt, Parameters["writeCat"]["parameters"], outputCatSQL, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"], Parameters["parameters"]["getUncertainties"])
 	if track_memory_usage: print_memory_usage(t0)
 

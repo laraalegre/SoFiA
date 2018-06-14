@@ -26,8 +26,13 @@ def dilate(cube, mask, objects, cathead, Parameters):
 	dilateChan = Parameters["parameters"]["dilateChan"]
 	
 	# Stops dilating when (flux_new - flux_old) / flux_new < dilateThreshold
-	for mm in range(1, mask.max() + 1):
-		obj = objects[mm - 1]
+	sourceIDs = np.unique(mask)
+	# remove first element which should be zero
+	if sourceIDs[0] == 0:
+		sourceIDs = np.delete(sourceIDs,0)
+	
+	for i in range(0, len(sourceIDs)):
+		obj = objects[i]
 		xmin = max(0, obj[list(cathead).index("x_min")] - dilatePixMax)
 		xmax = min(cube.shape[2] - 1, obj[list(cathead).index("x_max")] + dilatePixMax)
 		ymin = max(0, obj[list(cathead).index("y_min")] - dilatePixMax)
@@ -40,13 +45,13 @@ def dilate(cube, mask, objects, cathead, Parameters):
 		objcube = cube[zmin:zmax+1, ymin:ymax+1, xmin:xmax+1].copy()
 		objmask = mask[zmin:zmax+1, ymin:ymax+1, xmin:xmax+1].copy()
 		allmask = mask[zmin:zmax+1, ymin:ymax+1, xmin:xmax+1].copy()
-		otherobjs = (allmask > 0) * (allmask != mm)
+		otherobjs = (allmask > 0) * (allmask != sourceIDs[i])
 		
 		if (otherobjs).sum():
-			# Ensure that objects != mm within dilatePixMax, dilateChan are not
+			# Ensure that objects with different source IDs within dilatePixMax, dilateChan are not
 			# included in the flux growth calculation
-			err.warning("Object {0:d} has possible overlapping objects within {1:d} pix, {2:d} chan.".format(mm, dilatePixMax, dilateChan))
-			objcube[(allmask > 0) * (allmask != mm)] = 0
+			err.warning("Object {0:d} has possible overlapping objects within {1:d} pix, {2:d} chan.".format(sourceIDs[i], dilatePixMax, dilateChan))
+			objcube[(allmask > 0) * (allmask != sourceIDs[i])] = 0
 		
 		fluxes = []
 		
@@ -55,23 +60,23 @@ def dilate(cube, mask, objects, cathead, Parameters):
 			dilstruct = (np.sqrt(((np.indices((dd, dd)) - dil)**2).sum(axis=0)) <= dil).astype(int)
 			dilstruct.resize((1, dilstruct.shape[0], dilstruct.shape[1]))
 			dilstruct = dilstruct.repeat(dilateChan * 2 + 1, axis=0)
-			fluxes.append(objcube[nd.morphology.binary_dilation(objmask==mm, structure=dilstruct)].sum())
+			fluxes.append(objcube[nd.morphology.binary_dilation(objmask==sourceIDs[i], structure=dilstruct)].sum())
 			if dil > 0 and (fluxes[-1] - fluxes[-2]) / fluxes[-1] < dilateThreshold:
 				dil -= 1
 				break
 		
 		# Pick the best dilation kernel for current object and update mask
-		err.message("Mask dilation of source {0:d} by {1:d} px and {2:d} chan.".format(mm, dil, dilateChan))
+		err.message("Mask dilation of source {0:d} by {1:d} px and {2:d} chan.".format(sourceIDs[i], dil, dilateChan))
 		dd = dil * 2 + 1
 		dilstruct = (np.sqrt(((np.indices((dd, dd)) - dil)**2).sum(axis=0)) <= dil).astype(int)
 		dilstruct.resize((1, dilstruct.shape[0], dilstruct.shape[1]))
 		dilstruct = dilstruct.repeat(dilateChan * 2 + 1, axis=0)
 		
-		# Only grow the mask of object mm even when other objects are present in objmask
-		objmask[nd.morphology.binary_dilation(objmask==mm, structure=dilstruct).astype(int) == 1] = mm
+		# Only grow the mask of object sourceIDs[i] even when other objects are present in objmask
+		objmask[nd.morphology.binary_dilation(objmask==sourceIDs[i], structure=dilstruct).astype(int) == 1] = sourceIDs[i]
 		
-		# Put back in objmask objects != mm that may have been inside objmask before 
-		# dilation or may have been temporarily replaced by the dilated object mm
+		# Put back in objmask objects != sourceIDs[i] that may have been inside objmask before 
+		# dilation or may have been temporarily replaced by the dilated object sourceIDs[i]
 		if (otherobjs).sum():
 			objmask[otherobjs] = allmask[otherobjs]
 		mask[zmin:zmax+1, ymin:ymax+1, xmin:xmax+1] = objmask
@@ -196,12 +201,16 @@ def parametrise(cube, mask, objects, cathead, catformt, catparunits, Parameters,
 		source_dict = d[i].getParameters()
 		
 		# Check source index
-		index = int(source_dict["id"].getValue())
+		ID = int(source_dict["id"].getValue())
+		IDind = cathead.index("id")
+		
+		ind = np.where(objects[:,IDind]==ID)[0][0]
+
 		for j in sorted(source_dict):
 			if j in replParam:
-				objects[index - 1][cathead.index(origParam[replParam.index(j)])] = source_dict[j].getValue()
+				objects[ind][cathead.index(origParam[replParam.index(j)])] = source_dict[j].getValue()
 			else:
-				objects[index - 1][cathead.index(j)] = source_dict[j].getValue()
+				objects[ind][cathead.index(j)] = source_dict[j].getValue()
 	
 	objects = np.array(objects)
 	cathead = np.array(cathead)
@@ -211,3 +220,83 @@ def parametrise(cube, mask, objects, cathead, catformt, catparunits, Parameters,
 	err.message("Parameterisation complete.")
 	
 	return cube, mask, objects, cathead, catformt, catparunits
+
+
+
+def parameters_from_mask(dict_Header, mask):
+    
+	# if the user only provided an indexed mask, we need to create the objects, catParNames, catParFormt, catParUnits and dunits arrays
+	# Set catalogue header
+	if "bunit" in dict_Header: dunits = dict_Header["bunit"]
+	else: dunits = "-"
+	# set parameter info arrays
+	catParNames = ("id", "x_geo", "y_geo", "z_geo", "x", "y", "z", "x_min", "x_max", "y_min", "y_max", "z_min", "z_max", "n_pix", "n_chan", "n_los")
+	catParUnits = ("-", "pix", "pix", "chan", "pix", "pix", "chan", "pix", "pix", "pix", "pix", "chan", "chan", "-", "chan", "-")
+	catParFormt = ("%10i", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%7i", "%7i", "%7i", "%7i", "%7i", "%7i", "%8i", "%7i", "%7i")
+	catParNames = np.array(catParNames)
+	catParUnits = np.array(catParUnits)
+	catParFormt = np.array(catParFormt)
+
+	# create object array from index mask
+	indices = np.unique(mask).astype(int)
+
+	# remove first element if it is zero
+	if indices[0] == 0:
+		indices = np.delete(indices,0)
+
+	# make object array
+	objects = np.empty((len(indices),len(catParNames)))
+	objects[:,:] = np.nan
+
+	# fill with object parameters needed for parameterisation
+	for i in range(len(indices)):
+				# add object ids
+				objects[i,catParNames=="id"] = indices[i]
+				# add boundaries and geometric center
+				xmin,xmax,ymin,ymax,zmin,zmax,xgeo,ygeo,zgeo,n_pix,n_los,n_chan = src_params_from_mask(mask,indices[i])
+				objects[i,catParNames=="x_min"] = xmin
+				objects[i,catParNames=="x_max"] = xmax
+				objects[i,catParNames=="y_min"] = ymin
+				objects[i,catParNames=="y_max"] = ymax
+				objects[i,catParNames=="z_min"] = zmin
+				objects[i,catParNames=="z_max"] = zmax
+				objects[i,catParNames=="x_geo"] = xgeo
+				objects[i,catParNames=="y_geo"] = ygeo
+				objects[i,catParNames=="z_geo"] = zgeo
+				objects[i,catParNames=="n_pix"] = n_pix
+				objects[i,catParNames=="n_chan"] = n_chan
+				objects[i,catParNames=="n_los"] = n_los
+
+
+	NRdet = len(indices)
+
+	return NRdet, catParNames, catParUnits, catParFormt, objects, dunits
+
+
+def src_params_from_mask(mask,ID):
+    
+    
+	# get coordinates of pixels, that contain the selected ID
+	indices = np.vstack(np.where(mask==ID))
+
+	# min and max (x,y,z) values represent the bounding boxes
+	xmin,xmax = min(indices[2]),max(indices[2])+1
+	ymin,ymax = min(indices[1]),max(indices[1])+1
+	zmin,zmax = min(indices[0]),max(indices[0])+1
+
+	# total number of pixes in the source
+	n_pix = indices.shape[1]
+
+	# geometric center
+	cgeo = (indices.sum(axis=1)).astype(float)/float(n_pix)
+	xgeo,ygeo,zgeo = cgeo[2], cgeo[1], cgeo[0]
+
+	# number of lines of sight
+	collapsedMap = mask[zmin:zmax,ymin:ymax,xmin:xmax].sum(axis=0)
+	collapsedMap[collapsedMap>0] = 1
+	n_los = collapsedMap.sum()
+
+	# number of channels
+	n_chan = zmax-zmin
+
+	return xmin,xmax,ymin,ymax,zmin,zmax,xgeo,ygeo,zgeo,n_pix,n_los,n_chan
