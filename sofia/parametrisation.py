@@ -235,6 +235,7 @@ def parametrise(cube, mask, objects, cathead, catformt, catparunits, Parameters,
 
 def create_source_flags(cube, mask, cathead, obj_id, x_min, x_max, y_min, y_max, z_min, z_max):
 	flag = 0
+	[z_min, z_max, y_min, y_max, x_min, x_max] = map(int, [z_min, z_max, y_min, y_max, x_min, x_max])
 	
 	# Check spatial boundaries
 	if x_min == 0 or x_max == cube.shape[2] or y_min == 0 or y_max == cube.shape[1]:

@@ -8,7 +8,7 @@ from numpy import *
 import re
 
 
-def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, subcube=[], subcubeMode='pixel', doFlag=False, flagRegions=False, flagFile='', cubeOnly=False):
+def read_data(doSubcube, inFile, invertData, weightsFile, maskFile, weightsFunction = None, subcube=[], subcubeMode='pixel', doFlag=False, flagRegions=False, flagFile='', cubeOnly=False):
 	# import the fits file into an numpy array for the cube and a dictionary for the header:
 	# the data cube is converted into a 3D array
 	
@@ -208,6 +208,12 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 		raise SystemExit(1)
 	
 	f.close()
+	
+	
+	# Check if cube needs to be inverted
+	if invertData:
+		np_Cube *= -1.0
+		print("Inverting data cube to search for negative signals")
 	
 	
 	# check whether the axes are in the expected order:

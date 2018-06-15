@@ -34,6 +34,7 @@ steps.doOptical                 =       false
 # Import module
 
 import.inFile                   =       
+import.invertData               =       false
 import.weightsFile              =       
 import.maskFile                 =       
 import.weightsFunction          =       

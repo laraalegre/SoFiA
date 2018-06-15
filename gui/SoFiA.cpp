@@ -1858,6 +1858,10 @@ void SoFiA::createInterface()
 	tabInputLayoutData->setContentsMargins(0, 0, 0, 0);
 	tabInputWidgetData->setLayout(tabInputLayoutData);
 	
+	tabInputFieldInvertData = new QCheckBox(tr("Invert data cube"), tabInputGroupBox1);
+	tabInputFieldInvertData->setObjectName("import.invertData");
+	connect(tabInputFieldInvertData, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	
 	tabInputWidgetMask = new QWidget(tabInputGroupBox1);
 	tabInputLayoutMask = new QHBoxLayout();
 	tabInputFieldMask  = new QLineEdit(tabInputWidgetMask);
@@ -1891,6 +1895,7 @@ void SoFiA::createInterface()
 	connect(tabInputFieldWeightsFunction, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
 	
 	tabInputForm1->addRow(tr("Data cube:"), tabInputWidgetData);
+	tabInputForm1->addRow(tr(""), tabInputFieldInvertData);
 	tabInputForm1->addRow(tr("Mask cube:"), tabInputWidgetMask);
 	tabInputForm1->addRow(tr("Weights cube:"), tabInputWidgetWeights);
 	tabInputForm1->addRow(tr("Weights function:"), tabInputFieldWeightsFunction);
@@ -3278,6 +3283,7 @@ void SoFiA::createWhatsThis()
 	tabInputFieldFlags->setWhatsThis(tr("<h3>flag.regions</h3><p>Pixel/channel range(s) to be flagged prior to source finding. Format:</p><p><code>[[x1, x2, y1, y2, z1, z2], ...]</code></p><p>A place holder, <code>''</code> (two single quotes), can be used for the upper range limit (<code>x2</code>, <code>y2</code>, and <code>z2</code>) to flag all the way to the end, e.g.</p><p><code>[[0, '', 0, '', 0, 19]]</code></p><p>will flag the first 20 channels of the entire cube. The default is an empty list, <code>[]</code>, which means to not flag anything.</p>"));
 	tabInputFieldFlagCube->setWhatsThis(tr("<h3>flag.file</h3><p>Full path and file name of an optional flagging cube that must be of the same dimensions as the input cube. All pixels that are flagged (i.e. set to BLANK) in the flagging cube will also be flagged in the input cube prior to source finding. The default is to not apply flags.</p>"));
 	tabInputFieldData->setWhatsThis(tr("<h3>import.inFile</h3><p>Full path and file name of the input data cube. This option is mandatory, and there is no default. Note that only <b>FITS</b> files are currently supported by SoFiA.</p>"));
+	tabInputFieldInvertData->setWhatsThis(tr("<h3>import.invertData</h3><p>If set to <b>true</b>, SoFiA will multiply the data cube by &minus;1 in order to search for negative signals.</p>"));
 	tabInputFieldMask->setWhatsThis(tr("<h3>import.maskFile</h3><p>Full path and file name of an optional file containing a mask of pixels identified as part of a source, e.g. from a previous run of SoFiA. This can be used to re-parametrise sources without repeating the source finding step or to add more sources from a second source finding run. The default is to not read a mask cube.</p>"));
 	tabInputFieldSubcube->setWhatsThis(tr("<h3>import.subcube</h3><p>This parameter defines a subcube to be read in and processed by SoFiA. Depending on the value of import.subcubeMode, the range is either specified in pixels as</p><p><code>[x1, x2, y1, y2, z1, z2]</code></p><p>or in world coordinates as</p><p><code>[x, y, z, rx, ry, rz]</code></p><p>In the latter case, <code>x</code>, <code>y</code> and <code>z</code> define the centre of the subcube, and <code>rx</code>, <code>ry</code> and <code>rz</code> specify the half-widths in the three dimensions. If world coordinates are used, all parameters must be in the native format as defined in the header of the data cube; e.g. if <code>CUNIT3</code> is <code>'Hz'</code> then both <code>z</code> and <code>rz</code> must be given in hertz. The default is an empty list, <code>[]</code>, which means to read the entire cube.</p>"));
 	tabInputFieldSubcubeMode->setWhatsThis(tr("<h3>import.subcubeMode</h3><p>This parameter defines whether import.subcube is specified in pixels (<b>pixel</b>) or in world coordinates (<b>world</b>).</p>"));

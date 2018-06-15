@@ -21,6 +21,7 @@ SCfind.verbose	=	true
 flag.file	=	
 flag.regions	=	[]
 import.inFile	=	
+import.invertData = false
 import.maskFile	=	
 import.subcube	=	[]
 import.subcubeMode	=	pixel

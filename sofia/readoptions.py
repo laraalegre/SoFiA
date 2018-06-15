@@ -126,6 +126,7 @@ def allowedDataTypes():
 	        "steps.doDebug": "bool", \
 	        "steps.doOptical": "bool", \
 	        "import.inFile": "string", \
+	        "import.invertData": "bool", \
 	        "import.weightsFile": "string", \
 	        "import.maskFile": "string", \
 	        "import.weightsFunction": "string", \

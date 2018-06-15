@@ -303,6 +303,7 @@ private:
 	QFormLayout  *tabInputForm1;
 	QLineEdit    *tabInputFieldData;
 	QPushButton  *tabInputButtonData;
+	QCheckBox    *tabInputFieldInvertData;
 	QLineEdit    *tabInputFieldMask;
 	QPushButton  *tabInputButtonMask;
 	QLineEdit    *tabInputFieldWeights;

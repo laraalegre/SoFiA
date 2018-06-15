@@ -565,6 +565,7 @@ if Parameters["steps"]["doMerge"] and NRdet:
 # -------------------------------------------------------------------------------
 
 if Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["import"]["weightsFile"] or Parameters["import"]["weightsFunction"]:
+	err.message("Reloading data cube for parameterisation")
 	del np_Cube, dict_Header
 	kwargs = Parameters["import"].copy()
 	kwargs.update({"cubeOnly":True})
