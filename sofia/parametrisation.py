@@ -94,9 +94,13 @@ def parametrise(cube, mask, objects, cathead, catformt, catparunits, Parameters,
 	initcatalog = cp.PySourceCatalog()
 	
 	for obj in objects:
+		# Check flags
+		source_flag = create_source_flags(cube, mask, cathead, obj[cathead == "id"], obj[cathead == "x_min"], obj[cathead == "x_max"], obj[cathead == "y_min"], obj[cathead == "y_max"], obj[cathead == "z_min"], obj[cathead == "z_max"])
+		
 		newSource = cp.PySource()
 		newSource.ID = obj[cathead == "id"]
 		newParamsDict = {
+			"flag": cp.PyMeasurement("flag", source_flag, 0.0, ""),
 			"x": cp.PyMeasurement("x", obj[cathead == "x_geo"], 0.0, ""),
 			"y": cp.PyMeasurement("y", obj[cathead == "y_geo"], 0.0, ""),
 			"z": cp.PyMeasurement("z", obj[cathead == "z_geo"], 0.0, ""),
@@ -105,7 +109,7 @@ def parametrise(cube, mask, objects, cathead, catformt, catparunits, Parameters,
 			"y_min": cp.PyMeasurement("y_min", obj[cathead == "y_min"], 0.0, ""),
 			"y_max": cp.PyMeasurement("y_max", obj[cathead == "y_max"], 0.0, ""),
 			"z_min": cp.PyMeasurement("z_min", obj[cathead == "z_min"], 0.0, ""),
-			"z_max": cp.PyMeasurement("z_max", obj[cathead == "z_max"], 0.0, ""),
+			"z_max": cp.PyMeasurement("z_max", obj[cathead == "z_max"], 0.0, "")
 			}
 		newSource.setParameters(newParamsDict)
 		initcatalog.insert(newSource)
@@ -133,6 +137,7 @@ def parametrise(cube, mask, objects, cathead, catformt, catparunits, Parameters,
 	cathead = list(cathead)
 	newunits = {
 		"id": "-",
+		"flag": "-",
 		"x": "pix",
 		"y": "pix",
 		"z": "pix",
@@ -211,3 +216,33 @@ def parametrise(cube, mask, objects, cathead, catformt, catparunits, Parameters,
 	err.message("Parameterisation complete.")
 	
 	return cube, mask, objects, cathead, catformt, catparunits
+
+
+
+# ===============================
+# FUNCTION: Generate source flags
+# ===============================
+
+def create_source_flags(cube, mask, cathead, obj_id, x_min, x_max, y_min, y_max, z_min, z_max):
+	flag = 0
+	
+	# Check spatial boundaries
+	if x_min == 0 or x_max == cube.shape[2] or y_min == 0 or y_max == cube.shape[1]:
+		flag |= 1
+	
+	# Check spectral boundaries
+	if z_min == 0 or z_max == cube.shape[0]:
+		flag |= 2
+	
+	# Check for NaN and other sources
+	obj_cube = cube[z_min:z_max+1, y_min:y_max+1, x_min:x_max+1].copy()
+	obj_mask = mask[z_min:z_max+1, y_min:y_max+1, x_min:x_max+1].copy()
+	dil = nd.morphology.binary_dilation(obj_mask==obj_id, structure=np.ones([3, 3, 3]))
+	dil_values = obj_cube[dil]
+	dil_masked = obj_mask[dil]
+	if np.isnan(dil_values).any():
+		flag |= 4
+	if(dil_masked[dil_masked > 0] != obj_id).any():
+		flag |= 8
+	
+	return flag

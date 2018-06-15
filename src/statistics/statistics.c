@@ -1,11 +1,11 @@
-/* =================================================================== */
-/* This module provides time-critical and memory-critical statistical  */
-/* functions implemented in plain C99. They can be called from within  */
-/* Python using the ctypes module after compilation into a shared ob-  */
-/* ject library named statistics.so.                                   */
-/* =================================================================== */
-/* Compilation: gcc -O3 -fPIC -shared -o statistics.so statistics.c    */
-/* =================================================================== */
+// ===================================================================
+// This module provides time-critical and memory-critical statistical
+// functions implemented in plain C99. They can be called from within
+// Python using the ctypes module after compilation into a shared ob-
+// ject library named statistics.so.
+// ===================================================================
+// Compilation: gcc -std=c99 -O3 -fPIC -shared -o statistics.so statistics.c
+// ===================================================================
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,9 +17,15 @@
 #define RMS_MAD 1
 #define RMS_GAUSS 2
 
-#define RMS_NEG 0
-#define RMS_ALL 1
-#define RMS_POS 2
+#define RMS_NEG -1
+#define RMS_ALL  0
+#define RMS_POS  1
+
+
+#define loop_desc(I,N) for(size_t (I) = (N); (I)--;)
+
+
+typedef float data_t;
 
 
 
@@ -27,116 +33,165 @@
 /* Function declarations */
 /* ===================== */
 
-/* Check for NaN */
-unsigned int check_nan(const float *data, const size_t size, const unsigned int byte_order);
-/* Replace NaN */
-void replace_nan(float *data, const float *mask, const size_t size, float value, const unsigned int byte_order_data, const unsigned int byte_order_mask);
-/* Set mask based on threshold */
-void set_mask(unsigned char *mask, const float *data, const size_t size, const float threshold, const unsigned int byte_order);
-/* Measure RMS */
-double standard_deviation(const float *data, const size_t size, const size_t cadence, const unsigned int flux_range, const unsigned int byte_order);
-/* Summation */
-double sum(const float *data, const size_t size);
-/* Moment map generation */
-double *moment(const float *data, const size_t nx, const size_t ny, const size_t nz, const unsigned int mom, const double *mom0, const double *mom1);
-/* Uniform filter */
-void uniform_filter_1d(float *data, const size_t nx, const size_t ny, const size_t nz, const size_t width, const unsigned int edge_mode);
-/* Memory release */
+// Check for NaN
+unsigned int check_nan(const data_t *data, const size_t size);
+// Set mask based on threshold
+void set_mask(unsigned char *mask, const data_t *data, const size_t size, const data_t threshold);
+// Standard deviation
+double stddev(const data_t *data, const size_t size, const size_t cadence, const int flux_range, data_t value);
+// Median
+data_t median(data_t *data, const size_t size);
+// Median absolute deviation
+data_t mad(data_t *data, const size_t size, data_t value);
+// Summation
+double sum(const data_t *data, const size_t size, const unsigned int mean);
+// Kahan sum
+double kahan_sum(const data_t *data, const size_t size, const unsigned int mean);
+// Moment map generation
+double *moment(const data_t *data, const size_t nx, const size_t ny, const size_t nz, const unsigned int mom, const double *mom0, const double *mom1);
+// Uniform filter
+void uniform_filter_1d(data_t *data, const size_t nx, const size_t ny, const size_t nz, const size_t width, const unsigned int edge_mode);
+// Partial sorting of n-th element
+data_t nth_element(data_t *data, const size_t size, const size_t n);
+// Maximum and minimum
+data_t max(const data_t *data, const size_t size);
+data_t min(const data_t *data, const size_t size);
+// Memory release
 void free_memory(double *data);
-/* Check native byte order of machine */
+// Check native byte order of machine
 inline unsigned int native_byte_order(void);
-/* Swap byte order */
-inline void swap_byte_order(float *value);
+// Swap byte order
+inline void swap_byte_order_32(float *value);
+inline void swap_byte_order_64(double *value);
+// Check for NaN
+inline unsigned int is_nan(const data_t *value);
 
 
 
-/* =================================== */
-/* FUNCTION: Check for presence of NaN */
-/* =================================== */
+// -------------------------
+// Check if any NaN in array
+// -------------------------
 
-unsigned int check_nan(const float *data, const size_t size, const unsigned int byte_order)
+unsigned int check_nan(const data_t *data, const size_t size)
 {
-	const unsigned int swap_needed = (byte_order != native_byte_order());
-	
-	for(size_t i = size; i--;)
-	{
-		float value = data[i];
-		if(swap_needed) swap_byte_order(&value);
-		if(isnan(value)) return 1;
-	}
-	
+	const data_t *ptr = data + size;
+	while(ptr --> data) if(is_nan(ptr)) return 1;
 	return 0;
 }
 
 
 
-/* ================================ */
-/* FUNCTION: Replace NaN with value */
-/* ================================ */
+// ----------------------------------
+// Maximum and minimum value in array
+// ----------------------------------
 
-void replace_nan(float *data, const float *mask, const size_t size, float value, const unsigned int byte_order_data, const unsigned int byte_order_mask)
+data_t max(const data_t *data, const size_t size)
 {
-	const unsigned int swap_needed_data = (byte_order_data != native_byte_order());
-	const unsigned int swap_needed_mask = (byte_order_mask != native_byte_order());
+	data_t result = NAN;
+	const data_t *ptr = data + size;
 	
-	for(size_t i = size; i--;)
+	while(ptr --> data)
 	{
-		float mask_value = mask[i];
-		if(swap_needed_mask) swap_byte_order(&mask_value);
-		
-		if(isnan(mask_value))
+		if(is_nan(ptr)) continue;
+		if(is_nan(&result) || *ptr > result) result = *ptr;
+	}
+	
+	return result;
+}
+
+data_t min(const data_t *data, const size_t size)
+{
+	data_t result = NAN;
+	const data_t *ptr = data + size;
+	
+	while(ptr --> data)
+	{
+		if(is_nan(ptr)) continue;
+		if(is_nan(&result) || *ptr < result) result = *ptr;
+	}
+	
+	return result;
+}
+
+
+
+// ---------------------------
+// Summation of array elements
+// ---------------------------
+
+double sum(const data_t *data, const size_t size, const unsigned int mean)
+{
+	const data_t *ptr = data + size;
+	double result = 0.0;
+	size_t counter = 0;
+	
+	while(ptr --> data)
+	{
+		if(!is_nan(ptr))
 		{
-			if(swap_needed_data) swap_byte_order(&value);
-			data[i] = value;
+			result += *ptr;
+			++counter;
 		}
 	}
 	
-	return;
+	if(mean && counter) return result / (double)counter;
+	return result;
 }
 
 
 
-/* ===================================== */
-/* FUNCTION: Set mask based on threshold */
-/* ===================================== */
+// ---------------------------------
+// Kahan summation of array elements
+// ---------------------------------
 
-void set_mask(unsigned char *mask, const float *data, const size_t size, const float threshold, const unsigned int byte_order)
+double kahan_sum(const data_t *data, const size_t size, const unsigned int mean)
 {
-	const unsigned int swap_needed = (byte_order != native_byte_order());
+	const data_t *ptr = data + size;
+	double result = 0.0;
+	double error = 0.0;
+	size_t counter = 0;
 	
-	for(size_t i = size; i--;)
+	while(ptr --> data)
 	{
-		float value = data[i];
-		if(swap_needed) swap_byte_order(&value);
-		if(fabs(value) >= threshold) mask[i] = 1;
+		if(!is_nan(ptr))
+		{
+			double y = *ptr - error;
+			double t = result + y;
+			error = (t - result) - y;
+			result = t;
+			++counter;
+		}
 	}
 	
-	return;
+	if(mean && counter) return result / (double)counter;
+	return result;
 }
 
 
 
-/* ==================================== */
-/* FUNCTION: Measure standard deviation */
-/* ==================================== */
+// --------------------------------------
+// Standard deviation about value or mean
+// --------------------------------------
 
-double standard_deviation(const float *data, const size_t size, const size_t cadence, const unsigned int flux_range, const unsigned int byte_order)
+double stddev(const data_t *data, const size_t size, const size_t cadence, const int flux_range, data_t value)
 {
 	double result = 0.0;
 	size_t counter = 0;
-	const unsigned int swap_needed = (byte_order != native_byte_order());
+	const data_t *ptr = data + size;
 	
-	for(size_t i = size - size % cadence; i -= cadence;)
+	// Calculate mean if no value specified
+	if(is_nan(&value)) value = sum(data, size, 1);
+	
+	while(data < ptr)
 	{
-		float value = data[i];
-		if(swap_needed) swap_byte_order(&value);
-		if(isnan(value)) continue;
+		ptr -= cadence;
+		if(is_nan(ptr)) continue;
 		
-		if(value < 0.0)
+		if(*ptr < 0.0)
 		{
 			if(flux_range <= RMS_ALL)
 			{
-				result += value * value;
+				result += (*ptr - value) * (*ptr - value);
 				++counter;
 			}
 		}
@@ -144,7 +199,7 @@ double standard_deviation(const float *data, const size_t size, const size_t cad
 		{
 			if(flux_range >= RMS_ALL)
 			{
-				result += value * value;
+				result += (*ptr - value) * (*ptr - value);
 				++counter;
 			}
 		}
@@ -155,25 +210,96 @@ double standard_deviation(const float *data, const size_t size, const size_t cad
 
 
 
-/* ============================================= */
-/* FUNCTION: Calculate the sum over a data array */
-/* ============================================= */
+// ---------------
+// Median of array
+// ---------------
 
-double sum(const float *data, const size_t size)
+// WARNING: Not NaN-safe!
+data_t median(data_t *data, const size_t size)
 {
-	double sum = 0.0;
-	unsigned int flag = 0;
-	size_t i = size;
+	/* Exact median */
+	const size_t n = size / 2;
+	const data_t value = nth_element(data, size, n);
+	if(size & 1U) return value;
+	return (value + max(data, n)) / 2.0;
 	
-	for(;i--;) {
-		if(!isnan(data[i])) {
-			sum += data[i];
-			flag = 1;
-		}
+	/* Approximate median (marginally faster) */
+	/*return nth_element(data, size, size / 2);*/
+}
+
+
+
+// -------------------------
+// Median absolute deviation
+// -------------------------
+
+data_t mad(data_t *data, const size_t size, data_t value)
+{
+	data_t *ptr = data + size;
+	if(is_nan(&value)) value = median(data, size);
+	while(ptr --> data) *ptr = fabs(*ptr - value);
+	return 1.4826 * median(data, size);
+}
+
+
+
+// ------------------------------
+// N-th smallest element in array
+// ------------------------------
+
+// WARNING: Not NaN-safe!
+data_t nth_element(data_t *data, const size_t size, const size_t n)
+{
+	data_t *l = data;
+	data_t *m = data + size - 1;
+	data_t *ptr = data + n;
+	
+	while(l < m)
+	{
+		data_t value = *ptr;
+		data_t *i = l;
+		data_t *j = m;
+		
+		do
+		{
+			while(*i < value) ++i;
+			while(value < *j) --j;
+			
+			if(i <= j)
+			{
+				data_t tmp = *i;
+				*i = *j;
+				*j = tmp;
+				++i;
+				--j;
+			}
+		} while(i <= j);
+		
+		if(j < ptr) l = i;
+		if(ptr < i) m = j;
 	}
 	
-	if(flag) return sum;
-	return NAN;
+	return *ptr;
+}
+
+
+
+// ---------------------------
+// Set mask based on threshold
+// ---------------------------
+
+void set_mask(unsigned char *mask, const data_t *data, const size_t size, const data_t threshold)
+{
+	const data_t *ptr_data = data + size;
+	unsigned char *ptr_mask = mask + size;
+	
+	while(ptr_data --> data)
+	{
+		--ptr_mask;
+		if(fabs(*ptr_data) >= threshold) *ptr_mask = 1U;
+	}
+	
+	return;
 }
 
 
@@ -182,34 +308,35 @@ double sum(const float *data, const size_t size)
 /* FUNCTION: Calculate the moment 0 of a 3-D array */
 /* =============================================== */
 
-double *moment(const float *data, const size_t nx, const size_t ny, const size_t nz, const unsigned int mom, const double *mom0, const double *mom1)
+// ALERT: This needs to be updated and sped up!
+double *moment(const data_t *data, const size_t nx, const size_t ny, const size_t nz, const unsigned int mom, const double *mom0, const double *mom1)
 {
-	size_t x = nx;
-	size_t y = ny;
-	size_t z = nz;
-	size_t index_2d;
-	size_t index_3d;
-	double offset;
-	unsigned int flag;
-	
 	double *moment_map = (double*)calloc(nx * ny, sizeof(double));
 	
-	if(moment_map == NULL) {
+	if(moment_map == NULL)
+	{
 		fprintf(stderr, "ERROR: Failed to allocate memory for moment map.\n");
 		exit(1);
 	}
 	
-	for(;x--;) {
-		for(;y--;) {
-			flag = 0;
-			index_2d = y + ny * x;
+	loop_desc(x, nx)
+	{
+		loop_desc(y, ny)
+		{
+			unsigned int flag = 0;
+			size_t index_2d = y + ny * x;
 			
-			for(;z--;) {
-				index_3d = z + nz * index_2d;
+			loop_desc(z, nz)
+			{
+				size_t index_3d = z + nz * index_2d;
 				
-				if(!isnan(data[index_3d])) {
+				if(!isnan(data[index_3d]))
+				{
 					flag = 1;
-					switch(mom) {
+					double offset;
+					
+					switch(mom)
+					{
 						case 2:
 							offset = mom1[index_2d] - z;
 							moment_map[index_2d] += offset * offset * data[index_3d];
@@ -224,8 +351,10 @@ double *moment(const float *data, const size_t nx, const size_t ny, const size_t
 				}
 			}
 			
-			if(flag) {
-				switch(mom) {
+			if(flag)
+			{
+				switch(mom)
+				{
 					case 2:
 						moment_map[index_2d] = sqrt(moment_map[index_2d] / mom0[index_2d]);
 						break;
@@ -236,7 +365,8 @@ double *moment(const float *data, const size_t nx, const size_t ny, const size_t
 						break;
 				}
 			}
-			else {
+			else
+			{
 				moment_map[index_2d] = NAN;
 			}
 		}
@@ -252,15 +382,12 @@ double *moment(const float *data, const size_t nx, const size_t ny, const size_t
 /* ===================================== */
 
 /* WARNING: This function is untested and cannot handle NaN and inf! */
-void uniform_filter_1d(float *data, const size_t nx, const size_t ny, const size_t nz, const size_t width, const unsigned int edge_mode)
+void uniform_filter_1d(data_t *data, const size_t nx, const size_t ny, const size_t nz, const size_t width, const unsigned int edge_mode)
 {
-	size_t x, y, z, n;
-	size_t index_2d, index_3d;
 	size_t radius = width / 2;
-	float value;
 	
 	/* Allocate memory for spectrum */
-	float *spectrum = (float*)malloc(nz * sizeof(float));
+	data_t *spectrum = (data_t*)malloc(nz * sizeof(data_t));
 	
 	if(spectrum == NULL)
 	{
@@ -269,41 +396,41 @@ void uniform_filter_1d(float *data, const size_t nx, const size_t ny, const size
 	}
 	
 	/* Loop over the image plane */
-	for(x = nx; x--;)
+	loop_desc(x, nx)
 	{
-		for(y = ny; y--;)
+		loop_desc(y, ny)
 		{
 			/* Determine pixel index */
-			index_2d = y + ny * z;
+			size_t index_2d = y + ny * x;
 			
 			/* Copy data into spectrum */
-			for(z = nz; z--;)
+			loop_desc(z, nz)
 			{
-				index_3d = x + nx * index_2d;
+				size_t index_3d = z + nz * index_2d;
 				spectrum[z] = data[index_3d];
 			}
 			
-			value = 0.0;
+			data_t value = 0.0;
 			
 			/* Apply filter */
-			for(z = radius; z < nz - radius; ++z)
+			for(size_t z = radius; z < nz - radius; ++z)
 			{
-				index_3d = z + nz * index_2d;
-				value += spectrum[z] / (float)width;
+				size_t index_3d = z + nz * index_2d;
+				value += spectrum[z] / (data_t)width;
 				
-				for(n = 1; n <= radius; ++n)
+				for(size_t n = 1; n <= radius; ++n)
 				{
-					value += spectrum[z - n] / (float)width;
-					value += spectrum[z + n] / (float)width;
+					value += spectrum[z - n] / (data_t)width;
+					value += spectrum[z + n] / (data_t)width;
 				}
 				
 				data[index_3d] = value;
 			}
 			
 			/* Mask unfiltered channels with NaN */
-			for(n = 0; n < radius; ++n)
+			loop_desc(n, radius)
 			{
-				index_3d = n + nz * index_2d;
+				size_t index_3d = n + nz * index_2d;
 				data[index_3d] = NAN;
 				index_3d = (nz - n - 1) + nz * index_2d;
 				data[index_3d] = NAN;
@@ -347,15 +474,34 @@ inline unsigned int native_byte_order(void)
 
 
 
-/* ================================== */
-/* FUNCTION: Swap byte order of float */
-/* ================================== */
+/* ========================= */
+/* FUNCTION: Swap byte order */
+/* ========================= */
 
-inline void swap_byte_order(float *value)
+inline void swap_byte_order_32(float *value)
 {
 	uint32_t tmp;
 	memcpy(&tmp, value, 4);
 	tmp = __builtin_bswap32(tmp);
 	memcpy(value, &tmp, 4);
 	return;
+}
+
+inline void swap_byte_order_64(double *value)
+{
+	uint64_t tmp;
+	memcpy(&tmp, value, 8);
+	tmp = __builtin_bswap64(tmp);
+	memcpy(value, &tmp, 8);
+	return;
+}
+
+
+/* ============ */
+/* Check if NaN */
+/* ============ */
+
+inline unsigned int is_nan(const data_t *value)
+{
+	return *value != *value;
 }

@@ -53,7 +53,7 @@ def read_data(doSubcube, inFile, weightsFile, maskFile, weightsFunction = None, 
 				corrfact = cos(subcube[1] / 180.0 * pi)
 			
 			if header['NAXIS'] == 4:
-				subcube = wcsin.wcs_world2pix(array([[subcube[0] -subcube[3] / corrfact, subcube[1] - subcube[4], subcube[2] - subcube[5], 0], [subcube[0] + subcube[3] / corrfact, subcube[1] + subcube[4], subcube[2] + subcube[5], 0]]), 0)[:,:3]
+				subcube = wcsin.wcs_world2pix(array([[subcube[0] - subcube[3] / corrfact, subcube[1] - subcube[4], subcube[2] - subcube[5], 0], [subcube[0] + subcube[3] / corrfact, subcube[1] + subcube[4], subcube[2] + subcube[5], 0]]), 0)[:,:3]
 			elif header['NAXIS'] == 3:
 				subcube = wcsin.wcs_world2pix(array([[subcube[0] - subcube[3] / corrfact, subcube[1] - subcube[4], subcube[2] - subcube[5]], [subcube[0] + subcube[3] / corrfact, subcube[1] + subcube[4], subcube[2] + subcube[5]]]), 0)
 			elif header['NAXIS'] == 2:

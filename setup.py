@@ -143,12 +143,12 @@ setup(
 	version = sofia_version,
 	ext_package = "sofia",
 	ext_modules = [
-		#Extension(
-		#	"_statistics",
-		#	statistics_src,
-		#	extra_compile_args = ["-O3", "-std=c99"],
-		#	include_dirs = include_dirs
-		#	),
+		Extension(
+			"_statistics",
+			statistics_src,
+			extra_compile_args = ["-O3", "-std=c99"],
+			include_dirs = include_dirs
+			),
 		Extension(
 			"linker",
 			linker_src,

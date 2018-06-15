@@ -15,6 +15,7 @@ y_min		pos.cartesian.y;stat.min
 y_max		pos.cartesian.y;stat.max
 z_min		pos.cartesian.z;stat.min
 z_max		pos.cartesian.z;stat.max
+flag		meta.code.qual
 n_pix		meta.number;instr.pixel
 n_los		meta.number;instr.pixel
 n_chan		meta.number;instr.pixel

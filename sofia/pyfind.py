@@ -4,7 +4,6 @@ import math
 import numpy as np
 from scipy import ndimage
 from sofia.functions import GetRMS
-#from sofia import statistics as stat
 from sofia import error as err
 
 
@@ -18,17 +17,14 @@ def SCfinder_mem(cube, mask, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.
 	FWHM_CONST    = 2.0 * math.sqrt(2.0 * math.log(2.0))   # Conversion between sigma and FWHM of Gaussian function
 	MAX_PIX_CONST = 1.0e+6                                 # Maximum number of pixels for noise calculation; sampling is set accordingly
 	
-	# Create binary mask array
-	#mask = np.zeros(cube.shape, dtype=np.bool)
+	# Check for NaN in cube
 	found_nan = np.isnan(cube).any()
-	#found_nan = stat.check_nan(cube)
 	
 	# Set sampling sampleRms for rms measurement
 	sampleRms = max(1, int((float(cube.size) / MAX_PIX_CONST)**(1.0 / min(3, len(cube.shape)))))
 	
 	# Measure noise in original cube with sampling "sampleRms"
 	rms = GetRMS(cube, rmsMode=rmsMode, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=verbose, sample=sampleRms)
-	#rms = stat.standard_deviation(cube, fluxRange, sampleRms)
 	
 	# Loop over all kernels
 	for kernel in kernels:
@@ -52,7 +48,6 @@ def SCfinder_mem(cube, mask, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.
 		# Replace all NaNs with zero
 		if found_nan:
 			cube_smooth[np.isnan(cube)] = 0.0
-			#stat.replace_nan(cube_smooth, cube, 0.0)
 		
 		cube_smooth[(cube_smooth > 0) & (mask > 0)] = maskScaleXY * rms
 		cube_smooth[(cube_smooth < 0) & (mask > 0)] = -maskScaleXY * rms
@@ -69,17 +64,14 @@ def SCfinder_mem(cube, mask, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.
 		# Re-insert the NaNs taken out earlier
 		if found_nan:
 			cube_smooth[np.isnan(cube)] = np.nan
-			#stat.replace_nan(cube_smooth, cube, np.nan)
 		
 		# Calculate the RMS of the smoothed cube:
 		rms_smooth = GetRMS(cube_smooth, rmsMode=rmsMode, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=verbose, sample=sampleRms)
-		#rms_smooth = stat.standard_deviation(cube_smooth, fluxRange, sampleRms)
 		
 		# Add pixels above threshold to mask by setting bit 1
 		with np.errstate(invalid="ignore"):
-			mask |= (np.absolute(cube_smooth) > threshold * rms_smooth)
+			mask |= (np.absolute(cube_smooth) >= threshold * rms_smooth)
 			#mask = np.bitwise_or(mask, np.greater_equal(np.absolute(cube_smooth), threshold * rms_smooth))
-			#stat.set_mask(mask, cube_smooth, threshold * rms_smooth)
 		
 		# Delete smoothed cube again
 		del cube_smooth
