@@ -2,7 +2,7 @@
 
 
 # Track memory usage?
-track_memory_usage = True
+track_memory_usage = False
 
 
 # Import default Python libraries
