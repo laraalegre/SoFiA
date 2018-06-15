@@ -334,29 +334,32 @@ if Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Par
 # ---- FILTERS ----
 # -----------------
 
-err.print_progress_message("Running source finder", t0)
-
-# Apply the different filters that each create a mask.
-
-# --- PYFIND (S+C) ---
-if Parameters["steps"]["doSCfind"]:
-	err.message("Running S+C filter")
-	pyfind.SCfinder_mem(np_Cube, mask, dict_Header, t0, **Parameters["SCfind"])
-	if track_memory_usage: print_memory_usage(t0)
-
-# --- CNHI ---	
-if Parameters["steps"]["doCNHI"]:
-	err.message("Running CNHI filter")
-	mask += CNHI.find_sources(np_Cube, mask, **Parameters["CNHI"])
-	if track_memory_usage: print_memory_usage(t0)
- 
-# --- THRESHOLD ---	
-if Parameters["steps"]["doThreshold"]:
-	err.message("Running threshold filter")
-	threshold_filter.filter(mask, np_Cube, dict_Header, **Parameters["threshold"])
-	if track_memory_usage: print_memory_usage(t0)
-
-err.message("Source finding complete.")
+if Parameters["steps"]["doSCfind"] or Parameters["steps"]["doCNHI"] or Parameters["steps"]["doThreshold"]:
+	err.print_progress_message("Running source finder", t0)
+	# Turn mask into binary mask
+	mask[mask > 0] = 1
+	
+	# Apply the different filters that each create a mask.
+	
+	# --- PYFIND (S+C) ---
+	if Parameters["steps"]["doSCfind"]:
+		err.message("Running S+C filter")
+		pyfind.SCfinder_mem(np_Cube, mask, dict_Header, t0, **Parameters["SCfind"])
+		if track_memory_usage: print_memory_usage(t0)
+	
+	# --- CNHI ---	
+	if Parameters["steps"]["doCNHI"]:
+		err.message("Running CNHI filter")
+		mask += CNHI.find_sources(np_Cube, mask, **Parameters["CNHI"])
+		if track_memory_usage: print_memory_usage(t0)
+	
+	# --- THRESHOLD ---	
+	if Parameters["steps"]["doThreshold"]:
+		err.message("Running threshold filter")
+		threshold_filter.filter(mask, np_Cube, dict_Header, **Parameters["threshold"])
+		if track_memory_usage: print_memory_usage(t0)
+	
+	err.message("Source finding complete.")
 
 # Check if positivity flag is set; if so, remove negative pixels from mask:
 if Parameters["merge"]["positivity"]:
@@ -365,7 +368,7 @@ if Parameters["merge"]["positivity"]:
 		"most  powerful  algorithms useless,  including mask  optimisation and\n"
 		"reliability calculation.  Only use this option if you are fully aware\n"
 		"of its risks and consequences!", frame=True)
-	mask = np.bitwise_and(np.greater(mask, 0), np.greater(np_Cube, 0))
+	mask[np_Cube < 0.0] = 0
 	if track_memory_usage: print_memory_usage(t0)
 
 # Check whether any pixels are detected
@@ -452,7 +455,7 @@ if Parameters["steps"]["doReliability"] and Parameters["steps"]["doMerge"] and N
 	# ---- CALCULATE RELIABILITY ----
 	err.print_progress_message("Determining reliability", t0)
 	objects, reliable = addrel.EstimateRel(np.array(objects), outroot, catParNames, **Parameters["reliability"])
-	err.message("The following sources have been detected: " + str(reliable))
+	err.message("The following reliable sources have been detected: " + str(reliable))
 	catParNames = tuple(list(catParNames) + ["n_pos",  "n_neg",  "rel"])
 	catParUnits = tuple(list(catParUnits) + ["-",      "-",      "-"])
 	catParFormt = tuple(list(catParFormt) + ["%12.3e", "%12.3e", "%12.6f"])
@@ -461,7 +464,7 @@ if Parameters["steps"]["doReliability"] and Parameters["steps"]["doMerge"] and N
 elif Parameters["steps"]["doMerge"] and NRdet:
 	err.print_progress_time(t0)
 	reliable = list(np.array(objects)[np.array(objects)[:,16] > 0,0].astype(int)) # select all positive sources
-	err.message("The following sources have been detected: " + str(reliable))
+	err.message("The following reliable sources have been detected: " + str(reliable))
 	if track_memory_usage: print_memory_usage(t0)
 
 else:
@@ -560,6 +563,15 @@ if Parameters["steps"]["doMerge"] and NRdet:
 
 
 
+# --------------------------------------
+# Terminate if no reliable sources found
+# --------------------------------------
+
+if not NRdet:
+	err.warning("No sources detected. Exiting pipeline.", fatal=True)
+
+
+
 # -------------------------------------------------------------------------------
 # ---- RELOAD ORIGINAL DATA CUBE FOR PARAMETERISATION IF IT HAS BEEN CHANGED ----
 # -------------------------------------------------------------------------------
@@ -579,7 +591,7 @@ if Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Par
 # ---- OUTPUT FOR DEBUGGING (MOMENTS) ----
 # ----------------------------------------
 
-if Parameters['steps']['doDebug'] and NRdet:
+if Parameters['steps']['doDebug']:
 	err.print_progress_message("Writing pre-optimisation mask and moment maps for debugging", t0)
 	debug = 1
 	#writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_rel.fits'%outroot,Parameters['writeCat']['compress'])
@@ -593,8 +605,8 @@ if Parameters['steps']['doDebug'] and NRdet:
 # ----------------------
 
 if Parameters["steps"]["doParameterise"]:
-	if not (Parameters["steps"]["doMerge"] and NRdet):
-		NRdet, catParNames, catParUnits, catParFormt, objects, dunits = parametrisation.parameters_from_mask(dict_Header, mask)
+	if not Parameters["steps"]["doMerge"]:
+		catParNames, catParUnits, catParFormt, objects, dunits = parametrisation.parameters_from_mask(dict_Header, mask)
 	err.print_progress_message("Parameterising sources", t0)
 	
 	# Print warning message about statistical uncertainties
@@ -617,21 +629,12 @@ if Parameters["steps"]["doParameterise"]:
 	err.message("Parameterisation complete.")
 	if track_memory_usage: print_memory_usage(t0)
 
-# ---------------------------------------
-# ---- CHECK IF OBJECTS ARRAY EXISTS ----
-# ---------------------------------------
-
-if 'objects' in locals():
-	objArray = True
-else:
-	objArray = False
-
 
 # --------------------
 # ---- WRITE MASK ----
 # --------------------
 
-if Parameters["steps"]["doWriteMask"] and NRdet:
+if Parameters["steps"]["doWriteMask"]:
 	err.print_progress_message("Writing mask cube", t0)
 	writemask.writeMask(mask, dict_Header, Parameters, outputMaskCube, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"])
 	if track_memory_usage: print_memory_usage(t0)
@@ -642,7 +645,7 @@ if Parameters["steps"]["doWriteMask"] and NRdet:
 # ---- STORE CUBELETS ----
 # ------------------------
 
-if Parameters["steps"]["doCubelets"] and objArray:
+if Parameters["steps"]["doCubelets"]:
 	err.print_progress_message("Writing cubelets", t0)
 	objects = np.array(objects)
 	cathead = np.array(catParNames)
@@ -655,7 +658,7 @@ if Parameters["steps"]["doCubelets"] and objArray:
 # ---- MAKE MOM0 and MOM1 ----
 # ----------------------------
 
-if (Parameters["steps"]["doMom0"] or Parameters["steps"]["doMom1"]) and NRdet:
+if (Parameters["steps"]["doMom0"] or Parameters["steps"]["doMom1"]):
 	err.print_progress_message("Writing moment maps", t0)
 	debug = 0
 	write_mom = [Parameters["steps"]["doMom0"], Parameters["steps"]["doMom1"], False]
@@ -676,7 +679,7 @@ if (Parameters["steps"]["doMom0"] or Parameters["steps"]["doMom1"]) and NRdet:
 # ---- CORRECT COORDINATES IF WORKING ON SUBCUBES ----
 # ----------------------------------------------------
 
-if len(subcube) and objArray:
+if len(subcube):
 	err.print_progress_message("Correcting parameters for sub-cube offset", t0)
 	# List of parameters to correct for X, Y and Z offset
 	corrX = ["x_geo", "x", "x_min", "x_max"]
@@ -699,7 +702,7 @@ if len(subcube) and objArray:
 # ---- APPEND PARAMETER VALUES IN PHYSICAL UNITS ----
 # ---------------------------------------------------
 
-if Parameters["steps"]["doWriteCat"] and objArray:
+if Parameters["steps"]["doWriteCat"]:
 	err.print_progress_message("Adding WCS position to catalogue", t0)
 	objects, catParNames, catParFormt, catParUnits = wcs_coordinates.add_wcs_coordinates(objects, catParNames, catParFormt, catParUnits, Parameters)
 
@@ -709,7 +712,7 @@ if Parameters["steps"]["doWriteCat"] and objArray:
 # ---- STORE CATALOGUES ----
 # --------------------------
 
-if Parameters["steps"]["doWriteCat"] and objArray:
+if Parameters["steps"]["doWriteCat"]:
 	err.print_progress_message("Writing output catalogue", t0)
 	
 	if "rms" in catParNames:

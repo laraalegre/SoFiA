@@ -311,8 +311,7 @@ def parameters_from_mask(dict_Header, mask):
 				objects[i, catParNames=="n_chan"] = n_chan
 				objects[i, catParNames=="n_los"] = n_los
 	
-	NRdet = len(indices)
-	return NRdet, catParNames, catParUnits, catParFormt, objects, dunits
+	return catParNames, catParUnits, catParFormt, objects, dunits
 
 
 
