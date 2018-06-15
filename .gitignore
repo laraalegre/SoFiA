@@ -14,3 +14,6 @@ SoFiA
 
 # Ignore backup files:
 *~
+
+# Ignore the test directory
+sofia/tests
