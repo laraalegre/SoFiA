@@ -105,6 +105,7 @@ def allowedDataTypes():
 	# Ensure that all new parameters get added to this list!
 	# Parameters not listed here will be ignored by the parser!
 	return {"pipeline.pedantic": "bool", \
+	        "pipeline.trackMemory": "bool", \
 	        "steps.doSubcube": "bool", \
 	        "steps.doFlag": "bool", \
 	        "steps.doSmooth": "bool", \
@@ -129,6 +130,7 @@ def allowedDataTypes():
 	        "import.invertData": "bool", \
 	        "import.weightsFile": "string", \
 	        "import.maskFile": "string", \
+	        "import.sources": "array", \
 	        "import.weightsFunction": "string", \
 	        "import.subcubeMode": "string", \
 	        "import.subcube": "array", \

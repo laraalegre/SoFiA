@@ -5,6 +5,7 @@
 # General pipeline settings
 
 pipeline.pedantic               =       true
+pipeline.trackMemory            =       false
 
 
 # Pipeline modules
@@ -37,6 +38,7 @@ import.inFile                   =
 import.invertData               =       false
 import.weightsFile              =       
 import.maskFile                 =       
+import.sources                  =       []
 import.weightsFunction          =       
 import.subcube                  =       []
 import.subcubeMode              =       pixel

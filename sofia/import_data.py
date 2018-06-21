@@ -8,7 +8,7 @@ from numpy import *
 import re
 
 
-def read_data(doSubcube, inFile, invertData, weightsFile, maskFile, weightsFunction = None, subcube=[], subcubeMode='pixel', doFlag=False, flagRegions=False, flagFile='', cubeOnly=False):
+def read_data(doSubcube, inFile, invertData, weightsFile, maskFile, sources, weightsFunction = None, subcube=[], subcubeMode='pixel', doFlag=False, flagRegions=False, flagFile='', cubeOnly=False):
 	# import the fits file into an numpy array for the cube and a dictionary for the header:
 	# the data cube is converted into a 3D array
 	
@@ -460,6 +460,14 @@ def read_data(doSubcube, inFile, invertData, weightsFile, maskFile, weightsFunct
 				#mask[mask > 0] = 1
 				g.close()
 				print ('Mask cube loaded.')
+			
+			# In all cases, evaluate import.sources to only keep specific sources IDs
+			if sources:
+				for sid in sources:
+					mask[mask == sid] = -sid
+				mask[mask > 0] = 0
+				mask *= -1
+			
 			# In all cases, convert mask to Boolean with masked pixels set to 1.
 			#mask = (mask > 0).astype(bool)
 		else:

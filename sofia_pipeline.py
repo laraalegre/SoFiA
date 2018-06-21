@@ -1,15 +1,12 @@
 #! /usr/bin/env python
 
 
-# Track memory usage?
-track_memory_usage = False
-
-
 # Import default Python libraries
 import sys
 import os
 from time import time
 import numpy as np
+import resource
 
 # Import library version numbers
 from scipy import __version__ as scipy_version
@@ -46,16 +43,13 @@ from sofia import __version__ as sofia_version
 # FUNCTION TO MONITOR MEMORY USAGE
 # --------------------------------
 
-if track_memory_usage:
-	import resource
-	
-	MEM_FACTOR = 1024.0
-	if sys.platform == "darwin":
-		MEM_FACTOR *= 1024.0
-	
-	def print_memory_usage(t0):
-		err.message("\x1B[36mPeak memory usage: {0:.3f} MB at {1:.3f} s\x1B[0m".format(float(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) / MEM_FACTOR, time() - t0))
-		return
+MEM_FACTOR = 1024.0
+if sys.platform == "darwin":
+	MEM_FACTOR *= 1024.0
+
+def print_memory_usage(t0):
+	err.message("\x1B[36mPeak memory usage: {0:.3f} MB at {1:.3f} s\x1B[0m".format(float(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss) / MEM_FACTOR, time() - t0))
+	return
 
 
 
@@ -118,7 +112,6 @@ err.message(
 # --------------------------------
 
 t0 = time()
-if track_memory_usage: print_memory_usage(t0)
 
 
 
@@ -129,7 +122,6 @@ if track_memory_usage: print_memory_usage(t0)
 err.print_progress_message("Reading default parameters", t0)
 default_file = os.getenv("SOFIA_PIPELINE_PATH").replace("sofia_pipeline.py", "SoFiA_default_input.txt")
 Parameters = readoptions.readPipelineOptions(default_file)
-if track_memory_usage: print_memory_usage(t0)
 
 
 
@@ -172,8 +164,8 @@ if not outputDir or not os.path.isdir(outputDir) or outputDir.isspace():
 else:
 	if outputDir[-1] != "/": outputDir += "/"
 	outroot = outputDir + outroot
-if track_memory_usage: print_memory_usage(t0)
 
+if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 
 # -------------------------------------------
@@ -274,7 +266,7 @@ kwargs.update({"doFlag": Parameters["steps"]["doFlag"], "flagRegions": Parameter
 np_Cube, dict_Header, mask, subcube = import_data.read_data(Parameters["steps"]["doSubcube"], **kwargs)
 #np_Cube, dict_Header, mask, subcube = import_data_2.import_data(Parameters["steps"]["doSubcube"], **kwargs)
 err.message("Data cube(s) loaded.")
-if track_memory_usage: print_memory_usage(t0)
+if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 
 # -------------------------
@@ -283,17 +275,17 @@ if track_memory_usage: print_memory_usage(t0)
 
 if Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["steps"]["doWavelet"]:
 	err.print_progress_message("Applying input filters", t0)
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 # ---- SMOOTHING ----
 if Parameters["steps"]["doSmooth"]:
 	np_Cube = smooth_cube.smooth(np_Cube, **Parameters["smooth"])
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 # ---- NOISE SCALING ----
 if Parameters["steps"]["doScaleNoise"]:
 	np_Cube, noise_cube = sigma_cube.sigma_scale(np_Cube, **Parameters["scaleNoise"])
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 # --- WAVELET ---
 if Parameters["steps"]["doWavelet"]:
@@ -304,29 +296,29 @@ if Parameters["steps"]["doWavelet"]:
 	np_Cube = wavelet_finder.denoise_2d1d(np_Cube, **Parameters["wavelet"])
 	np_Cube = np.transpose(np_Cube, axes=[2, 1, 0])
 	np_Cube = np_Cube.copy()
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 
 # --- WRITE FILTERED CUBE ---
 if Parameters["steps"]["doWriteFilteredCube"] and (Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["steps"]["doWavelet"]):
 	err.message("Writing filtered cube")
 	write_filtered_cube.writeFilteredCube(np_Cube, dict_Header, Parameters, outputFilteredCube, Parameters["writeCat"]["compress"])
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 # --- WRITE NOISE CUBE ---
 if Parameters["steps"]["doWriteNoiseCube"] and Parameters["steps"]["doScaleNoise"]:
 	err.message("Writing noise cube")
 	write_filtered_cube.writeFilteredCube(noise_cube, dict_Header, Parameters, outputNoiseCube, Parameters["writeCat"]["compress"])
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 # Delete noise cube again to release memory
 if Parameters["steps"]["doScaleNoise"]:
 	del noise_cube
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 if Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["steps"]["doWavelet"]:
 	err.message("Input filters applied.")
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 
 
@@ -345,19 +337,19 @@ if Parameters["steps"]["doSCfind"] or Parameters["steps"]["doCNHI"] or Parameter
 	if Parameters["steps"]["doSCfind"]:
 		err.message("Running S+C filter")
 		pyfind.SCfinder_mem(np_Cube, mask, dict_Header, t0, **Parameters["SCfind"])
-		if track_memory_usage: print_memory_usage(t0)
+		if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 	
 	# --- CNHI ---	
 	if Parameters["steps"]["doCNHI"]:
 		err.message("Running CNHI filter")
 		mask += CNHI.find_sources(np_Cube, mask, **Parameters["CNHI"])
-		if track_memory_usage: print_memory_usage(t0)
+		if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 	
 	# --- THRESHOLD ---	
 	if Parameters["steps"]["doThreshold"]:
 		err.message("Running threshold filter")
 		threshold_filter.filter(mask, np_Cube, dict_Header, **Parameters["threshold"])
-		if track_memory_usage: print_memory_usage(t0)
+		if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 	
 	err.message("Source finding complete.")
 
@@ -369,7 +361,7 @@ if Parameters["merge"]["positivity"]:
 		"reliability calculation.  Only use this option if you are fully aware\n"
 		"of its risks and consequences!", frame=True)
 	mask[np_Cube < 0.0] = 0
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 # Check whether any pixels are detected
 NRdet = (mask > 0).sum()
@@ -377,7 +369,7 @@ if not NRdet:
 	err.warning("No pixels detected. Exiting pipeline.", fatal=True)
 else:
 	err.message("{0:,d} out of {1:,d} pixels detected ({2:.4f}%)".format(NRdet, np.array(mask.shape).prod(), 100.0 * float(NRdet) / float(np.array(mask.shape).prod())))
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 
 
@@ -389,7 +381,7 @@ if Parameters["steps"]["doMerge"] and NRdet:
 	err.print_progress_message("Merging detections", t0)
 	objects = []
 	objects, mask = linker.link_objects(np_Cube, objects, mask, Parameters["merge"]["radiusX"], Parameters["merge"]["radiusY"], Parameters["merge"]["radiusZ"], Parameters["merge"]["minSizeX"], Parameters["merge"]["minSizeY"], Parameters["merge"]["minSizeZ"])
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 	
 	if not objects: err.warning("No objects remain after merging. Exiting pipeline.", fatal=True)
 	
@@ -398,7 +390,7 @@ if Parameters["steps"]["doMerge"] and NRdet:
 	NRdet = len(objects)
 	NRdetNeg = (np.array(objects)[:,16] < 0).sum()
 	err.message("{0:,d} sources detected: {1:,d} positive and {2:,d} negative.".format(NRdet, NRdet - NRdetNeg, NRdetNeg))
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 	
 	# Set catalogue header
 	if "bunit" in dict_Header: dunits = dict_Header["bunit"]
@@ -441,7 +433,7 @@ if Parameters["steps"]["doReliability"] and Parameters["steps"]["doMerge"] and N
 	sampleRms = max(1, int((float(np.array(np_Cube.shape).prod()) / maxNrVox)**(1.0 / min(3, len(np_Cube.shape)))))
 	globalrms = functions.GetRMS(np_Cube, rmsMode="negative", zoomx=1, zoomy=1, zoomz=1, verbose=True, sample=sampleRms)
 	err.print_progress_time(t0)
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 	
 	# normalise flux parameters to global rms
 	# (this is done also if weights were applied, in case they are prop. to 1/sigma but not exactly = 1/sigma)
@@ -450,7 +442,7 @@ if Parameters["steps"]["doReliability"] and Parameters["steps"]["doMerge"] and N
 	objects[:,catParNames.index("snr_max")] /= globalrms
 	objects[:,catParNames.index("snr_sum")] /= globalrms
 	objects = [list(item) for item in list(objects)]
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 	
 	# ---- CALCULATE RELIABILITY ----
 	err.print_progress_message("Determining reliability", t0)
@@ -459,18 +451,18 @@ if Parameters["steps"]["doReliability"] and Parameters["steps"]["doMerge"] and N
 	catParNames = tuple(list(catParNames) + ["n_pos",  "n_neg",  "rel"])
 	catParUnits = tuple(list(catParUnits) + ["-",      "-",      "-"])
 	catParFormt = tuple(list(catParFormt) + ["%12.3e", "%12.3e", "%12.6f"])
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 elif Parameters["steps"]["doMerge"] and NRdet:
 	err.print_progress_time(t0)
 	reliable = list(np.array(objects)[np.array(objects)[:,16] > 0,0].astype(int)) # select all positive sources
 	err.message("The following reliable sources have been detected: " + str(reliable))
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 else:
 	err.print_progress_time(t0)
 	reliable = [1,] # if not merging, all detected pixels have ID = 1 and here they are set to be reliable
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 
 
@@ -491,7 +483,7 @@ if Parameters["steps"]["doMerge"] and NRdet:
 			objects = np.delete(objects, [index], axis=1)
 	
 	objects, catParNames, catParUnits, catParFormt = [list(item) for item in list(objects)], tuple(catParNames), tuple(catParUnits), tuple(catParFormt)
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 
 
@@ -535,7 +527,7 @@ if Parameters["steps"]["doMerge"] and NRdet:
 	tmpCatParUnits = list(catParUnits);
 	tmpCatParUnits.insert(1, "-");
 	catParUnits= tuple(tmpCatParUnits);
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 	
 	# In the mask file
 	mask *= -1
@@ -559,7 +551,7 @@ if Parameters["steps"]["doMerge"] and NRdet:
 		newRel.append(i + 1)
 	reliable = np.array(newRel)
 	NRdet = objects.shape[0]
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 
 
@@ -583,7 +575,7 @@ if Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Par
 	kwargs.update({"cubeOnly":True})
 	np_Cube, dict_Header = import_data.read_data(Parameters["steps"]["doSubcube"], **kwargs)
 	#np_Cube, dict_Header = import_data_2.import_data(Parameters["steps"]["doSubcube"], **kwargs)
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 
 
@@ -627,7 +619,7 @@ if Parameters["steps"]["doParameterise"]:
 	catParFormt = tuple(catParFormt)
 	
 	err.message("Parameterisation complete.")
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 
 # --------------------
@@ -637,7 +629,7 @@ if Parameters["steps"]["doParameterise"]:
 if Parameters["steps"]["doWriteMask"]:
 	err.print_progress_message("Writing mask cube", t0)
 	writemask.writeMask(mask, dict_Header, Parameters, outputMaskCube, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"])
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 
 
@@ -650,7 +642,7 @@ if Parameters["steps"]["doCubelets"]:
 	objects = np.array(objects)
 	cathead = np.array(catParNames)
 	cubelets.writeSubcube(np_Cube, dict_Header, mask, objects, cathead, outroot, outputCubeletsDir, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"])
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 
 
@@ -663,7 +655,7 @@ if (Parameters["steps"]["doMom0"] or Parameters["steps"]["doMom1"]):
 	debug = 0
 	write_mom = [Parameters["steps"]["doMom0"], Parameters["steps"]["doMom1"], False]
 	writemoment2.writeMoments(np_Cube, mask, outroot, debug, dict_Header, Parameters["writeCat"]["compress"], write_mom[0], write_mom[1], Parameters["writeCat"]["overwrite"])
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 	#writemoment.writeMoments(np_Cube, mask, outroot, debug, dict_Header, Parameters["writeCat"]["compress"], write_mom, Parameters["writeCat"]["overwrite"])
 	
 	# WARNING: This will regrid and hence alter the data cube!
@@ -728,9 +720,9 @@ if Parameters["steps"]["doWriteCat"]:
 	
 	if Parameters["writeCat"]["writeSQL"]:
 		write_catalog.write_catalog_from_array("SQL", objects, catParNames, catParUnits, catParFormt, Parameters["writeCat"]["parameters"], outputCatSQL, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"], Parameters["parameters"]["getUncertainties"])
-	if track_memory_usage: print_memory_usage(t0)
+	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 
 
 err.print_progress_message("Pipeline finished", t0)
-if track_memory_usage: print_memory_usage(t0)
+if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
