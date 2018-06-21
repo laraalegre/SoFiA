@@ -462,11 +462,15 @@ def read_data(doSubcube, inFile, invertData, weightsFile, maskFile, sources, wei
 				print ('Mask cube loaded.')
 			
 			# In all cases, evaluate import.sources to only keep specific source IDs
-			if sources:
-				for sid in sources:
-					mask[mask == sid] = -sid
-				mask[mask > 0] = 0
-				mask *= -1
+			# WARNING: This assumes that source IDs are positive!
+			if isinstance(sources, list):
+				if sources:
+					for sid in sources:
+						mask[mask == sid] *= -1
+					mask[mask > 0] *= 0
+					mask *= -1
+			else:
+				sys.stderr.write("\nWARNING: Ignoring parameter 'import.sources'; value is not a valid list.\n\n")
 			
 			# In all cases, convert mask to Boolean with masked pixels set to 1.
 			#mask = (mask > 0).astype(bool)
