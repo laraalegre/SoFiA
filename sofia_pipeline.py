@@ -369,7 +369,6 @@ if not NRdet:
 	err.warning("No pixels detected. Exiting pipeline.", fatal=True)
 else:
 	err.message("{0:,d} out of {1:,d} pixels detected ({2:.4f}%)".format(NRdet, np.array(mask.shape).prod(), 100.0 * float(NRdet) / float(np.array(mask.shape).prod())))
-	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 
 
