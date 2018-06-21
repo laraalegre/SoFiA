@@ -461,7 +461,7 @@ def read_data(doSubcube, inFile, invertData, weightsFile, maskFile, sources, wei
 				g.close()
 				print ('Mask cube loaded.')
 			
-			# In all cases, evaluate import.sources to only keep specific sources IDs
+			# In all cases, evaluate import.sources to only keep specific source IDs
 			if sources:
 				for sid in sources:
 					mask[mask == sid] = -sid
