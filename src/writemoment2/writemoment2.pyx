@@ -20,8 +20,10 @@ def regridMaskedChannels(datacube,maskcube,header):
 	err.message("Regridding...")
 	z = (np.arange(1.0, header["naxis3"] + 1) - header["CRPIX3"]) * header["CDELT3"] + header["CRVAL3"]
 	
-	if header["CTYPE3"] == "VELO-HEL":
+	if func.check_header_keywords(func.KEYWORDS_VELO, header["CTYPE3"]):
 		pixscale = (1.0 - header["CRVAL3"] / scipy.constants.c) / (1.0 - z / scipy.constants.c)
+	elif func.check_header_keywords(func.KEYWORDS_FREQ, header["CTYPE3"]):
+		pixscale = header["CRVAL3"] / z
 	else:
 		err.warning("Cannot convert 3rd axis coordinates to frequency.\nIgnoring the effect of CELLSCAL = 1/F.")
 		pixscale = np.ones((header["naxis3"]))
