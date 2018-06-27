@@ -621,6 +621,15 @@ if Parameters["steps"]["doParameterise"]:
 	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 
+
+# -----------------------------------------
+# ---- REMEMBER IF OBJECT ARRAY EXISTS ----
+# -----------------------------------------
+
+object_array_exists = "objects" in locals()
+
+
+
 # --------------------
 # ---- WRITE MASK ----
 # --------------------
@@ -636,7 +645,7 @@ if Parameters["steps"]["doWriteMask"]:
 # ---- STORE CUBELETS ----
 # ------------------------
 
-if Parameters["steps"]["doCubelets"]:
+if Parameters["steps"]["doCubelets"] and object_array_exists:
 	err.print_progress_message("Writing cubelets", t0)
 	objects = np.array(objects)
 	cathead = np.array(catParNames)
@@ -670,7 +679,7 @@ if (Parameters["steps"]["doMom0"] or Parameters["steps"]["doMom1"]):
 # ---- CORRECT COORDINATES IF WORKING ON SUBCUBES ----
 # ----------------------------------------------------
 
-if len(subcube):
+if len(subcube) and object_array_exists:
 	err.print_progress_message("Correcting parameters for sub-cube offset", t0)
 	# List of parameters to correct for X, Y and Z offset
 	corrX = ["x_geo", "x", "x_min", "x_max"]
@@ -693,7 +702,7 @@ if len(subcube):
 # ---- APPEND PARAMETER VALUES IN PHYSICAL UNITS ----
 # ---------------------------------------------------
 
-if Parameters["steps"]["doWriteCat"]:
+if Parameters["steps"]["doWriteCat"] and object_array_exists:
 	err.print_progress_message("Adding WCS position to catalogue", t0)
 	objects, catParNames, catParFormt, catParUnits = wcs_coordinates.add_wcs_coordinates(objects, catParNames, catParFormt, catParUnits, Parameters)
 
@@ -703,7 +712,7 @@ if Parameters["steps"]["doWriteCat"]:
 # ---- STORE CATALOGUES ----
 # --------------------------
 
-if Parameters["steps"]["doWriteCat"]:
+if Parameters["steps"]["doWriteCat"] and object_array_exists:
 	err.print_progress_message("Writing output catalogue", t0)
 	
 	if "rms" in catParNames:
