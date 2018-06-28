@@ -465,6 +465,7 @@ def read_data(doSubcube, inFile, invertData, weightsFile, maskFile, sources, wei
 			# WARNING: This assumes that source IDs are positive!
 			if isinstance(sources, list):
 				if sources:
+					sys.stdout.write("Only the following sources from the mask are retained:\n  " + str(sources) + "\n")
 					for sid in sources:
 						mask[mask == sid] *= -1
 					mask[mask > 0] *= 0
