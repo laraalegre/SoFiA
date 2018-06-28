@@ -471,7 +471,7 @@ def read_data(doSubcube, inFile, invertData, weightsFile, maskFile, sources, wei
 					mask[mask > 0] *= 0
 					mask *= -1
 				else:
-					sys.stdout.write("Retaining all sources from the mask.\n")
+					sys.stdout.write("All sources from the mask will be retained.\n")
 			else:
 				sys.stderr.write("\nWARNING: Ignoring parameter 'import.sources'; value is not a valid list.\n\n")
 			
