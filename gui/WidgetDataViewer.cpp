@@ -666,9 +666,9 @@ void WidgetDataViewer::setUpLut(int type)
 				}
 				else
 				{
-					valueR = 255;
-					valueG = 255;
-					valueB = 255;
+					valueR = 127;
+					valueG = 127;
+					valueB = 127;
 				}
 				break;
 			
