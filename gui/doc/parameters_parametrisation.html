@@ -27,164 +27,6 @@
       The settings in this section control the way in which the observational parameters of detected sources are calculated. In addition, SoFiA offers the possibility of estimating the reliability of each individual detection under certain circumstances.
     </p>
     
-    <h3>Parameterisation</h3>
-    
-    <p>
-      Parameterisation is an important step of any source finding exercise, and the quality of the source parameters measured by SoFiA will determine the accuracy of any scientific analysis based on those parameters. In principal, SoFiA measures all parameters by integrating over the entire sources mask derived in the merging step, and the accuracy of the parameterisation will therefore depend of how accurate the source mask was determined by the combinations of source finding and merging.
-    </p>
-    
-    <p>
-      Simple threshold finders have the tendency to produce masks that are too small and miss some of the faint outer parts of sources that are below the detection threshold. In order to rectify this problem, SoFiA offers two methods of optimising the source mask. Both methods work by iteratively growing an initially small mask outwards until the integrated flux within the mask does not increase any further. The first methods, enabled with the <code>parameters.optimiseMask</code> parameter, uses an ellipse in the spatial domain and a constant size in the spectral domain as the mask shape. It is therefore particularly useful for sources that have approximately the shape of an elliptical cylinder in a three-dimensional data cube. The second method, enabled with the <code>parameters.dilateMask</code> parameter, instead dilates the original mask in all three dimensions and is therefore more appropriate for sources of arbitrary shape, such as galaxies that are both spatially and spectrally well-resolved.
-    </p>
-    
-    <p>
-      Another option offered by SoFiA is the possibility to fit a Busy Function (<a href="http://adsabs.harvard.edu/abs/2014MNRAS.438.1176W">Westmeier et al. 2014</a>) to the integrated spectrum of each source and determine basic source parameters from that fit. This is particularly useful for galaxies that are spatially unresolved. Parameterisation based on Busy Function fitting is usually more accurate than direct measurement of parameters such as peak flux or line width, because the fit is less sensitive to individual noise peaks in the data that would otherwise influence the measurement. Busy function fitting can be enabled with the <code>parameters.fitBusyFunction</code> parameter, and source parameters derived from the fit will be included in the output catalogue in addition to the &lsquo;traditional&rsquo; measurements of the same parameters.
-    </p>
-    
-    <table id="steps.doParameterise">
-        <tr>
-            <td class="head">Parameter:</td><td class="body2">steps.doParameterise</td>
-        </tr>
-        <tr>
-            <td class="head">Type:</td><td class="body"><code>bool</code></td>
-        </tr>
-        <tr>
-            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
-        </tr>
-        <tr>
-            <td class="head">Default:</td><td class="body"><code>true</code></td>
-        </tr>
-        <tr>
-            <td class="head">Description:</td><td class="body">If set to <code>true</code>, run the mask optimisation and source parameterisation module.</td>
-        </tr>
-    </table>
-    
-    <table id="parameters.fitBusyFunction">
-        <tr>
-            <td class="head">Parameter:</td><td class="body2">parameters.fitBusyFunction</td>
-        </tr>
-        <tr>
-            <td class="head">Type:</td><td class="body"><code>bool</code></td>
-        </tr>
-        <tr>
-            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
-        </tr>
-        <tr>
-            <td class="head">Default:</td><td class="body"><code>false</code></td>
-        </tr>
-        <tr>
-            <td class="head">Description:</td><td class="body">Fit the Busy Function (<a href="http://adsabs.harvard.edu/abs/2014MNRAS.438.1176W">Westmeier et al. 2014</a>) to the integrated spectrum of each source for more accurate parameterisation.</td>
-        </tr>
-    </table>
-    
-    <table id="parameters.optimiseMask">
-        <tr>
-            <td class="head">Parameter:</td><td class="body2">parameters.optimiseMask</td>
-        </tr>
-        <tr>
-            <td class="head">Type:</td><td class="body"><code>bool</code></td>
-        </tr>
-        <tr>
-            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
-        </tr>
-        <tr>
-            <td class="head">Default:</td><td class="body"><code>false</code></td>
-        </tr>
-        <tr>
-            <td class="head">Description:</td><td class="body">Run the mask optimisation algorithm based on fitting and growing ellipses to achieve more accurate flux measurements. Note that the improved integrated fluxes obtained by this algorithm will come at the cost of increased statistical uncertainties in most source parameters (also see <a href="#parameters.dilateMask">parameters.dilateMask</a>).</td>
-        </tr>
-    </table>
-    
-    <table id="parameters.dilateMask">
-        <tr>
-            <td class="head">Parameter:</td><td class="body2">parameters.dilateMask</td>
-        </tr>
-        <tr>
-            <td class="head">Type:</td><td class="body"><code>bool</code></td>
-        </tr>
-        <tr>
-            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
-        </tr>
-        <tr>
-            <td class="head">Default:</td><td class="body"><code>false</code></td>
-        </tr>
-        <tr>
-            <td class="head">Description:</td><td class="body">Run the mask optimisation algorithm based on spatially dilating the initial mask to achieve more accurate flux measurements. The advantage of this algorithm is that it preserves the source shape (also see <a href="#parameters.optimiseMask">parameters.optimiseMask</a>).</td>
-        </tr>
-    </table>
-    
-    <table id="parameters.dilateThreshold">
-        <tr>
-            <td class="head2">Parameter:</td><td class="body3">parameters.dilateThreshold</td>
-        </tr>
-        <tr>
-            <td class="head2">Type:</td><td class="body"><code>float</code></td>
-        </tr>
-        <tr>
-            <td class="head2">Values:</td><td class="body"></td>
-        </tr>
-        <tr>
-            <td class="head2">Default:</td><td class="body"><code>0.02</code></td>
-        </tr>
-        <tr>
-            <td class="head2">Description:</td><td class="body">No idea what this parameter does... Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
-        </tr>
-    </table>
-    
-    <table id="parameters.dilatePixMax">
-        <tr>
-            <td class="head2">Parameter:</td><td class="body3">parameters.dilatePixMax</td>
-        </tr>
-        <tr>
-            <td class="head2">Type:</td><td class="body"><code>int</code></td>
-        </tr>
-        <tr>
-            <td class="head2">Values:</td><td class="body"></td>
-        </tr>
-        <tr>
-            <td class="head2">Default:</td><td class="body"><code>10</code></td>
-        </tr>
-        <tr>
-            <td class="head2">Description:</td><td class="body">No idea what this parameter does... Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
-        </tr>
-    </table>
-    
-    <table id="parameters.dilateChan">
-        <tr>
-            <td class="head2">Parameter:</td><td class="body3">parameters.dilateChan</td>
-        </tr>
-        <tr>
-            <td class="head2">Type:</td><td class="body"><code>int</code></td>
-        </tr>
-        <tr>
-            <td class="head2">Values:</td><td class="body"></td>
-        </tr>
-        <tr>
-            <td class="head2">Default:</td><td class="body"><code>1</code></td>
-        </tr>
-        <tr>
-            <td class="head2">Description:</td><td class="body">No idea what this parameter does... Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
-        </tr>
-    </table>
-    
-    <table id="parameters.getUncertainties">
-        <tr>
-            <td class="head2">Parameter:</td><td class="body3">parameters.getUncertainties</td>
-        </tr>
-        <tr>
-            <td class="head2">Type:</td><td class="body"><code>bool</code></td>
-        </tr>
-        <tr>
-            <td class="head2">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
-        </tr>
-        <tr>
-            <td class="head2">Default:</td><td class="body"><code>false</code></td>
-        </tr>
-        <tr>
-            <td class="head2">Description:</td><td class="body">If set to <code>true</code>, statistical uncertainties of several source parameters, including centroids and line widths, will be estimated. Please use this feature with great caution, as statistical uncertainties are not likely to be representative of the true uncertainties, in particular when systematic errors are present. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
-        </tr>
-    </table>
-    
     <h3>Reliability</h3>
     
     <p>
@@ -414,6 +256,164 @@
     <td class="head2">Description:</td><td class="body">For each source parameter defined in <a href="#reliability.parSpace">reliability.parSpace</a> this parameter defines whether the reliability analysis is carried out in linear space (<code>0</code>) or in logarithmic space (<code>1</code>). Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
   </tr>
 </table>
+    
+    <h3>Parameterisation</h3>
+    
+    <p>
+      Parameterisation is an important step of any source finding exercise, and the quality of the source parameters measured by SoFiA will determine the accuracy of any scientific analysis based on those parameters. In principal, SoFiA measures all parameters by integrating over the entire sources mask derived in the merging step, and the accuracy of the parameterisation will therefore depend of how accurate the source mask was determined by the combinations of source finding and merging.
+    </p>
+    
+    <p>
+      Simple threshold finders have the tendency to produce masks that are too small and miss some of the faint outer parts of sources that are below the detection threshold. In order to rectify this problem, SoFiA offers two methods of optimising the source mask. Both methods work by iteratively growing an initially small mask outwards until the integrated flux within the mask does not increase any further. The first methods, enabled with the <code>parameters.optimiseMask</code> parameter, uses an ellipse in the spatial domain and a constant size in the spectral domain as the mask shape. It is therefore particularly useful for sources that have approximately the shape of an elliptical cylinder in a three-dimensional data cube. The second method, enabled with the <code>parameters.dilateMask</code> parameter, instead dilates the original mask in all three dimensions and is therefore more appropriate for sources of arbitrary shape, such as galaxies that are both spatially and spectrally well-resolved.
+    </p>
+    
+    <p>
+      Another option offered by SoFiA is the possibility to fit a Busy Function (<a href="http://adsabs.harvard.edu/abs/2014MNRAS.438.1176W">Westmeier et al. 2014</a>) to the integrated spectrum of each source and determine basic source parameters from that fit. This is particularly useful for galaxies that are spatially unresolved. Parameterisation based on Busy Function fitting is usually more accurate than direct measurement of parameters such as peak flux or line width, because the fit is less sensitive to individual noise peaks in the data that would otherwise influence the measurement. Busy function fitting can be enabled with the <code>parameters.fitBusyFunction</code> parameter, and source parameters derived from the fit will be included in the output catalogue in addition to the &lsquo;traditional&rsquo; measurements of the same parameters.
+    </p>
+    
+    <table id="steps.doParameterise">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">steps.doParameterise</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>true</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, run the mask optimisation and source parameterisation module.</td>
+        </tr>
+    </table>
+    
+    <table id="parameters.fitBusyFunction">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">parameters.fitBusyFunction</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Fit the Busy Function (<a href="http://adsabs.harvard.edu/abs/2014MNRAS.438.1176W">Westmeier et al. 2014</a>) to the integrated spectrum of each source for more accurate parameterisation.</td>
+        </tr>
+    </table>
+    
+    <table id="parameters.optimiseMask">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">parameters.optimiseMask</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Run the mask optimisation algorithm based on fitting and growing ellipses to achieve more accurate flux measurements. Note that the improved integrated fluxes obtained by this algorithm will come at the cost of increased statistical uncertainties in most source parameters (also see <a href="#parameters.dilateMask">parameters.dilateMask</a>).</td>
+        </tr>
+    </table>
+    
+    <table id="parameters.dilateMask">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">parameters.dilateMask</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Run the mask optimisation algorithm based on spatially dilating the initial mask to achieve more accurate flux measurements. The advantage of this algorithm is that it preserves the source shape (also see <a href="#parameters.optimiseMask">parameters.optimiseMask</a>).</td>
+        </tr>
+    </table>
+    
+    <table id="parameters.dilateThreshold">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">parameters.dilateThreshold</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>0.02</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">No idea what this parameter does... Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+        </tr>
+    </table>
+    
+    <table id="parameters.dilatePixMax">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">parameters.dilatePixMax</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>10</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">No idea what this parameter does... Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+        </tr>
+    </table>
+    
+    <table id="parameters.dilateChan">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">parameters.dilateChan</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>1</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">No idea what this parameter does... Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+        </tr>
+    </table>
+    
+    <table id="parameters.getUncertainties">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">parameters.getUncertainties</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">If set to <code>true</code>, statistical uncertainties of several source parameters, including centroids and line widths, will be estimated. Please use this feature with great caution, as statistical uncertainties are not likely to be representative of the true uncertainties, in particular when systematic errors are present. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+        </tr>
+    </table>
     
     <p align="center">
       <a href="parameters_merging.html">&larr;&nbsp;Previous</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="parameters.html">&uarr;&nbsp;Up</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="parameters_output.html">Next&nbsp;&rarr;</a>

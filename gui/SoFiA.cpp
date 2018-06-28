@@ -367,8 +367,7 @@ int SoFiA::updateVariables()
 	{
 		if(parameters.contains(w->objectName()))      // Only existing parameters will get updated!
 		{
-			if(w->text() == "auto") parameters.insert(w->objectName(), "0.0"); // for scaleKernel
-			else parameters.insert(w->objectName(), w->text());
+			parameters.insert(w->objectName(), w->text());
 		}
 	}
 	
@@ -789,6 +788,9 @@ void SoFiA::updateFields()
 {
 	// Activate or de-activate fields and buttons
 	
+	// Disable import.sources field if no input mask is selected
+	tabInputFieldSources->setEnabled(not (tabInputFieldMask->text()).isEmpty());
+	
 	// Check ranges in optical source finding:
 	double n = tabInputFieldSpatialSize->text().toDouble();
 	if(n < 0.0) tabInputFieldSpatialSize->setText("0.0");
@@ -821,9 +823,7 @@ void SoFiA::updateFields()
 	tabParametrisationFieldRelMin->setText(QString::number(static_cast<double>(tabParametrisationSliderRelMin->value()) / RELMIN_SCALE_FACTOR, 'f', 2));
 	
 	// Check kernel scale slider position:
-	int tmpKernelScale = tabParametrisationSliderScaleKernel->value();
-	if(tmpKernelScale == 0) tabParametrisationFieldScaleKernel->setText("auto");
-	else tabParametrisationFieldScaleKernel->setText(QString::number(static_cast<double>(tmpKernelScale) / KERNEL_SCALE_FACTOR, 'f', 2));
+	tabParametrisationFieldScaleKernel->setText(QString::number(static_cast<double>(tabParametrisationSliderScaleKernel->value()) / KERNEL_SCALE_FACTOR, 'f', 2));
 	
 	// Ensure that reliability range is within 0 and 1:
 	n = tabParametrisationFieldRelMin->text().toDouble();
@@ -894,9 +894,9 @@ void SoFiA::updateFields()
 	if(tabMergingButtonPositivity->isChecked())  toolBoxME->setItemIcon(1, iconTaskComplete);
 	else                                         toolBoxME->setItemIcon(1, iconTaskReject);
 	
-	if(tabParametrisationGroupBox1->isChecked()) toolBoxPA->setItemIcon(0, iconTaskComplete);
+	if(tabParametrisationGroupBox2->isChecked()) toolBoxPA->setItemIcon(0, iconTaskComplete);
 	else                                         toolBoxPA->setItemIcon(0, iconTaskReject);
-	if(tabParametrisationGroupBox2->isChecked()) toolBoxPA->setItemIcon(1, iconTaskComplete);
+	if(tabParametrisationGroupBox1->isChecked()) toolBoxPA->setItemIcon(1, iconTaskComplete);
 	else                                         toolBoxPA->setItemIcon(1, iconTaskReject);
 	
 	if(tabOutputButtonASCII->isChecked() or tabOutputButtonXML->isChecked() or tabOutputButtonSQL->isChecked() or (tabOutputButtonFilteredCube->isEnabled() and tabOutputButtonFilteredCube->isChecked()) or tabOutputButtonMask->isChecked() or tabOutputButtonMom0->isChecked() or tabOutputButtonMom1->isChecked() or tabOutputButtonCubelets->isChecked()) toolBoxOP->setItemIcon(0, iconTaskComplete);
@@ -1866,6 +1866,7 @@ void SoFiA::createInterface()
 	tabInputLayoutMask = new QHBoxLayout();
 	tabInputFieldMask  = new QLineEdit(tabInputWidgetMask);
 	tabInputFieldMask->setObjectName("import.maskFile");
+	connect(tabInputFieldMask, SIGNAL(textChanged(const QString &)), this, SLOT(updateFields()));
 	connect(tabInputFieldMask, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
 	tabInputButtonMask = new QPushButton(tr("Select..."), tabInputWidgetMask);
 	connect(tabInputButtonMask, SIGNAL(clicked()), this, SLOT(selectInputMaskFile()));
@@ -1874,6 +1875,10 @@ void SoFiA::createInterface()
 	tabInputLayoutMask->addWidget(tabInputButtonMask);
 	tabInputLayoutMask->setContentsMargins(0, 0, 0, 0);
 	tabInputWidgetMask->setLayout(tabInputLayoutMask);
+	
+	tabInputFieldSources  = new QLineEdit(tabInputGroupBox1);
+	tabInputFieldSources->setObjectName("import.sources");
+	connect(tabInputFieldSources, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
 	
 	tabInputWidgetWeights = new QWidget(tabInputGroupBox1);
 	tabInputLayoutWeights = new QHBoxLayout();
@@ -1897,6 +1902,7 @@ void SoFiA::createInterface()
 	tabInputForm1->addRow(tr("Data cube:"), tabInputWidgetData);
 	tabInputForm1->addRow(tr(""), tabInputFieldInvertData);
 	tabInputForm1->addRow(tr("Mask cube:"), tabInputWidgetMask);
+	tabInputForm1->addRow(tr("Sources:"), tabInputFieldSources);
 	tabInputForm1->addRow(tr("Weights cube:"), tabInputWidgetWeights);
 	tabInputForm1->addRow(tr("Weights function:"), tabInputFieldWeightsFunction);
 	tabInputForm1->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
@@ -2685,35 +2691,6 @@ void SoFiA::createInterface()
 	
 	tabParametrisationLayout = new QVBoxLayout();
 	
-	tabParametrisationGroupBox1 = new QGroupBox(tr("Enable"), toolBoxPA);
-	tabParametrisationGroupBox1->setObjectName("steps.doParameterise");
-	tabParametrisationGroupBox1->setCheckable(true);
-	tabParametrisationGroupBox1->setChecked(true);
-	connect(tabParametrisationGroupBox1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
-	connect(tabParametrisationGroupBox1, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabParametrisationForm1 = new QFormLayout();
-	
-	tabParametrisationButtonDilateMask = new QCheckBox(tr("Optimise mask (dilation)"), tabParametrisationGroupBox1);
-	tabParametrisationButtonDilateMask->setObjectName("parameters.dilateMask");
-	tabParametrisationButtonDilateMask->setEnabled(true);
-	tabParametrisationButtonDilateMask->setChecked(false);
-	connect(tabParametrisationButtonDilateMask, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabParametrisationButtonMaskOpt = new QCheckBox(tr("Optimise mask (ellipse)"), tabParametrisationGroupBox1);
-	tabParametrisationButtonMaskOpt->setObjectName("parameters.optimiseMask");
-	tabParametrisationButtonMaskOpt->setEnabled(true);
-	tabParametrisationButtonMaskOpt->setChecked(false);
-	connect(tabParametrisationButtonMaskOpt, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	tabParametrisationButtonBusyFunction = new QCheckBox(tr("Fit Busy Function"), tabParametrisationGroupBox1);
-	tabParametrisationButtonBusyFunction->setObjectName("parameters.fitBusyFunction");
-	tabParametrisationButtonBusyFunction->setEnabled(true);
-	tabParametrisationButtonBusyFunction->setChecked(false);
-	connect(tabParametrisationButtonBusyFunction, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
-	
-	tabParametrisationForm1->addRow(tr(""), tabParametrisationButtonDilateMask);
-	tabParametrisationForm1->addRow(tr(""), tabParametrisationButtonMaskOpt);
-	tabParametrisationForm1->addRow(tr(""), tabParametrisationButtonBusyFunction);
-	tabParametrisationGroupBox1->setLayout(tabParametrisationForm1);
-	
 	tabParametrisationGroupBox2 = new QGroupBox(tr("Enable"), toolBoxPA);
 	tabParametrisationGroupBox2->setObjectName("steps.doReliability");
 	tabParametrisationGroupBox2->setCheckable(true);
@@ -2722,7 +2699,7 @@ void SoFiA::createInterface()
 	connect(tabParametrisationGroupBox2, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	tabParametrisationForm2 = new QFormLayout();
 	
-	tabParametrisationWidgetRelMin = new QWidget(tabParametrisationGroupBox1);
+	tabParametrisationWidgetRelMin = new QWidget(tabParametrisationGroupBox2);
 	tabParametrisationLayoutRelMin = new QHBoxLayout();
 	tabParametrisationSliderRelMin = new QSlider(Qt::Horizontal, tabParametrisationWidgetRelMin);
 	tabParametrisationSliderRelMin->setMinimum(0);
@@ -2763,7 +2740,6 @@ void SoFiA::createInterface()
 	tabParametrisationLayoutScaleKernel->setContentsMargins(0, 0, 0, 0);
 	tabParametrisationWidgetScaleKernel->setLayout(tabParametrisationLayoutScaleKernel);
 	
-	
 	tabParametrisationButtonRelPlot = new QCheckBox(tr("Enable"), tabParametrisationGroupBox2);
 	tabParametrisationButtonRelPlot->setObjectName("reliability.makePlot");
 	tabParametrisationButtonRelPlot->setEnabled(true);
@@ -2775,6 +2751,35 @@ void SoFiA::createInterface()
 	tabParametrisationForm2->addRow(tr("Diagnostic plot:"), tabParametrisationButtonRelPlot);
 	tabParametrisationForm2->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 	tabParametrisationGroupBox2->setLayout(tabParametrisationForm2);
+	
+	tabParametrisationGroupBox1 = new QGroupBox(tr("Enable"), toolBoxPA);
+	tabParametrisationGroupBox1->setObjectName("steps.doParameterise");
+	tabParametrisationGroupBox1->setCheckable(true);
+	tabParametrisationGroupBox1->setChecked(true);
+	connect(tabParametrisationGroupBox1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
+	connect(tabParametrisationGroupBox1, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	tabParametrisationForm1 = new QFormLayout();
+	
+	tabParametrisationButtonDilateMask = new QCheckBox(tr("Optimise mask (dilation)"), tabParametrisationGroupBox1);
+	tabParametrisationButtonDilateMask->setObjectName("parameters.dilateMask");
+	tabParametrisationButtonDilateMask->setEnabled(true);
+	tabParametrisationButtonDilateMask->setChecked(false);
+	connect(tabParametrisationButtonDilateMask, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	tabParametrisationButtonMaskOpt = new QCheckBox(tr("Optimise mask (ellipse)"), tabParametrisationGroupBox1);
+	tabParametrisationButtonMaskOpt->setObjectName("parameters.optimiseMask");
+	tabParametrisationButtonMaskOpt->setEnabled(true);
+	tabParametrisationButtonMaskOpt->setChecked(false);
+	connect(tabParametrisationButtonMaskOpt, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	tabParametrisationButtonBusyFunction = new QCheckBox(tr("Fit Busy Function"), tabParametrisationGroupBox1);
+	tabParametrisationButtonBusyFunction->setObjectName("parameters.fitBusyFunction");
+	tabParametrisationButtonBusyFunction->setEnabled(true);
+	tabParametrisationButtonBusyFunction->setChecked(false);
+	connect(tabParametrisationButtonBusyFunction, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	
+	tabParametrisationForm1->addRow(tr(""), tabParametrisationButtonDilateMask);
+	tabParametrisationForm1->addRow(tr(""), tabParametrisationButtonMaskOpt);
+	tabParametrisationForm1->addRow(tr(""), tabParametrisationButtonBusyFunction);
+	tabParametrisationGroupBox1->setLayout(tabParametrisationForm1);
 	
 	tabParametrisationButtonPrev = new QPushButton(tr("Previous"), tabParametrisation);
 	tabParametrisationButtonPrev->setIcon(iconGoPreviousView);
@@ -2791,8 +2796,8 @@ void SoFiA::createInterface()
 	tabParametrisationWidgetControls = new QWidget(tabParametrisation);
 	tabParametrisationWidgetControls->setLayout(tabParametrisationLayoutControls);
 	
-	toolBoxPA->addItem(tabParametrisationGroupBox1, iconTaskReject, tr("Source Parameterisation"));
 	toolBoxPA->addItem(tabParametrisationGroupBox2, iconTaskReject, tr("Reliability Calculation"));
+	toolBoxPA->addItem(tabParametrisationGroupBox1, iconTaskReject, tr("Source Parameterisation"));
 	
 	tabParametrisationLayout->addWidget(toolBoxPA);
 	tabParametrisationLayout->addStretch();
@@ -3285,6 +3290,7 @@ void SoFiA::createWhatsThis()
 	tabInputFieldData->setWhatsThis(tr("<h3>import.inFile</h3><p>Full path and file name of the input data cube. This option is mandatory, and there is no default. Note that only <b>FITS</b> files are currently supported by SoFiA.</p>"));
 	tabInputFieldInvertData->setWhatsThis(tr("<h3>import.invertData</h3><p>If set to <b>true</b>, SoFiA will multiply the data cube by &minus;1 in order to search for negative signals.</p>"));
 	tabInputFieldMask->setWhatsThis(tr("<h3>import.maskFile</h3><p>Full path and file name of an optional file containing a mask of pixels identified as part of a source, e.g. from a previous run of SoFiA. This can be used to re-parametrise sources without repeating the source finding step or to add more sources from a second source finding run. The default is to not read a mask cube.</p>"));
+	tabInputFieldSources->setWhatsThis(tr("<h3>import.sources</h3><p>List of source IDs to be retained in the input source mask (e.g. <b>[1, 3, 4]</b>). An empty list (<b>[]</b>) means that all sources are kept (default). Otherwise, sources not in the list will be removed from the mask before proceeding.</p><p>This parameter will only take effect if <b>import.maskFile</b> is set.</p>"));
 	tabInputFieldSubcube->setWhatsThis(tr("<h3>import.subcube</h3><p>This parameter defines a subcube to be read in and processed by SoFiA. Depending on the value of import.subcubeMode, the range is either specified in pixels as</p><p><code>[x1, x2, y1, y2, z1, z2]</code></p><p>or in world coordinates as</p><p><code>[x, y, z, rx, ry, rz]</code></p><p>In the latter case, <code>x</code>, <code>y</code> and <code>z</code> define the centre of the subcube, and <code>rx</code>, <code>ry</code> and <code>rz</code> specify the half-widths in the three dimensions. If world coordinates are used, all parameters must be in the native format as defined in the header of the data cube; e.g. if <code>CUNIT3</code> is <code>'Hz'</code> then both <code>z</code> and <code>rz</code> must be given in hertz. The default is an empty list, <code>[]</code>, which means to read the entire cube.</p>"));
 	tabInputFieldSubcubeMode->setWhatsThis(tr("<h3>import.subcubeMode</h3><p>This parameter defines whether import.subcube is specified in pixels (<b>pixel</b>) or in world coordinates (<b>world</b>).</p>"));
 	tabInputFieldWeights->setWhatsThis(tr("<h3>import.weightsFile</h3><p>Full path and file name of an optional file containing the weights of pixels in the input cube. The weights will be applied before running the source finder. The default is to not apply weights.</p>"));
@@ -3303,7 +3309,7 @@ void SoFiA::createWhatsThis()
 	tabParametrisationButtonDilateMask->setWhatsThis(tr("<h3>parameters.dilateMask</h3><p>Run the mask optimisation algorithm based on spatially <b>dilating</b> the initial mask to achieve more accurate flux measurements.</p>"));
 	tabParametrisationButtonBusyFunction->setWhatsThis(tr("<h3>parameters.fitBusyFunction</h3><p>Fit the Busy Function (<a href=\"http://adsabs.harvard.edu/abs/2014MNRAS.438.1176W\">Westmeier et al. 2014</a>) to the integrated spectrum for more accurate parameterisation.</p>"));
 	tabParametrisationButtonMaskOpt->setWhatsThis(tr("<h3>parameters.optimiseMask</h3><p>Run the mask optimisation algorithm based on fitting and <b>growing</b> ellipses to achieve more accurate flux measurements.</p>"));
-	tabParametrisationFieldScaleKernel->setWhatsThis(tr("<h3>reliability.scaleKernel</h3><p>If <b>autoKernel</b> is set to <b>true</b>, then this parameter will determine whether the kernel size will be set automatically by SoFiA (<b>auto</b>) or scaled by the given factor (<b>&gt;&nbsp;0</b>). If <b>autoKernel</b> is <b>false</b>, this option will be ignored."));
+	tabParametrisationFieldScaleKernel->setWhatsThis(tr("<h3>reliability.scaleKernel</h3><p>If <b>autoKernel</b> is set to <b>true</b>, then this parameter will determine whether the kernel size will be set automatically by SoFiA (<b>0</b>) or scaled by the given factor (<b>&gt;&nbsp;0</b>). If <b>autoKernel</b> is <b>false</b>, this option will be ignored."));
 	tabParametrisationSliderScaleKernel->setWhatsThis(tr("<h3>reliability.scaleKernel</h3><p>If <b>autoKernel</b> is set to <b>true</b>, then this parameter will determine whether the kernel size will be set automatically by SoFiA (<b>auto</b>) or scaled by the given factor (<b>&gt;&nbsp;0</b>). If <b>autoKernel</b> is <b>false</b>, this option will be ignored."));
 	tabParametrisationButtonRelPlot->setWhatsThis(tr("<h3>reliability.makePlot</h3><p>If set to <b>true</b>, PDF files showing the distribution of positive and negative detections in parameter space will be created for diagnostic purposes.</p>"));
 	tabParametrisationFieldRelMin->setWhatsThis(tr("<h3>reliability.threshold</h3><p>Discard sources whose reliability is below this threshold.</p>"));

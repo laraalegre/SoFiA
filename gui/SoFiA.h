@@ -305,6 +305,7 @@ private:
 	QPushButton  *tabInputButtonData;
 	QCheckBox    *tabInputFieldInvertData;
 	QLineEdit    *tabInputFieldMask;
+	QLineEdit    *tabInputFieldSources;
 	QPushButton  *tabInputButtonMask;
 	QLineEdit    *tabInputFieldWeights;
 	QPushButton  *tabInputButtonWeights;
