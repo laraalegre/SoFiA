@@ -102,7 +102,11 @@ WidgetDataViewer::~WidgetDataViewer()
 
 int WidgetDataViewer::openFitsFile(const std::string &url)
 {
-	if(fips->readFile(url)) return 1;
+	if(fips->readFile(url))
+	{
+		std::cerr << "Error: Failed to read FITS file.\n";
+		return 1;
+	}
 	
 	// Redefine settings
 	zoomToFit();

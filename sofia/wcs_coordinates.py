@@ -10,6 +10,7 @@ import numpy as np
 import scipy.constants
 from astropy import wcs
 from astropy.io import fits
+from astropy.coordinates import Longitude, Latitude
 from sofia import error as err
 
 
@@ -186,7 +187,7 @@ def add_wcs_coordinates(objects, catParNames, catParFormt, catParUnits, Paramete
 		iau_names = np.empty([n_src, 1], dtype=object)
 		
 		if header["ctype1"][:4] == "RA--":
-			# Equatorial coordinates try to figure out equinox:
+			# Equatorial coordinates; try to figure out equinox:
 			iau_coord = "equ"
 			if "equinox" in header:
 				if int(header["equinox"]) >= 2000: iau_equinox = "J"
@@ -212,21 +213,10 @@ def add_wcs_coordinates(objects, catParNames, catParFormt, catParUnits, Paramete
 			lat = objects[src][n_par - 2]
 			
 			if iau_coord == "equ":
-				ra = lon / 15.0    # convert assumed degrees to hours
-				ra_h = int(ra)
-				ra_m = int((ra - ra_h) * 60.0)
-				ra_s = (ra - ra_h - (ra_m / 60.0)) * 3600.0
-				
-				dec_sgn = np.sign(lat)
-				dec = abs(lat)
-				dec_d = int(dec)
-				dec_m = int((dec - dec_d) * 60.0)
-				dec_s = (dec - dec_d - (dec_m / 60.0)) * 3600.0
-				
-				iau_pos = "{0:02d}{1:02d}{2:05.2f}".format(ra_h, ra_m, ra_s)
-				if dec_sgn < 0: iau_pos += "-"
-				else: iau_pos += "+"
-				iau_pos += "{0:02d}{1:02d}{2:04.1f}".format(dec_d, dec_m, dec_s)
+				ra = Longitude(lon, unit="deg")
+				dec = Latitude(lat, unit="deg")
+				iau_pos = ra.to_string(unit="h", decimal=False, sep="", precision=2, alwayssign=False, pad=True, fields=3)
+				iau_pos += dec.to_string(unit="deg", decimal=False, sep="", precision=1, alwayssign=True, pad=True, fields=3)
 			else:
 				iau_pos = "{0:08.4f}".format(lon)
 				if lat < 0.0: iau_pos += "-"
