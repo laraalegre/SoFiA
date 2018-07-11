@@ -10,6 +10,7 @@ import numpy as np
 import scipy.constants
 from astropy import wcs
 from astropy.io import fits
+from astropy import units as u
 from astropy.coordinates import Longitude, Latitude
 from sofia import error as err
 
@@ -213,10 +214,10 @@ def add_wcs_coordinates(objects, catParNames, catParFormt, catParUnits, Paramete
 			lat = objects[src][n_par - 2]
 			
 			if iau_coord == "equ":
-				ra = Longitude(lon, unit="deg")
-				dec = Latitude(lat, unit="deg")
-				iau_pos = ra.to_string(unit="h", decimal=False, sep="", precision=2, alwayssign=False, pad=True, fields=3)
-				iau_pos += dec.to_string(unit="deg", decimal=False, sep="", precision=1, alwayssign=True, pad=True, fields=3)
+				ra = Longitude(lon, unit=u.deg)
+				dec = Latitude(lat, unit=u.deg)
+				iau_pos = ra.to_string(unit=u.h, decimal=False, sep="", precision=2, alwayssign=False, pad=True, fields=3)
+				iau_pos += dec.to_string(unit=u.deg, decimal=False, sep="", precision=1, alwayssign=True, pad=True, fields=3)
 			else:
 				iau_pos = "{0:08.4f}".format(lon)
 				if lat < 0.0: iau_pos += "-"
