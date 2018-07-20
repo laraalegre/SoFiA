@@ -184,7 +184,7 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 		err.ensure(z1 < z2 and y1 < y2 and x1 < x2, "Edge size exceeds cube size for at least one axis.")
 		
 		# Create empty cube (filled with 1) to hold noise values
-		rms_cube = np.ones(cube.shape)
+		rms_cube = np.ones(cube.shape, dtype=cube.dtype)
 		
 		# Measure noise across 2D planes and scale cube accordingly
 		if scaleZ:
