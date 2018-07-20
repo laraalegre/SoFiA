@@ -12,41 +12,55 @@
 #include <string.h>
 #include <stdint.h>
 #include <math.h>
+#include <float.h>
 
 #define RMS_STD 0
 #define RMS_MAD 1
 #define RMS_GAUSS 2
 
-#define RMS_NEG -1
-#define RMS_ALL  0
-#define RMS_POS  1
-
 
 #define loop_desc(I,N) for(size_t (I) = (N); (I)--;)
 
+// Conversion factor between MAD and STD, calculated as 1.0 / scipy.stats.norm.ppf(3.0 / 4.0)
+#define MAD_TO_STD 1.482602218505602
 
+
+// Define data type
+#define DATA_T_MAX FLT_MAX
 typedef float data_t;
+//#define DATA_T_MAX DBL_MAX
+//typedef double data_t;
+
+
+// General remarks:
+//
+// * The introduction of counters in many of the statistical function (e.g. summation)
+//   does not appear to have any impact on the speed of the algorithm. The functions
+//   seem to take exactly the same time to complete irrespective of whether a counter
+//   is included or not.
+//
+// * Throughout this code the assumption is made that NaN != NaN and that any comparison
+//   (i.e. ==, <, >, <=, >=) of NaN with n evaluates to false for all n. Should this not
+//   be the case for some reason, then the algorithms would no longer be NaN-safe!
 
 
 
-/* ===================== */
-/* Function declarations */
-/* ===================== */
+// ---------------------
+// Function declarations
+// ---------------------
 
 // Check for NaN
-unsigned int check_nan(const data_t *data, const size_t size);
+unsigned int contains_nan(const data_t *data, const size_t size);
 // Set mask based on threshold
 void set_mask(unsigned char *mask, const data_t *data, const size_t size, const data_t threshold);
 // Standard deviation
 double stddev(const data_t *data, const size_t size, const size_t cadence, const int flux_range, data_t value);
 // Median
-data_t median(data_t *data, const size_t size);
+data_t median(data_t *data, const size_t size, const unsigned int approx);
 // Median absolute deviation
 data_t mad(data_t *data, const size_t size, data_t value);
 // Summation
 double sum(const data_t *data, const size_t size, const unsigned int mean);
-// Kahan sum
-double kahan_sum(const data_t *data, const size_t size, const unsigned int mean);
 // Moment map generation
 double *moment(const data_t *data, const size_t nx, const size_t ny, const size_t nz, const unsigned int mom, const double *mom0, const double *mom1);
 // Uniform filter
@@ -64,18 +78,17 @@ inline unsigned int native_byte_order(void);
 inline void swap_byte_order_32(float *value);
 inline void swap_byte_order_64(double *value);
 // Check for NaN
-inline unsigned int is_nan(const data_t *value);
+inline unsigned int is_nan(const data_t value);
 
 
 
-// -------------------------
-// Check if any NaN in array
-// -------------------------
+// --------------------------
+// Check for any NaN in array
+// --------------------------
 
-unsigned int check_nan(const data_t *data, const size_t size)
+unsigned int contains_nan(const data_t *data, const size_t size)
 {
-	const data_t *ptr = data + size;
-	while(ptr --> data) if(is_nan(ptr)) return 1;
+	for(const data_t *ptr = data + size; ptr --> data;) if(is_nan(*ptr)) return 1;
 	return 0;
 }
 
@@ -85,127 +98,96 @@ unsigned int check_nan(const data_t *data, const size_t size)
 // Maximum and minimum value in array
 // ----------------------------------
 
+// NOTE: These functions should be intrinsically NaN-safe, as comparisons
+//       between NaN and n should evaluate to false for all n.
 data_t max(const data_t *data, const size_t size)
 {
-	data_t result = NAN;
-	const data_t *ptr = data + size;
+	data_t result = -DATA_T_MAX;
+	unsigned int counter = 0;
 	
-	while(ptr --> data)
+	for(const data_t *ptr = data + size; ptr --> data;)
 	{
-		if(is_nan(ptr)) continue;
-		if(is_nan(&result) || *ptr > result) result = *ptr;
+		if(*ptr > result)
+		{
+			result = *ptr;
+			counter = 1U;
+		}
 	}
 	
-	return result;
+	if(counter) return result;
+	return NAN;
 }
 
 data_t min(const data_t *data, const size_t size)
 {
-	data_t result = NAN;
-	const data_t *ptr = data + size;
+	data_t result = DATA_T_MAX;
+	unsigned int counter = 0;
 	
-	while(ptr --> data)
+	for(const data_t *ptr = data + size; ptr --> data;)
 	{
-		if(is_nan(ptr)) continue;
-		if(is_nan(&result) || *ptr < result) result = *ptr;
+		if(*ptr < result)
+		{
+			result = *ptr;
+			counter = 1U;
+		}
 	}
 	
-	return result;
+	if(counter) return result;
+	return NAN;
 }
 
 
 
-// ---------------------------
-// Summation of array elements
-// ---------------------------
+// -----------------------------
+// Sum or mean of array elements
+// -----------------------------
 
 double sum(const data_t *data, const size_t size, const unsigned int mean)
 {
-	const data_t *ptr = data + size;
 	double result = 0.0;
 	size_t counter = 0;
 	
-	while(ptr --> data)
+	for(const data_t *ptr = data + size; ptr --> data;)
 	{
-		if(!is_nan(ptr))
+		if(!is_nan(*ptr))
 		{
 			result += *ptr;
 			++counter;
 		}
 	}
 	
-	if(mean && counter) return result / (double)counter;
-	return result;
-}
-
-
-
-// ---------------------------------
-// Kahan summation of array elements
-// ---------------------------------
-
-double kahan_sum(const data_t *data, const size_t size, const unsigned int mean)
-{
-	const data_t *ptr = data + size;
-	double result = 0.0;
-	double error = 0.0;
-	size_t counter = 0;
-	
-	while(ptr --> data)
+	if(counter)
 	{
-		if(!is_nan(ptr))
-		{
-			double y = *ptr - error;
-			double t = result + y;
-			error = (t - result) - y;
-			result = t;
-			++counter;
-		}
+		if(mean) result /= (double)counter;
+		return result;
 	}
-	
-	if(mean && counter) return result / (double)counter;
-	return result;
+	return NAN;
 }
 
 
 
-// --------------------------------------
-// Standard deviation about value or mean
-// --------------------------------------
+// ------------------------------
+// Standard deviation about value
+// ------------------------------
 
+// NOTE: This function should be NaN-safe, as comparisons between
+//       NaN and n should evaluate to false for all n.
 double stddev(const data_t *data, const size_t size, const size_t cadence, const int flux_range, data_t value)
 {
 	double result = 0.0;
 	size_t counter = 0;
-	const data_t *ptr = data + size;
 	
-	// Calculate mean if no value specified
-	if(is_nan(&value)) value = sum(data, size, 1);
-	
-	while(data < ptr)
+	for(const data_t *ptr = data; ptr < data + size; ptr += cadence)
 	{
-		ptr -= cadence;
-		if(is_nan(ptr)) continue;
-		
-		if(*ptr < 0.0)
+		if((!flux_range && !is_nan(*ptr)) || (flux_range < 0 && *ptr < 0.0) || (flux_range > 0 && *ptr > 0.0))
 		{
-			if(flux_range <= RMS_ALL)
-			{
-				result += (*ptr - value) * (*ptr - value);
-				++counter;
-			}
-		}
-		else
-		{
-			if(flux_range >= RMS_ALL)
-			{
-				result += (*ptr - value) * (*ptr - value);
-				++counter;
-			}
+			result += (*ptr - value) * (*ptr - value);
+			++counter;
 		}
 	}
 	
-	return sqrt(result / counter);
+	if(counter) return sqrt(result / counter);
+	return NAN;
 }
 
 
@@ -214,17 +196,13 @@ double stddev(const data_t *data, const size_t size, const size_t cadence, const
 // Median of array
 // ---------------
 
-// WARNING: Not NaN-safe!
-data_t median(data_t *data, const size_t size)
+// WARNING: Not NaN-safe! Modifies data array!
+data_t median(data_t *data, const size_t size, const unsigned int approx)
 {
-	/* Exact median */
 	const size_t n = size / 2;
 	const data_t value = nth_element(data, size, n);
-	if(size & 1U) return value;
+	if((size & 1U) || approx) return value;
 	return (value + max(data, n)) / 2.0;
-	
-	/* Approximate median (marginally faster) */
-	/*return nth_element(data, size, size / 2);*/
 }
 
 
@@ -233,12 +211,11 @@ data_t median(data_t *data, const size_t size)
 // Median absolute deviation
 // -------------------------
 
+// WARNING: Not NaN-safe! Modifies data array!
 data_t mad(data_t *data, const size_t size, data_t value)
 {
-	data_t *ptr = data + size;
-	if(is_nan(&value)) value = median(data, size);
-	while(ptr --> data) *ptr = fabs(*ptr - value);
-	return 1.4826 * median(data, size);
+	for(data_t *ptr = data + size; ptr --> data;) *ptr = fabs(*ptr - value);
+	return MAD_TO_STD * median(data, size, 0);
 }
 
 
@@ -247,7 +224,7 @@ data_t mad(data_t *data, const size_t size, data_t value)
 // N-th smallest element in array
 // ------------------------------
 
-// WARNING: Not NaN-safe!
+// WARNING: Not NaN-safe! Modifies data array!
 data_t nth_element(data_t *data, const size_t size, const size_t n)
 {
 	data_t *l = data;
@@ -465,8 +442,8 @@ void free_memory(double *data)
 inline unsigned int native_byte_order(void)
 {
 	// Returns 0 on little-endian and 1 on big-endian machines
-	// NOTE: This check will only work on systems
-	//       where sizeof(long) > sizeof(char) = 1
+	// NOTE: This check will only work on systems where
+	//       sizeof(long) > sizeof(char) = 1
 	
 	long n = 1;
 	return *(char *)&n != 1;
@@ -501,7 +478,7 @@ inline void swap_byte_order_64(double *value)
 /* Check if NaN */
 /* ============ */
 
-inline unsigned int is_nan(const data_t *value)
+inline unsigned int is_nan(const data_t value)
 {
-	return *value != *value;
+	return value != value;
 }

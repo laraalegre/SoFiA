@@ -33,7 +33,7 @@ _stat.stddev.restype = ct.c_double
 
 # Median
 # ------
-_stat.median.argtypes = [ct.POINTER(ct.c_float), ct.c_size_t]
+_stat.median.argtypes = [ct.POINTER(ct.c_float), ct.c_size_t, ct.c_uint]
 _stat.median.restype = ct.c_float
 
 # Median absolute deviation
@@ -45,11 +45,6 @@ _stat.mad.restype = ct.c_float
 # ---------
 _stat.sum.argtypes = [ct.POINTER(ct.c_float), ct.c_size_t, ct.c_uint]
 _stat.sum.restype = ct.c_double
-
-# Kahan sum
-# ---------
-_stat.kahan_sum.argtypes = [ct.POINTER(ct.c_float), ct.c_size_t, ct.c_uint]
-_stat.kahan_sum.restype = ct.c_double
 
 # Moment map
 # ----------
@@ -132,9 +127,10 @@ def median(data, flux_range="all", cadence=1):
 	# Prepare arguments
 	arg_data    = data.ctypes.data_as(ct.POINTER(ct.c_float))
 	arg_size    = ct.c_size_t(data.size)
+	arg_approx  = ct.c_uint(0)
 	
 	# Call C function
-	return _stat.median(arg_data, arg_size)
+	return _stat.median(arg_data, arg_size, arg_approx)
 
 
 # Median absolute deviation
@@ -170,20 +166,6 @@ def sum(data):
 	
 	# Call C function
 	return _stat.sum(arg_data, arg_size, arg_mean)
-
-
-# Kahan sum
-# ---------
-def kahan_sum(data):
-	global _stat
-	
-	# Prepare arguments
-	arg_data = data.ctypes.data_as(ct.POINTER(ct.c_float))
-	arg_size = ct.c_size_t(data.size)
-	arg_mean = ct.c_uint(0)
-	
-	# Call C function
-	return _stat.kahan_sum(arg_data, arg_size, arg_mean)
 
 
 # Mean
@@ -222,7 +204,7 @@ def moment(data, mom=0, mom0=None, mom1=None):
 	# Copy data into new NumPy array
 	moment_map = np.array(np.fromiter(ptr_moment_map, dtype=np.float64, count=data.shape[0]*data.shape[1])).reshape((data.shape[0], data.shape[1]))
 	
-	# De-allocate memory
+	# Release memory
 	_stat.free_memory(ptr_moment_map)
 	
 	return moment_map
@@ -232,7 +214,4 @@ def moment(data, mom=0, mom0=None, mom1=None):
 # ----------------------------
 
 def get_byte_order(data):
-	byte_order = 0
-	if(data.dtype.byteorder == ">"):
-		byte_order = 1
-	return byte_order
+	return (data.dtype.byteorder == ">")
