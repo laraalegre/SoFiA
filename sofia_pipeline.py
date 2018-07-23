@@ -156,6 +156,8 @@ if not outputBase or outputBase.isspace() or "/" in outputBase or "\\" in output
 	outroot = Parameters["import"]["inFile"].split("/")[-1]
 	if (outroot.lower()).endswith(".fits") and len(outroot) > 5:
 		outroot = outroot[0:-5]
+	if (outroot.lower()).endswith(".fits.gz") and len(outroot) > 8:
+		outroot = outroot[0:-8]
 else:
 	outroot = outputBase
 
