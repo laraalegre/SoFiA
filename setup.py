@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from distutils.core import setup, Extension
-from distutils.version import StrictVersion
+from distutils.version import LooseVersion
 import distutils.command.build
 
 import sys
@@ -22,7 +22,7 @@ for (pkg, required_version) in dependencies:
 	try:
 		m = __import__(pkg)
 		available_version = m.__version__
-		if StrictVersion(available_version) < StrictVersion(required_version): raise ValueError
+		if LooseVersion(available_version) < LooseVersion(required_version): raise ValueError
 	except ImportError:
 		print ("ERROR: Package '" + pkg + "' not found, but required by SoFiA.")
 		unmetDependencies = True
