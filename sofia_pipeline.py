@@ -613,7 +613,7 @@ if Parameters["steps"]["doParameterise"]:
 			"the true uncertainties of those parameters, in par-\n"
 			"ticular in the presence of systematic errors.", frame=True)
 	
-	if Parameters["parameters"]["dilateMask"]: mask = parametrisation.dilate(np_Cube, mask, objects, catParNames, Parameters)
+	if Parameters["parameters"]["dilateMask"]: mask, objects = parametrisation.dilate(np_Cube, mask, objects, catParNames, Parameters)
 	np_Cube, mask, objects, catParNames, catParFormt, catParUnits = parametrisation.parametrise(np_Cube, mask, objects, catParNames, catParFormt, catParUnits, Parameters, dunits)
 	catParNames = tuple(catParNames)
 	catParUnits = tuple(catParUnits)

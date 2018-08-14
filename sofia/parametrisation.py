@@ -85,7 +85,15 @@ def dilate(cube, mask, objects, cathead, Parameters):
 		del objmask
 		del allmask
 		del otherobjs
-	return mask
+	
+		objects[i,list(cathead).index("x_min")] = max(0, obj[list(cathead).index("x_min")] - dil)
+		objects[i,list(cathead).index("x_max")] = min(cube.shape[2] - 1, obj[list(cathead).index("x_max")] + dil)
+		objects[i,list(cathead).index("y_min")] = max(0, obj[list(cathead).index("y_min")] - dil)
+		objects[i,list(cathead).index("y_max")] = min(cube.shape[1] - 1, obj[list(cathead).index("y_max")] + dil)
+		objects[i,list(cathead).index("z_min")] = max(0, obj[list(cathead).index("z_min")] - dilateChan)
+		objects[i,list(cathead).index("z_max")] = min(cube.shape[0] - 1, obj[list(cathead).index("z_max")] + dilateChan)
+        
+	return mask, objects
 
 
 
