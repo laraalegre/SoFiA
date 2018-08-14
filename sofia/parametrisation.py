@@ -81,17 +81,40 @@ def dilate(cube, mask, objects, cathead, Parameters):
 			objmask[otherobjs] = allmask[otherobjs]
 		mask[zmin:zmax+1, ymin:ymax+1, xmin:xmax+1] = objmask
 		
+		# Update n_pix, x_geo and n_chan
+		n_pix = objmask[objmask==sourceIDs[i]].sum()/sourceIDs[i]
+		ind = np.vstack(np.where(objmask==sourceIDs[i]))
+		cgeo = (ind.sum(axis=1)).astype(float)/float(n_pix)
+		x_geo, y_geo, z_geo = cgeo[2]+xmin, cgeo[1]+ymin, cgeo[0]+zmin
+		zmin, zmax = min(ind[0]), max(ind[0]) + 1
+		n_chan = zmax-zmin	
+		
+		# Update n_los
+		objmask[objmask!=sourceIDs[i]] = 0
+		maskSumA0 = objmask.sum(axis=0)
+		maskSumA0[maskSumA0>1] = 1
+		n_los = maskSumA0.sum()
+		
+
 		del objcube
 		del objmask
 		del allmask
 		del otherobjs
 	
-		objects[i,list(cathead).index("x_min")] = max(0, obj[list(cathead).index("x_min")] - dil)
-		objects[i,list(cathead).index("x_max")] = min(cube.shape[2] - 1, obj[list(cathead).index("x_max")] + dil)
-		objects[i,list(cathead).index("y_min")] = max(0, obj[list(cathead).index("y_min")] - dil)
-		objects[i,list(cathead).index("y_max")] = min(cube.shape[1] - 1, obj[list(cathead).index("y_max")] + dil)
-		objects[i,list(cathead).index("z_min")] = max(0, obj[list(cathead).index("z_min")] - dilateChan)
-		objects[i,list(cathead).index("z_max")] = min(cube.shape[0] - 1, obj[list(cathead).index("z_max")] + dilateChan)
+		objects[i,list(cathead).index("x_min")]  = max(0, obj[list(cathead).index("x_min")] - dil)
+		objects[i,list(cathead).index("x_max")]  = min(cube.shape[2] - 1, obj[list(cathead).index("x_max")] + dil)
+		objects[i,list(cathead).index("y_min")]  = max(0, obj[list(cathead).index("y_min")] - dil)
+		objects[i,list(cathead).index("y_max")]  = min(cube.shape[1] - 1, obj[list(cathead).index("y_max")] + dil)
+		objects[i,list(cathead).index("z_min")]  = max(0, obj[list(cathead).index("z_min")] - dilateChan)
+		objects[i,list(cathead).index("z_max")]  = min(cube.shape[0] - 1, obj[list(cathead).index("z_max")] + dilateChan)
+		objects[i,list(cathead).index("n_pix")]  = n_pix
+		objects[i,list(cathead).index("n_chan")] = n_chan
+		objects[i,list(cathead).index("n_los")]  = n_los
+		objects[i,list(cathead).index("x_geo")]  = x_geo
+		objects[i,list(cathead).index("y_geo")]  = y_geo
+		objects[i,list(cathead).index("z_geo")]  = z_geo
+		
+		
         
 	return mask, objects
 
