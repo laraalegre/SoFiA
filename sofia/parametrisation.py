@@ -82,17 +82,17 @@ def dilate(cube, mask, objects, cathead, Parameters):
 		mask[zmin:zmax+1, ymin:ymax+1, xmin:xmax+1] = objmask
 		
 		# Update n_pix, x_geo and n_chan
-		n_pix = objmask[objmask==sourceIDs[i]].sum()/sourceIDs[i]
-		ind = np.vstack(np.where(objmask==sourceIDs[i]))
-		cgeo = (ind.sum(axis=1)).astype(float)/float(n_pix)
-		x_geo, y_geo, z_geo = cgeo[2]+xmin, cgeo[1]+ymin, cgeo[0]+zmin
+		n_pix = objmask[objmask == sourceIDs[i]].sum() / sourceIDs[i]
+		ind = np.vstack(np.where(objmask == sourceIDs[i]))
+		cgeo = (ind.sum(axis=1)).astype(float) / float(n_pix)
+		x_geo, y_geo, z_geo = cgeo[2] + xmin, cgeo[1] + ymin, cgeo[0] + zmin
 		zmin, zmax = min(ind[0]), max(ind[0]) + 1
-		n_chan = zmax-zmin	
+		n_chan = zmax - zmin
 		
 		# Update n_los
-		objmask[objmask!=sourceIDs[i]] = 0
+		objmask[objmask != sourceIDs[i]] = 0
 		maskSumA0 = objmask.sum(axis=0)
-		maskSumA0[maskSumA0>1] = 1
+		maskSumA0[maskSumA0 > 1] = 1
 		n_los = maskSumA0.sum()
 		
 
