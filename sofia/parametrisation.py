@@ -253,6 +253,39 @@ def parametrise(cube, mask, objects, cathead, catformt, catparunits, Parameters,
 	catparunits = np.array(catparunits)
 	catformt = np.array(catformt)
 	
+	# if mask optimization is enabled, some parameters from the linker have to be updated
+	if Parameters["parameters"]["optimiseMask"]:
+		for i in range(objects.shape[0]):
+			# bounding box coordinates
+			coord = []
+			for c in ["x_min", "x_max", "y_min", "y_max", "z_min", "z_max"]:
+				coord.append(int(objects[i, cathead == c]))
+			# cut out object submask
+			submask = mask[coord[4]:coord[5] + 1, coord[2]:coord[3] + 1, coord[0]:coord[1] + 1]
+			objID = objects[i, cathead == "id"]
+			submask[submask!=objID] = 0
+			
+			# Update n_pix, x_geo and n_chan
+			n_pix = submask.sum() / objID
+			ind = np.vstack(np.where(submask == objID))
+			cgeo = (ind.sum(axis=1)).astype(float) / float(n_pix)
+			x_geo, y_geo, z_geo = cgeo[2] + coord[0], cgeo[1] + coord[2], cgeo[0] + coord[4]
+			zmin, zmax = min(ind[0]), max(ind[0]) + 1
+			n_chan = zmax - zmin
+			
+			# Update n_los
+			submaskSumA0 = submask.sum(axis=0)
+			submaskSumA0[submaskSumA0 > 1] = 1
+			n_los = submaskSumA0.sum()
+			
+			objects[i, cathead == "n_pix"]  = n_pix
+			objects[i, cathead == "n_chan"] = n_chan
+			objects[i, cathead == "n_los"]  = n_los
+			objects[i, cathead == "x_geo"]  = x_geo
+			objects[i ,cathead == "y_geo"]  = y_geo
+			objects[i, cathead == "z_geo"]  = z_geo
+		del submask
+	
 	err.message("Parameterisation complete.")
 	
 	return cube, mask, objects, cathead, catformt, catparunits
