@@ -226,11 +226,16 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 			if not "CUNIT3" in headerCubelets: bunitExt = ".std_unit_" + headerCubelets["CTYPE3"]
 			else: bunitExt = "." + headerCubelets["CUNIT3"]
 		
-		# Make copy of subcube and regrid
+		# Make copy of subcube and regrid if necessary
+		# NOTE: Why on earth do we need to make a copy here? If we don't create a copy,
+		#       then SoFiA will crash as all pixels in the moment map are NaN, but I
+		#       don't understand why this would be the case in the first place.
 		subcubeCopy = subcube.copy()
-		subcubeCopy[submask == 0] = 0
-		if "cellscal" in headerCubelets:
-			if headerCubelets["cellscal"] == "1/F": subcubeCopy = func.regridMaskedChannels(subcubeCopy, submask, headerCubelets)
+		if "cellscal" in headerCubelets and headerCubelets["cellscal"] == "1/F":
+			subcubeCopy[submask == 0] = 0        # NOTE: These will later be set to NaN by the regridding task
+			subcubeCopy = func.regridMaskedChannels(subcubeCopy, submask, headerCubelets)
+		else:
+			subcubeCopy[submask == 0] = np.nan   # NOTE: Manually set to NaN to ensure correct generation of spectra below
 		
 		moments = [None, None, None]
 		with np.errstate(invalid="ignore"):
@@ -241,7 +246,7 @@ def writeSubcube(cube, header, mask, objects, cathead, outroot, outputDir, compr
 			velArr = ((np.arange(subcubeCopy.shape[0]).reshape((subcubeCopy.shape[0], 1, 1)) + 1.0 - headerCubelets["CRPIX3"]) * headerCubelets["CDELT3"] + headerCubelets["CRVAL3"]) * scalemom12
 			moments[1] = np.divide(np.nansum(velArr * subcubeCopy, axis=0), moments[0])
 			# NOTE: Here we make use of array broadcasting in NumPy, but we need to reshape the velocity array
-			# from [nz] to [nz, 1, 1] for this to work, so that [nz, 1, 1] * [nz, ny, nx] --> [nz, ny, nx].
+			#       from [nz] to [nz, 1, 1] for this to work, so that [nz, 1, 1] * [nz, ny, nx] --> [nz, ny, nx].
 			
 			# Definition of moment 2
 			velArr = velArr - moments[1]
