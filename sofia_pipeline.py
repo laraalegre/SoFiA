@@ -300,7 +300,6 @@ if Parameters["steps"]["doWavelet"]:
 	np_Cube = np_Cube.copy()
 	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
-
 # --- WRITE FILTERED CUBE ---
 if Parameters["steps"]["doWriteFilteredCube"] and (Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["steps"]["doWavelet"]):
 	err.message("Writing filtered cube")
@@ -313,7 +312,7 @@ if Parameters["steps"]["doWriteNoiseCube"] and Parameters["steps"]["doScaleNoise
 	write_filtered_cube.writeFilteredCube(noise_cube, dict_Header, Parameters, outputNoiseCube, Parameters["writeCat"]["compress"])
 	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
-# Delete noise cube again to release memory
+# --- DELETE NOISE CUBE TO RELEASE MEMORY ---
 if Parameters["steps"]["doScaleNoise"]:
 	del noise_cube
 	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
@@ -403,7 +402,7 @@ if Parameters["steps"]["doMerge"] and NRdet:
 # ---- OUTPUT FOR DEBUGGING (MASK) ----
 # -------------------------------------
 
-if Parameters['steps']['doDebug'] and NRdet:
+if Parameters['steps']['doDebug'] and Parameters["steps"]["doMerge"] and NRdet:
 	err.print_progress_message("Writing all-source mask cube for debugging", t0)
 	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_all.fits' % outroot, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
 
@@ -432,7 +431,7 @@ if Parameters["steps"]["doReliability"] and Parameters["steps"]["doMerge"] and N
 	err.print_progress_message("Measuring noise to divide flux parameters by global RMS", t0)
 	maxNrVox = 1e+6 # maximum number of pixels over which to calculate the global RMS. Sampling below is set accordingly.
 	sampleRms = max(1, int((float(np.array(np_Cube.shape).prod()) / maxNrVox)**(1.0 / min(3, len(np_Cube.shape)))))
-	globalrms = functions.GetRMS(np_Cube, rmsMode="negative", zoomx=1, zoomy=1, zoomz=1, verbose=True, sample=sampleRms)
+	globalrms = functions.GetRMS(np_Cube, rmsMode="mad", fluxRange="negative", zoomx=1, zoomy=1, zoomz=1, verbose=True, sample=sampleRms)
 	err.print_progress_time(t0)
 	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 	
@@ -467,6 +466,16 @@ else:
 
 
 
+# ------------------------------------------
+# ---- OUTPUT FOR DEBUGGING (CATALOGUE) ----
+# ------------------------------------------
+
+if Parameters['steps']['doDebug'] and Parameters["steps"]["doMerge"] and NRdet:
+	err.print_progress_message("Writing all-source debugging catalogue including all parameters relevant for the reliability calculation", t0)
+	write_catalog.write_catalog_from_array('ASCII', objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatAsciiDebug, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'], Parameters['parameters']['getUncertainties'])
+
+
+
 # ------------------------------------------------------
 # ---- REMOVE UNNECESSARY PARAMETERS FROM CATALOGUE ----
 # ------------------------------------------------------
@@ -485,16 +494,6 @@ if Parameters["steps"]["doMerge"] and NRdet:
 	
 	objects, catParNames, catParUnits, catParFormt = [list(item) for item in list(objects)], tuple(catParNames), tuple(catParUnits), tuple(catParFormt)
 	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
-
-
-
-# ------------------------------------------
-# ---- OUTPUT FOR DEBUGGING (CATALOGUE) ----
-# ------------------------------------------
-
-if Parameters['steps']['doDebug']:
-	err.print_progress_message("Writing all-source debugging catalogue including all parameters relevant for the reliability calculation", t0)
-	write_catalog.write_catalog_from_array('ASCII', objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatAsciiDebug, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'], Parameters['parameters']['getUncertainties'])
 
 
 

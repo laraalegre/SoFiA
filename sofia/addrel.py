@@ -290,6 +290,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 			plt.ylim(lims[p2][0], lims[p2][1])
 			plt.xlabel(labs[p1])
 			plt.ylabel(labs[p2])
+			plt.grid(color='k',linestyle='-',linewidth=0.2)
 		fig1.savefig("%s_rel_scatter.pdf" % pdfoutname, rasterized=True)
 	
 	
@@ -347,6 +348,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 			plt.ylim(lims[p2][0], lims[p2][1])
 			plt.xlabel(labs[p1])
 			plt.ylabel(labs[p2])
+			plt.grid(color='k',linestyle='-',linewidth=0.2)
 		fig2.savefig("%s_rel_contour.pdf" % pdfoutname, rasterized=True)
 	
 	
