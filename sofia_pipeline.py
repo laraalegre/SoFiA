@@ -24,6 +24,7 @@ from sofia import wavelet_finder
 from sofia import addrel
 from sofia import threshold_filter
 from sofia import smooth_cube
+from sofia import maskerrors
 from sofia import write_filtered_cube
 from sofia import writemask
 from sofia import writemoment2
@@ -299,6 +300,11 @@ if Parameters["steps"]["doWavelet"]:
 	np_Cube = np.transpose(np_Cube, axes=[2, 1, 0])
 	np_Cube = np_Cube.copy()
 	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
+
+# --- MASK ERRORS ---
+if Parameters["steps"]["doMaskErrors"]:
+	err.message('Will attempt to mask continuum subtraction artefacts...')
+	np_Cube=maskerrors.maskerrors(np_Cube,**Parameters["maskErrors"])
 
 # --- WRITE FILTERED CUBE ---
 if Parameters["steps"]["doWriteFilteredCube"] and (Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["steps"]["doWavelet"]):
