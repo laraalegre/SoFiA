@@ -14,7 +14,7 @@ steps.doSubcube                 =       false
 steps.doFlag                    =       false
 steps.doSmooth                  =       false
 steps.doScaleNoise              =       false
-steps.doMaskErrors              =       false
+steps.doFlagErrors              =       false
 steps.doSCfind                  =       true
 steps.doThreshold               =       false
 steps.doWavelet                 =       false
@@ -86,10 +86,10 @@ scaleNoise.gridSpectral         =       0
 scaleNoise.interpolation        =       none
 
 
-# Mask errors module
+# Flag errors module
 
-maskErrors.mskthr               =       2.5
-maskErrors.dilside		=	3
+flagErrors.flgthr               =       2.5
+flagErrors.dilside		=	3
 
 
 # 2D-1D wavelet finder module
