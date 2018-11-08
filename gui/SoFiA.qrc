@@ -77,6 +77,7 @@
 		<file>icons/32/SoFiA.png</file>
 		<file>../SoFiA_default_input.txt</file>
 		<file>parsets/SoFiA_parset_extragalactic.par</file>
+		<file>parsets/SoFiA_parset_extragalactic_artefacts.par</file>
 		<file>parsets/SoFiA_parset_continuum.par</file>
 	</qresource>
 </RCC>

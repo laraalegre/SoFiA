@@ -36,6 +36,7 @@
 
 #define SOFIA_DEFAULT_SETTINGS ":/SoFiA_default_input.txt"
 #define SOFIA_PARSET_EXTRAGALACTIC ":/parsets/SoFiA_parset_extragalactic.par"
+#define SOFIA_PARSET_EXTRAGALACTIC_ARTEFACTS ":/parsets/SoFiA_parset_extragalactic_artefacts.par"
 #define SOFIA_PARSET_CONTINUUM ":/parsets/SoFiA_parset_continuum.par"
 #define SOFIA_TEMP_FILE        "SoFiA.session"
 #define SOFIA_RC_FILE          ".SoFiA"
@@ -144,6 +145,7 @@ private slots:
 	void selectOutputDirectory();
 	void loadSettings();
 	void loadParsetExtragalactic();
+	void loadParsetExtragalacticArtefacts();
 	void loadParsetContinuum();
 	void saveSettings();
 	void saveSettingsAs();
@@ -249,6 +251,7 @@ private:
 	
 	QAction    *actionOpen;
 	QAction    *actionLoadParsetExtragalactic;
+	QAction    *actionLoadParsetExtragalacticArtefacts;
 	QAction    *actionLoadParsetContinuum;
 	QAction    *actionSave;
 	QAction    *actionSaveAs;

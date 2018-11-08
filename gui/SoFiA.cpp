@@ -1117,6 +1117,31 @@ void SoFiA::loadParsetExtragalactic()
 
 
 
+// ---------------------------------------------------------
+// Slot to load parameter set 'Extragalactic with artefacts'
+// ---------------------------------------------------------
+
+void SoFiA::loadParsetExtragalacticArtefacts()
+{
+	if(settingsChanged)
+	{
+		QMessageBox messageBox(this);
+		messageBox.setWindowTitle(tr("SoFiA - New Parameter File"));
+		messageBox.setText(tr("<p>This action will load the default parameter set %1 and close the current file. All unsaved changes will be lost.</p><p>Do you wish to create a new parameter file?</p>").arg(QString::fromUtf8("‘Extragalactic HI Cube with Artefacts’")));
+		messageBox.setStandardButtons(QMessageBox::Cancel | QMessageBox::Ok);
+		messageBox.setDefaultButton(QMessageBox::Ok);
+		messageBox.setIcon(QMessageBox::Warning);
+		
+		int choice = messageBox.exec();
+		if(choice != QMessageBox::Ok) return;
+	}
+	
+	setDefaults(SOFIA_PARSET_EXTRAGALACTIC_ARTEFACTS);
+	return;
+}
+
+
+
 // --------------------------------------
 // Slot to load parameter set 'Continuum'
 // --------------------------------------
@@ -3056,6 +3081,10 @@ void SoFiA::createInterface()
 	actionLoadParsetExtragalactic->setIcon(iconDrawCube);
 	connect(actionLoadParsetExtragalactic, SIGNAL(triggered()), this, SLOT(loadParsetExtragalactic()));
 	
+	actionLoadParsetExtragalacticArtefacts = new QAction(tr("Extragalactic HI Cube (with artefacts)"), this);
+	actionLoadParsetExtragalacticArtefacts->setIcon(iconDrawCube);
+	connect(actionLoadParsetExtragalacticArtefacts, SIGNAL(triggered()), this, SLOT(loadParsetExtragalacticArtefacts()));
+	
 	actionLoadParsetContinuum = new QAction(tr("Radio Continuum Image"), this);
 	actionLoadParsetContinuum->setIcon(iconDrawRectangle);
 	connect(actionLoadParsetContinuum, SIGNAL(triggered()), this, SLOT(loadParsetContinuum()));
@@ -3199,6 +3228,7 @@ void SoFiA::createInterface()
 	menuLoadParset = new QMenu(tr("Presets"), this);
 	menuLoadParset->setIcon(iconDocumentNew);
 	menuLoadParset->addAction(actionLoadParsetExtragalactic);
+	menuLoadParset->addAction(actionLoadParsetExtragalacticArtefacts);
 	menuLoadParset->addAction(actionLoadParsetContinuum);
 	
 	menuFile = new QMenu(tr("&File"), this);
