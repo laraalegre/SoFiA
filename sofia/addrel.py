@@ -204,7 +204,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 		# Find reliable sources (taking maximum(Rs, 0) in order to include objects with Rs < 0 if
 		# threshold == 0; Rs may be < 0 because of insufficient statistics)
 		#reliable=(np.maximum(Rs, 0)>=threshold) * (data[pos, ftotCOL].reshape(-1,) > fMin) * (data[pos, fmaxCOL].reshape(-1,) > 4)
-		reliable = (np.maximum(Rs, 0) >= threshold) * (data[pos, ftotCOL].reshape(-1,) > fMin)
+		reliable = (np.maximum(Rs, 0) >= threshold) * ((data[pos, ftotCOL] / np.sqrt(data[pos, parNames.index("n_pix")])).reshape(-1,) > fMin)
 		
 		if autoKernel:
 			# Calculate quantities needed for comparison to Skellam distribution
