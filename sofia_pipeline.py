@@ -467,6 +467,16 @@ else:
 
 
 
+# ------------------------------------------
+# ---- OUTPUT FOR DEBUGGING (CATALOGUE) ----
+# ------------------------------------------
+
+if Parameters['steps']['doDebug']:
+	err.print_progress_message("Writing all-source debugging catalogue including all parameters relevant for the reliability calculation", t0)
+	write_catalog.write_catalog_from_array('ASCII', objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatAsciiDebug, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'], Parameters['parameters']['getUncertainties'])
+
+
+
 # ------------------------------------------------------
 # ---- REMOVE UNNECESSARY PARAMETERS FROM CATALOGUE ----
 # ------------------------------------------------------
@@ -485,16 +495,6 @@ if Parameters["steps"]["doMerge"] and NRdet:
 	
 	objects, catParNames, catParUnits, catParFormt = [list(item) for item in list(objects)], tuple(catParNames), tuple(catParUnits), tuple(catParFormt)
 	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
-
-
-
-# ------------------------------------------
-# ---- OUTPUT FOR DEBUGGING (CATALOGUE) ----
-# ------------------------------------------
-
-if Parameters['steps']['doDebug']:
-	err.print_progress_message("Writing all-source debugging catalogue including all parameters relevant for the reliability calculation", t0)
-	write_catalog.write_catalog_from_array('ASCII', objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatAsciiDebug, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'], Parameters['parameters']['getUncertainties'])
 
 
 
