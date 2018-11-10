@@ -23,8 +23,13 @@ class gaussian_kde_set_covariance(stats.gaussian_kde):
 # ================================================
 
 def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_pix"], logPars=[1, 1, 1], autoKernel=True, scaleKernel=1, negPerBin=1, skellamTol=-0.5, kernel=[0.15, 0.05, 0.1], usecov=False, doscatter=1, docontour=1, doskellam=1, dostats=0, saverel=1, threshold=0.99, fMin=0, verb=0, makePlot=False):
+
 	# Set negPerBin to be >=1
 	negPerBin=max(1.,negPerBin)
+	
+	# Always work on logarithmic parameter values
+	if 0 in logPars: err.warning("  Setting all reliability.logPars entries to 1")
+	logPars=[1 for pp in parSpace]
 	
 	# Import Matplotlib if diagnostic plots requested
 	if makePlot:
