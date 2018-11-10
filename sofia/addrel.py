@@ -61,7 +61,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 			parsTmp = data[:,fmaxCOL] * pos - data[:,fminCOL] * neg
 			if logPars[ii]: parsTmp = np.log10(parsTmp)
 			pars = np.concatenate((pars, parsTmp.reshape(-1, 1)), axis=1)
-		elif parSpace[ii] == "snr_sum":
+		elif parSpace[ii] == "snr_sum" or parSpace[ii] == "snr_mean":
 			parsTmp = abs(data[:,parCol[ii]].reshape(-1, 1))
 			if logPars[ii]: parsTmp = np.log10(parsTmp)
 			pars = np.concatenate((pars, parsTmp), axis=1)
