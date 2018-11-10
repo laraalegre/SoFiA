@@ -110,6 +110,7 @@ def allowedDataTypes():
 	        "steps.doFlag": "bool", \
 	        "steps.doSmooth": "bool", \
 	        "steps.doScaleNoise": "bool", \
+	        "steps.doFlagErrors": "bool", \
 	        "steps.doSCfind": "bool", \
 	        "steps.doThreshold": "bool", \
 	        "steps.doWavelet": "bool", \
@@ -159,6 +160,8 @@ def allowedDataTypes():
 	        "scaleNoise.gridSpatial": "int", \
 	        "scaleNoise.gridSpectral": "int", \
 	        "scaleNoise.interpolation": "string", \
+	        "flagErrors.flgthr": "float", \
+	        "flagErrors.dilside": "int", \
 	        "SCfind.threshold": "float", \
 	        "SCfind.sizeFilter": "float", \
 	        "SCfind.maskScaleXY": "float", \
