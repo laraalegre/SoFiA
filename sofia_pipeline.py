@@ -444,9 +444,8 @@ if Parameters["steps"]["doReliability"] and Parameters["steps"]["doMerge"] and N
 	# normalise flux parameters to global rms
 	# (this is done also if weights were applied, in case they are prop. to 1/sigma but not exactly = 1/sigma)
 	objects = np.array(objects)
-	objects[:,catParNames.index("snr_min")] /= globalrms
-	objects[:,catParNames.index("snr_max")] /= globalrms
-	objects[:,catParNames.index("snr_sum")] /= globalrms
+	for scalablePar in ["snr_min","snr_max","snr_sum","snr_sum_p","snr_sum_n","snr_mean","snr_std","snr_rms"]:
+		objects[:,catParNames.index(scalablePar)] /= globalrms
 	objects = [list(item) for item in list(objects)]
 	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 	
