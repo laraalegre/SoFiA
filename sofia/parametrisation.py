@@ -23,7 +23,7 @@ def BusyFunction(x, a, b1, b2, c, w, xe, xp):
 def dilate(cube, mask, objects, cathead, Parameters):
 	dilateThreshold = Parameters["parameters"]["dilateThreshold"]
 	dilatePixMax = Parameters["parameters"]["dilatePixMax"]
-	dilateChan = Parameters["parameters"]["dilateChan"]
+	dilateChanMax = Parameters["parameters"]["dilateChanMax"]
 	
 	# Stops dilating when (flux_new - flux_old) / flux_new < dilateThreshold
 	sourceIDs = np.unique(mask)
@@ -37,8 +37,8 @@ def dilate(cube, mask, objects, cathead, Parameters):
 		xmax = min(cube.shape[2] - 1, obj[list(cathead).index("x_max")] + dilatePixMax)
 		ymin = max(0, obj[list(cathead).index("y_min")] - dilatePixMax)
 		ymax = min(cube.shape[1] - 1, obj[list(cathead).index("y_max")] + dilatePixMax)
-		zmin = max(0, obj[list(cathead).index("z_min")] - dilateChan)
-		zmax = min(cube.shape[0] - 1, obj[list(cathead).index("z_max")] + dilateChan)
+		zmin = max(0, obj[list(cathead).index("z_min")] - dilateChanMax)
+		zmax = min(cube.shape[0] - 1, obj[list(cathead).index("z_max")] + dilateChanMax)
 		
 		[zmin, zmax, ymin, ymax, xmin, xmax] = map(int, [zmin, zmax, ymin, ymax, xmin, xmax])
 		
@@ -48,33 +48,44 @@ def dilate(cube, mask, objects, cathead, Parameters):
 		otherobjs = (allmask > 0) * (allmask != sourceIDs[i])
 		
 		if (otherobjs).sum():
-			# Ensure that objects with different source IDs within dilatePixMax, dilateChan are not
+			# Ensure that objects with different source IDs within dilatePixMax, dilateChanMax are not
 			# included in the flux growth calculation
-			err.warning("Object {0:d} has possible overlapping objects within {1:d} pix, {2:d} chan.".format(sourceIDs[i], dilatePixMax, dilateChan))
+			err.warning("Object {0:d} has possible overlapping objects within {1:d} pix, {2:d} chan.".format(sourceIDs[i], dilatePixMax, dilateChanMax))
 			objcube[(allmask > 0) * (allmask != sourceIDs[i])] = 0
 		
 		fluxes = []
 		
-		for dil in range(dilatePixMax + 1):
-			dd = dil * 2 + 1
-			dilstruct = (np.sqrt(((np.indices((dd, dd)) - dil)**2).sum(axis=0)) <= dil).astype(int)
-			dilstruct.resize((1, dilstruct.shape[0], dilstruct.shape[1]))
-			dilstruct = dilstruct.repeat(dilateChan * 2 + 1, axis=0)
+		# Loop through Z dilation kernels until the flux converges or the maximum allowed Z dilation is reached
+		for dilchan in range(dilateChanMax + 1):
+			dd = dilchan * 2 + 1
+			dilstruct = np.ones((dd,1,1))
 			fluxes.append(objcube[nd.morphology.binary_dilation(objmask==sourceIDs[i], structure=dilstruct)].sum())
-			if dil > 0 and (fluxes[-1] - fluxes[-2]) / fluxes[-1] < dilateThreshold:
-				dil -= 1
+			if dilchan > 0 and (fluxes[-1] - fluxes[-2]) / fluxes[-1] < dilateThreshold:
+				dilchan -= 1
 				break
-		
-		# Pick the best dilation kernel for current object and update mask
-		err.message("Mask dilation of source {0:d} by {1:d} px and {2:d} chan.".format(sourceIDs[i], dil, dilateChan))
-		dd = dil * 2 + 1
-		dilstruct = (np.sqrt(((np.indices((dd, dd)) - dil)**2).sum(axis=0)) <= dil).astype(int)
+		# Pick the best Z dilation kernel for current object and update mask
+		dd = dilchan * 2 + 1
+		dilstruct = np.ones((dd,1,1))
+		# Only grow the mask of object sourceIDs[i] even when other objects are present in objmask
+		objmask[nd.morphology.binary_dilation(objmask==sourceIDs[i], structure=dilstruct).astype(int) == 1] = sourceIDs[i]
+
+		# Loop through XY dilation kernels until the flux converges or the maximum allowed XY dilation is reached
+		for dilpix in range(dilatePixMax + 1):
+			dd = dilpix * 2 + 1
+			dilstruct = (np.sqrt(((np.indices((dd, dd)) - dilpix)**2).sum(axis=0)) <= dilpix).astype(int)
+			dilstruct.resize((1, dilstruct.shape[0], dilstruct.shape[1]))
+			fluxes.append(objcube[nd.morphology.binary_dilation(objmask==sourceIDs[i], structure=dilstruct)].sum())
+			if dilpix > 0 and (fluxes[-1] - fluxes[-2]) / fluxes[-1] < dilateThreshold:
+				dilpix -= 1
+				break
+		# Pick the best XY dilation kernel for current object and update mask
+		dd = dilpix * 2 + 1
+		dilstruct = (np.sqrt(((np.indices((dd, dd)) - dilpix)**2).sum(axis=0)) <= dilpix).astype(int)
 		dilstruct.resize((1, dilstruct.shape[0], dilstruct.shape[1]))
-		dilstruct = dilstruct.repeat(dilateChan * 2 + 1, axis=0)
-		
 		# Only grow the mask of object sourceIDs[i] even when other objects are present in objmask
 		objmask[nd.morphology.binary_dilation(objmask==sourceIDs[i], structure=dilstruct).astype(int) == 1] = sourceIDs[i]
 		
+		err.message("Mask of source {0:d} dilated by {2:d} chan and then by {1:d} pix.".format(sourceIDs[i], dilpix, dilchan))
 		# Put back in objmask objects != sourceIDs[i] that may have been inside objmask before 
 		# dilation or may have been temporarily replaced by the dilated object sourceIDs[i]
 		if (otherobjs).sum():
@@ -101,12 +112,12 @@ def dilate(cube, mask, objects, cathead, Parameters):
 		del allmask
 		del otherobjs
 	
-		objects[i,list(cathead).index("x_min")]  = max(0, obj[list(cathead).index("x_min")] - dil)
-		objects[i,list(cathead).index("x_max")]  = min(cube.shape[2] - 1, obj[list(cathead).index("x_max")] + dil)
-		objects[i,list(cathead).index("y_min")]  = max(0, obj[list(cathead).index("y_min")] - dil)
-		objects[i,list(cathead).index("y_max")]  = min(cube.shape[1] - 1, obj[list(cathead).index("y_max")] + dil)
-		objects[i,list(cathead).index("z_min")]  = max(0, obj[list(cathead).index("z_min")] - dilateChan)
-		objects[i,list(cathead).index("z_max")]  = min(cube.shape[0] - 1, obj[list(cathead).index("z_max")] + dilateChan)
+		objects[i,list(cathead).index("x_min")]  = max(0, obj[list(cathead).index("x_min")] - dilpix)
+		objects[i,list(cathead).index("x_max")]  = min(cube.shape[2] - 1, obj[list(cathead).index("x_max")] + dilpix)
+		objects[i,list(cathead).index("y_min")]  = max(0, obj[list(cathead).index("y_min")] - dilpix)
+		objects[i,list(cathead).index("y_max")]  = min(cube.shape[1] - 1, obj[list(cathead).index("y_max")] + dilpix)
+		objects[i,list(cathead).index("z_min")]  = max(0, obj[list(cathead).index("z_min")] - dilchan)
+		objects[i,list(cathead).index("z_max")]  = min(cube.shape[0] - 1, obj[list(cathead).index("z_max")] + dilchan)
 		objects[i,list(cathead).index("n_pix")]  = n_pix
 		objects[i,list(cathead).index("n_chan")] = n_chan
 		objects[i,list(cathead).index("n_los")]  = n_los

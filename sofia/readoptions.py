@@ -212,7 +212,7 @@ def allowedDataTypes():
 	        "parameters.dilateMask": "bool", \
 	        "parameters.dilateThreshold":"float",\
 	        "parameters.dilatePixMax":"int",\
-	        "parameters.dilateChan":"int",\
+	        "parameters.dilateChanMax":"int",\
 	        "writeCat.overwrite":"bool", \
 	        "writeCat.compress":"bool", \
 	        "writeCat.outputDir": "string", \
