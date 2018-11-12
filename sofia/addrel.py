@@ -24,11 +24,8 @@ class gaussian_kde_set_covariance(stats.gaussian_kde):
 
 def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_pix"], logPars=[1, 1, 1], autoKernel=True, scaleKernel=1, negPerBin=1, skellamTol=-0.5, kernel=[0.15, 0.05, 0.1], usecov=False, doscatter=1, docontour=1, doskellam=1, dostats=0, saverel=1, threshold=0.99, fMin=0, verb=0, makePlot=False):
 
-	# Set negPerBin to be >=1
-	negPerBin=max(1.,negPerBin)
-	
-	# Always work on logarithmic parameter values
-	if 0 in logPars: err.warning("  Setting all reliability.logPars entries to 1")
+	# Always work on logarithmic parameter values; the reliability.logPars parameter should be removed
+	if 0 in logPars: err.warning("  Setting all reliability.logPars entries to 1. This parameter is no longer editable by users.")
 	logPars=[1 for pp in parSpace]
 	
 	# Import Matplotlib if diagnostic plots requested
@@ -78,7 +75,8 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 			if logPars[ii]: parsTmp = np.log10(parsTmp)
 			pars = np.concatenate((pars, parsTmp), axis=1)
 	
-	err.message("  Working in parameter space " + str(parSpace))
+	err.message("  Working in parameter space {0:}".format(str(parSpace)))
+	err.message("  Will convolve the distribution of positive and negative sources in this space to derive the P and N density fields")
 	pars = np.transpose(pars)
 	
 	
@@ -149,29 +147,40 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 		kernelIter = 0.0
 		deltplot = []
 		
-		# Scale the kernel size as requested by the user or by the auto-scale algorithm (scaleKernel > 0)
-		if scaleKernel:
+		# Scale the kernel size as requested by the user (scaleKernel>0) or use the autoscale algorithm (scaleKernel=0)
+		if scaleKernel>0:
 			# Scale kernel size as requested by the user
 			# Note that the scale factor is squared because users are asked to give a factor to apply to sqrt(kernel)
 			kernel *= scaleKernel**2
-			err.message("  Using kernel with shape of %s and size scaled by factor %.2f." % (kernelType, scaleKernel))
+			err.message("  Using the {0:s} matrix scaled by a factor {1:.2f} as convolution kernel".format(kernelType, scaleKernel))
 			err.message("  The sqrt(kernel) size is:")
-			err.message(str(np.sqrt(np.abs(kernel))))
-		else:
-			# Scale kernel size to start the kernel-growing loop
+			err.message(" " + str(np.sqrt(np.abs(kernel))))
+		elif scaleKernel==0:
+			# Scale kernel size to get started the kernel-growing loop
 			# The scale factor for sqrt(kernel) is elevated to the power of 1.0 / len(parCol)
+			err.message("  Will search for the best convolution kernel by scaling the {0:s} matrix".format(kernelType))
+			err.message("  The {0:s} matrix has sqrt:".format(kernelType))
+			err.message(" " + str(np.sqrt(np.abs(kernel))))
+			# negPerBin must be >=1
+			err.ensure(negPerBin>=1,"The parameter reliability.negPerBin used to start the convolution kernel search was set to {0:.1f} but must be >= 1. Please change your settings.".format(negPerBin))
 			kernel *= ((negPerBin + kernelIter) / Nneg)**(2.0 / len(parCol))
-			err.message("  Will find the best kernel as a scaled version of the %s:" % kernelType)
-			err.message("  Starting from the kernel with sqrt(kernel) size:")
-			err.message("  " + str(np.sqrt(np.abs(kernel))))
-			err.message("  Growing kernel...")
+			err.message("  Search starting from the kernel with sqrt:")
+			err.message(" " + str(np.sqrt(np.abs(kernel))))
+			err.message("  Iteratively growing kernel until the distribution of (P-N)/sqrt(P+N) reaches median/width = {0:.2f} ...".format(skellamTol))
+			err.ensure(skellamTol<=0,"The parameter reliability.skellamTol was set to {0:.2f} but must be <= 0. Please change your settings.".format(skellamTol))
+		else:
+			err.ensure(scaleKernel>=0,\
+				"The reliability.scaleKernel parameter cannot be negative.\n"\
+				"It should be = 0 if you want SoFiA to find the optimal kernel scaling\n"\
+				"or > 0 if you want to set the scaling yourself.\n"\
+				"Please change your settings.")
 		
 		#deltOLD=-1e+9 # Used to stop kernel growth if P-N stops moving closer to zero [NOT USED CURRENTLY]
 		if doskellam and makePlot: fig0 = plt.figure()
 	else:
 		# Note that the user must give sigma, which then gets squared
-		err.message("  Using user-defined variance kernel with sqrt(kernel) size:")
-		err.message(str(np.array(kernel)))
+		err.message("  Using user-defined variance kernel with sqrt(kernel) size: {0}".format(kernel))
+		err.ensure(len(parSpace)==len(kernel),"The number of entries in the kernel above does not match the number of parameters you requested for the reliability calculation.")
 		kernel = np.identity(len(kernel)) * np.array(kernel)**2
 	
 	# Set grow_kernel to 1 to start the kernel growing loop below.
@@ -223,28 +232,29 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 			deltmax = delt.max()
 			
 			if deltmed / deltstd > -100 and doskellam and makePlot:
-				plt.hist(delt / deltstd, bins=np.arange(deltmin / deltstd, max(5.1, deltmax / deltstd), 0.01), cumulative=True, histtype="step", color=(min(1, float(negPerBin + kernelIter) / Nneg), 0,0), normed=True)
-				deltplot.append([((negPerBin + kernelIter) / Nneg)**(1.0 / len(parCol)), deltmed / deltstd])
-			
-			err.message("  iteration, median, width, median/width = %3i, %9.2e, %9.2e, %9.2e" % (kernelIter, deltmed, deltstd, deltmed / deltstd))
-			
+				plt.hist(delt / deltstd, bins=np.arange(deltmin / deltstd, max(5.1, deltmax / deltstd), 0.01), cumulative=True, histtype="step", color=(min(1, float(max(1.,negPerBin) + kernelIter) / Nneg), 0,0), normed=True)
+				deltplot.append([((max(1.,negPerBin) + kernelIter) / Nneg)**(1.0 / len(parCol)), deltmed / deltstd])
+						
 			if scaleKernel: grow_kernel = 0
-			elif deltmed / deltstd > skellamTol or negPerBin + kernelIter >= Nneg:
-				grow_kernel = 0
-				err.message("  Found good kernel after %i kernel growth iterations. The sqrt(kernel) size is:" % kernelIter)
-				err.message(np.sqrt(np.abs(kernel)))
-			elif deltmed / deltstd < 5 * skellamTol:
-				kernel *= (float(negPerBin + kernelIter + 20) / (negPerBin + kernelIter))**(2.0 / len(parCol)) 
-				kernelIter += 20
-			elif deltmed / deltstd < 2 * skellamTol:
-				kernel *= (float(negPerBin + kernelIter + 10) / (negPerBin + kernelIter))**(2.0 / len(parCol))
-				kernelIter += 10
-			elif deltmed / deltstd < 1.5 * skellamTol:
-				kernel *= (float(negPerBin + kernelIter + 3) / (negPerBin + kernelIter))**(2.0 / len(parCol))
-				kernelIter += 3
 			else:
-				kernel *= (float(negPerBin + kernelIter + 1) / (negPerBin + kernelIter))**(2.0 / len(parCol))
-				kernelIter += 1
+				err.message("  iteration, median, width, median/width = %3i, %9.2e, %9.2e, %9.2e" % (kernelIter, deltmed, deltstd, deltmed / deltstd))
+
+				if deltmed / deltstd > skellamTol or negPerBin + kernelIter >= Nneg:
+					grow_kernel = 0
+					err.message("  Found good kernel after %i kernel growth iterations. The sqrt(kernel) size is:" % kernelIter)
+					err.message(np.sqrt(np.abs(kernel)))
+				elif deltmed / deltstd < 5 * skellamTol:
+					kernel *= (float(negPerBin + kernelIter + 20) / (negPerBin + kernelIter))**(2.0 / len(parCol)) 
+					kernelIter += 20
+				elif deltmed / deltstd < 2 * skellamTol:
+					kernel *= (float(negPerBin + kernelIter + 10) / (negPerBin + kernelIter))**(2.0 / len(parCol))
+					kernelIter += 10
+				elif deltmed / deltstd < 1.5 * skellamTol:
+					kernel *= (float(negPerBin + kernelIter + 3) / (negPerBin + kernelIter))**(2.0 / len(parCol))
+					kernelIter += 3
+				else:
+					kernel *= (float(negPerBin + kernelIter + 1) / (negPerBin + kernelIter))**(2.0 / len(parCol))
+					kernelIter += 1
 		else:
 			grow_kernel = 0
 	
@@ -348,7 +358,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 			plt.subplot(nr, nc, n_p)
 			plt.contour(x1, x2, Np, origin="lower", colors="b", levels=levs, zorder=2)
 			plt.contour(x1, x2, Nn, origin="lower", colors="r", levels=levs, zorder=1)
-
+			
 			# Plot Integrated SNR threshold
 			if fMin>0:
 				if (parSpace[jj[0]],parSpace[jj[1]])==("snr_sum","snr_mean"):
@@ -357,7 +367,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 				if (parSpace[jj[0]],parSpace[jj[1]])==("snr_mean","snr_sum"):
 					yArray=np.arange(lims[p2][0],lims[p2][1]+(lims[p2][1]-lims[p2][0])/100,(lims[p2][1]-lims[p2][0])/100)
 					plt.plot(np.log10(fMin)*2-yArray,yArray,'k:')
-
+			
 			if reliable.sum(): plt.scatter(pars[p1,pos][reliable], pars[p2,pos][reliable], marker="o", s=10, edgecolor="k", facecolor="k", zorder=4)
 			if (pseudoreliable * (reliable == False)).sum(): plt.scatter(pars[p1,pos][pseudoreliable * (reliable == False)], pars[p2,pos][pseudoreliable * (reliable == False)], marker="x", s=40, edgecolor="0.5", facecolor="0.5", zorder=3)
 			for si in specialids: plt.plot(pars[p1,ids==si], pars[p2,ids==si], "kd", zorder=10000, ms=7, mfc="none", mew=2)
