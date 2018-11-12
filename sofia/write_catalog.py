@@ -136,6 +136,7 @@ def write_catalog_from_array(mode, objects, catHeader, catUnits, catFormat, parL
 			err.error("Failed to write to XML catalogue: " + outName + ".", fatal=False)
 			return
 		f1.write(prettify(votable))
+		#f1.write(tostring(votable, "utf-8")) // without prettifying, which is faster and uses much less memory
 		f1.close
 	
 	# -----------------------------------------------------------------End-XML-
