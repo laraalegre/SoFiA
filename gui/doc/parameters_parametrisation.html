@@ -169,19 +169,19 @@
 
     <table id="reliability.fMin">
         <tr>
-            <td class="head2">Parameter:</td><td class="body3">reliability.fMin</td>
+            <td class="head">Parameter:</td><td class="body2">reliability.fMin</td>
         </tr>
         <tr>
-            <td class="head2">Type:</td><td class="body"><code>float</code></td>
+            <td class="head">Type:</td><td class="body"><code>float</code></td>
         </tr>
         <tr>
-            <td class="head2">Values:</td><td class="body">&ge; <code>0.0</code></td>
+            <td class="head">Values:</td><td class="body">&ge; <code>0.0</code></td>
         </tr>
         <tr>
-            <td class="head2">Default:</td><td class="body"><code>10.0</code></td>
+            <td class="head">Default:</td><td class="body"><code>10.0</code></td>
         </tr>
         <tr>
-            <td class="head2">Description:</td><td class="body">Minimum value of the sum of the pixel values divided by the square root of the number of pixels for a source to be considered reliable. This parameter is a proxy for integrated signal-to-noise ratio, but has not yet been divided by the square root of the beam solid angle in pixels. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+            <td class="head">Description:</td><td class="body">Minimum value of the sum of the pixel values, &sum;<var>S</var><sub><var>i</var></sub>, divided by the square root of the number of pixels, <var>N</var>, for a source to be considered reliable. This parameter is a proxy for integrated signal-to-noise ratio, SNR<sub>int</sub> = &sum; <var>S</var><sub><var>i</var></sub> / [&sigma; <var>N</var><sup>1/2</sup> &Omega;<sup>1/2</sup>], where &sigma; is the RMS noise level and &Omega; is the solid angle of the beam in pixels, but has not yet been divided by the square root of the beam solid angle in pixels.</td>
         </tr>
     </table>
 

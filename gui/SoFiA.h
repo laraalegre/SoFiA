@@ -503,6 +503,7 @@ private:
 	QLineEdit    *tabParametrisationFieldRelMin;
 	QSlider      *tabParametrisationSliderScaleKernel;
 	QLineEdit    *tabParametrisationFieldScaleKernel;
+	QLineEdit    *tabParametrisationFieldSNRCut;
 	QCheckBox    *tabParametrisationButtonRelPlot;
 	
 	QHBoxLayout  *tabParametrisationLayoutControls;
