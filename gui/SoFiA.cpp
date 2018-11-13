@@ -2780,7 +2780,7 @@ void SoFiA::createInterface()
 	
 	tabParametrisationForm2->addRow(tr("Threshold:"), tabParametrisationWidgetRelMin);
 	tabParametrisationForm2->addRow(tr("Kernel scale:"), tabParametrisationWidgetScaleKernel);
-	tabParametrisationForm2->addRow(tr("SNR cutoff:"), tabParametrisationFieldSNRCut);
+	tabParametrisationForm2->addRow(tr("&sum;&thinsp;<var>S</var><sub><var>i</var></sub>&thinsp;/<var>N</var><sup>1/2</sup> cut:"), tabParametrisationFieldSNRCut);
 	tabParametrisationForm2->addRow(tr("Diagnostic plot:"), tabParametrisationButtonRelPlot);
 	tabParametrisationForm2->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
 	tabParametrisationGroupBox2->setLayout(tabParametrisationForm2);
