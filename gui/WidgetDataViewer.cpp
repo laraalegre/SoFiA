@@ -113,7 +113,7 @@ int WidgetDataViewer::openFitsFile(const std::string &url)
 	
 	if(std::isnan(fips->minimum()) or std::isnan(fips->maximum()) or fips->minimum() >= fips->maximum())
 	{
-		std::cerr << "Warning: DATAMIN or DATAMAX undefined; calculating values.\n";
+		std::cerr << "Warning: DATAMIN or DATAMAX undefined; extracting values from data.\n";
 		
 		dataMin =  std::numeric_limits<double>::max();
 		dataMax = -std::numeric_limits<double>::max();
