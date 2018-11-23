@@ -304,6 +304,13 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 			plt.scatter(pars[p1,pos], pars[p2,pos], marker="o", c="b", s=10, edgecolor="face", alpha=0.5)
 			plt.scatter(pars[p1,neg], pars[p2,neg], marker="o", c="r", s=10, edgecolor="face", alpha=0.5)
 			for si in specialids: plt.plot(pars[p1, ids==si], pars[p2, ids==si], "kd", zorder=10000, ms=7, mfc="none", mew=2)
+			# Plot Integrated SNR threshold
+			if fMin>0 and (parSpace[jj[0]],parSpace[jj[1]])==("snr_sum","snr_mean"):
+				xArray=np.arange(lims[p1][0],lims[p1][1]+(lims[p1][1]-lims[p1][0])/100,(lims[p1][1]-lims[p1][0])/100)
+				plt.plot(xArray,np.log10(fMin)*2-xArray,'k:')
+			elif fMin>0 and (parSpace[jj[0]],parSpace[jj[1]])==("snr_mean","snr_sum"):
+				yArray=np.arange(lims[p2][0],lims[p2][1]+(lims[p2][1]-lims[p2][0])/100,(lims[p2][1]-lims[p2][0])/100)
+				plt.plot(np.log10(fMin)*2-yArray,yArray,'k:')
 			plt.xlim(lims[p1][0], lims[p1][1])
 			plt.ylim(lims[p2][0], lims[p2][1])
 			plt.xlabel(labs[p1])
@@ -360,13 +367,12 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 			plt.contour(x1, x2, Nn, origin="lower", colors="r", levels=levs, zorder=1)
 			
 			# Plot Integrated SNR threshold
-			if fMin>0:
-				if (parSpace[jj[0]],parSpace[jj[1]])==("snr_sum","snr_mean"):
-					xArray=np.arange(lims[p1][0],lims[p1][1]+(lims[p1][1]-lims[p1][0])/100,(lims[p1][1]-lims[p1][0])/100)
-					plt.plot(xArray,np.log10(fMin)*2-xArray,'k:')
-				if (parSpace[jj[0]],parSpace[jj[1]])==("snr_mean","snr_sum"):
-					yArray=np.arange(lims[p2][0],lims[p2][1]+(lims[p2][1]-lims[p2][0])/100,(lims[p2][1]-lims[p2][0])/100)
-					plt.plot(np.log10(fMin)*2-yArray,yArray,'k:')
+			if fMin>0 and (parSpace[jj[0]],parSpace[jj[1]])==("snr_sum","snr_mean"):
+				xArray=np.arange(lims[p1][0],lims[p1][1]+(lims[p1][1]-lims[p1][0])/100,(lims[p1][1]-lims[p1][0])/100)
+				plt.plot(xArray,np.log10(fMin)*2-xArray,'k:')
+			elif fMin>0 and (parSpace[jj[0]],parSpace[jj[1]])==("snr_mean","snr_sum"):
+				yArray=np.arange(lims[p2][0],lims[p2][1]+(lims[p2][1]-lims[p2][0])/100,(lims[p2][1]-lims[p2][0])/100)
+				plt.plot(np.log10(fMin)*2-yArray,yArray,'k:')
 			
 			if reliable.sum(): plt.scatter(pars[p1,pos][reliable], pars[p2,pos][reliable], marker="o", s=10, edgecolor="k", facecolor="k", zorder=4)
 			if (pseudoreliable * (reliable == False)).sum(): plt.scatter(pars[p1,pos][pseudoreliable * (reliable == False)], pars[p2,pos][pseudoreliable * (reliable == False)], marker="x", s=40, edgecolor="0.5", facecolor="0.5", zorder=3)
