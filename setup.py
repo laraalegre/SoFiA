@@ -192,9 +192,11 @@ os.chmod("sofia_pipeline.py", os.stat("sofia_pipeline.py").st_mode | stat.S_IXUS
 
 # Path to SoFiA modules
 cwd = os.getcwd()
-for ll in os.listdir(cwd + "/build"):
-	if "lib." in ll:
-		sofiaModulesPath = cwd + "/build/" + ll
+sofiaModulesPath = cwd
+if os.path.isdir(cwd + "/build"):
+	for ll in os.listdir(cwd + "/build"):
+		if "lib." in ll:
+			sofiaModulesPath = cwd + "/build/" + ll
 
 # Set system variable SOFIA_PIPELINE_PATH
 os.environ["SOFIA_PIPELINE_PATH"] = cwd + "/sofia_pipeline.py"
