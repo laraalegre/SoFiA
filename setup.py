@@ -44,8 +44,8 @@ class build(distutils.command.build.build):
 		distutils.command.build.build.initialize_options(self, *args, **kwargs)
 
 	def run(self, *args, **kwargs):
-		global nogui
-		nogui = self.no_gui
+		global compile_gui
+		compile_gui = not self.no_gui
 		distutils.command.build.build.run(self, *args, **kwargs)
 
 
@@ -202,9 +202,6 @@ if os.path.isdir(cwd + "/build"):
 os.environ["SOFIA_PIPELINE_PATH"] = cwd + "/sofia_pipeline.py"
 print (cwd + "/sofia_pipeline.py")
 print (os.environ["SOFIA_PIPELINE_PATH"])
-
-# Compile SoFiA GUI
-compile_gui = (nogui != "True")
 
 if compile_gui:
 	os.chdir("gui")
