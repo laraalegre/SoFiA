@@ -6,7 +6,7 @@ SoFiA
 Introduction 🍸
 --------------
 
-<img align="right" src="https://raw.githubusercontent.com/wiki/SoFiA-Admin/SoFiA/Images/sofia_screenshot.png" width="348" height="346" alt="SoFiA screenshot" />
+<img align="right" src="https://raw.githubusercontent.com/wiki/SoFiA-Admin/SoFiA/Images/sofia_screenshot.png" width="232" height="230" alt="SoFiA screenshot" />
 
 SoFiA, the Source Finding Application, is a new **HI source finding pipeline** 
 intended to find and parametrise galaxies in HI data cubes. SoFiA can be 
