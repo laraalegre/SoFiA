@@ -15,8 +15,9 @@ cdef extern from "RJJ_ObjGen.h":
 							int chunk_x_start, int chunk_y_start, int chunk_z_start, 
 							int radiusX, int radiusY, int radiusZ, 
 							int minSizeX, int minSizeY, int minSizeZ, 
-							int min_v_size, 
-							float intens_thresh_min, float intens_thresh_max, 
+							int maxSizeX, int maxSizeY, int maxSizeZ,
+							int minVoxels, int maxVoxels,
+							float minIntens, float maxIntens, 
 							long int flag_value, 
 							long int start_obj, vector[object_props *] & detections, vector[long int] & obj_ids, vector[long int] & check_obj_ids, int obj_limit, 
 							int max_x_val, int max_y_val, int max_z_val, 
@@ -25,7 +26,7 @@ cdef extern from "RJJ_ObjGen.h":
 	
 	cdef void InitObjGen(vector[object_props *] & detections, long int & NOobj, int obj_limit, vector[long int] & obj_ids, vector[long int] & check_obj_ids, size_t *& data_metric, int *& xyz_order)
 	cdef void FreeObjGen(vector[object_props *] & detections, size_t *& data_metric, int *& xyz_order)
-	cdef void ThresholdObjs(vector[object_props *] & detections, long int NOobj, int obj_limit, int minSizeX, int minSizeY, int minSizeZ, int min_v_size, float intens_thresh_min, float intens_thresh_max, int min_LoS_count)
+	cdef void ThresholdObjs(vector[object_props *] & detections, long int NOobj, int obj_limit, int minSizeX, int minSizeY, int minSizeZ, int maxSizeX, int maxSizeY, int maxSizeZ, int minVoxels, int maxVoxels, int minLOS, int maxLOS, float minFill, float maxFill, float minIntens, float maxIntens)
 	cdef void CreateMetric( size_t * data_metric, int * xyz_order, int size_x, int size_y, int size_z)
 	
 	cdef cppclass object_props:
@@ -93,7 +94,7 @@ cdef extern from "RJJ_ObjGen.h":
 		# number of lines of sight that this object extends over
 		int Get_LoScount()
 
-def link_objects(data, objects, mask, radiusX = 0, radiusY = 0, radiusZ = 0, minSizeX = 1, minSizeY = 1, minSizeZ = 1, min_LOS = 1):
+def link_objects(data, objects, mask, radiusX = 0, radiusY = 0, radiusZ = 0, minSizeX = 1, minSizeY = 1, minSizeZ = 1, maxSizeX = -1, maxSizeY = -1, maxSizeZ = -1, minVoxels = 1, maxVoxels = -1, minLOS = 1, maxLOS = -1, minFill = -1, maxFill = 2, minIntens = -9E30, maxIntens = 9E30):
 	"""
 	Given a data cube and a binary mask, create a labeled version of the mask.
 	In addition, close groups of objects can be linked together, so they have the same label.
@@ -117,9 +118,18 @@ def link_objects(data, objects, mask, radiusX = 0, radiusY = 0, radiusZ = 0, min
 	minSizeX, minSizeY, minSizeZ : int
 		The minimum size objects can have in all three dimensions
 	
-	min_LOS : int
-		The mininum pixel-extent in the spatial (x,y) domain of the data a source must have
+	maxSizeX, maxSizeY, maxSizeZ : int
+		The minimum size objects can have in all three dimensions
+
+	minVoxels, maxVoxels : int
+		The minimum and maximum number of voxels comprising an object	
+
+	minLOS, maxLOS : int
+		The mininum and maximum pixel-extent in the spatial (x,y) domain of the data a source must have
 	
+	minFill, maxFill : float
+		The minimum and maximum percentage of the voxels within an object's bounding box that is flagged as source
+
 	ss_mode : int
 		The linking method. A value of 1 uses a cuboid and all other values use an elliptical cylinder.
 	
@@ -132,7 +142,7 @@ def link_objects(data, objects, mask, radiusX = 0, radiusY = 0, radiusZ = 0, min
 			Geometric Center X,Y,Z
 			Center-Of-Mass X,Y,X
 			Bounding Box Xmin, Xmax, Ymin, Ymax, Zmin, Zmax
-			Flux Min, Max, Total
+			Flux Min, Flux Max, Flux Total,
 		
 		The Bounding box are defined is such a way that they can be
 		used as slices, i.e. data[Zmin:Zmax]
@@ -144,12 +154,15 @@ def link_objects(data, objects, mask, radiusX = 0, radiusY = 0, radiusZ = 0, min
 		objects
 	except:
 		objects = []
-	return _link_objects(data.astype(np.single, copy = False), objects, mask.astype(np.int_, copy = False), radiusX, radiusY, radiusZ, minSizeX, minSizeY, minSizeZ, min_LOS)
+	return _link_objects(data.astype(np.single, copy = False), objects, mask.astype(np.int_, copy = False), radiusX, radiusY, radiusZ, minSizeX, minSizeY, minSizeZ, maxSizeX, maxSizeY, maxSizeZ, minVoxels, maxVoxels, minLOS, maxLOS, minFill, maxFill, minIntens, maxIntens)
 
 cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, objects, np.ndarray[dtype = long int, ndim = 3] mask,
 				   int radiusX = 3, int radiusY = 3, int radiusZ = 5,
 				   int minSizeX = 1, int minSizeY = 1, int minSizeZ = 1,
-				   int min_LOS = 1):
+				   int maxSizeX = -1, int maxSizeY = -1, int maxSizeZ = -1,
+				   int minVoxels = 1, int maxVoxels = -1,
+				   int minLOS = 1, int maxLOS = -99, float minFill = -1, float maxFill = 2,
+				   float minIntens = -9E30, float maxIntens = 9E30):
 	
 	cdef int i, x, y, z, g, g_start, g_end
 	cdef long int obj_id
@@ -182,14 +195,7 @@ cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, objects, np.ndarray
 	cdef int chunk_x_start = 0
 	cdef int chunk_y_start = 0
 	cdef int chunk_z_start = 0
-	
-	# Define min_v_size; does not seem to be used
-	cdef int min_v_size = 0
-	
-	# Define intensity thresholds
-	cdef float intens_thresh_min = -1E10
-	cdef float intens_thresh_max = 1E10
-	
+			
 	# Define value that is used to mark sources in the mask
 	cdef long int flag_val = -1
 	
@@ -217,8 +223,8 @@ cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, objects, np.ndarray
 	CreateMetric(data_metric, xyz_order, size_x, size_y, size_z)
 	
 	# Create and threshold objects
-	NOobj = CreateObjects(<float *> data.data, <long int *> mask.data, size_x, size_y, size_z, chunk_x_start, chunk_y_start, chunk_z_start, radiusX, radiusY, radiusZ, minSizeX, minSizeY, minSizeZ, min_v_size, intens_thresh_min, intens_thresh_max, flag_val, obj_id, detections, obj_ids, check_obj_ids, obj_limit, size_x, size_y, size_z, ss_mode, data_metric, xyz_order)
-	ThresholdObjs(detections, NOobj, obj_limit, minSizeX, minSizeY, minSizeZ, min_v_size, intens_thresh_min, intens_thresh_max, min_LOS)
+	NOobj = CreateObjects(<float *> data.data, <long int *> mask.data, size_x, size_y, size_z, chunk_x_start, chunk_y_start, chunk_z_start, radiusX, radiusY, radiusZ, minSizeX, minSizeY, minSizeZ, maxSizeX, maxSizeY, maxSizeZ, minVoxels, maxVoxels, minIntens, maxIntens, flag_val, obj_id, detections, obj_ids, check_obj_ids, obj_limit, size_x, size_y, size_z, ss_mode, data_metric, xyz_order)
+	ThresholdObjs(detections, NOobj, obj_limit, minSizeX, minSizeY, minSizeZ, maxSizeX, maxSizeY, maxSizeZ, minVoxels, maxVoxels, minLOS, maxLOS, minFill, maxFill, minIntens, maxIntens)
 	
 	# Reset output mask
 	for z in range(size_z):
@@ -249,13 +255,13 @@ cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, objects, np.ndarray
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetDECi())
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetFREQi())
 			
-			# Adding 1 to the maxima to aid slicing/iteration
+			# Bounding box values
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetRAmin())
-			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetRAmax() + 1)
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetRAmax())
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetDECmin())
-			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetDECmax() + 1)
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetDECmax())
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetFREQmin())
-			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetFREQmax() + 1)
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].GetFREQmax())
 			
 			# Number of voxels
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].ShowVoxels())
@@ -301,6 +307,9 @@ cdef _link_objects(np.ndarray[dtype = float, ndim = 3] data, objects, np.ndarray
 			# the number of lines of sight that the object covers
 			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].Get_LoScount());
 			
+			# the fill factor of the object's bounding box
+			obj.append(detections[obj_batch][i - (obj_batch * obj_limit)].ShowVoxels()/((detections[obj_batch][i - (obj_batch * obj_limit)].GetRAmax() - detections[obj_batch][i - (obj_batch * obj_limit)].GetRAmin() + 1)*(detections[obj_batch][i - (obj_batch * obj_limit)].GetDECmax() - detections[obj_batch][i - (obj_batch * obj_limit)].GetDECmin() + 1)*(detections[obj_batch][i - (obj_batch * obj_limit)].GetFREQmax() - detections[obj_batch][i - (obj_batch * obj_limit)].GetFREQmin() + 1)));
+
 			objects.append(obj)
 			
 			for y in range(detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_size(2), detections[obj_batch][i - (obj_batch * obj_limit)].Get_srep_size(3) + 1):

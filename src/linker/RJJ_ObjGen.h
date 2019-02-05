@@ -22,19 +22,23 @@ class object_props {
  private:
 
   int NOvox;
-  float ra, ra_i, ra_min, ra_max;
-  float dec, dec_i, dec_min, dec_max;
-  float freq, freq_i, freq_min, freq_max;
-  float tot_intens, avg_intens, min_intens, max_intens, sigma_intens, rms;
+  double ra, ra_i;
+  float ra_min, ra_max;
+  double dec, dec_i;
+  float dec_min, dec_max;
+  double freq, freq_i;
+  float freq_min, freq_max;
+  double tot_intens, avg_intens, sigma_intens, rms;
+  float min_intens, max_intens;
   int srep_size[6], * srep_grid, * srep_strings, srep_update;
-  float * mini_mom0, * mini_RAPV, * mini_DECPV, * mini_obj_spec, * mini_ref_spec, * mini_vfield;
+  double * mini_mom0, * mini_RAPV, * mini_DECPV, * mini_obj_spec, * mini_ref_spec, * mini_vfield;
   float w_max, w20_min, w20_max, w50_min, w50_max;
   float cw_max, cw20_min, cw20_max, cw50_min, cw50_max;
 
   // new parameters --- multiple central moment calculations
-  float p_tot_intens, n_tot_intens;
-  float p_ra_i, p_dec_i, p_freq_i;
-  float n_ra_i, n_dec_i, n_freq_i;
+  double p_tot_intens, n_tot_intens;
+  double p_ra_i, p_dec_i, p_freq_i;
+  double n_ra_i, n_dec_i, n_freq_i;
 
   // define operators that don't make sense for this type of object
   object_props operator - (const object_props & subtracted);
@@ -91,32 +95,32 @@ class object_props {
   int GetDECmax();
   int GetFREQmin();
   int GetFREQmax();
-  float GetRA();
-  float GetDEC();
-  float GetFREQ();
-  float GetRAi();
-  float GetDECi();
-  float GetFREQi();
-  float GetTI();
-  float GetSigmaI();
-  float GetRMSI();
-  float GetAvgI();
+  double GetRA();
+  double GetDEC();
+  double GetFREQ();
+  double GetRAi();
+  double GetDECi();
+  double GetFREQi();
+  double GetTI();
+  double GetSigmaI();
+  double GetRMSI();
+  double GetAvgI();
   float GetMinI();
   float GetMaxI();
   void ReInit();
   
-  float GetRAi_p();
-  float GetDECi_p();
-  float GetFREQi_p();
-  float GetTI_p();
-  float GetRAi_n();
-  float GetDECi_n();
-  float GetFREQi_n();
-  float GetTI_n();
+  double GetRAi_p();
+  double GetDECi_p();
+  double GetFREQi_p();
+  double GetTI_p();
+  double GetRAi_n();
+  double GetDECi_n();
+  double GetFREQi_n();
+  double GetTI_n();
 
   void AddPoint(float x_pos, float y_pos, float z_pos, float value);
   void AddObject(object_props & merged);
-  void AddObject(object_props & merged,vector<int> & temp_sparse_reps_grid,vector<int> & temp_sparse_reps_strings,vector<float> & temp_mom0,vector<float> & temp_RAPV,vector<float> & temp_DECPV,vector<float> & temp_ref_spec,vector<float> & temp_obj_spec,vector<float> & temp_vfield);
+  void AddObject(object_props & merged,vector<int> & temp_sparse_reps_grid,vector<int> & temp_sparse_reps_strings,vector<double> & temp_mom0,vector<double> & temp_RAPV,vector<double> & temp_DECPV,vector<double> & temp_ref_spec,vector<double> & temp_obj_spec,vector<double> & temp_vfield);
 
   void Set_w_max(float value);
   float Get_w_max();
@@ -159,37 +163,37 @@ class object_props {
   void Create_mom0(int value);
   void Set_mom0(int index, float value);
   void Add_mom0(int index, float value);
-  float Get_mom0(int index);
+  double Get_mom0(int index);
   void Free_mom0();
 
   void Create_RAPV(int value);
   void Set_RAPV(int index, float value);
   void Add_RAPV(int index, float value);
-  float Get_RAPV(int index);
+  double Get_RAPV(int index);
   void Free_RAPV();
 
   void Create_DECPV(int value);
   void Set_DECPV(int index, float value);
   void Add_DECPV(int index, float value);
-  float Get_DECPV(int index);
+  double Get_DECPV(int index);
   void Free_DECPV();
 
   void Create_ospec(int value);
   void Set_ospec(int index, float value);
   void Add_ospec(int index, float value);
-  float Get_ospec(int index);
+  double Get_ospec(int index);
   void Free_ospec();
 
   void Create_rspec(int value);
   void Set_rspec(int index, float value);
   void Add_rspec(int index, float value);
-  float Get_rspec(int index);
+  double Get_rspec(int index);
   void Free_rspec();
 
   void Create_vfield(int value);
   void Set_vfield(int index, float value);
   void Add_vfield(int index, float value);
-  float Get_vfield(int index);
+  double Get_vfield(int index);
   void Free_vfield();
 
   void ReInit_srep();
@@ -299,14 +303,14 @@ public:
   double GetMaxI();
   void ReInit();
   
-  float GetRAi_p();
-  float GetDECi_p();
-  float GetFREQi_p();
-  float GetTI_p();
-  float GetRAi_n();
-  float GetDECi_n();
-  float GetFREQi_n();
-  float GetTI_n();
+  double GetRAi_p();
+  double GetDECi_p();
+  double GetFREQi_p();
+  double GetTI_p();
+  double GetRAi_n();
+  double GetDECi_n();
+  double GetFREQi_n();
+  double GetTI_n();
 
   void AddPoint(double x_pos, double y_pos, double z_pos, double value);
   void AddObject(object_props_dbl & merged);
@@ -409,14 +413,14 @@ extern void CreateMetric(size_t * data_metric, int * xyz_order, int NOx, int NOy
 
 // functions using floats
 
-extern int CreateObjects(float * data_vals, int * flag_vals, int size_x, int size_y, int size_z, int chunk_x_start, int chunk_y_start, int chunk_z_start, int merge_x, int merge_y, int merge_z, int min_x_size, int min_y_size, int min_z_size, int min_v_size, float intens_thresh_min, float intens_thresh_max, int flag_value, int start_obj, vector<object_props *> & detections, vector<int> & obj_ids, vector<int> & check_obj_ids, int obj_limit, int max_x_val, int max_y_val, int max_z_val, int ss_mode, size_t * data_metric, int * xyz_order);
-extern long int CreateObjects(float * data_vals, long int * flag_vals, int size_x, int size_y, int size_z, int chunk_x_start, int chunk_y_start, int chunk_z_start, int merge_x, int merge_y, int merge_z, int min_x_size, int min_y_size, int min_z_size, int min_v_size, float intens_thresh_min, float intens_thresh_max, long int flag_value, long int start_obj, vector<object_props *> & detections, vector<long int> & obj_ids, vector<long int> & check_obj_ids, int obj_limit, int max_x_val, int max_y_val, int max_z_val, int ss_mode, size_t * data_metric, int * xyz_order);
+extern int CreateObjects(float * data_vals, int * flag_vals, int size_x, int size_y, int size_z, int chunk_x_start, int chunk_y_start, int chunk_z_start, int merge_x, int merge_y, int merge_z, int min_x_size, int min_y_size, int min_z_size, int max_x_size, int max_y_size, int max_z_size, int min_v_size, int max_v_size, float intens_thresh_min, float intens_thresh_max, int flag_value, int start_obj, vector<object_props *> & detections, vector<int> & obj_ids, vector<int> & check_obj_ids, int obj_limit, int max_x_val, int max_y_val, int max_z_val, int ss_mode, size_t * data_metric, int * xyz_order);
+extern long int CreateObjects(float * data_vals, long int * flag_vals, int size_x, int size_y, int size_z, int chunk_x_start, int chunk_y_start, int chunk_z_start, int merge_x, int merge_y, int merge_z, int min_x_size, int min_y_size, int min_z_size, int max_x_size, int max_y_size, int max_z_size, int min_v_size, int max_v_size, float intens_thresh_min, float intens_thresh_max, long int flag_value, long int start_obj, vector<object_props *> & detections, vector<long int> & obj_ids, vector<long int> & check_obj_ids, int obj_limit, int max_x_val, int max_y_val, int max_z_val, int ss_mode, size_t * data_metric, int * xyz_order);
 
 extern int AddObjsToChunk(int * flag_vals, vector<object_props *> & detections, int NOobj, int obj_limit, int chunk_x_start, int chunk_y_start, int chunk_z_start, int chunk_x_size, int chunk_y_size, int chunk_z_size, vector<int> & check_obj_ids, size_t * data_metric, int * xyz_order);
 extern int AddObjsToChunk(long int * flag_vals, vector<object_props *> & detections, long int NOobj, int obj_limit, int chunk_x_start, int chunk_y_start, int chunk_z_start, int chunk_x_size, int chunk_y_size, int chunk_z_size, vector<long int> & check_obj_ids, size_t * data_metric, int * xyz_order);
 
-extern void ThresholdObjs(vector<object_props *> & detections, int NOobj, int obj_limit, int min_x_size, int min_y_size, int min_z_size, int min_v_size, float intens_thresh_min, float intens_thresh_max, int min_LoS_count);
-extern void ThresholdObjs(vector<object_props *> & detections, long int NOobj, int obj_limit, int min_x_size, int min_y_size, int min_z_size, int min_v_size, float intens_thresh_min, float intens_thresh_max, int min_LoS_count);
+extern void ThresholdObjs(vector<object_props *> & detections, int NOobj, int obj_limit, int min_x_size, int min_y_size, int min_z_size, int max_x_size, int max_y_size, int max_z_size, int min_v_size, int max_v_size, int min_los, int max_los, float min_fill, float max_fill, float intens_thresh_min, float intens_thresh_max);
+extern void ThresholdObjs(vector<object_props *> & detections, long int NOobj, int obj_limit, int min_x_size, int min_y_size, int min_z_size, int max_x_size, int max_y_size, int max_z_size, int min_v_size, int max_v_size, int min_los, int max_los, float min_fill, float max_fill, float intens_thresh_min, float intens_thresh_max);
 
 extern float CreateMoment0Map(float * plot_array, int NOobj, vector<object_props *> & detections, int NOx, int NOy, int obj_limit);
 extern float CreateMoment0Map(float * plot_array, long int NOobj, vector<object_props *> & detections, int NOx, int NOy, int obj_limit);
@@ -455,8 +459,8 @@ extern long int CreateObjects(double * data_vals, long int * flag_vals, int size
 extern int AddObjsToChunk(int * flag_vals, vector<object_props_dbl *> & detections, int NOobj, int obj_limit, int chunk_x_start, int chunk_y_start, int chunk_z_start, int chunk_x_size, int chunk_y_size, int chunk_z_size, vector<int> & check_obj_ids, size_t * data_metric, int * xyz_order);
 extern int AddObjsToChunk(long int * flag_vals, vector<object_props_dbl *> & detections, long int NOobj, int obj_limit, int chunk_x_start, int chunk_y_start, int chunk_z_start, int chunk_x_size, int chunk_y_size, int chunk_z_size, vector<long int> & check_obj_ids, size_t * data_metric, int * xyz_order);
 
-extern void ThresholdObjs(vector<object_props_dbl *> & detections, int NOobj, int obj_limit, int min_x_size, int min_y_size, int min_z_size, int min_v_size, double intens_thresh_min, double intens_thresh_max, int min_LoS_count);
-extern void ThresholdObjs(vector<object_props_dbl *> & detections, long int NOobj, int obj_limit, int min_x_size, int min_y_size, int min_z_size, int min_v_size, double intens_thresh_min, double intens_thresh_max, int min_LoS_count);
+extern void ThresholdObjs(vector<object_props_dbl *> & detections, int NOobj, int obj_limit, int min_x_size, int min_y_size, int min_z_size, int max_x_size, int max_y_size, int max_z_size, int min_v_size, int max_v_size, int min_los, int max_los, float min_fill, float max_fill, double intens_thresh_min, double intens_thresh_max);
+extern void ThresholdObjs(vector<object_props_dbl *> & detections, long int NOobj, int obj_limit, int min_x_size, int min_y_size, int min_z_size, int max_x_size, int max_y_size, int max_z_size, int min_v_size, int max_v_size, int min_los, int max_los, float min_fill, float max_fill, double intens_thresh_min, double intens_thresh_max);
 
 extern float CreateMoment0Map(float * plot_array, int NOobj, vector<object_props_dbl *> & detections, int NOx, int NOy, int obj_limit);
 extern float CreateMoment0Map(float * plot_array, long int NOobj, vector<object_props_dbl *> & detections, int NOx, int NOy, int obj_limit);

@@ -192,8 +192,19 @@ def allowedDataTypes():
 	        "merge.radiusY": "int", \
 	        "merge.radiusZ": "int", \
 	        "merge.minSizeX": "int", \
+	        "merge.maxSizeX": "int", \
 	        "merge.minSizeY": "int", \
+	        "merge.maxSizeY": "int", \
 	        "merge.minSizeZ": "int", \
+	        "merge.maxSizeZ": "int", \
+	        "merge.minVoxels": "int", \
+	        "merge.maxVoxels": "int", \
+	        "merge.minLoS": "int", \
+	        "merge.maxLoS": "int", \
+	        "merge.minFill": "int", \
+	        "merge.maxFill": "int", \
+                "merge.minIntens": "float", \
+                "merge.maxIntens": "float", \
 	        "merge.positivity": "bool", \
 	        "reliability.parSpace": "array", \
 	        "reliability.logPars": "array", \

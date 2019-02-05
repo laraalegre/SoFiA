@@ -57,3 +57,5 @@ lon			pos.galactic.lon
 lat			pos.galactic.lat
 freq		em.freq
 velo		spect.dopplerVeloc
+fll_fctr	meta.number
+n_vox		meta.number;instr.pixel		

@@ -5,12 +5,13 @@ using namespace std;
 
 // functions using floats
 
-void ThresholdObjs(vector< object_props *> & detections, int NOobj, int obj_limit, int min_x_size, int min_y_size, int min_z_size, int min_v_size, float intens_thresh_min, float intens_thresh_max, int min_LoS_count){
+void ThresholdObjs(vector< object_props *> & detections, int NOobj, int obj_limit, int min_x_size, int min_y_size, int min_z_size, int max_x_size, int max_y_size, int max_z_size, int min_v_size, int max_v_size, int min_los, int max_los, float min_fill, float max_fill, float intens_thresh_min, float intens_thresh_max){
   
   float progress;
   int i, j, k, obj_batch;
 
   progress = 0.0;
+  std::cout << "Thresholding objects . . . " << std::endl;
   std::cout << "0 | |:| | : | |:| | 100% complete" << std::endl;
   for(k = 0; k < NOobj; ++k){
 	
@@ -33,11 +34,13 @@ void ThresholdObjs(vector< object_props *> & detections, int NOobj, int obj_limi
 
     }
 
+    // calculate the size of the detection's bounding box
+    j = (detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(1) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) + 1) * (detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(3) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(2) + 1) * (detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(5) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(4) + 1);
+
     // apply the thresholds, and if it fails re-initialise the object
-    if(((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(1) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) + 1) < min_x_size)  || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(3) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(2) + 1) < min_y_size) || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(5) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(4) + 1) < min_z_size) || (detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels() < min_v_size) || (detections[obj_batch][(k - (obj_batch * obj_limit))].GetTI() < intens_thresh_min) || (detections[obj_batch][(k - (obj_batch * obj_limit))].GetTI() > intens_thresh_max) || (i < min_LoS_count)){
+    if(((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(1) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) + 1) < min_x_size)  || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(3) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(2) + 1) < min_y_size) || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(5) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(4) + 1) < min_z_size) || (detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels() < min_v_size) || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(1) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) + 1) > max_x_size && max_x_size >= 1)  || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(3) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(2) + 1) > max_y_size && max_y_size >= 1) || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(5) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(4) + 1) > max_z_size && max_z_size >= 1) || (detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels() > max_v_size && max_v_size >= 1) || (detections[obj_batch][(k - (obj_batch * obj_limit))].GetTI() < intens_thresh_min) || (detections[obj_batch][(k - (obj_batch * obj_limit))].GetTI() > intens_thresh_max) || (i < min_los) || (i > max_los && max_los >= 1) || ((((float) detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels())/((float) j)) < min_fill) || ((((float) detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels())/((float) j)) > max_fill && max_fill >= 1)){
 
       // re-initialise object
-      detections[obj_batch][(k - (obj_batch * obj_limit))].ReInit();
       if((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_update() != 0) && (detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) >= 0)){
 	
 	detections[obj_batch][(k - (obj_batch * obj_limit))].ReInit_srep();
@@ -46,6 +49,7 @@ void ThresholdObjs(vector< object_props *> & detections, int NOobj, int obj_limi
       }
       detections[obj_batch][(k - (obj_batch * obj_limit))].ReInit_size();
       detections[obj_batch][(k - (obj_batch * obj_limit))].Set_srep_update(0);
+      detections[obj_batch][(k - (obj_batch * obj_limit))].ReInit();
 
     }
     
@@ -57,7 +61,7 @@ void ThresholdObjs(vector< object_props *> & detections, int NOobj, int obj_limi
 
 }
 
-void ThresholdObjs(vector< object_props *> & detections, long int NOobj, int obj_limit, int min_x_size, int min_y_size, int min_z_size, int min_v_size, float intens_thresh_min, float intens_thresh_max, int min_LoS_count){
+void ThresholdObjs(vector< object_props *> & detections, long int NOobj, int obj_limit, int min_x_size, int min_y_size, int min_z_size, int max_x_size, int max_y_size, int max_z_size, int min_v_size, int max_v_size, int min_los, int max_los, float min_fill, float max_fill, float intens_thresh_min, float intens_thresh_max){
   
   float progress;
   int i, j;
@@ -86,11 +90,13 @@ void ThresholdObjs(vector< object_props *> & detections, long int NOobj, int obj
 
     }
 
-    // apply the thresholds, and if it fails re-initialise the object 
-    if(((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(1) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) + 1) < min_x_size)  || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(3) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(2) + 1) < min_y_size) || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(5) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(4) + 1) < min_z_size) || (detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels() < min_v_size) || (detections[obj_batch][(k - (obj_batch * obj_limit))].GetTI() < intens_thresh_min) || (detections[obj_batch][(k - (obj_batch * obj_limit))].GetTI() > intens_thresh_max) || (i < min_LoS_count)){
+    // calculate the size of the detection's bounding box
+    j = (detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(1) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) + 1) * (detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(3) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(2) + 1) * (detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(5) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(4) + 1);
+
+    // apply the thresholds, and if it fails re-initialise the object
+    if(((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(1) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) + 1) < min_x_size)  || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(3) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(2) + 1) < min_y_size) || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(5) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(4) + 1) < min_z_size) || (detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels() < min_v_size) || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(1) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) + 1) > max_x_size && max_x_size >= 1)  || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(3) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(2) + 1) > max_y_size && max_y_size >= 1) || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(5) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(4) + 1) > max_z_size && max_z_size >= 1) || (detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels() > max_v_size && max_v_size >= 1) || (detections[obj_batch][(k - (obj_batch * obj_limit))].GetTI() < intens_thresh_min) || (detections[obj_batch][(k - (obj_batch * obj_limit))].GetTI() > intens_thresh_max) || (i < min_los) || (i > max_los && max_los >= 1) || ((((float) detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels())/((float) j)) < min_fill) || ((((float) detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels())/((float) j)) > max_fill && max_fill >= 1)){
 
       // re-initialise object
-      detections[obj_batch][(k - (obj_batch * obj_limit))].ReInit();
       if((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_update() != 0) && (detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) >= 0)){
 	
 	detections[obj_batch][(k - (obj_batch * obj_limit))].ReInit_srep();
@@ -99,6 +105,7 @@ void ThresholdObjs(vector< object_props *> & detections, long int NOobj, int obj
       }
       detections[obj_batch][(k - (obj_batch * obj_limit))].ReInit_size();
       detections[obj_batch][(k - (obj_batch * obj_limit))].Set_srep_update(0);
+      detections[obj_batch][(k - (obj_batch * obj_limit))].ReInit();
 
     }
     
@@ -112,7 +119,7 @@ void ThresholdObjs(vector< object_props *> & detections, long int NOobj, int obj
 
 // functions using doubles
 
-void ThresholdObjs(vector< object_props_dbl *> & detections, int NOobj, int obj_limit, int min_x_size, int min_y_size, int min_z_size, int min_v_size, double intens_thresh_min, double intens_thresh_max, int min_LoS_count){
+void ThresholdObjs(vector< object_props_dbl *> & detections, int NOobj, int obj_limit, int min_x_size, int min_y_size, int min_z_size, int max_x_size, int max_y_size, int max_z_size, int min_v_size, int max_v_size, int min_los, int max_los, float min_fill, float max_fill, double intens_thresh_min, double intens_thresh_max){
   
   float progress;
   int i, j, k, obj_batch;
@@ -140,11 +147,13 @@ void ThresholdObjs(vector< object_props_dbl *> & detections, int NOobj, int obj_
 
     }
 
+    // calculate the size of the detection's bounding box
+    j = (detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(1) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) + 1) * (detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(3) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(2) + 1) * (detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(5) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(4) + 1);
+
     // apply the thresholds, and if it fails re-initialise the object
-    if(((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(1) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) + 1) < min_x_size)  || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(3) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(2) + 1) < min_y_size) || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(5) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(4) + 1) < min_z_size) || (detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels() < min_v_size) || (detections[obj_batch][(k - (obj_batch * obj_limit))].GetTI() < intens_thresh_min) || (detections[obj_batch][(k - (obj_batch * obj_limit))].GetTI() > intens_thresh_max) || (i < min_LoS_count)){
+    if(((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(1) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) + 1) < min_x_size)  || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(3) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(2) + 1) < min_y_size) || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(5) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(4) + 1) < min_z_size) || (detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels() < min_v_size) || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(1) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) + 1) > max_x_size && max_x_size >= 1)  || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(3) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(2) + 1) > max_y_size && max_y_size >= 1) || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(5) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(4) + 1) > max_z_size && max_z_size >= 1) || (detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels() > max_v_size && max_v_size >= 1) || (detections[obj_batch][(k - (obj_batch * obj_limit))].GetTI() < intens_thresh_min) || (detections[obj_batch][(k - (obj_batch * obj_limit))].GetTI() > intens_thresh_max) || (i < min_los) || (i > max_los && max_los >= 1) || ((((float) detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels())/((float) j)) < min_fill) || ((((float) detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels())/((float) j)) > max_fill && max_fill >= 1)){
 
       // re-initialise object
-      detections[obj_batch][(k - (obj_batch * obj_limit))].ReInit();
       if((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_update() != 0) && (detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) >= 0)){
 	
 	detections[obj_batch][(k - (obj_batch * obj_limit))].ReInit_srep();
@@ -153,6 +162,7 @@ void ThresholdObjs(vector< object_props_dbl *> & detections, int NOobj, int obj_
       }
       detections[obj_batch][(k - (obj_batch * obj_limit))].ReInit_size();
       detections[obj_batch][(k - (obj_batch * obj_limit))].Set_srep_update(0);
+      detections[obj_batch][(k - (obj_batch * obj_limit))].ReInit();
 
     }
     
@@ -164,7 +174,7 @@ void ThresholdObjs(vector< object_props_dbl *> & detections, int NOobj, int obj_
 
 }
 
-void ThresholdObjs(vector< object_props_dbl *> & detections, long int NOobj, int obj_limit, int min_x_size, int min_y_size, int min_z_size, int min_v_size, double intens_thresh_min, double intens_thresh_max, int min_LoS_count){
+void ThresholdObjs(vector< object_props_dbl *> & detections, long int NOobj, int obj_limit, int min_x_size, int min_y_size, int min_z_size, int max_x_size, int max_y_size, int max_z_size, int min_v_size, int max_v_size, int min_los, int max_los, float min_fill, float max_fill, double intens_thresh_min, double intens_thresh_max){
   
   float progress;
   int i, j;
@@ -193,11 +203,13 @@ void ThresholdObjs(vector< object_props_dbl *> & detections, long int NOobj, int
 
     }
 
+    // calculate the size of the detection's bounding box
+    j = (detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(1) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) + 1) * (detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(3) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(2) + 1) * (detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(5) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(4) + 1);
+
     // apply the thresholds, and if it fails re-initialise the object
-    if(((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(1) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) + 1) < min_x_size)  || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(3) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(2) + 1) < min_y_size) || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(5) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(4) + 1) < min_z_size) || (detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels() < min_v_size) || (detections[obj_batch][(k - (obj_batch * obj_limit))].GetTI() < intens_thresh_min) || (detections[obj_batch][(k - (obj_batch * obj_limit))].GetTI() > intens_thresh_max) || (i < min_LoS_count)){
+    if(((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(1) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) + 1) < min_x_size)  || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(3) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(2) + 1) < min_y_size) || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(5) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(4) + 1) < min_z_size) || (detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels() < min_v_size) || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(1) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) + 1) > max_x_size && max_x_size >= 1)  || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(3) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(2) + 1) > max_y_size && max_y_size >= 1) || ((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(5) - detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(4) + 1) > max_z_size && max_z_size >= 1) || (detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels() > max_v_size && max_v_size >= 1) || (detections[obj_batch][(k - (obj_batch * obj_limit))].GetTI() < intens_thresh_min) || (detections[obj_batch][(k - (obj_batch * obj_limit))].GetTI() > intens_thresh_max) || (i < min_los) || (i > max_los && max_los >= 1) || ((((float) detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels())/((float) j)) < min_fill) || ((((float) detections[obj_batch][(k - (obj_batch * obj_limit))].ShowVoxels())/((float) j)) > max_fill && max_fill >= 1)){
 
       // re-initialise object
-      detections[obj_batch][(k - (obj_batch * obj_limit))].ReInit();
       if((detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_update() != 0) && (detections[obj_batch][(k - (obj_batch * obj_limit))].Get_srep_size(0) >= 0)){
 	
 	detections[obj_batch][(k - (obj_batch * obj_limit))].ReInit_srep();
@@ -206,6 +218,7 @@ void ThresholdObjs(vector< object_props_dbl *> & detections, long int NOobj, int
       }
       detections[obj_batch][(k - (obj_batch * obj_limit))].ReInit_size();
       detections[obj_batch][(k - (obj_batch * obj_limit))].Set_srep_update(0);
+      detections[obj_batch][(k - (obj_batch * obj_limit))].ReInit();
 
     }
     

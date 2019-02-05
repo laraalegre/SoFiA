@@ -237,9 +237,9 @@ if not Parameters["writeCat"]["overwrite"]:
 
 if Parameters["steps"]["doMerge"]:
 	# Define parameters returned by the linker module
-	catParNames = ("id", "x_geo", "y_geo", "z_geo", "x", "y", "z", "x_min", "x_max", "y_min", "y_max", "z_min", "z_max", "n_pix", "snr_min", "snr_max", "snr_sum", "x_p", "y_p", "z_p", "x_n", "y_n", "z_n", "snr_sum_p", "snr_sum_n", "snr_mean", "snr_std", "snr_rms", "w20", "w50", "w20_cfd", "w50_cfd", "n_x", "n_y", "n_chan", "n_los")
-	catParUnits = ("-", "pix", "pix", "chan", "pix", "pix", "chan", "pix", "pix", "pix", "pix", "chan", "chan", "-", "-", "-", "-", "pix", "pix", "chan", "pix", "pix", "chan", "-", "-", "-", "-", "-", "chan", "chan", "chan", "chan", "pix", "pix", "chan", "-")
-	catParFormt = ("%10i", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%7i", "%7i", "%7i", "%7i", "%7i", "%7i", "%8i", "%12.3e", "%12.3e", "%12.3e", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%12.3e", "%12.3e", "%12.3e", "%12.3e", "%12.3e", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%7i", "%7i", "%7i", "%7i")
+	catParNames = ("id", "x_geo", "y_geo", "z_geo", "x", "y", "z", "x_min", "x_max", "y_min", "y_max", "z_min", "z_max", "n_pix", "snr_min", "snr_max", "snr_sum", "x_p", "y_p", "z_p", "x_n", "y_n", "z_n", "snr_sum_p", "snr_sum_n", "snr_mean", "snr_std", "snr_rms", "w20", "w50", "w20_cfd", "w50_cfd", "n_x", "n_y", "n_chan", "n_los", "fill_frac")
+	catParUnits = ("-", "pix", "pix", "chan", "pix", "pix", "chan", "pix", "pix", "pix", "pix", "chan", "chan", "-", "-", "-", "-", "pix", "pix", "chan", "pix", "pix", "chan", "-", "-", "-", "-", "-", "chan", "chan", "chan", "chan", "pix", "pix", "chan", "-", "-")
+	catParFormt = ("%10i", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%7i", "%7i", "%7i", "%7i", "%7i", "%7i", "%8i", "%12.3e", "%12.3e", "%12.3e", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%12.3e", "%12.3e", "%12.3e", "%12.3e", "%12.3e", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%7i", "%7i", "%7i", "%7i", "%5.3f")
 	
 	# Check that the parameters to be used for the reliability calculation are included in catParNames
 	if Parameters["steps"]["doReliability"]:
@@ -382,11 +382,10 @@ else:
 # -----------------
 # ---- MERGING ----
 # -----------------
-
 if Parameters["steps"]["doMerge"] and NRdet:
 	err.print_progress_message("Merging detections", t0)
 	objects = []
-	objects, mask = linker.link_objects(np_Cube, objects, mask, Parameters["merge"]["radiusX"], Parameters["merge"]["radiusY"], Parameters["merge"]["radiusZ"], Parameters["merge"]["minSizeX"], Parameters["merge"]["minSizeY"], Parameters["merge"]["minSizeZ"])
+	objects, mask = linker.link_objects(np_Cube, objects, mask, Parameters["merge"]["radiusX"], Parameters["merge"]["radiusY"], Parameters["merge"]["radiusZ"], Parameters["merge"]["minSizeX"], Parameters["merge"]["minSizeY"], Parameters["merge"]["minSizeZ"], Parameters["merge"]["maxSizeX"], Parameters["merge"]["maxSizeY"], Parameters["merge"]["maxSizeZ"], Parameters["merge"]["minVoxels"], Parameters["merge"]["maxVoxels"], Parameters["merge"]["minLoS"], Parameters["merge"]["maxLoS"], Parameters["merge"]["minFill"], Parameters["merge"]["maxFill"], Parameters["merge"]["minIntens"], Parameters["merge"]["maxIntens"])
 	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 	
 	if not objects: err.warning("No objects remain after merging. Exiting pipeline.", fatal=True)

@@ -88,25 +88,25 @@ object_props::object_props(const object_props & copied){
   } else { srep_strings = NULL; }
   if(copied.mini_mom0 != NULL){
 
-    mini_mom0 = new float[(srep_size[1] - srep_size[0] + 1) * (srep_size[3] - srep_size[2] + 1)];
+    mini_mom0 = new double[(srep_size[1] - srep_size[0] + 1) * (srep_size[3] - srep_size[2] + 1)];
     for(i = 0; i < ((srep_size[1] - srep_size[0] + 1) * (srep_size[3] - srep_size[2] + 1)); ++i){ mini_mom0[i] = copied.mini_mom0[i]; }
 
   } else { mini_mom0 = NULL; }
   if(copied.mini_RAPV != NULL){
 
-    mini_RAPV = new float[(srep_size[1] - srep_size[0] + 1) * (srep_size[5] - srep_size[4] + 1)];
+    mini_RAPV = new double[(srep_size[1] - srep_size[0] + 1) * (srep_size[5] - srep_size[4] + 1)];
     for(i = 0; i < ((srep_size[1] - srep_size[0] + 1) * (srep_size[5] - srep_size[4] + 1)); ++i){ mini_RAPV[i] = copied.mini_RAPV[i]; }
 
   } else { mini_RAPV = NULL; }
   if(copied.mini_DECPV != NULL){
 
-    mini_DECPV = new float[(srep_size[3] - srep_size[2] + 1) * (srep_size[5] - srep_size[4] + 1)];
+    mini_DECPV = new double[(srep_size[3] - srep_size[2] + 1) * (srep_size[5] - srep_size[4] + 1)];
     for(i = 0; i < ((srep_size[3] - srep_size[2] + 1) * (srep_size[5] - srep_size[4] + 1)); ++i){ mini_DECPV[i] = copied.mini_DECPV[i]; }
     
   } else { mini_DECPV = NULL; }
   if(mini_obj_spec != NULL){
 
-    mini_obj_spec = new float[(srep_size[5] - srep_size[4] + 1)];
+    mini_obj_spec = new double[(srep_size[5] - srep_size[4] + 1)];
     for(i = 0; i < ((srep_size[5] - srep_size[4] + 1)); ++i){ mini_obj_spec[i] = copied.mini_obj_spec[i]; }
 
   } else { mini_obj_spec = NULL; }
@@ -114,12 +114,12 @@ object_props::object_props(const object_props & copied){
 
     if((copied.srep_size[5] - copied.srep_size[4] + 1) >= 10){
 
-      mini_ref_spec = new float[(srep_size[5] - srep_size[4] + 1)];
+      mini_ref_spec = new double[(srep_size[5] - srep_size[4] + 1)];
       for(i = 0; i < ((srep_size[5] - srep_size[4] + 1)); ++i){ mini_ref_spec[i] = copied.mini_ref_spec[i]; }    
 
     } else {
 
-      mini_ref_spec = new float[(srep_size[5] - srep_size[4] + 11)];
+      mini_ref_spec = new double[(srep_size[5] - srep_size[4] + 11)];
       for(i = 0; i < ((srep_size[5] - srep_size[4] + 11)); ++i){ mini_ref_spec[i] = copied.mini_ref_spec[i]; }    
 
     }
@@ -127,7 +127,7 @@ object_props::object_props(const object_props & copied){
   } else { mini_ref_spec = NULL; }
   if(copied.mini_vfield != NULL){
 
-    mini_vfield = new float[(srep_size[1] - srep_size[0] + 1) * (srep_size[3] - srep_size[2] + 1)];
+    mini_vfield = new double[(srep_size[1] - srep_size[0] + 1) * (srep_size[3] - srep_size[2] + 1)];
     for(i = 0; i < ((srep_size[1] - srep_size[0] + 1) * (srep_size[3] - srep_size[2] + 1)); ++i){ mini_vfield[i] = copied.mini_vfield[i]; }
 
   } else { mini_vfield = NULL; }
@@ -203,25 +203,25 @@ object_props & object_props::operator = (const object_props & copied){
     } else { srep_strings = NULL; }
     if(copied.mini_mom0 != NULL){
       
-      mini_mom0 = new float[(srep_size[1] - srep_size[0] + 1) * (srep_size[3] - srep_size[2] + 1)];
+      mini_mom0 = new double[(srep_size[1] - srep_size[0] + 1) * (srep_size[3] - srep_size[2] + 1)];
       for(i = 0; i < ((srep_size[1] - srep_size[0] + 1) * (srep_size[3] - srep_size[2] + 1)); ++i){ mini_mom0[i] = copied.mini_mom0[i]; }
       
     } else { mini_mom0 = NULL; }
     if(copied.mini_RAPV != NULL){
       
-      mini_RAPV = new float[(srep_size[1] - srep_size[0] + 1) * (srep_size[5] - srep_size[4] + 1)];
+      mini_RAPV = new double[(srep_size[1] - srep_size[0] + 1) * (srep_size[5] - srep_size[4] + 1)];
       for(i = 0; i < ((srep_size[1] - srep_size[0] + 1) * (srep_size[5] - srep_size[4] + 1)); ++i){ mini_RAPV[i] = copied.mini_RAPV[i]; }
       
     } else { mini_RAPV = NULL; }
     if(copied.mini_DECPV != NULL){
       
-      mini_DECPV = new float[(srep_size[3] - srep_size[2] + 1) * (srep_size[5] - srep_size[4] + 1)];
+      mini_DECPV = new double[(srep_size[3] - srep_size[2] + 1) * (srep_size[5] - srep_size[4] + 1)];
       for(i = 0; i < ((srep_size[3] - srep_size[2] + 1) * (srep_size[5] - srep_size[4] + 1)); ++i){ mini_DECPV[i] = copied.mini_DECPV[i]; }
       
     } else { mini_DECPV = NULL; }
     if(mini_obj_spec != NULL){
       
-      mini_obj_spec = new float[(srep_size[5] - srep_size[4] + 1)];
+      mini_obj_spec = new double[(srep_size[5] - srep_size[4] + 1)];
       for(i = 0; i < ((srep_size[5] - srep_size[4] + 1)); ++i){ mini_obj_spec[i] = copied.mini_obj_spec[i]; }
       
     } else { mini_obj_spec = NULL; }
@@ -229,12 +229,12 @@ object_props & object_props::operator = (const object_props & copied){
       
       if((copied.srep_size[5] - copied.srep_size[4] + 1) >= 10){
 	
-	mini_ref_spec = new float[(srep_size[5] - srep_size[4] + 1)];
+	mini_ref_spec = new double[(srep_size[5] - srep_size[4] + 1)];
 	for(i = 0; i < ((srep_size[5] - srep_size[4] + 1)); ++i){ mini_ref_spec[i] = copied.mini_ref_spec[i]; }    
 	
       } else {
 	
-	mini_ref_spec = new float[(srep_size[5] - srep_size[4] + 11)];
+	mini_ref_spec = new double[(srep_size[5] - srep_size[4] + 11)];
 	for(i = 0; i < ((srep_size[5] - srep_size[4] + 11)); ++i){ mini_ref_spec[i] = copied.mini_ref_spec[i]; }    
 	
       }
@@ -242,7 +242,7 @@ object_props & object_props::operator = (const object_props & copied){
     } else { mini_ref_spec = NULL; }
     if(copied.mini_vfield != NULL){
       
-      mini_vfield = new float[(srep_size[1] - srep_size[0] + 1) * (srep_size[3] - srep_size[2] + 1)];
+      mini_vfield = new double[(srep_size[1] - srep_size[0] + 1) * (srep_size[3] - srep_size[2] + 1)];
       for(i = 0; i < ((srep_size[1] - srep_size[0] + 1) * (srep_size[3] - srep_size[2] + 1)); ++i){ mini_vfield[i] = copied.mini_vfield[i]; }
       
     } else { mini_vfield = NULL; }
@@ -422,42 +422,206 @@ void object_props::ReInit(){
 
 }
 
-void object_props::AddVoxel(int value){ NOvox+=value; }
+void object_props::AddVoxel(int value){ 
 
-void object_props::AddRa(float value){ ra+=value; }
+  if(!isnan(value)){
 
-void object_props::AddDec(float value){ dec+=value; }
+    if(!isinf(value)){
 
-void object_props::AddFreq(float value){ freq+=value; }
+      NOvox+=value; 
+ 
+    } else {
 
-void object_props::AddRA_i(float pos, float value){ 
-  ra_i+=(pos * value);
-  if(value >= 0.0){ p_ra_i+=(pos * value); } else { n_ra_i+=(pos * value); }
+      NOvox+=((value > 0) ? 1000000000 : -1000000000);
+      
+    }
+    
+  }
+  
+}
+
+void object_props::AddRa(float value){ 
+
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      ra+=((double) value); 
+
+    } else {
+
+      ra+=((value > 0.0) ? 9E30 : -9E30);
+
+    }
+
+  }
+
+}
+
+void object_props::AddDec(float value){ 
+
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      dec+=((double) value); 
+
+    } else {
+
+      dec+=((value > 0.0) ? 9E30 : -9E30);
+
+    }
+
+  }
+
+}
+
+void object_props::AddFreq(float value){ 
+
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      freq+=((double) value); 
+
+    } else {
+
+      freq+=((value > 0.0) ? 9E30 : -9E30);
+
+    }
+
+  }
+
+}
+
+void object_props::AddRA_i(float pos, float value){
+
+  pos = pos * value;
+  if(!isnan(pos)){
+
+    if(!isinf(pos)){
+
+      ra_i+=(pos);
+      if(value >= 0.0){ p_ra_i+=((double) pos); } else { n_ra_i+=((double) pos); }
+
+    } else {
+
+      ra_i+=((pos > 0.0) ? 9E30 : -9E30);
+      if(value >= 0.0){ p_ra_i+=9E30; } else { n_ra_i+=-9E30; }      
+
+    }
+
+  }
+ 
 }
 
 void object_props::AddDec_i(float pos, float value){ 
-  dec_i+=value; 
-  if(value >= 0.0){ p_dec_i+=(pos * value); } else { n_dec_i+=(pos * value); }
+
+  pos = pos * value;
+  if(!isnan(pos)){
+
+    if(!isinf(pos)){
+
+      dec_i+=(pos);
+      if(value >= 0.0){ p_dec_i+=((double) pos); } else { n_dec_i+=((double) pos); }
+
+    } else {
+
+      dec_i+=((pos > 0.0) ? 9E30 : -9E30);
+      if(value >= 0.0){ p_dec_i+=9E30; } else { n_dec_i+=-9E30; }      
+
+    }
+
+  }
+
 }
 
 void object_props::AddFreq_i(float pos, float value){ 
-  freq_i+=value; 
-  if(value >= 0.0){ p_freq_i+=(pos * value); } else { n_freq_i+=(pos * value); }
+
+  pos = pos * value;
+  if(!isnan(pos)){
+
+    if(!isinf(pos)){
+
+      freq_i+=(pos);
+      if(value >= 0.0){ p_freq_i+=((double) pos); } else { n_freq_i+=((double) pos); }
+
+    } else {
+
+      freq_i+=((pos > 0.0) ? 9E30 : -9E30);
+      if(value >= 0.0){ p_freq_i+=9E30; } else { n_freq_i+=-9E30; }      
+
+    }
+
+  }
+
 }
 
 void object_props::AddTotIntens(float value){ 
-  tot_intens+=value; 
-  if(value >= 0.0){ p_tot_intens+=value; } else { n_tot_intens+=value; }
+
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      tot_intens+=(value);
+      if(value >= 0.0){ p_tot_intens+=((double) value); } else { n_tot_intens+=((double) value); }
+
+    } else {
+
+      tot_intens+=((value > 0.0) ? 9E30 : -9E30);
+      if(value >= 0.0){ p_tot_intens+=9E30; } else { n_tot_intens+=-9E30; }      
+
+    }
+
+  }
+
 }
 
-void object_props::AddAvgIntens(float value){ avg_intens+=value; }
+void object_props::AddAvgIntens(float value){ 
 
-void object_props::AddSigmaItens(float value){ sigma_intens+=(value * value); }
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      avg_intens+=((double) value); 
+
+    } else {
+
+      avg_intens+=((value > 0.0) ? 9E30 : -9E30);
+
+    }
+
+  }
+
+}
+
+void object_props::AddSigmaItens(float value){ 
+
+  value = value * value;
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      sigma_intens+=((double) value); 
+
+    } else {
+
+      sigma_intens+=((value > 0.0) ? 8.1E61 : -8.1E61);
+
+    }
+
+  }
+
+}
 
 void object_props::AdjustRange(float value){
     
-  if(value <= min_intens){ min_intens = value; }
-  if(value >= max_intens){ max_intens = value; }
+  if(!isnan(value) && !isinf(value)){
+
+    if(value <= min_intens){ min_intens = value; }
+    if(value >= max_intens){ max_intens = value; }
+
+  }
 
 }
 
@@ -467,15 +631,15 @@ void object_props::CalcProps(){
   int g;
 
   // calculate basic properties
-  ra = ra / NOvox; 
-  dec = dec / NOvox; 
-  freq = freq / NOvox;
+  ra = ra / ((double) NOvox); 
+  dec = dec / ((double) NOvox); 
+  freq = freq / ((double) NOvox);
   ra_i = ra_i / tot_intens;
   dec_i = dec_i / tot_intens;
   freq_i = freq_i / tot_intens;
-  avg_intens = avg_intens / NOvox;
-  rms = sqrtf((sigma_intens / NOvox));
-  sigma_intens = sqrtf(((sigma_intens / NOvox) - (avg_intens * avg_intens)));
+  avg_intens = avg_intens / ((double) NOvox);
+  rms = sqrt((sigma_intens / ((double) NOvox)));
+  sigma_intens = sqrt(((sigma_intens / ((double) NOvox)) - (avg_intens * avg_intens)));
   
   // new parameters --- multiple central moment calculations
   p_ra_i = p_ra_i / p_tot_intens;
@@ -484,7 +648,7 @@ void object_props::CalcProps(){
   n_ra_i = n_ra_i / n_tot_intens;
   n_dec_i = n_dec_i / n_tot_intens;
   n_freq_i = n_freq_i / n_tot_intens;
-  if(tot_intens >= 0.0){
+  /*if(tot_intens >= 0.0){
     ra_i = p_ra_i;
     dec_i = p_dec_i;
     freq_i = p_freq_i;
@@ -492,7 +656,7 @@ void object_props::CalcProps(){
     ra_i = n_ra_i;
     dec_i = n_dec_i;
     freq_i = n_freq_i;
-  }
+    }*/
 
   // remove inf's and nan's from the various arrays
   for(g = 0; g < ((srep_size[1] - srep_size[0] + 1) * (srep_size[3] - srep_size[2] + 1)); ++g){
@@ -768,22 +932,34 @@ void object_props::ShowSrep_file(std::fstream& output_file){
 
 void object_props::AdjustRArange(float value){
 
-  if(value <= ra_min){ ra_min = value; }
-  if(value >= ra_max){ ra_max = value; }
+  if(!isnan(value) && !isinf(value)){
+    
+    if(value <= ra_min){ ra_min = value; }
+    if(value >= ra_max){ ra_max = value; }
+
+  }
 
 }
 
 void object_props::AdjustDECrange(float value){
 
-  if(value <= dec_min){ dec_min = value; }
-  if(value >= dec_max){ dec_max = value; }
+  if(!isnan(value) && !isinf(value)){
+    
+    if(value <= dec_min){ dec_min = value; }
+    if(value >= dec_max){ dec_max = value; }
+
+  }
 
 }
 
 void object_props::AdjustFREQrange(float value){
 
-  if(value <= freq_min){ freq_min = value; }
-  if(value >= freq_max){ freq_max = value; }
+  if(!isnan(value) && !isinf(value)){
+    
+    if(value <= freq_min){ freq_min = value; }
+    if(value >= freq_max){ freq_max = value; }
+
+  }
 
 }
 
@@ -797,53 +973,53 @@ int object_props::ShowDECrange(){ return (int) (fabs(dec_max - dec_min) + 1); }
 
 int object_props::ShowFREQrange(){ return (int) (fabs(freq_max - freq_min) + 1); }
 
-int object_props::GetRAmin(){ return ra_min; }
+int object_props::GetRAmin(){ return ((int) floor(ra_min + 0.5)); }
 
-int object_props::GetRAmax(){ return ra_max; }
+int object_props::GetRAmax(){ return ((int) floor(ra_max + 0.5)); }
 
-int object_props::GetDECmin(){ return dec_min; }
+int object_props::GetDECmin(){ return ((int) floor(dec_min + 0.5)); }
 
-int object_props::GetDECmax(){ return dec_max; }
+int object_props::GetDECmax(){ return ((int) floor(dec_max + 0.5)); }
 
-int object_props::GetFREQmin(){ return freq_min; }
+int object_props::GetFREQmin(){ return ((int) floor(freq_min + 0.5)); }
 
-int object_props::GetFREQmax(){ return freq_max; }
+int object_props::GetFREQmax(){ return ((int) floor(freq_max + 0.5)); }
 
-float object_props::GetRA(){ return ra; }
+double object_props::GetRA(){ return ra; }
 
-float object_props::GetDEC(){ return dec; }
+double object_props::GetDEC(){ return dec; }
 
-float object_props::GetFREQ(){ return freq; }
+double object_props::GetFREQ(){ return freq; }
 
-float object_props::GetRAi(){ return ra_i; }
+double object_props::GetRAi(){ return ra_i; }
 
-float object_props::GetDECi(){ return dec_i; }
+double object_props::GetDECi(){ return dec_i; }
 
-float object_props::GetFREQi(){ return freq_i; }
+double object_props::GetFREQi(){ return freq_i; }
 
-float object_props::GetTI(){ return tot_intens; }
+double object_props::GetTI(){ return tot_intens; }
 
-float object_props::GetRAi_p(){ return p_ra_i; }
+double object_props::GetRAi_p(){ return p_ra_i; }
 
-float object_props::GetDECi_p(){ return p_dec_i; }
+double object_props::GetDECi_p(){ return p_dec_i; }
 
-float object_props::GetFREQi_p(){ return p_freq_i; }
+double object_props::GetFREQi_p(){ return p_freq_i; }
 
-float object_props::GetTI_p(){ return p_tot_intens; }
+double object_props::GetTI_p(){ return p_tot_intens; }
 
-float object_props::GetRAi_n(){ return n_ra_i; }
+double object_props::GetRAi_n(){ return n_ra_i; }
 
-float object_props::GetDECi_n(){ return n_dec_i; }
+double object_props::GetDECi_n(){ return n_dec_i; }
 
-float object_props::GetFREQi_n(){ return n_freq_i; }
+double object_props::GetFREQi_n(){ return n_freq_i; }
 
-float object_props::GetTI_n(){ return n_tot_intens; }
+double object_props::GetTI_n(){ return n_tot_intens; }
 
-float object_props::GetSigmaI(){ return sigma_intens; }
+double object_props::GetSigmaI(){ return sigma_intens; }
 
-float object_props::GetRMSI(){ return rms; }
+double object_props::GetRMSI(){ return rms; }
 
-float object_props::GetAvgI(){ return avg_intens; }
+double object_props::GetAvgI(){ return avg_intens; }
 
 float object_props::GetMinI(){ return min_intens; }
 
@@ -913,63 +1089,159 @@ int object_props::Get_srep_strings(int index){ return srep_strings[index]; }
 
 void object_props::Free_srep_strings(){ if(srep_strings != NULL){ delete [] srep_strings; srep_strings = NULL; } }
 
-void object_props::Create_mom0(int value){ while(mini_mom0 == NULL){ mini_mom0 = new float[value]; } }
+void object_props::Create_mom0(int value){ while(mini_mom0 == NULL){ mini_mom0 = new double[value]; } }
 
 void object_props::Set_mom0(int index, float value){ mini_mom0[index] = value; }
 
-void object_props::Add_mom0(int index, float value){ mini_mom0[index]+=value; }
+void object_props::Add_mom0(int index, float value){ 
 
-float object_props::Get_mom0(int index){ return mini_mom0[index]; }
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      mini_mom0[index]+=value; 
+
+    } else {
+
+      mini_mom0[index]+=((value > 0.0) ? 9E30 : -9E30);
+
+    }
+
+  }
+
+}
+
+double object_props::Get_mom0(int index){ return mini_mom0[index]; }
 
 void object_props::Free_mom0(){ if(mini_mom0 != NULL){ delete [] mini_mom0; mini_mom0 = NULL; } }
 
-void object_props::Create_RAPV(int value){ while(mini_RAPV == NULL){ mini_RAPV = new float[value]; } }
+void object_props::Create_RAPV(int value){ while(mini_RAPV == NULL){ mini_RAPV = new double[value]; } }
 
 void object_props::Set_RAPV(int index, float value){ mini_RAPV[index] = value; }
 
-void object_props::Add_RAPV(int index, float value){ mini_RAPV[index]+=value; }
+void object_props::Add_RAPV(int index, float value){ 
 
-float object_props::Get_RAPV(int index){ return mini_RAPV[index]; }
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      mini_RAPV[index]+=value; 
+
+    } else {
+
+      mini_RAPV[index]+=((value > 0.0) ? 9E30 : -9E30);
+
+    }
+
+  }
+
+}
+
+double object_props::Get_RAPV(int index){ return mini_RAPV[index]; }
 
 void object_props::Free_RAPV(){ if(mini_RAPV != NULL){ delete [] mini_RAPV; mini_RAPV = NULL; } }
 
-void object_props::Create_DECPV(int value){ while(mini_DECPV == NULL){ mini_DECPV = new float[value]; } }
+void object_props::Create_DECPV(int value){ while(mini_DECPV == NULL){ mini_DECPV = new double[value]; } }
 
 void object_props::Set_DECPV(int index, float value){ mini_DECPV[index] = value; }
 
-void object_props::Add_DECPV(int index, float value){ mini_DECPV[index]+=value; }
+void object_props::Add_DECPV(int index, float value){ 
 
-float object_props::Get_DECPV(int index){ return mini_DECPV[index]; }
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      mini_DECPV[index]+=value; 
+
+    } else {
+
+      mini_DECPV[index]+=((value > 0.0) ? 9E30 : -9E30);
+
+    }
+
+  }
+
+}
+
+double object_props::Get_DECPV(int index){ return mini_DECPV[index]; }
 
 void object_props::Free_DECPV(){ if(mini_DECPV != NULL){ delete [] mini_DECPV; mini_DECPV = NULL; } }
 
-void object_props::Create_ospec(int value){ while(mini_obj_spec == NULL){ mini_obj_spec = new float[value]; } }
+void object_props::Create_ospec(int value){ while(mini_obj_spec == NULL){ mini_obj_spec = new double[value]; } }
 
 void object_props::Set_ospec(int index, float value){ mini_obj_spec[index] = value; }
 
-void object_props::Add_ospec(int index, float value){ mini_obj_spec[index]+=value; }
+void object_props::Add_ospec(int index, float value){ 
 
-float object_props::Get_ospec(int index){ return mini_obj_spec[index]; }
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      mini_obj_spec[index]+=value; 
+
+    } else {
+
+      mini_obj_spec[index]+=((value > 0.0) ? 9E30 : -9E30);
+
+    }
+
+  }
+
+}
+
+double object_props::Get_ospec(int index){ return mini_obj_spec[index]; }
 
 void object_props::Free_ospec(){ if(mini_obj_spec != NULL){ delete [] mini_obj_spec; mini_obj_spec = NULL; } }
 
-void object_props::Create_rspec(int value){ while(mini_ref_spec == NULL){ mini_ref_spec = new float[value]; } }
+void object_props::Create_rspec(int value){ while(mini_ref_spec == NULL){ mini_ref_spec = new double[value]; } }
 
 void object_props::Set_rspec(int index, float value){ mini_ref_spec[index] = value; }
 
-void object_props::Add_rspec(int index, float value){ mini_ref_spec[index]+=value; }
+void object_props::Add_rspec(int index, float value){ 
 
-float object_props::Get_rspec(int index){ return mini_ref_spec[index]; }
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      mini_ref_spec[index]+=value; 
+
+    } else {
+
+      mini_ref_spec[index]+=((value > 0.0) ? 9E30 : -9E30);
+
+    }
+
+  }
+
+}
+
+double object_props::Get_rspec(int index){ return mini_ref_spec[index]; }
 
 void object_props::Free_rspec(){ if(mini_ref_spec != NULL){ delete [] mini_ref_spec; mini_ref_spec = NULL; } }
 
-void object_props::Create_vfield(int value){ while(mini_vfield == NULL){ mini_vfield = new float[value]; } }
+void object_props::Create_vfield(int value){ while(mini_vfield == NULL){ mini_vfield = new double[value]; } }
 
 void object_props::Set_vfield(int index, float value){ mini_vfield[index] = value; }
 
-void object_props::Add_vfield(int index, float value){ mini_vfield[index]+=value; }
+void object_props::Add_vfield(int index, float value){ 
 
-float object_props::Get_vfield(int index){ return mini_vfield[index]; }
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      mini_vfield[index]+=value; 
+
+    } else {
+
+      mini_vfield[index]+=((value > 0.0) ? 9E30 : -9E30);
+
+    }
+
+  }
+
+}
+
+double object_props::Get_vfield(int index){ return mini_vfield[index]; }
 
 void object_props::Free_vfield(){ if(mini_vfield != NULL){ delete [] mini_vfield; mini_vfield = NULL; } }
 
@@ -1037,7 +1309,7 @@ void object_props::AddObject(object_props & merged){
 
   int j,k,g,sx,sy,sz;
   vector<int> temp_sparse_reps_grid, temp_sparse_reps_strings;
-  vector<float> temp_mom0, temp_RAPV, temp_DECPV, temp_ref_spec, temp_obj_spec, temp_vfield;
+  vector<double> temp_mom0, temp_RAPV, temp_DECPV, temp_ref_spec, temp_obj_spec, temp_vfield;
     
   if(this != &merged){ 
 
@@ -1431,7 +1703,7 @@ void object_props::AddObject(object_props & merged){
 
 }
 
-void object_props::AddObject(object_props & merged,vector<int> & temp_sparse_reps_grid,vector<int> & temp_sparse_reps_strings,vector<float> & temp_mom0,vector<float> & temp_RAPV,vector<float> & temp_DECPV,vector<float> & temp_ref_spec,vector<float> & temp_obj_spec,vector<float> & temp_vfield){
+void object_props::AddObject(object_props & merged,vector<int> & temp_sparse_reps_grid,vector<int> & temp_sparse_reps_strings,vector<double> & temp_mom0,vector<double> & temp_RAPV,vector<double> & temp_DECPV,vector<double> & temp_ref_spec,vector<double> & temp_obj_spec,vector<double> & temp_vfield){
 
   int j,k,g,sx,sy,sz;
     
@@ -2242,42 +2514,206 @@ void object_props_dbl::ReInit(){
 
 }
 
-void object_props_dbl::AddVoxel(int value){ NOvox+=value; }
+void object_props_dbl::AddVoxel(int value){
 
-void object_props_dbl::AddRa(double value){ ra+=value; }
+  if(!isnan(value)){
 
-void object_props_dbl::AddDec(double value){ dec+=value; }
+    if(!isinf(value)){
 
-void object_props_dbl::AddFreq(double value){ freq+=value; }
+      NOvox+=value; 
+ 
+    } else {
+
+      NOvox+=((value > 0) ? 1000000000 : -1000000000);
+      
+    }
+    
+  }
+
+}
+
+void object_props_dbl::AddRa(double value){ 
+
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      ra+=value; 
+ 
+    } else {
+
+      ra+=((value > 0.0) ? 9E30 : -9E30);
+      
+    }
+    
+  }
+
+}
+
+void object_props_dbl::AddDec(double value){ 
+
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      dec+=value; 
+ 
+    } else {
+
+      dec+=((value > 0.0) ? 9E30 : -9E30);
+      
+    }
+    
+  }
+
+}
+
+void object_props_dbl::AddFreq(double value){ 
+
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      freq+=value; 
+ 
+    } else {
+
+      freq+=((value > 0.0) ? 9E30 : -9E30);
+      
+    }
+    
+  }
+
+}
 
 void object_props_dbl::AddRA_i(double pos, double value){ 
-  ra_i+=(pos * value);
-  if(value >= 0.0){ p_ra_i+=(pos * value); } else { n_ra_i+=(pos * value); }
+
+  pos = pos * value;
+  if(!isnan(pos)){
+
+    if(!isinf(pos)){
+
+      ra_i+=(pos);
+      if(value >= 0.0){ p_ra_i+=((double) pos); } else { n_ra_i+=((double) pos); }
+
+    } else {
+
+      ra_i+=((pos > 0.0) ? 9E30 : -9E30);
+      if(value >= 0.0){ p_ra_i+=9E30; } else { n_ra_i+=-9E30; }      
+
+    }
+
+  }
+
 }
 
 void object_props_dbl::AddDec_i(double pos, double value){ 
-  dec_i+=value; 
-  if(value >= 0.0){ p_dec_i+=(pos * value); } else { n_dec_i+=(pos * value); }
+
+  pos = pos * value;
+  if(!isnan(pos)){
+
+    if(!isinf(pos)){
+
+      dec_i+=(pos);
+      if(value >= 0.0){ p_dec_i+=((double) pos); } else { n_dec_i+=((double) pos); }
+
+    } else {
+
+      dec_i+=((pos > 0.0) ? 9E30 : -9E30);
+      if(value >= 0.0){ p_dec_i+=9E30; } else { n_dec_i+=-9E30; }      
+
+    }
+
+  }
+
 }
 
 void object_props_dbl::AddFreq_i(double pos, double value){ 
-  freq_i+=value; 
-  if(value >= 0.0){ p_freq_i+=(pos * value); } else { n_freq_i+=(pos * value); }
+
+  pos = pos * value;
+  if(!isnan(pos)){
+
+    if(!isinf(pos)){
+
+      freq_i+=(pos);
+      if(value >= 0.0){ p_freq_i+=((double) pos); } else { n_freq_i+=((double) pos); }
+
+    } else {
+
+      freq_i+=((pos > 0.0) ? 9E30 : -9E30);
+      if(value >= 0.0){ p_freq_i+=9E30; } else { n_freq_i+=-9E30; }      
+
+    }
+
+  }
+
 }
 
 void object_props_dbl::AddTotIntens(double value){ 
-  tot_intens+=value; 
-  if(value >= 0.0){ p_tot_intens+=value; } else { n_tot_intens+=value; }
+
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      tot_intens+=(value);
+      if(value >= 0.0){ p_tot_intens+=((double) value); } else { n_tot_intens+=((double) value); }
+
+    } else {
+
+      tot_intens+=((value > 0.0) ? 9E30 : -9E30);
+      if(value >= 0.0){ p_tot_intens+=9E30; } else { n_tot_intens+=-9E30; }      
+
+    }
+
+  }
+
 }
 
-void object_props_dbl::AddAvgIntens(double value){ avg_intens+=value; }
+void object_props_dbl::AddAvgIntens(double value){ 
 
-void object_props_dbl::AddSigmaItens(double value){ sigma_intens+=(value * value); }
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      avg_intens+=value; 
+ 
+    } else {
+
+      avg_intens+=((value > 0.0) ? 9E30 : -9E30);
+      
+    }
+    
+  }
+
+}
+
+void object_props_dbl::AddSigmaItens(double value){ 
+
+  value = value * value;
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      sigma_intens+=value; 
+ 
+    } else {
+
+      freq+=((value > 0.0) ? 8.1E61 : -8.1E61);
+      
+    }
+    
+  }
+
+}
 
 void object_props_dbl::AdjustRange(double value){
     
-  if(value <= min_intens){ min_intens = value; }
-  if(value >= max_intens){ max_intens = value; }
+  if(!isnan(value) && !isinf(value)){
+
+    if(value <= min_intens){ min_intens = value; }
+    if(value >= max_intens){ max_intens = value; }
+
+  }
 
 }
 
@@ -2287,15 +2723,15 @@ void object_props_dbl::CalcProps(){
   int g;
 
   // calculate basic properties
-  ra = ra / NOvox; 
-  dec = dec / NOvox; 
-  freq = freq / NOvox;
+  ra = ra / ((double) NOvox); 
+  dec = dec / ((double) NOvox); 
+  freq = freq / ((double) NOvox);
   ra_i = ra_i / tot_intens;
   dec_i = dec_i / tot_intens;
   freq_i = freq_i / tot_intens;
-  avg_intens = avg_intens / NOvox;
-  rms = sqrtf((sigma_intens / NOvox));
-  sigma_intens = sqrtf(((sigma_intens / NOvox) - (avg_intens * avg_intens)));
+  avg_intens = avg_intens / ((double) NOvox);
+  rms = sqrtf((sigma_intens / ((double) NOvox)));
+  sigma_intens = sqrtf(((sigma_intens / ((double) NOvox)) - (avg_intens * avg_intens)));
   
   // new parameters --- multiple central moment calculations
   p_ra_i = p_ra_i / p_tot_intens;
@@ -2304,7 +2740,7 @@ void object_props_dbl::CalcProps(){
   n_ra_i = n_ra_i / n_tot_intens;
   n_dec_i = n_dec_i / n_tot_intens;
   n_freq_i = n_freq_i / n_tot_intens;
-  if(tot_intens >= 0.0){
+  /*if(tot_intens >= 0.0){
     ra_i = p_ra_i;
     dec_i = p_dec_i;
     freq_i = p_freq_i;
@@ -2312,7 +2748,7 @@ void object_props_dbl::CalcProps(){
     ra_i = n_ra_i;
     dec_i = n_dec_i;
     freq_i = n_freq_i;
-  }
+    }*/
 
   // remove inf's and nan's from the various arrays
   for(g = 0; g < ((srep_size[1] - srep_size[0] + 1) * (srep_size[3] - srep_size[2] + 1)); ++g){
@@ -2588,22 +3024,34 @@ void object_props_dbl::ShowSrep_file(std::fstream& output_file){
 
 void object_props_dbl::AdjustRArange(double value){
 
-  if(value <= ra_min){ ra_min = value; }
-  if(value >= ra_max){ ra_max = value; }
+  if(!isnan(value) && !isinf(value)){
+
+    if(value <= ra_min){ ra_min = value; }
+    if(value >= ra_max){ ra_max = value; }
+
+  }
 
 }
 
 void object_props_dbl::AdjustDECrange(double value){
 
-  if(value <= dec_min){ dec_min = value; }
-  if(value >= dec_max){ dec_max = value; }
+  if(!isnan(value) && !isinf(value)){
+
+    if(value <= dec_min){ dec_min = value; }
+    if(value >= dec_max){ dec_max = value; }
+
+  }
 
 }
 
 void object_props_dbl::AdjustFREQrange(double value){
 
-  if(value <= freq_min){ freq_min = value; }
-  if(value >= freq_max){ freq_max = value; }
+  if(!isnan(value) && !isinf(value)){
+
+    if(value <= freq_min){ freq_min = value; }
+    if(value >= freq_max){ freq_max = value; }
+
+  }
 
 }
 
@@ -2617,17 +3065,17 @@ int object_props_dbl::ShowDECrange(){ return (int) (fabs(dec_max - dec_min) + 1)
 
 int object_props_dbl::ShowFREQrange(){ return (int) (fabs(freq_max - freq_min) + 1); }
 
-int object_props_dbl::GetRAmin(){ return ra_min; }
+int object_props_dbl::GetRAmin(){ return ((int) floor(ra_min + 0.5)); }
 
-int object_props_dbl::GetRAmax(){ return ra_max; }
+int object_props_dbl::GetRAmax(){ return ((int) floor(ra_max + 0.5)); }
 
-int object_props_dbl::GetDECmin(){ return dec_min; }
+int object_props_dbl::GetDECmin(){ return ((int) floor(dec_min + 0.5)); }
 
-int object_props_dbl::GetDECmax(){ return dec_max; }
+int object_props_dbl::GetDECmax(){ return ((int) floor(dec_max + 0.5)); }
 
-int object_props_dbl::GetFREQmin(){ return freq_min; }
+int object_props_dbl::GetFREQmin(){ return ((int) floor(freq_min + 0.5)); }
 
-int object_props_dbl::GetFREQmax(){ return freq_max; }
+int object_props_dbl::GetFREQmax(){ return ((int) floor(freq_max + 0.5)); }
 
 double object_props_dbl::GetRA(){ return ra; }
 
@@ -2643,21 +3091,21 @@ double object_props_dbl::GetFREQi(){ return freq_i; }
 
 double object_props_dbl::GetTI(){ return tot_intens; }
 
-float object_props_dbl::GetRAi_p(){ return p_ra_i; }
+double object_props_dbl::GetRAi_p(){ return p_ra_i; }
 
-float object_props_dbl::GetDECi_p(){ return p_dec_i; }
+double object_props_dbl::GetDECi_p(){ return p_dec_i; }
 
-float object_props_dbl::GetFREQi_p(){ return p_freq_i; }
+double object_props_dbl::GetFREQi_p(){ return p_freq_i; }
 
-float object_props_dbl::GetTI_p(){ return p_tot_intens; }
+double object_props_dbl::GetTI_p(){ return p_tot_intens; }
 
-float object_props_dbl::GetRAi_n(){ return n_ra_i; }
+double object_props_dbl::GetRAi_n(){ return n_ra_i; }
 
-float object_props_dbl::GetDECi_n(){ return n_dec_i; }
+double object_props_dbl::GetDECi_n(){ return n_dec_i; }
 
-float object_props_dbl::GetFREQi_n(){ return n_freq_i; }
+double object_props_dbl::GetFREQi_n(){ return n_freq_i; }
 
-float object_props_dbl::GetTI_n(){ return n_tot_intens; }
+double object_props_dbl::GetTI_n(){ return n_tot_intens; }
 
 double object_props_dbl::GetSigmaI(){ return sigma_intens; }
 
@@ -2737,7 +3185,23 @@ void object_props_dbl::Create_mom0(int value){ while(mini_mom0 == NULL){ mini_mo
 
 void object_props_dbl::Set_mom0(int index, double value){ mini_mom0[index] = value; }
 
-void object_props_dbl::Add_mom0(int index, double value){ mini_mom0[index]+=value; }
+void object_props_dbl::Add_mom0(int index, double value){ 
+
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      mini_mom0[index]+=value; 
+
+    } else {
+
+      mini_mom0[index]+=((value > 0.0) ? 9E30 : -9E30);
+
+    }
+
+  }
+
+}
 
 double object_props_dbl::Get_mom0(int index){ return mini_mom0[index]; }
 
@@ -2747,7 +3211,23 @@ void object_props_dbl::Create_RAPV(int value){ while(mini_RAPV == NULL){ mini_RA
 
 void object_props_dbl::Set_RAPV(int index, double value){ mini_RAPV[index] = value; }
 
-void object_props_dbl::Add_RAPV(int index, double value){ mini_RAPV[index]+=value; }
+void object_props_dbl::Add_RAPV(int index, double value){ 
+
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      mini_RAPV[index]+=value; 
+
+    } else {
+
+      mini_RAPV[index]+=((value > 0.0) ? 9E30 : -9E30);
+
+    }
+
+  }
+
+}
 
 double object_props_dbl::Get_RAPV(int index){ return mini_RAPV[index]; }
 
@@ -2757,7 +3237,23 @@ void object_props_dbl::Create_DECPV(int value){ while(mini_DECPV == NULL){ mini_
 
 void object_props_dbl::Set_DECPV(int index, double value){ mini_DECPV[index] = value; }
 
-void object_props_dbl::Add_DECPV(int index, double value){ mini_DECPV[index]+=value; }
+void object_props_dbl::Add_DECPV(int index, double value){ 
+
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      mini_DECPV[index]+=value; 
+
+    } else {
+
+      mini_DECPV[index]+=((value > 0.0) ? 9E30 : -9E30);
+
+    }
+
+  }
+
+}
 
 double object_props_dbl::Get_DECPV(int index){ return mini_DECPV[index]; }
 
@@ -2767,7 +3263,23 @@ void object_props_dbl::Create_ospec(int value){ while(mini_obj_spec == NULL){ mi
 
 void object_props_dbl::Set_ospec(int index, double value){ mini_obj_spec[index] = value; }
 
-void object_props_dbl::Add_ospec(int index, double value){ mini_obj_spec[index]+=value; }
+void object_props_dbl::Add_ospec(int index, double value){ 
+
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      mini_obj_spec[index]+=value; 
+
+    } else {
+
+      mini_obj_spec[index]+=((value > 0.0) ? 9E30 : -9E30);
+
+    }
+
+  }
+
+}
 
 double object_props_dbl::Get_ospec(int index){ return mini_obj_spec[index]; }
 
@@ -2777,7 +3289,23 @@ void object_props_dbl::Create_rspec(int value){ while(mini_ref_spec == NULL){ mi
 
 void object_props_dbl::Set_rspec(int index, double value){ mini_ref_spec[index] = value; }
 
-void object_props_dbl::Add_rspec(int index, double value){ mini_ref_spec[index]+=value; }
+void object_props_dbl::Add_rspec(int index, double value){ 
+
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      mini_ref_spec[index]+=value; 
+
+    } else {
+
+      mini_ref_spec[index]+=((value > 0.0) ? 9E30 : -9E30);
+
+    }
+
+  }
+
+}
 
 double object_props_dbl::Get_rspec(int index){ return mini_ref_spec[index]; }
 
@@ -2787,7 +3315,23 @@ void object_props_dbl::Create_vfield(int value){ while(mini_vfield == NULL){ min
 
 void object_props_dbl::Set_vfield(int index, double value){ mini_vfield[index] = value; }
 
-void object_props_dbl::Add_vfield(int index, double value){ mini_vfield[index]+=value; }
+void object_props_dbl::Add_vfield(int index, double value){ 
+
+  if(!isnan(value)){
+
+    if(!isinf(value)){
+
+      mini_vfield[index]+=value; 
+
+    } else {
+
+      mini_vfield[index]+=((value > 0.0) ? 9E30 : -9E30);
+
+    }
+
+  }
+
+}
 
 double object_props_dbl::Get_vfield(int index){ return mini_vfield[index]; }
 
