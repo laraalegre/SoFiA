@@ -486,7 +486,7 @@ if Parameters['steps']['doDebug'] and Parameters["steps"]["doMerge"] and NRdet:
 
 if Parameters["steps"]["doMerge"] and NRdet:
 	objects, catParNames, catParUnits, catParFormt = np.array(objects), list(catParNames), list(catParUnits), list(catParFormt)
-	removecols = ["snr_min", "snr_max", "snr_sum", "x_p", "y_p", "z_p", "x_n", "y_n", "z_n", "snr_sum_p", "snr_sum_n", "snr_mean", "snr_std", "snr_rms", "w20", "w50", "w20_cfd", "w50_cfd", "n_pos", "n_neg", "n_x", "n_y"]
+	removecols = ["fill_frac", "snr_min", "snr_max", "snr_sum", "x_p", "y_p", "z_p", "x_n", "y_n", "z_n", "snr_sum_p", "snr_sum_n", "snr_mean", "snr_std", "snr_rms", "w20", "w50", "w20_cfd", "w50_cfd", "n_pos", "n_neg", "n_x", "n_y"]
 	
 	for remcol in removecols:
 		if remcol in catParNames:
