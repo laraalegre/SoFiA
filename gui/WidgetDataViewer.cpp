@@ -1,7 +1,7 @@
 /// ____________________________________________________________________ ///
 ///                                                                      ///
 /// SoFiA 1.2.1 (WidgetDataViewer.cpp) - Source Finding Application      ///
-/// Copyright (C) 2016-2018 Tobias Westmeier                             ///
+/// Copyright (C) 2016-2019 Tobias Westmeier                             ///
 /// ____________________________________________________________________ ///
 ///                                                                      ///
 /// Address:  Tobias Westmeier                                           ///
