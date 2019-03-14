@@ -41,131 +41,131 @@
       Several aspects of reliability calculation can be controlled by the user, including the smoothing kernel to be used in logarithmic parameter space (<code>reliability.kernel</code>) and the reliability threshold (<code>reliability.threshold</code>) to be used to discard all sources whose reliability is below that threshold. The optimal kernel size can also be determined automatically within SoFiA by setting the <code>reliability.autoKernel</code> parameter to <code>true</code> (this is the default behaviour).
     </p>
     
-<table id="steps.doReliability">
-  <tr>
-    <td class="head">Parameter:</td><td class="body2">steps.doReliability</td>
-  </tr>
-  <tr>
-    <td class="head">Type:</td><td class="body"><code>bool</code></td>
-  </tr>
-  <tr>
-    <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
-  </tr>
-  <tr>
-    <td class="head">Default:</td><td class="body"><code>false</code></td>
-  </tr>
-  <tr>
-    <td class="head">Description:</td><td class="body">If set to <code>true</code>, use negative detections to determine the reliability of each source based on the algorithm of <a href="http://adsabs.harvard.edu/abs/2012PASA...29..296S">Serra, Jurek &amp; Fl&ouml;er (2012)</a>.</td>
-  </tr>
-</table>
+    <table id="steps.doReliability">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">steps.doReliability</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, use negative detections to determine the reliability of each source based on the algorithm of <a href="http://adsabs.harvard.edu/abs/2012PASA...29..296S">Serra, Jurek &amp; Fl&ouml;er (2012)</a>.</td>
+        </tr>
+    </table>
 
-<table id="reliability.threshold">
-  <tr>
-    <td class="head">Parameter:</td><td class="body2">reliability.threshold</td>
-  </tr>
-  <tr>
-    <td class="head">Type:</td><td class="body"><code>float</code></td>
-  </tr>
-  <tr>
-    <td class="head">Values:</td><td class="body"><code>0.0</code>&thinsp;&ndash;&thinsp;<code>1.0</code></td>
-  </tr>
-  <tr>
-    <td class="head">Default:</td><td class="body"><code>0.9</code></td>
-  </tr>
-  <tr>
-    <td class="head">Description:</td><td class="body">Discard all sources whose reliability is below this threshold.</td>
-  </tr>
-</table>
+    <table id="reliability.threshold">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">reliability.threshold</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>0.0</code>&thinsp;&ndash;&thinsp;<code>1.0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>0.9</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Discard all sources whose reliability is below this threshold.</td>
+        </tr>
+    </table>
 
-<table id="reliability.kernel">
-  <tr>
-    <td class="head2">Parameter:</td><td class="body3">reliability.kernel</td>
-  </tr>
-  <tr>
-    <td class="head2">Type:</td><td class="body"><code>list</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Values:</td><td class="body"></td>
-  </tr>
-  <tr>
-    <td class="head2">Default:</td><td class="body"><code>[0.15, 0.05, 0.1]</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Description:</td><td class="body">Size of the 3D smoothing kernel in log(parameter) space (see <a href="#reliability.parSpace">reliability.parSpace</a>). This parameter will be ignored if <a href="#reliability.autoKernel">reliability.autoKernel</a> is set to <code>true</code> (default behaviour). Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
-  </tr>
-</table>
+    <table id="reliability.kernel">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">reliability.kernel</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>list</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>[0.15, 0.05, 0.1]</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">Size of the 3D smoothing kernel in log(parameter) space (see <a href="#reliability.parSpace">reliability.parSpace</a>). This parameter will be ignored if <a href="#reliability.autoKernel">reliability.autoKernel</a> is set to <code>true</code> (default behaviour). Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+        </tr>
+    </table>
 
-<table id="reliability.autoKernel">
-  <tr>
-    <td class="head2">Parameter:</td><td class="body3">reliability.autoKernel</td>
-  </tr>
-  <tr>
-    <td class="head2">Type:</td><td class="body"><code>bool</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Default:</td><td class="body"><code>true</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Description:</td><td class="body">This parameter controls whether the kernel size to be used for reliability calculation should be determined automatically (<code>true</code>) or manually (<code>false</code>). Default is <code>true</code>. If set to <code>false</code>, the <a href="#reliability.kernel">reliability.kernel</a> parameter must be used to specify the kernel size. Note that this is a <em>hidden</em> option not accessible through the graphical user interface. Also see the <a href="#reliability.negPerBin">reliability.negPerBin</a> and <a href="#reliability.skellamTol">reliability.skellamTol</a> parameters.</td>
-  </tr>
-</table>
+    <table id="reliability.autoKernel">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">reliability.autoKernel</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>true</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">This parameter controls whether the kernel size to be used for reliability calculation should be determined automatically (<code>true</code>) or manually (<code>false</code>). Default is <code>true</code>. If set to <code>false</code>, the <a href="#reliability.kernel">reliability.kernel</a> parameter must be used to specify the kernel size. Note that this is a <em>hidden</em> option not accessible through the graphical user interface. Also see the <a href="#reliability.negPerBin">reliability.negPerBin</a> and <a href="#reliability.skellamTol">reliability.skellamTol</a> parameters.</td>
+        </tr>
+    </table>
 
-<table id="reliability.scaleKernel">
-  <tr>
-    <td class="head">Parameter:</td><td class="body2">reliability.scaleKernel</td>
-  </tr>
-  <tr>
-    <td class="head">Type:</td><td class="body"><code>float</code></td>
-  </tr>
-  <tr>
-    <td class="head">Values:</td><td class="body"><code>&ge; 0.0</code></td>
-  </tr>
-  <tr>
-    <td class="head">Default:</td><td class="body"><code>0.5</code></td>
-  </tr>
-  <tr>
-    <td class="head">Description:</td><td class="body">If <code>autoKernel</code> is set to <code>true</code>, then this parameter will determine whether the kernel size will be set automatically by SoFiA (<code>0</code>) or scaled by the given factor (<code>&gt;&nbsp;0</code>). If <code>autoKernel</code> is <code>false</code>, this option will be ignored.</td>
-  </tr>
-</table>
+    <table id="reliability.scaleKernel">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">reliability.scaleKernel</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>&ge; 0.0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>0.5</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If <code>autoKernel</code> is set to <code>true</code>, then this parameter will determine whether the kernel size will be set automatically by SoFiA (<code>0</code>) or scaled by the given factor (<code>&gt;&nbsp;0</code>). If <code>autoKernel</code> is <code>false</code>, this option will be ignored.</td>
+        </tr>
+    </table>
 
-<table id="reliability.makePlot">
-  <tr>
-    <td class="head">Parameter:</td><td class="body2">reliability.makePlot</td>
-  </tr>
-  <tr>
-    <td class="head">Type:</td><td class="body"><code>bool</code></td>
-  </tr>
-  <tr>
-    <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
-  </tr>
-  <tr>
-    <td class="head">Default:</td><td class="body"><code>false</code></td>
-  </tr>
-  <tr>
-    <td class="head">Description:</td><td class="body">If set to <code>true</code>, PDF files showing the distribution of positive and negative detections in parameter space will be created for diagnostic purposes.</td>
-  </tr>
-</table>
+    <table id="reliability.makePlot">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">reliability.makePlot</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, PDF files showing the distribution of positive and negative detections in parameter space will be created for diagnostic purposes.</td>
+        </tr>
+    </table>
 
-<table id="reliability.parSpace">
-  <tr>
-    <td class="head2">Parameter:</td><td class="body3">reliability.parSpace</td>
-  </tr>
-  <tr>
-    <td class="head2">Type:</td><td class="body"><code>list</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Values:</td><td class="body"></td>
-  </tr>
-  <tr>
-    <td class="head2">Default:</td><td class="body"><code>['n_pix', 'snr_sum', 'snr_max']</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Description:</td><td class="body">Defines the 3D parameter space in which to determine reliability. It is strongly recommended to use the pre-defined default settings. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
-  </tr>
-</table>
+    <table id="reliability.parSpace">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">reliability.parSpace</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>list</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>['n_pix', 'snr_sum', 'snr_max']</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">Defines the 3D parameter space in which to determine reliability. It is strongly recommended to use the pre-defined default settings. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+        </tr>
+    </table>
 
     <table id="reliability.fMin">
         <tr>
@@ -185,77 +185,77 @@
         </tr>
     </table>
 
-<table id="reliability.negPerBin">
-  <tr>
-    <td class="head2">Parameter:</td><td class="body3">reliability.negPerBin</td>
-  </tr>
-  <tr>
-    <td class="head2">Type:</td><td class="body"><code>float</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Values:</td><td class="body">&ge; <code>1.0</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Default:</td><td class="body"><code>1.0</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Description:</td><td class="body">This parameter defines the minimum number of negative detections per bin in parameter space required for the automatic kernel size determination. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
-  </tr>
-</table>
+    <table id="reliability.negPerBin">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">reliability.negPerBin</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body">&ge; <code>1.0</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>1.0</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">This parameter defines the minimum number of negative detections per bin in parameter space required for the automatic kernel size determination. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+        </tr>
+    </table>
 
-<table id="reliability.skellamTol">
-  <tr>
-    <td class="head2">Parameter:</td><td class="body3">reliability.skellamTol</td>
-  </tr>
-  <tr>
-    <td class="head2">Type:</td><td class="body"><code>float</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Values:</td><td class="body"></td>
-  </tr>
-  <tr>
-    <td class="head2">Default:</td><td class="body"><code>-0.5</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Description:</td><td class="body">Tolerance parameter for reliability kernel size determination. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
-  </tr>
-</table>
+    <table id="reliability.skellamTol">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">reliability.skellamTol</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>-0.5</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">Tolerance parameter for reliability kernel size determination. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+        </tr>
+    </table>
 
-<table id="reliability.usecov">
-  <tr>
-    <td class="head2">Parameter:</td><td class="body3">reliability.usecov</td>
-  </tr>
-  <tr>
-    <td class="head2">Type:</td><td class="body"><code>bool</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Default:</td><td class="body"><code>true</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Description:</td><td class="body">Controls whether to use the full covariance kernel when smoothing the distribution of detections in parameter space. The default is <code>true</code>. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
-  </tr>
-</table>
+    <table id="reliability.usecov">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">reliability.usecov</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>true</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">Controls whether to use the full covariance kernel when smoothing the distribution of detections in parameter space. The default is <code>true</code>. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+        </tr>
+    </table>
 
-<table id="reliability.logPars">
-  <tr>
-    <td class="head2">Parameter:</td><td class="body3">reliability.logPars</td>
-  </tr>
-  <tr>
-    <td class="head2">Type:</td><td class="body"><code>list</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Values:</td><td class="body"></td>
-  </tr>
-  <tr>
-    <td class="head2">Default:</td><td class="body"><code>[1,1,1]</code></td>
-  </tr>
-  <tr>
-    <td class="head2">Description:</td><td class="body">For each source parameter defined in <a href="#reliability.parSpace">reliability.parSpace</a> this parameter defines whether the reliability analysis is carried out in linear space (<code>0</code>) or in logarithmic space (<code>1</code>). Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
-  </tr>
-</table>
+    <table id="reliability.logPars">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">reliability.logPars</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>list</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>[1,1,1]</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">For each source parameter defined in <a href="#reliability.parSpace">reliability.parSpace</a> this parameter defines whether the reliability analysis is carried out in linear space (<code>0</code>) or in logarithmic space (<code>1</code>). Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+        </tr>
+    </table>
     
     <h3>Parameterisation</h3>
     
@@ -288,7 +288,7 @@
             <td class="head">Description:</td><td class="body">If set to <code>true</code>, run the mask optimisation and source parameterisation module.</td>
         </tr>
     </table>
-    
+
     <table id="parameters.fitBusyFunction">
         <tr>
             <td class="head">Parameter:</td><td class="body2">parameters.fitBusyFunction</td>
@@ -306,7 +306,7 @@
             <td class="head">Description:</td><td class="body">Fit the Busy Function (<a href="http://adsabs.harvard.edu/abs/2014MNRAS.438.1176W">Westmeier et al. 2014</a>) to the integrated spectrum of each source for more accurate parameterisation.</td>
         </tr>
     </table>
-    
+
     <table id="parameters.optimiseMask">
         <tr>
             <td class="head">Parameter:</td><td class="body2">parameters.optimiseMask</td>
@@ -324,7 +324,7 @@
             <td class="head">Description:</td><td class="body">Run the mask optimisation algorithm based on fitting and growing ellipses to achieve more accurate flux measurements. Note that the improved integrated fluxes obtained by this algorithm will come at the cost of increased statistical uncertainties in most source parameters (also see <a href="#parameters.dilateMask">parameters.dilateMask</a>).</td>
         </tr>
     </table>
-    
+
     <table id="parameters.dilateMask">
         <tr>
             <td class="head">Parameter:</td><td class="body2">parameters.dilateMask</td>
@@ -342,7 +342,7 @@
             <td class="head">Description:</td><td class="body">Run the mask optimisation algorithm based on spatially dilating the initial mask to achieve more accurate flux measurements. The advantage of this algorithm is that it preserves the source shape (also see <a href="#parameters.optimiseMask">parameters.optimiseMask</a>).</td>
         </tr>
     </table>
-    
+
     <table id="parameters.dilateThreshold">
         <tr>
             <td class="head2">Parameter:</td><td class="body3">parameters.dilateThreshold</td>
@@ -360,7 +360,7 @@
             <td class="head2">Description:</td><td class="body">No idea what this parameter does... Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
         </tr>
     </table>
-    
+
     <table id="parameters.dilatePixMax">
         <tr>
             <td class="head2">Parameter:</td><td class="body3">parameters.dilatePixMax</td>
@@ -375,13 +375,13 @@
             <td class="head2">Default:</td><td class="body"><code>10</code></td>
         </tr>
         <tr>
-            <td class="head2">Description:</td><td class="body">No idea what this parameter does... Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+            <td class="head2">Description:</td><td class="body">Sets the maximum mask dilation (in pixels) in the spatial domain. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
         </tr>
     </table>
-    
-    <table id="parameters.dilateChan">
+
+    <table id="parameters.dilateChanMax">
         <tr>
-            <td class="head2">Parameter:</td><td class="body3">parameters.dilateChan</td>
+            <td class="head2">Parameter:</td><td class="body3">parameters.dilateChanMax</td>
         </tr>
         <tr>
             <td class="head2">Type:</td><td class="body"><code>int</code></td>
@@ -390,13 +390,13 @@
             <td class="head2">Values:</td><td class="body"></td>
         </tr>
         <tr>
-            <td class="head2">Default:</td><td class="body"><code>1</code></td>
+            <td class="head2">Default:</td><td class="body"><code>3</code></td>
         </tr>
         <tr>
-            <td class="head2">Description:</td><td class="body">No idea what this parameter does... Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
+            <td class="head2">Description:</td><td class="body">Sets the maximum mask dilation along the spectral axis. Note that this is a <em>hidden</em> option not accessible through the graphical user interface.</td>
         </tr>
     </table>
-    
+
     <table id="parameters.getUncertainties">
         <tr>
             <td class="head2">Parameter:</td><td class="body3">parameters.getUncertainties</td>

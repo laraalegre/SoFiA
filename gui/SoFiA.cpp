@@ -3337,9 +3337,9 @@ void SoFiA::createInterface()
 
 
 
-// ----------------------------------------
-// Function to create What's This? entries:
-// ----------------------------------------
+// ------------------------------------------
+// Function to create 'What's This?' entries:
+// ------------------------------------------
 
 void SoFiA::createWhatsThis()
 {

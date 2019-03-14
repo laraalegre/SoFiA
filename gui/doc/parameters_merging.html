@@ -34,7 +34,7 @@
     </p>
     
     <p>
-      Merging of pixels into sources is controlled by two sets of parameters. The first set defines the maximum separation that two detected pixels are allowed to have in order to be considered as part of the same source. This maximum separation is controlled independently for each dimension, using the <code>merge.radiusX</code>, <code>merge.radiusY</code> and <code>merge.radiusZ</code> parameters. Once all pixels have been merged into sources, the size of each source is checked (again independently in each dimension), and sources falling below the size thresholds (specified with <code>merge.minSizeX</code>, <code>merge.minSizeX</code> and <code>merge.minSizeX</code>) are discarded. This allows many spurious detections, such as bright noise peaks, to be eliminated based on their small size.
+      Merging of pixels into sources is controlled by two sets of parameters. The first set defines the maximum separation that two detected pixels are allowed to have in order to be considered as part of the same source. This maximum separation is controlled independently for each dimension, using the <code>merge.radiusX</code>, <code>merge.radiusY</code> and <code>merge.radiusZ</code> parameters. Once all pixels have been merged into sources, the size of each source is checked (again independently in each dimension), and sources falling below the size thresholds (specified with <code>merge.minSizeX</code>, <code>merge.minSizeX</code> and <code>merge.minSizeX</code>) are discarded. This allows many spurious detections, such as bright noise peaks, to be eliminated based on their small size. Note that several additional filtering options are available, but these are less frequently needed and mostly unavailable through the GUI.
     </p>
     
     <p>
@@ -239,7 +239,7 @@
             <td class="head2">Default:</td><td class="body"><code>1</code></td>
         </tr>
         <tr>
-            <td class="head2">Description:</td><td class="body">Minimum required number of voxels of genuine sources after merging. Sources below this limit will be discarded. Note that this is a hidden option not available in the GUI.</td>
+            <td class="head2">Description:</td><td class="body">Minimum required number of voxels of genuine sources after merging. Sources below this limit will be discarded. Note that this is a <em>hidden</em> option not available in the GUI.</td>
         </tr>
     </table>
 
@@ -257,7 +257,7 @@
             <td class="head2">Default:</td><td class="body"><code>-1</code></td>
         </tr>
         <tr>
-            <td class="head2">Description:</td><td class="body">Maximum allowed number of voxels of genuine sources after merging. Sources above this limit will be discarded. Set to -1 to disable maximum size filtering. Note that this is a hidden option not available in the GUI.</td>
+            <td class="head2">Description:</td><td class="body">Maximum allowed number of voxels of genuine sources after merging. Sources above this limit will be discarded. Set to -1 to disable maximum size filtering. Note that this is a <em>hidden</em> option not available in the GUI.</td>
         </tr>
     </table>
 
@@ -275,7 +275,7 @@
             <td class="head2">Default:</td><td class="body"><code>1</code></td>
         </tr>
         <tr>
-            <td class="head2">Description:</td><td class="body">Minimum required number of lines-of-sight (i.e. spatial pixels) of genuine sources after merging. Sources below this limit will be discarded. Note that this is a hidden option not available in the GUI.</td>
+            <td class="head2">Description:</td><td class="body">Minimum required number of lines-of-sight (i.e. spatial pixels) of genuine sources after merging. Sources below this limit will be discarded. Note that this is a <em>hidden</em> option not available in the GUI.</td>
         </tr>
     </table>
 
@@ -293,7 +293,7 @@
             <td class="head2">Default:</td><td class="body"><code>-1</code></td>
         </tr>
         <tr>
-            <td class="head2">Description:</td><td class="body">Maximum allowed number of lines-of-sight (i.e. spatial pixels) of genuine sources after merging. Sources above this limit will be discarded. Set to -1 to disable maximum size filtering. Note that this is a hidden option not available in the GUI.</td>
+            <td class="head2">Description:</td><td class="body">Maximum allowed number of lines-of-sight (i.e. spatial pixels) of genuine sources after merging. Sources above this limit will be discarded. Set to -1 to disable maximum size filtering. Note that this is a <em>hidden</em> option not available in the GUI.</td>
         </tr>
     </table>
 
@@ -311,7 +311,7 @@
             <td class="head2">Default:</td><td class="body"><code>-1</code></td>
         </tr>
         <tr>
-            <td class="head2">Description:</td><td class="body">No idea what this does. Note that this is a hidden option not available in the GUI.</td>
+            <td class="head2">Description:</td><td class="body">No idea what this does. Note that this is a <em>hidden</em> option not available in the GUI.</td>
         </tr>
     </table>
 
@@ -329,7 +329,7 @@
             <td class="head2">Default:</td><td class="body"><code>2</code></td>
         </tr>
         <tr>
-            <td class="head2">Description:</td><td class="body">No idea what this does. Note that this is a hidden option not available in the GUI.</td>
+            <td class="head2">Description:</td><td class="body">No idea what this does. Note that this is a <em>hidden</em> option not available in the GUI.</td>
         </tr>
     </table>
 
@@ -347,7 +347,7 @@
             <td class="head2">Default:</td><td class="body"><code>-9e+30</code></td>
         </tr>
         <tr>
-            <td class="head2">Description:</td><td class="body">Probably some minimum flux limit. Note that this is a hidden option not available in the GUI.</td>
+            <td class="head2">Description:</td><td class="body">Probably some minimum flux limit. Note that this is a <em>hidden</em> option not available in the GUI.</td>
         </tr>
     </table>
 
@@ -365,7 +365,7 @@
             <td class="head2">Default:</td><td class="body"><code>9e+30</code></td>
         </tr>
         <tr>
-            <td class="head2">Description:</td><td class="body">Probably some maximum flux limit. Note that this is a hidden option not available in the GUI.</td>
+            <td class="head2">Description:</td><td class="body">Probably some maximum flux limit. Note that this is a <em>hidden</em> option not available in the GUI.</td>
         </tr>
     </table>
 
