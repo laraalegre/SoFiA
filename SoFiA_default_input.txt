@@ -48,7 +48,7 @@ import.subcubeMode              =       pixel
 # Flagging module
 
 flag.regions                    =       []
-flag.file                       =
+flag.file                       =       
 
 
 # Optical finder module
@@ -89,7 +89,7 @@ scaleNoise.interpolation        =       none
 # Flag errors module
 
 flagErrors.flgthr               =       2.5
-flagErrors.dilside		=	3
+flagErrors.dilside              =       3
 
 
 # 2D-1D wavelet finder module
@@ -140,10 +140,10 @@ merge.radiusX                   =       3
 merge.radiusY                   =       3
 merge.radiusZ                   =       3
 merge.minSizeX                  =       3
-merge.maxSizeX                  =       -1
 merge.minSizeY                  =       3
-merge.maxSizeY                  =       -1
 merge.minSizeZ                  =       2
+merge.maxSizeX                  =       -1
+merge.maxSizeY                  =       -1
 merge.maxSizeZ                  =       -1
 merge.minVoxels                 =       1
 merge.maxVoxels                 =       -1
@@ -151,8 +151,8 @@ merge.minLoS                    =       1
 merge.maxLoS                    =       -1
 merge.minFill                   =       -1
 merge.maxFill                   =       2
-merge.minIntens                 =       -9E30
-merge.maxIntens                 =       9E30
+merge.minIntens                 =       -9e+30
+merge.maxIntens                 =       9e+30
 merge.positivity                =       false
 
 

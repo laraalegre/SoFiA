@@ -457,8 +457,10 @@ private:
 	
 	QGroupBox    *tabMergingGroupBox1;
 	QWidget      *tabMergingWidget1Left;
+	QWidget      *tabMergingWidget1Middle;
 	QWidget      *tabMergingWidget1Right;
 	QFormLayout  *tabMergingForm1Left;
+	QFormLayout  *tabMergingForm1Middle;
 	QFormLayout  *tabMergingForm1Right;
 	QHBoxLayout  *tabMergingForm1Layout;
 	
@@ -468,6 +470,9 @@ private:
 	QSpinBox     *tabMergingFieldMinSizeX;
 	QSpinBox     *tabMergingFieldMinSizeY;
 	QSpinBox     *tabMergingFieldMinSizeZ;
+	QSpinBox     *tabMergingFieldMaxSizeX;
+	QSpinBox     *tabMergingFieldMaxSizeY;
+	QSpinBox     *tabMergingFieldMaxSizeZ;
 	
 	QGroupBox    *tabMergingGroupBox2;
 	QFormLayout  *tabMergingForm2;

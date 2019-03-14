@@ -62,7 +62,7 @@
             <td class="head">Description:</td><td class="body">If set to <code>true</code>, pixels detected by the source finder will be merged into final sources based on user-defined separation and size criteria.</td>
         </tr>
     </table>
-    
+
     <table id="merge.radiusX">
         <tr>
             <td class="head">Parameter:</td><td class="body2">merge.radiusX</td>
@@ -80,7 +80,7 @@
             <td class="head">Description:</td><td class="body">Merging radius in first dimension in pixels. Note that a value of <code>0</code> means that no merging takes place and each detected pixel is retained as a separate source.</td>
         </tr>
     </table>
-    
+
     <table id="merge.radiusY">
         <tr>
             <td class="head">Parameter:</td><td class="body2">merge.radiusY</td>
@@ -98,7 +98,7 @@
             <td class="head">Description:</td><td class="body">Merging radius in second dimension in pixels. Note that a value of <code>0</code> means that no merging takes place and each detected pixel is retained as a separate source.</td>
         </tr>
     </table>
-    
+
     <table id="merge.radiusZ">
         <tr>
             <td class="head">Parameter:</td><td class="body2">merge.radiusZ</td>
@@ -116,7 +116,7 @@
             <td class="head">Description:</td><td class="body">Merging radius in third dimension in pixels. Note that a value of <code>0</code> means that no merging takes place and each detected pixel is retained as a separate source.</td>
         </tr>
     </table>
-    
+
     <table id="merge.minSizeX">
         <tr>
             <td class="head">Parameter:</td><td class="body2">merge.minSizeX</td>
@@ -134,7 +134,7 @@
             <td class="head">Description:</td><td class="body">Minimum required extent in first dimension of genuine sources after merging. Sources below this size will be discarded.</td>
         </tr>
     </table>
-    
+
     <table id="merge.minSizeY">
         <tr>
             <td class="head">Parameter:</td><td class="body2">merge.minSizeY</td>
@@ -152,7 +152,7 @@
             <td class="head">Description:</td><td class="body">Minimum required extent in second dimension of genuine sources after merging. Sources below this size will be discarded.</td>
         </tr>
     </table>
-    
+
     <table id="merge.minSizeZ">
         <tr>
             <td class="head">Parameter:</td><td class="body2">merge.minSizeZ</td>
@@ -170,7 +170,205 @@
             <td class="head">Description:</td><td class="body">Minimum required extent in third dimension of genuine sources after merging. Sources below this size will be discarded.</td>
         </tr>
     </table>
-    
+
+    <table id="merge.maxSizeX">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">merge.maxSizeX</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>-1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>-1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Maximum allowed extent of genuine sources in first dimension after merging. Sources above this size will be discarded. Set to -1 to disable maximum size filtering.</td>
+        </tr>
+    </table>
+
+    <table id="merge.maxSizeY">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">merge.maxSizeY</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>-1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>-1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Maximum allowed extent of genuine sources in second dimension after merging. Sources above this size will be discarded. Set to -1 to disable maximum size filtering.</td>
+        </tr>
+    </table>
+
+    <table id="merge.maxSizeZ">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">merge.maxSizeZ</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>-1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>-1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Maximum allowed extent of genuine sources in third dimension after merging. Sources above this size will be discarded. Set to -1 to disable maximum size filtering.</td>
+        </tr>
+    </table>
+
+    <table id="merge.minVoxels">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">merge.minVoxels</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body">&ge; <code>1</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>1</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">Minimum required number of voxels of genuine sources after merging. Sources below this limit will be discarded. Note that this is a hidden option not available in the GUI.</td>
+        </tr>
+    </table>
+
+    <table id="merge.maxVoxels">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">merge.maxVoxels</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body">&ge; <code>-1</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>-1</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">Maximum allowed number of voxels of genuine sources after merging. Sources above this limit will be discarded. Set to -1 to disable maximum size filtering. Note that this is a hidden option not available in the GUI.</td>
+        </tr>
+    </table>
+
+    <table id="merge.minLoS">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">merge.minLoS</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body">&ge; <code>1</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>1</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">Minimum required number of lines-of-sight (i.e. spatial pixels) of genuine sources after merging. Sources below this limit will be discarded. Note that this is a hidden option not available in the GUI.</td>
+        </tr>
+    </table>
+
+    <table id="merge.maxLoS">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">merge.maxLoS</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body">&ge; <code>-1</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>-1</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">Maximum allowed number of lines-of-sight (i.e. spatial pixels) of genuine sources after merging. Sources above this limit will be discarded. Set to -1 to disable maximum size filtering. Note that this is a hidden option not available in the GUI.</td>
+        </tr>
+    </table>
+
+    <table id="merge.minFill">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">merge.minFill</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body">&ge; <code>-1</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>-1</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">No idea what this does. Note that this is a hidden option not available in the GUI.</td>
+        </tr>
+    </table>
+
+    <table id="merge.maxFill">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">merge.maxFill</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>2</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">No idea what this does. Note that this is a hidden option not available in the GUI.</td>
+        </tr>
+    </table>
+
+    <table id="merge.minIntens">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">merge.minIntens</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>-9e+30</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">Probably some minimum flux limit. Note that this is a hidden option not available in the GUI.</td>
+        </tr>
+    </table>
+
+    <table id="merge.maxIntens">
+        <tr>
+            <td class="head2">Parameter:</td><td class="body3">merge.maxIntens</td>
+        </tr>
+        <tr>
+            <td class="head2">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Values:</td><td class="body"></td>
+        </tr>
+        <tr>
+            <td class="head2">Default:</td><td class="body"><code>9e+30</code></td>
+        </tr>
+        <tr>
+            <td class="head2">Description:</td><td class="body">Probably some maximum flux limit. Note that this is a hidden option not available in the GUI.</td>
+        </tr>
+    </table>
+
     <table id="merge.positivity">
         <tr>
             <td class="head">Parameter:</td><td class="body2">merge.positivity</td>

@@ -1,6 +1,6 @@
 # SoFiA parameter file
 # Creator: SoFiA 1.2.1-beta
-# Date:    Wed Mar 28 06:11:51 2018
+# Date:    Thu Mar 14 04:04:55 2019
 
 CNHI.maxScale	=	-1
 CNHI.medianTest	=	true
@@ -20,6 +20,8 @@ SCfind.threshold	=	3.0
 SCfind.verbose	=	true
 flag.file	=	
 flag.regions	=	[]
+flagErrors.dilside	=	3
+flagErrors.flgthr	=	2.5
 import.inFile	=	
 import.invertData	=	false
 import.maskFile	=	
@@ -28,9 +30,20 @@ import.subcube	=	[]
 import.subcubeMode	=	pixel
 import.weightsFile	=	
 import.weightsFunction	=	
+merge.maxFill	=	2
+merge.maxIntens	=	9E30
+merge.maxLoS	=	-1
+merge.maxSizeX	=	-1
+merge.maxSizeY	=	-1
+merge.maxSizeZ	=	-1
+merge.maxVoxels	=	-1
+merge.minFill	=	-1
+merge.minIntens	=	-9E30
+merge.minLoS	=	1
 merge.minSizeX	=	5
 merge.minSizeY	=	5
 merge.minSizeZ	=	4
+merge.minVoxels	=	1
 merge.positivity	=	false
 merge.radiusX	=	1
 merge.radiusY	=	1
@@ -82,6 +95,7 @@ steps.doCNHI	=	false
 steps.doCubelets	=	false
 steps.doDebug	=	false
 steps.doFlag	=	false
+steps.doFlagErrors	=	false
 steps.doMerge	=	true
 steps.doMom0	=	true
 steps.doMom1	=	true
