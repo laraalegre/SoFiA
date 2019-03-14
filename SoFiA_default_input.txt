@@ -169,7 +169,7 @@ parameters.dilateChanMax        =       3
 
 # Reliability module
 
-reliability.parSpace            =       ['n_pix', 'snr_sum', 'snr_max']
+reliability.parSpace            =       ['snr_mean', 'snr_sum', 'snr_max']
 reliability.logPars             =       [1, 1, 1]
 reliability.autoKernel          =       true
 reliability.scaleKernel         =       0.5
