@@ -1,12 +1,8 @@
-<img align="right" src="https://github.com/SoFiA-Admin/SoFiA/wiki/Images/logo_sofia.png" width="120" height="45" alt="SoFiA logo" />
-
 SoFiA
 =====
 
-Introduction 🍸
---------------
-
-<img align="right" src="https://raw.githubusercontent.com/wiki/SoFiA-Admin/SoFiA/Images/sofia_screenshot.png" width="232" height="230" alt="SoFiA screenshot" />
+Introduction
+------------
 
 SoFiA, the Source Finding Application, is a new **HI source finding pipeline** 
 intended to find and parametrise galaxies in HI data cubes. SoFiA can be 
@@ -23,8 +19,8 @@ word `subscribe` in the e-mail body (note that the e-mail subject will be
 ignored).
 
 
-Requirements 📋
---------------
+Requirements
+------------
 
 The following packages and libraries will be required to install and run 
 SoFiA:
@@ -60,8 +56,8 @@ _Just as an example, on an Ubuntu system with Qt4 the `zlib1g-dev`,
 `libqt4-dev` and `qt4-qmake` packages must be installed as well._
 
 
-Installation 🔧
---------------
+Installation
+------------
 
 To install SoFiA on your computer, open a terminal window and change into the 
 folder where the downloaded file was saved. Then follow the steps below.
@@ -102,8 +98,8 @@ folder where the downloaded file was saved. Then follow the steps below.
     `SoFiA &`
 
 
-Problems 🚩
-----------
+Problems
+--------
 
 If you encounter problems when running the setup script, it is likely 
 that you are either missing one of the required packages and libraries or 
@@ -118,16 +114,16 @@ commonly encountered problems:
 * https://github.com/SoFiA-Admin/SoFiA/wiki/SoFiA-Troubleshooting
 
 
-Documentation 🗃️
----------------
+Documentation
+-------------
 
 SoFiA comes with its own built-in help browser that can be launched from 
 the help menu in the user interface. Alternatively, you can use your web 
 browser to open the index.html file located in the gui/doc/ sub-folder.
 
 
-Version history ✨️
------------------
+Version history
+---------------
 
 * SoFiA 1.2.0
   * Released 24/05/2018
@@ -228,14 +224,14 @@ Version history ✨️
     help system; may still contain bugs and errors.
 
 
-Copyright and licence 🔓
------------------------
+Copyright and licence
+---------------------
 
 SoFiA was created by the following people: Lars Flöer, Nadine Giese, Russell 
 Jurek, Martin Meyer, Attila Popping, Paolo Serra, Tobias Westmeier, and 
 Benjamin Winkel.
 
-© 2018 The SoFiA Authors
+© 2019 The SoFiA Authors
 
 This programme is free software: you can redistribute it and/or modify it 
 under the terms of the GNU General Public License as published by the Free 
