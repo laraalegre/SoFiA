@@ -630,7 +630,8 @@ int SoFiA::loadFile(const QString &fileName, QString &version)
 	if     (tabInFilterGroupBox1->isChecked()) toolBoxIF->setCurrentIndex(toolBoxIF->indexOf(tabInFilterGroupBox1));
 	else if(tabInFilterGroupBox2->isChecked()) toolBoxIF->setCurrentIndex(toolBoxIF->indexOf(tabInFilterGroupBox2));
 	else if(tabInFilterGroupBox3->isChecked()) toolBoxIF->setCurrentIndex(toolBoxIF->indexOf(tabInFilterGroupBox3));
-	else                                       toolBoxIF->setCurrentIndex(toolBoxIF->indexOf(tabInFilterGroupBox1));
+	else if(tabInFilterGroupBox4->isChecked()) toolBoxIF->setCurrentIndex(toolBoxIF->indexOf(tabInFilterGroupBox4));
+	else                                       toolBoxIF->setCurrentIndex(toolBoxIF->indexOf(tabInFilterGroupBox2));
 	// Source finders:
 	if     (tabSourceFindingGroupBox1->isChecked()) toolBoxSF->setCurrentIndex(toolBoxSF->indexOf(tabSourceFindingGroupBox1));
 	else if(tabSourceFindingGroupBox2->isChecked()) toolBoxSF->setCurrentIndex(toolBoxSF->indexOf(tabSourceFindingGroupBox2));
@@ -807,16 +808,20 @@ void SoFiA::updateFields()
 	tabSourceFindingFieldRmsMode2->setEnabled(tabSourceFindingFieldClipMethod->currentIndex() == 0 and tabSourceFindingGroupBox2->isChecked());
 	tabSourceFindingFieldFluxRange2->setEnabled(tabSourceFindingFieldClipMethod->currentIndex() == 0 and tabSourceFindingFieldRmsMode2->currentIndex() != 0 and tabSourceFindingGroupBox2->isChecked());
 	
+	// Ensure that artefact filtering threshold is positive
+	n = tabInFilterFieldArtefactsThreshold->text().toDouble();
+	if(n < 0.0) tabInFilterFieldArtefactsThreshold->setText("0.0");
+		
 	// Disable flux range field in threshold finder if RMS mode is 'negative':
 	tabSourceFindingFieldFluxRange->setEnabled(tabSourceFindingFieldRmsMode->currentIndex() != 0 and tabSourceFindingGroupBox1->isChecked());
 	
 	// Disable flux range field in noise scaling module if RMS statistic is 'negative':
 	tabInFilterFieldFluxRange->setEnabled(tabInFilterFieldStatistic->currentIndex() != 0 and tabInFilterGroupBox2->isChecked());
 	
-	// Enable/disable writing of filtered cube when no filters are selected:
-	tabOutputButtonFilteredCube->setEnabled(tabInFilterGroupBox1->isChecked() or tabInFilterGroupBox2->isChecked() or tabInFilterGroupBox3->isChecked() or not (tabInputFieldWeights->text()).isEmpty() or not (tabInputFieldWeightsFunction->text()).isEmpty());
+	// Disable writing of filtered cube when no filters are selected:
+	tabOutputButtonFilteredCube->setEnabled(tabInFilterGroupBox1->isChecked() or tabInFilterGroupBox2->isChecked() or tabInFilterGroupBox3->isChecked() or tabInFilterGroupBox4->isChecked() or not (tabInputFieldWeights->text()).isEmpty() or not (tabInputFieldWeightsFunction->text()).isEmpty());
 	
-	// Enable/disable writing of noise cube when noise scaling is not set:
+	// Disable writing of noise cube when noise scaling is not set:
 	tabOutputButtonNoiseCube->setEnabled(tabInFilterGroupBox2->isChecked());
 	
 	// Check reliability threshold slider position:
@@ -879,8 +884,10 @@ void SoFiA::updateFields()
 	else                                         toolBoxIF->setItemIcon(0, iconTaskReject);
 	if(tabInFilterGroupBox2->isChecked())        toolBoxIF->setItemIcon(1, iconTaskComplete);
 	else                                         toolBoxIF->setItemIcon(1, iconTaskReject);
-	if(tabInFilterGroupBox3->isChecked())        toolBoxIF->setItemIcon(2, iconTaskComplete);
+	if(tabInFilterGroupBox4->isChecked())        toolBoxIF->setItemIcon(2, iconTaskComplete);
 	else                                         toolBoxIF->setItemIcon(2, iconTaskReject);
+	if(tabInFilterGroupBox3->isChecked())        toolBoxIF->setItemIcon(3, iconTaskComplete);
+	else                                         toolBoxIF->setItemIcon(3, iconTaskReject);
 	
 	if(tabSourceFindingGroupBox1->isChecked())   toolBoxSF->setItemIcon(0, iconTaskComplete);
 	else                                         toolBoxSF->setItemIcon(0, iconTaskReject);
@@ -2063,6 +2070,7 @@ void SoFiA::createInterface()
 	
 	tabInFilterLayout = new QVBoxLayout();
 	
+	// smoothing
 	tabInFilterGroupBox1 = new QGroupBox(tr("Enable"), toolBoxIF);
 	tabInFilterGroupBox1->setObjectName("steps.doSmooth");
 	tabInFilterGroupBox1->setCheckable(true);
@@ -2070,7 +2078,6 @@ void SoFiA::createInterface()
 	connect(tabInFilterGroupBox1, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabInFilterGroupBox1, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
-	// smoothing
 	tabInFilterForm1 = new QFormLayout();
 	
 	tabInFilterFieldKernel = new QComboBox(tabInFilterGroupBox1);
@@ -2116,6 +2123,7 @@ void SoFiA::createInterface()
 	
 	
 	
+	// noise scaling
 	tabInFilterGroupBox2 = new QGroupBox(tr("Enable"), toolBoxIF);
 	tabInFilterGroupBox2->setObjectName("steps.doScaleNoise");
 	tabInFilterGroupBox2->setCheckable(true);
@@ -2123,7 +2131,6 @@ void SoFiA::createInterface()
 	connect(tabInFilterGroupBox2, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabInFilterGroupBox2, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
-	// noise scaling
 	tabInFilterForm2 = new QFormLayout();
 	
 	tabInFilterFieldMethod = new QComboBox(tabInFilterGroupBox2);
@@ -2283,6 +2290,39 @@ void SoFiA::createInterface()
 	tabInFilterForm2->addRow(tr("Window size:"), tabInFilterWidgetWindow);
 	tabInFilterForm2->addRow(tr("Interpolation:"), tabInFilterFieldInterpolation);
 	
+	
+	
+	// Filter artefacts
+	tabInFilterGroupBox4 = new QGroupBox(tr("Enable"), toolBoxIF);
+	tabInFilterGroupBox4->setObjectName("steps.doFilterArtefacts");
+	tabInFilterGroupBox4->setCheckable(true);
+	tabInFilterGroupBox4->setChecked(false);
+	connect(tabInFilterGroupBox4, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
+	connect(tabInFilterGroupBox4, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
+	
+	tabInFilterForm4 = new QFormLayout();
+	
+	tabInFilterFieldArtefactsThreshold = new QLineEdit(tabInFilterGroupBox4);
+	tabInFilterFieldArtefactsThreshold->setObjectName("filterArtefacts.threshold");
+	tabInFilterFieldArtefactsThreshold->setMaximumWidth(100);
+	tabInFilterFieldArtefactsThreshold->setMaxLength(10);
+	connect(tabInFilterFieldArtefactsThreshold, SIGNAL(editingFinished()), this, SLOT(updateFields()));
+	connect(tabInFilterFieldArtefactsThreshold, SIGNAL(textChanged(const QString &)), this, SLOT(parameterChanged()));
+	
+	tabInFilterFieldArtefactsDilation = new QSpinBox(tabInFilterGroupBox4);
+	tabInFilterFieldArtefactsDilation->setObjectName("filterArtefacts.dilation");
+	tabInFilterFieldArtefactsDilation->setMaximumWidth(100);
+	tabInFilterFieldArtefactsDilation->setMinimum(1);
+	tabInFilterFieldArtefactsDilation->setMaximum(99);
+	connect(tabInFilterFieldArtefactsDilation, SIGNAL(valueChanged(int)), this, SLOT(parameterChanged()));
+	
+	tabInFilterForm4->addRow(tr("Threshold:"), tabInFilterFieldArtefactsThreshold);
+	tabInFilterForm4->addRow(tr("Dilation:"), tabInFilterFieldArtefactsDilation);
+	tabInFilterGroupBox4->setLayout(tabInFilterForm4);
+	
+	
+	
+	// 2D-1D wavelet filter
 	tabInFilterGroupBox3 = new QGroupBox(tr("Enable"), toolBoxIF);
 	tabInFilterGroupBox3->setObjectName("steps.doWavelet");
 	tabInFilterGroupBox3->setCheckable(true);
@@ -2290,7 +2330,6 @@ void SoFiA::createInterface()
 	connect(tabInFilterGroupBox3, SIGNAL(toggled(bool)), this, SLOT(updateFields()));
 	connect(tabInFilterGroupBox3, SIGNAL(toggled(bool)), this, SLOT(parameterChanged()));
 	
-	// 2D-1D wavelet filter
 	tabInFilterForm3 = new QFormLayout();
 	
 	tabInFilterField2d1dThreshold = new QLineEdit(tabInFilterGroupBox3);
@@ -2334,6 +2373,8 @@ void SoFiA::createInterface()
 	tabInFilterGroupBox3->setLayout(tabInFilterForm3);
 	
 	
+	
+	// Footer
 	tabInFilterButtonPrev = new QPushButton(tr("Previous"), tabInFilter);
 	tabInFilterButtonPrev->setIcon(iconGoPreviousView);
 	connect(tabInFilterButtonPrev, SIGNAL(clicked()), this, SLOT(displayPrevTab()));
@@ -2351,6 +2392,7 @@ void SoFiA::createInterface()
 	
 	toolBoxIF->addItem(tabInFilterGroupBox1, iconTaskReject, tr("Smoothing"));
 	toolBoxIF->addItem(tabInFilterGroupBox2, iconTaskReject, tr("Noise Scaling"));
+	toolBoxIF->addItem(tabInFilterGroupBox4, iconTaskReject, tr("Filter Artefacts"));
 	toolBoxIF->addItem(tabInFilterGroupBox3, iconTaskReject, tr("2D-1D Wavelet Filter"));
 	
 	tabInFilterGroupBox1->setLayout(tabInFilterForm1);
@@ -3349,6 +3391,8 @@ void SoFiA::createWhatsThis()
 	tabSourceFindingFieldPReq->setWhatsThis(tr("<h3>CNHI.pReq</h3><p>Minimum probability requirement for detections to be considered genuine. Sensible values are typically in the range of about 10<sup>&minus;3</sup> to 10<sup>&minus;5</sup>.</p>"));
 	tabSourceFindingFieldQReq->setWhatsThis(tr("<h3>CNHI.qReq</h3><p>This is the Q value of the Kuiper test, which is a heuristic parameter for assessing the quality/accuracy of the probability calculated from the Kuiper test. The minimum scale that the CNHI source finder processes is increased until it is sufficiently large to ensure that the required Q value is achieved. This requirement supersedes the user-specified minimum scale (see parameter <strong>CNHI.minScale</strong>). The default value is <strong>3.8</strong>, which is the generally accepted minimally useful value.</p>"));
 	tabSourceFindingFieldVerbose->setWhatsThis(tr("<h3>CNHI.verbose</h3><p>An integer value that indicates the level of verbosity of the CNHI finder. Values of <strong>0</strong>, <strong>1</strong> and <strong>2</strong> correspond to <strong>none</strong>, <strong>minimal</strong> and <strong>maximal</strong>, respectively.</p>"));
+	tabInFilterFieldArtefactsDilation->setWhatsThis(tr("<h3>filterArtefacts.dilation</h3><p>Size of the box structuring element used to propagate the flagging to neighbouring lines of sight. A value of <b>1</b> means no dilation.</p>"));
+	tabInFilterFieldArtefactsThreshold->setWhatsThis(tr("<h3>filterArtefacts.threshold</h3><p>Threshold for masking lines of sight with anomalously high noise level. A line of sight is masked if its noise level is more than filterArtefacts.threshold * STD above the global noise level of the data cube, where STD is the standard deviation of the distribution of the noise values across all lines of sight.</p>"));
 	tabInputFieldFlagCube->setWhatsThis(tr("<h3>flag.file</h3><p>Full path and file name of an optional flagging cube that must be of the same dimensions as the input cube. All pixels that are flagged (i.e. set to BLANK) in the flagging cube will also be flagged in the input cube prior to source finding. The default is to not apply flags.</p>"));
 	tabInputFieldFlags->setWhatsThis(tr("<h3>flag.regions</h3><p>Pixel/channel range(s) to be flagged prior to source finding. Format:</p><p><code>[[x1, x2, y1, y2, z1, z2], ...]</code></p><p>A place holder, <code>''</code> (two single quotes), can be used for the upper range limit (<code>x2</code>, <code>y2</code>, and <code>z2</code>) to flag all the way to the end, e.g.</p><p><code>[[0, '', 0, '', 0, 19]]</code></p><p>will flag the first 20 channels of the entire cube. The default is an empty list, <code>[]</code>, which means to not flag anything.</p>"));
 	tabInputFieldData->setWhatsThis(tr("<h3>import.inFile</h3><p>Full path and file name of the input data cube. This option is mandatory, and there is no default. Note that only <b>FITS</b> files are currently supported by SoFiA.</p>"));
@@ -3405,6 +3449,7 @@ void SoFiA::createWhatsThis()
 	tabInFilterFieldSmoothingSpectral->setWhatsThis(tr("<h3>smooth.kernelZ</h3><p>Kernel size in pixels for third coordinate. For Gaussian kernels the value refers to the FWHM.</p>"));
 	tabSourceFindingGroupBox3->setWhatsThis(tr("<h3>steps.doCNHI</h3><p>Run the Characterised Noise HI (CNHI) source finder (<a href=\"http://adsabs.harvard.edu/abs/2012PASA...29..251J\">Jurek 2012</a>).</p>"));
 	tabOutputButtonCubelets->setWhatsThis(tr("<h3>steps.doCubelets</h3><p>Create and save data products for each individual source, including sub-cubes, moment 0, 1 and 2 maps, integrated spectra and position&ndash;velocity diagrams.</p>"));
+	tabInFilterGroupBox4->setWhatsThis(tr("<h3>steps.doFilterArtefacts</h3><p>If set to <b>true</b>, SoFiA will attempt to automatically flag residual continuum emission in the data on a position-by-position basis by measuring the noise along the line of sight and blanking all positions where the noise is above a given threshold with respect to the global noise level of the data cube.</p>"));
 	tabInputGroupBox3->setWhatsThis(tr("<h3>steps.doFlag</h3><p>Flag pixel and channel ranges before proceeding. Details are specified with the <b>flag.file</b> and <b>flag.regions</b> options.</p>"));
 	tabMergingGroupBox1->setWhatsThis(tr("<h3>steps.doMerge</h3><p>Merge detected pixels into final sources.</p>"));
 	tabOutputButtonMom0->setWhatsThis(tr("<h3>steps.doMom0</h3><p>Create and save moment-0 map of all detections.</p>"));
@@ -3415,7 +3460,7 @@ void SoFiA::createWhatsThis()
 	tabInFilterGroupBox2->setWhatsThis(tr("<h3>steps.doScaleNoise</h3><p>Automatically normalise noise levels prior to source finding.</p>"));
 	tabSourceFindingGroupBox1->setWhatsThis(tr("<h3>steps.doSCfind</h3><p>Run the smooth + clip finder on the data cube.</p>"));
 	tabInFilterGroupBox1->setWhatsThis(tr("<h3>steps.doSmooth</h3><p>Spatially and spectrally smooth cube prior to source finding.</p>"));
-	tabInputGroupBox4->setWhatsThis(tr("<h3>steps.doSubcube</h3><p>If set to true, source finding will be carried out on a subcube to be defined by the <b>import.subcube</b> and <b>import.subcubeMode</b> options.</p>"));
+	tabInputGroupBox4->setWhatsThis(tr("<h3>steps.doSubcube</h3><p>If set to <b>true</b>, source finding will be carried out on a subcube to be defined by the <b>import.subcube</b> and <b>import.subcubeMode</b> options.</p>"));
 	tabSourceFindingGroupBox2->setWhatsThis(tr("<h3>steps.doThreshold</h3><p>Run the threshold finder on the data cube.</p>"));
 	tabInFilterGroupBox3->setWhatsThis(tr("<h3>steps.doWavelet</h3><p>Decompose the data cube into wavelet components using the 2D&ndash;1D wavelet decomposition algorithm of <a href=\"http://adsabs.harvard.edu/abs/2012PASA...29..244F\">Fl&ouml;er et al. (2012)</a>.</p>"));
 	tabOutputButtonFilteredCube->setWhatsThis(tr("<h3>steps.doWriteFilteredCube</h3><p>Save a copy of the filtered data cube. Note that this will only make sense if at least one of the input filters was applied.</p>"));

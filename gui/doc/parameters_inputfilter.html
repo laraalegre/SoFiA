@@ -30,7 +30,8 @@
     <ul>
       <li>The purpose of the <strong>smoothing filter</strong> is to smooth the entire data cube with a user-specified kernel. This can be useful in certain situations, e.g. when only a threshold finder is to be applied to the data.</li>
       <li>The scope of the <strong>noise scaling</strong> filter is to divide the data cube by a local measurement of the noise level in order to remove any noise variations across the cube prior to source finding. This is recommended for all data cubes with varying noise across the spatial or spectral axes, e.g. interferometric images after primary-beam correction.</li>
-      <li>The <strong>wavelet filter</strong> will decompose the entire data cube into wavelet components and filter out wavelet scales associated with noise while retaining those scales on which there is actual source emission. It can be combined with the threshold finder to reliably detect sources while filtering out potential false detections due to noise.
+      <li>The <b>filter artefacts</b> option can be used to attempt to automatically flag lines of sight through the data cube that are affected by residual radio continuum emission prior to source finding.</li>
+      <li>The <strong>wavelet filter</strong> will decompose the entire data cube into wavelet components and filter out wavelet scales associated with noise while retaining those scales on which there is actual source emission. It can be combined with the threshold finder to reliably detect sources while filtering out potential false detections due to noise.</li>
     </ul>
     
     <p>
@@ -437,6 +438,66 @@
         </tr>
         <tr>
             <td class="head">Description:</td><td class="body">Select if the local noise measurement made by SoFiA should be interpolated in between grid points or not. The default is <code>none</code> which will simply fill each grid cell with the noise value. <code>linear</code> will carry out a linear interpolation between grid points, which is slower, but results in smoother noise maps. Lastly, <code>cubic</code> will carry out a cubic spline interpolation between grid points, which is by far the slowest method, but results in the smoothest noise maps. Note that this setting will only be relevant if <code>scaleNoise.method = local</code>.</td>
+        </tr>
+    </table>
+    
+    <h3>Filter Artefacts</h3>
+    
+    <p>
+      The purpose of this module is to attempt to automatically flag lines of sight in the data cube that are affected by residual radio continuum emission that was not fully subtracted from the spectral-line data. This method measures the noise level along each line of sight throughout the cube and automatically flags all line of sight where the noise is by more than <code>filterArtefacts.threshold</code> &times; &sigma; above the global noise level of the cube, where <code>filterArtefacts.threshold</code> is a user-defined parameter, while &sigma; is the standard deviation of the noise values across all lines of sight. In addition, the algorithm will dilate flagged lines of sight across neighbouring pixels using a box-shaped mask of size <code>filterArtefacts.dilation</code>.
+    </p>
+
+    <table id="steps.doFilterArtefacts">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">steps.doFilterArtefacts</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>bool</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body"><code>true</code>, <code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>false</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">If set to <code>true</code>, SoFiA will attempt to automatically flag residual continuum emission in the data on a position-by-position basis by measuring the noise along the line of sight and blanking all positions where the noise is above a given threshold with respect to the global noise level of the data cube.</td>
+        </tr>
+    </table>
+
+    <table id="filterArtefacts.threshold">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">filterArtefacts.threshold</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>float</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>0.0</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>2.5</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Threshold for masking lines of sight with anomalously high noise. A line of sight is masked if its noise level is more than <code>filterArtefacts.threshold</code> * STD above the global noise level of the data cube, where STD is the standard deviation of the distribution of the noise values across all lines of sight.</td>
+        </tr>
+    </table>
+
+    <table id="filterArtefacts.dilation">
+        <tr>
+            <td class="head">Parameter:</td><td class="body2">filterArtefacts.dilation</td>
+        </tr>
+        <tr>
+            <td class="head">Type:</td><td class="body"><code>int</code></td>
+        </tr>
+        <tr>
+            <td class="head">Values:</td><td class="body">&ge; <code>1</code></td>
+        </tr>
+        <tr>
+            <td class="head">Default:</td><td class="body"><code>3</code></td>
+        </tr>
+        <tr>
+            <td class="head">Description:</td><td class="body">Size of the box structuring element used to propagate the flagging to neighbouring lines of sight. A value of <code>1</code> means no dilation.</td>
         </tr>
     </table>
     

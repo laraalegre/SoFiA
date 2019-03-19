@@ -110,7 +110,7 @@ def allowedDataTypes():
 	        "steps.doFlag": "bool", \
 	        "steps.doSmooth": "bool", \
 	        "steps.doScaleNoise": "bool", \
-	        "steps.doFlagErrors": "bool", \
+	        "steps.doFilterArtefacts": "bool", \
 	        "steps.doSCfind": "bool", \
 	        "steps.doThreshold": "bool", \
 	        "steps.doWavelet": "bool", \
@@ -160,8 +160,8 @@ def allowedDataTypes():
 	        "scaleNoise.gridSpatial": "int", \
 	        "scaleNoise.gridSpectral": "int", \
 	        "scaleNoise.interpolation": "string", \
-	        "flagErrors.flgthr": "float", \
-	        "flagErrors.dilside": "int", \
+	        "filterArtefacts.threshold": "float", \
+	        "filterArtefacts.dilation": "int", \
 	        "SCfind.threshold": "float", \
 	        "SCfind.sizeFilter": "float", \
 	        "SCfind.maskScaleXY": "float", \
@@ -203,8 +203,8 @@ def allowedDataTypes():
 	        "merge.maxLoS": "int", \
 	        "merge.minFill": "int", \
 	        "merge.maxFill": "int", \
-                "merge.minIntens": "float", \
-                "merge.maxIntens": "float", \
+	        "merge.minIntens": "float", \
+	        "merge.maxIntens": "float", \
 	        "merge.positivity": "bool", \
 	        "reliability.parSpace": "array", \
 	        "reliability.logPars": "array", \

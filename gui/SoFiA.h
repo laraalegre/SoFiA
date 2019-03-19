@@ -400,6 +400,11 @@ private:
 	QSpinBox     *tabInFilterField2d1dIterations;
 	QCheckBox    *tabInFilterField2d1dPositivity;
 	
+	QGroupBox    *tabInFilterGroupBox4;
+	QFormLayout  *tabInFilterForm4;
+	QLineEdit    *tabInFilterFieldArtefactsThreshold;
+	QSpinBox     *tabInFilterFieldArtefactsDilation;
+	
 	QHBoxLayout  *tabInFilterLayoutControls;
 	QWidget      *tabInFilterWidgetControls;
 	QPushButton  *tabInFilterButtonPrev;

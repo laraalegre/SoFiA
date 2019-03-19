@@ -194,7 +194,7 @@ outputCatAsciiDebug = str(outroot) + "_cat.debug.ascii"
 
 if not Parameters["writeCat"]["overwrite"]:
 	# Filtered cube
-	if Parameters["steps"]["doWriteFilteredCube"] and (Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["steps"]["doWavelet"]):
+	if Parameters["steps"]["doWriteFilteredCube"] and (Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["steps"]["doFilterArtefacts"] or Parameters["steps"]["doWavelet"]):
 		checkOverwrite(outputFilteredCube)
 	
 	# Noise cube
@@ -301,13 +301,13 @@ if Parameters["steps"]["doWavelet"]:
 	np_Cube = np_Cube.copy()
 	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
-# --- FLAG ERRORS ---
-if Parameters["steps"]["doFlagErrors"]:
-	err.message('Will attempt to flag continuum subtraction artefacts...')
-	np_Cube=flagerrors.flaglos(np_Cube,**Parameters["flagErrors"])
+# --- FILTER ARTEFACTS ---
+if Parameters["steps"]["doFilterArtefacts"]:
+	err.message("Attempting to flag residual continuum emission")
+	np_Cube = flagerrors.flaglos(np_Cube, **Parameters["filterArtefacts"])
 
 # --- WRITE FILTERED CUBE ---
-if Parameters["steps"]["doWriteFilteredCube"] and (Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["steps"]["doWavelet"]):
+if Parameters["steps"]["doWriteFilteredCube"] and (Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["steps"]["doFilterArtefacts"] or Parameters["steps"]["doWavelet"]):
 	err.message("Writing filtered cube")
 	write_filtered_cube.writeFilteredCube(np_Cube, dict_Header, Parameters, outputFilteredCube, Parameters["writeCat"]["compress"])
 	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
@@ -407,9 +407,9 @@ if Parameters["steps"]["doMerge"] and NRdet:
 # ---- OUTPUT FOR DEBUGGING (MASK) ----
 # -------------------------------------
 
-if Parameters['steps']['doDebug'] and Parameters["steps"]["doMerge"] and NRdet:
+if Parameters["steps"]["doDebug"] and Parameters["steps"]["doMerge"] and NRdet:
 	err.print_progress_message("Writing all-source mask cube for debugging", t0)
-	writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_all.fits' % outroot, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'])
+	writemask.writeMask(mask, dict_Header, Parameters, "%s_mask.debug_all.fits" % outroot, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"])
 
 
 
@@ -474,9 +474,9 @@ else:
 # ---- OUTPUT FOR DEBUGGING (CATALOGUE) ----
 # ------------------------------------------
 
-if Parameters['steps']['doDebug'] and Parameters["steps"]["doMerge"] and NRdet:
+if Parameters["steps"]["doDebug"] and Parameters["steps"]["doMerge"] and NRdet:
 	err.print_progress_message("Writing all-source debugging catalogue including all parameters relevant for the reliability calculation", t0)
-	write_catalog.write_catalog_from_array('ASCII', objects, catParNames, catParUnits, catParFormt, Parameters['writeCat']['parameters'], outputCatAsciiDebug, Parameters['writeCat']['compress'], Parameters['writeCat']['overwrite'], Parameters['parameters']['getUncertainties'])
+	write_catalog.write_catalog_from_array("ASCII", objects, catParNames, catParUnits, catParFormt, Parameters["writeCat"]["parameters"], outputCatAsciiDebug, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"], Parameters["parameters"]["getUncertainties"])
 
 
 
@@ -587,12 +587,12 @@ if Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Par
 # ---- OUTPUT FOR DEBUGGING (MOMENTS) ----
 # ----------------------------------------
 
-if Parameters['steps']['doDebug']:
+if Parameters["steps"]["doDebug"]:
 	err.print_progress_message("Writing pre-optimisation mask and moment maps for debugging", t0)
 	debug = 1
-	#writemask.writeMask(mask, dict_Header, Parameters, '%s_mask.debug_rel.fits'%outroot,Parameters['writeCat']['compress'])
-	#mom0_Image = writemoment.writeMoment0(np_Cube, mask, outroot, debug, dict_Header,Parameters['writeCat']['compress'])
-	#writemoment.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image,Parameters['writeCat']['compress'])
+	#writemask.writeMask(mask, dict_Header, Parameters, "%s_mask.debug_rel.fits" % outroot, Parameters["writeCat"]["compress"])
+	#mom0_Image = writemoment.writeMoment0(np_Cube, mask, outroot, debug, dict_Header, Parameters["writeCat"]["compress"])
+	#writemoment.writeMoment1(np_Cube, mask, outroot, debug, dict_Header, mom0_Image, Parameters["writeCat"]["compress"])
 
 
 
