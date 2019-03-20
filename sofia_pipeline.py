@@ -290,21 +290,21 @@ if Parameters["steps"]["doScaleNoise"]:
 	np_Cube, noise_cube = sigma_cube.sigma_scale(np_Cube, **Parameters["scaleNoise"])
 	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
-# --- WAVELET ---
-if Parameters["steps"]["doWavelet"]:
-	err.message("Running wavelet filter")
-	# WARNING: There is a lot of time and memory overhead from transposing the cube forth and back!
-	# WARNING: This will need to be addressed in the future.
-	np_Cube = np.transpose(np_Cube, axes=[2, 1, 0])
-	np_Cube = wavelet_finder.denoise_2d1d(np_Cube, **Parameters["wavelet"])
-	np_Cube = np.transpose(np_Cube, axes=[2, 1, 0])
-	np_Cube = np_Cube.copy()
-	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
-
 # --- FILTER ARTEFACTS ---
 if Parameters["steps"]["doFilterArtefacts"]:
 	err.message("Attempting to flag residual continuum emission")
 	np_Cube = flagerrors.flaglos(np_Cube, **Parameters["filterArtefacts"])
+
+# --- WAVELET ---
+if Parameters["steps"]["doWavelet"]:
+        err.message("Running wavelet filter")
+        # WARNING: There is a lot of time and memory overhead from transposing the cube forth and back!
+        # WARNING: This will need to be addressed in the future.
+        np_Cube = np.transpose(np_Cube, axes=[2, 1, 0])
+        np_Cube = wavelet_finder.denoise_2d1d(np_Cube, **Parameters["wavelet"])
+        np_Cube = np.transpose(np_Cube, axes=[2, 1, 0])
+        np_Cube = np_Cube.copy()
+        if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 # --- WRITE FILTERED CUBE ---
 if Parameters["steps"]["doWriteFilteredCube"] and (Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Parameters["steps"]["doFilterArtefacts"] or Parameters["steps"]["doWavelet"]):
