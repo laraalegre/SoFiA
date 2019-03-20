@@ -2437,8 +2437,8 @@ void SoFiA::createInterface()
 	
 	tabSourceFindingFieldRmsMode = new QComboBox(tabSourceFindingGroupBox1);
 	tabSourceFindingFieldRmsMode->setObjectName("SCfind.rmsMode");
-	tabSourceFindingFieldRmsMode->addItem(tr("Gaussian fit to negative fluxes"), QVariant(QString("negative")));
-	tabSourceFindingFieldRmsMode->addItem(tr("Gaussian fit to flux histogram"), QVariant(QString("gauss")));
+	tabSourceFindingFieldRmsMode->addItem(tr("Gaussian fit to neg. fluxes"), QVariant(QString("negative")));
+	tabSourceFindingFieldRmsMode->addItem(tr("Gaussian fit to flux hist."), QVariant(QString("gauss")));
 	tabSourceFindingFieldRmsMode->addItem(tr("Median absolute deviation"), QVariant(QString("mad")));
 	tabSourceFindingFieldRmsMode->addItem(tr("Standard deviation"), QVariant(QString("std")));
 	connect(tabSourceFindingFieldRmsMode, SIGNAL(currentIndexChanged(int)), this, SLOT(updateFields()));
