@@ -350,8 +350,7 @@ if Parameters["steps"]["doSCfind"] or Parameters["steps"]["doCNHI"] or Parameter
 	if Parameters["steps"]["doCNHI"]:
 		err.message("Running CNHI filter")
 		#mask += CNHI.find_sources(np_Cube, mask, **Parameters["CNHI"]) # Fails in Numpy 1.10 or newer due to casting error!
-		#np.add(mask, CNHI.find_sources(np_Cube, mask, **Parameters["CNHI"]), out=mask, casting="unsafe") # This might work...
-		np.bitwise_or(mask, CNHI.find_sources(np_Cube, mask, **Parameters["CNHI"]), out=mask) # This should be safe, as no casting needed.
+		np.add(mask, CNHI.find_sources(np_Cube, mask, **Parameters["CNHI"]), out=mask, casting="unsafe") # This should work...
 		if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 	
 	# --- THRESHOLD ---	
