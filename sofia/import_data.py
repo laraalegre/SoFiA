@@ -479,7 +479,7 @@ def read_data(doSubcube, inFile, invertData, weightsFile, maskFile, sources, wei
 			#mask = (mask > 0).astype(bool)
 		else:
 			# Create an empty mask if none is provided.
-			mask = zeros(np_Cube.shape, dtype=bool)
+			mask = zeros(np_Cube.shape, dtype=int32)
 	
 	
 	if not cubeOnly:
