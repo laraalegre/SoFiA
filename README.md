@@ -125,6 +125,17 @@ browser to open the index.html file located in the gui/doc/ sub-folder.
 Version history
 ---------------
 
+* SoFiA 1.3.0
+  * Released 29/03/2019
+  * Adds several new features, including quality flags, additional linker
+    filtering options, automated flagging of residual continuum emission
+    and memory usage tracking.
+  * Fixes several bugs throughout the pipeline and improves some of the
+    existing features, most notably mask dilation, reliability filtering
+    and the graphical user interface.
+  * See release notes for details:
+    https://github.com/SoFiA-Admin/SoFiA/releases/tag/v1.3.0
+
 * SoFiA 1.2.0
   * Released 24/05/2018
   * Adds several new features, including better handling of reliability

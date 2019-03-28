@@ -18,7 +18,7 @@ def read_data(doSubcube, inFile, invertData, weightsFile, maskFile, sources, wei
 		raise SystemExit(1)
 	
 	# Handle sub-cube if requested by user:
-	# ALERT: Not that subcube boundaries for any axis are interpreted as [min, max) rather than [min, max] as expected by the user!!!
+	# ALERT: Note that subcube boundaries for any axis are interpreted as [min, max) rather than [min, max] as expected by the user!!!
 	#        This should be changed to avoid confusion. In addition, we should agree at some point whether SoFiA should be 0 or 1-based.
 	if doSubcube:
 		# Ensure that sub-cube specifications are as expected:
