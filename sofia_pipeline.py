@@ -241,20 +241,40 @@ if Parameters["steps"]["doMerge"]:
 	catParUnits = ("-", "pix", "pix", "chan", "pix", "pix", "chan", "pix", "pix", "pix", "pix", "chan", "chan", "-", "-", "-", "-", "pix", "pix", "chan", "pix", "pix", "chan", "-", "-", "-", "-", "-", "chan", "chan", "chan", "chan", "pix", "pix", "chan", "-", "-")
 	catParFormt = ("%10i", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%7i", "%7i", "%7i", "%7i", "%7i", "%7i", "%8i", "%12.3e", "%12.3e", "%12.3e", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%12.3e", "%12.3e", "%12.3e", "%12.3e", "%12.3e", "%10.3f", "%10.3f", "%10.3f", "%10.3f", "%7i", "%7i", "%7i", "%7i", "%5.3f")
 	
+	# --------------------------------------------------------------------------------------
+	# ### ALERT: Temporary list of allowed parameters for reliability calculation.
+	# ### This is necessary due to a bug in the linker that may produce wrong source parameters
+	# ### in some cases. NOTE: This list should be replaced with the original one again once the
+	# ### linker has been fixed. Ensure that catParNames_tmp is replaced with catParNames again
+	# ### in the for loops below as well!
+	# --------------------------------------------------------------------------------------
+	catParNames_tmp = ("n_pix", "n_chan", "n_los", "snr_min", "snr_max", "snr_sum", "snr_mean");
+	# --------------------------------------------------------------------------------------
+	
 	# Check that the parameters to be used for the reliability calculation are included in catParNames
 	if Parameters["steps"]["doReliability"]:
 		for pp in Parameters["reliability"]["parSpace"]:
-			if pp not in catParNames:
+			if pp not in catParNames_tmp:
 				message =  "You requested reliability calculation in the parameter space:\n\n"
 				message += "  " + str(Parameters["reliability"]["parSpace"]) + "\n\n"
 				message += "However, the parameter " + str(pp) + " is not recognised by SoFiA.\n"
 				message += "Allowed parameter names are:\n\n  "
-				for i in range(len(catParNames)):
-					message += str(catParNames[i])
-					if i < len(catParNames) - 1:
+				for i in range(len(catParNames_tmp)):
+					message += str(catParNames_tmp[i])
+					if i < len(catParNames_tmp) - 1:
 						if (i + 1) % 6 == 0: message += ",\n  "
 						else: message += ", "
 				message += "\n\nPlease use parameter names from the above list and try again."
+				# --------------------------------------------------------------------------
+				# ALERT: Delete the following again after the linker has been fixed:
+				# --------------------------------------------------------------------------
+				message += "\n\nNote that there are temporary restrictions in the number of\n"
+				message += "parameters available for reliability calculation due to a bug\n"
+				message += "in the linker. These restrictions will be lifted again in the\n"
+				message += "future once the linker has been fixed. For the time being we\n"
+				message += "recommend using the default parameter space of ['snr_mean',\n"
+				message += "'snr_sum', 'snr_max'] instead."
+				# --------------------------------------------------------------------------
 				err.error(message, fatal=True, frame=True)
 
 
