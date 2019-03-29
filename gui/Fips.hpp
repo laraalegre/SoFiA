@@ -1,6 +1,6 @@
 /// ____________________________________________________________________ ///
 ///                                                                      ///
-/// SoFiA 1.3.0 (Fips.hpp) - Source Finding Application                  ///
+/// SoFiA 1.3.1 (Fips.hpp) - Source Finding Application                  ///
 /// Copyright (C) 2013-2019 Tobias Westmeier                             ///
 /// ____________________________________________________________________ ///
 ///                                                                      ///
