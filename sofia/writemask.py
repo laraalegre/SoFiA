@@ -53,7 +53,11 @@ def writeMask(cube, header, dictionary, filename, compress, flagOverwrite):
 	
 	# add axes required to make the shape of the mask cube equal to the shape of the input datacube
 	while header["naxis"] > len(cube.shape): cube.resize(tuple([1,] + list(cube.shape)))
-	
+	# write the mask as 2D fits if the input does not contain information for a third axis
+	if 'CTYPE3' not in header:
+		hdu = fits.PrimaryHDU(data=cube[0], header=header)
+	else:
+		hdu = fits.PrimaryHDU(data=cube, header=header)
 	hdu = fits.PrimaryHDU(data=cube, header=header)
 	hdu.header["BUNIT"] = "source_ID"
 	hdu.header["DATAMIN"] = cube.min()
