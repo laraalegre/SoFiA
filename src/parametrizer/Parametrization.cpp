@@ -622,7 +622,7 @@ int Parametrization::measureLineWidth()
 	
 	i = spectrum.size() - 1;
 	
-	while(i >= 0 and spectrum[i] < specMax / 2.0) --i;
+	while(i >= 0 and spectrum[i] < specMax / 2.0) --i;  // ALERT: BUG!!! i is unsigned and by definition >= 0!!!
 	
 	if(i < 0) {
 		std::cerr << "Error (Parametrization): Calculation of W50 failed (2).\n";
