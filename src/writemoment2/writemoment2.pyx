@@ -105,54 +105,61 @@ def writeMoments(datacube, maskcube, filename, debug, header, compress, domom0, 
 	# Moment 0 image
 	# --------------
 	if domom0:
-		err.message("Writing moment-0") # in units of header["BUNIT"] * header["CDELT3"]
-		
-		# Velocity
-		if "vopt" in header["CTYPE3"].lower() or "vrad" in header["CTYPE3"].lower() or "velo" in header["CTYPE3"].lower() or "felo" in header["CTYPE3"].lower():
-			if not "CUNIT3" in header or header["CUNIT3"].lower() == "m/s":
-				# Converting (assumed) m/s to km/s
-				dkms = abs(header["CDELT3"]) / 1e+3
-				scalemom12 = 1.0 / 1e+3
-				bunitExt = ".km/s"
-			elif header["CUNIT3"].lower() == "km/s":
-				# Working in km/s
-				dkms = abs(header["CDELT3"])
-				scalemom12 = 1.0
-				bunitExt = ".km/s"
-			else:
-				# Working with whatever units the cube has
-				dkms = abs(header["CDELT3"])
-				scalemom12 = 1.0
-				bunitExt = "." + header["CUNIT3"]
-		
-		# Frequency
-		elif "freq" in header["CTYPE3"].lower():
-			if not "CUNIT3" in header or header["CUNIT3"].lower() == "hz":
-				# Using (or assuming) Hz
-				dkms = abs(header["CDELT3"])
-				scalemom12 = 1.0
-				bunitExt = ".Hz"
-			elif header["CUNIT3"].lower() == "khz":
-				# Converting kHz to Hz
-				dkms = abs(header["CDELT3"]) * 1e+3
-				scalemom12 = 1e+3
-				bunitExt = ".Hz"
-			else:
-				# Working with whatever frequency units the cube has
-				dkms = abs(header["CDELT3"])
-				scalemom12 = 1.0
-				bunitExt = "." + header["CUNIT3"]
-		
-		hdu = pyfits.PrimaryHDU(data=m0*dkms, header=header)
-		if "BUNIT" in hdu.header: hdu.header["BUNIT"] += bunitExt
-		hdu.header["DATAMIN"] = (m0 * dkms).min()
-		hdu.header["DATAMAX"] = (m0 * dkms).max()
-		hdu.header["ORIGIN"] = sofia_version_full
-		hdu.header["CELLSCAL"] = "constant"
-		func.delete_header(hdu.header, "CRPIX3")
-		func.delete_header(hdu.header, "CRVAL3")
-		func.delete_header(hdu.header, "CDELT3")
-		func.delete_header(hdu.header, "CTYPE3")
+		if "CTYPE3" in header:
+			err.message("Writing moment-0") # in units of header["BUNIT"] * header["CDELT3"]
+			
+			# Velocity
+			if "vopt" in header["CTYPE3"].lower() or "vrad" in header["CTYPE3"].lower() or "velo" in header["CTYPE3"].lower() or "felo" in header["CTYPE3"].lower():
+				if not "CUNIT3" in header or header["CUNIT3"].lower() == "m/s":
+					# Converting (assumed) m/s to km/s
+					dkms = abs(header["CDELT3"]) / 1e+3
+					scalemom12 = 1.0 / 1e+3
+					bunitExt = ".km/s"
+				elif header["CUNIT3"].lower() == "km/s":
+					# Working in km/s
+					dkms = abs(header["CDELT3"])
+					scalemom12 = 1.0
+					bunitExt = ".km/s"
+				else:
+					# Working with whatever units the cube has
+					dkms = abs(header["CDELT3"])
+					scalemom12 = 1.0
+					bunitExt = "." + header["CUNIT3"]
+			
+			# Frequency
+			elif "freq" in header["CTYPE3"].lower():
+				if not "CUNIT3" in header or header["CUNIT3"].lower() == "hz":
+					# Using (or assuming) Hz
+					dkms = abs(header["CDELT3"])
+					scalemom12 = 1.0
+					bunitExt = ".Hz"
+				elif header["CUNIT3"].lower() == "khz":
+					# Converting kHz to Hz
+					dkms = abs(header["CDELT3"]) * 1e+3
+					scalemom12 = 1e+3
+					bunitExt = ".Hz"
+				else:
+					# Working with whatever frequency units the cube has
+					dkms = abs(header["CDELT3"])
+					scalemom12 = 1.0
+					bunitExt = "." + header["CUNIT3"]
+			
+			hdu = pyfits.PrimaryHDU(data=m0*dkms, header=header)
+			if "BUNIT" in hdu.header: hdu.header["BUNIT"] += bunitExt
+			hdu.header["DATAMIN"] = (m0 * dkms).min()
+			hdu.header["DATAMAX"] = (m0 * dkms).max()
+			hdu.header["ORIGIN"] = sofia_version_full
+			hdu.header["CELLSCAL"] = "constant"
+			func.delete_header(hdu.header, "CRPIX3")
+			func.delete_header(hdu.header, "CRVAL3")
+			func.delete_header(hdu.header, "CDELT3")
+			func.delete_header(hdu.header, "CTYPE3")
+		else:
+			hdu = pyfits.PrimaryHDU(data=m0, header=header)
+			hdu.header["DATAMIN"] = m0.min()
+			hdu.header["DATAMAX"] = m0.max()
+			hdu.header["ORIGIN"] = sofia_version_full
+			domom1 = False
 		
 		if debug:
 			hdu.writeto("%s_mom0.debug.fits" % filename, output_verify="warn", **__astropy_arg_overwrite__)
