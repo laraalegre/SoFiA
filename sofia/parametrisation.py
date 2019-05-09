@@ -235,7 +235,7 @@ def parametrise(cube, mask, objects, cathead, catformt, catparunits, Parameters,
 	for i in sorted(pars):
 		if i not in replParam:
 			cathead.append(i)
-			catformt.append("%12.4f")
+			catformt.append("%16.8f")
 			catparunits.append(newunits[i])
 	
 	# Extend the parameter array
