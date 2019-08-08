@@ -5,6 +5,7 @@ import numpy as np
 from scipy import ndimage
 from sofia.functions import GetRMS
 from sofia import error as err
+from sofia.sigma_cube import sigma_scale
 
 
 
@@ -65,10 +66,14 @@ def SCfinder_mem(cube, mask, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.
 		if found_nan:
 			cube_smooth[np.isnan(cube)] = np.nan
 		
-		# Calculate the RMS of the smoothed cube:
+		# Per-kernel noise normalisation ### Time consuming, should be optional!
+		#cube_smooth, noise_smooth = sigma_scale(cube_smooth, method="1d2d",  statistic="mad", fluxRange="all", windowSpatial=25, interpolation="linear")
+
+		# Calculate the RMS of the smoothed (possibly normalised) cube
 		rms_smooth = GetRMS(cube_smooth, rmsMode=rmsMode, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=verbose, sample=sampleRms)
-		
+
 		# Add pixels above threshold to mask by setting bit 1
+		err.message("    Applying +/- {0:} sigma detection threshold".format(threshold))
 		with np.errstate(invalid="ignore"):
 			mask |= (np.absolute(cube_smooth) >= threshold * rms_smooth)
 			#mask = np.bitwise_or(mask, np.greater_equal(np.absolute(cube_smooth), threshold * rms_smooth))
