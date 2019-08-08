@@ -112,6 +112,19 @@ SCfind.rmsMode                  =       negative
 SCfind.fluxRange                =       all
 SCfind.kernels                  =       [[0, 0, 0, 'b'], [0, 0, 3, 'b'], [0, 0, 7, 'b'], [0, 0, 15, 'b'], [3, 3, 0, 'b'], [3, 3, 3, 'b'], [3, 3, 7, 'b'], [3, 3, 15, 'b'], [6, 6, 0, 'b'], [6, 6, 3, 'b'], [6, 6, 7, 'b'], [6, 6, 15, 'b']]
 SCfind.kernelUnit               =       pixel
+SCfind.kernelNoiseScale         =       false
+SCfind.method                   =       global
+SCfind.scaleX                   =       false
+SCfind.scaleY                   =       false
+SCfind.scaleZ                   =       true
+SCfind.edgeX                    =       0
+SCfind.edgeY                    =       0
+SCfind.edgeZ                    =       0
+SCfind.windowSpatial            =       25
+SCfind.windowSpectral           =       15
+SCfind.gridSpatial              =       0
+SCfind.gridSpectral             =       0
+SCfind.interpolation            =       none
 SCfind.verbose                  =       true
 
 

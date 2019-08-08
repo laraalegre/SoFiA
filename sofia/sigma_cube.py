@@ -226,14 +226,14 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 		# Create empty cube (filled with NaN) to hold noise values
 		rms_cube = np.full(cube.shape, np.nan, dtype=cube.dtype)
 
-		# Create empty cube (filled with 1) to hold noise values
-		#rms_cube = np.ones(cube.shape, dtype=cube.dtype)
-		
 		# Measure noise across 2D z-planes
+		err.message("      Mapping Z noise variation channel by channel")
 		for i in range(dimensions[0]):
 			if not np.all(np.isnan(cube[i, y1:y2, x1:x2])):
-				rms_cube[i, :, :] = GetRMS(cube[i, y1:y2, x1:x2], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0)
-	
+				rms = GetRMS(cube[i, y1:y2, x1:x2], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0)
+				if rms > 0:
+					rms_cube[i, :, :] = rms
+
 		# Measure noise across 3D XYZ subcubes each consisting of a 2D XY window and all Z channels
 
 		# Make window sizes integers >= 1
@@ -257,8 +257,9 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 		gridSpectral += (1 - gridSpectral % 2)
 		
 		# Print grid and window sizes adopted
-		err.message("      Using grid size of " + str(gridSpatial) + "pix")
-		err.message("      and window size of " + str(windowSpatial) + "pix")
+		err.message("      Mapping XY noise variation")
+		err.message("        using grid size of " + str(gridSpatial) + "pix")
+		err.message("        and window size of " + str(windowSpatial) + "pix")
 
 		# Generate grid points to be used
 		gridPointsZ = np.arange((dimensions[0] - gridSpectral * (int(math.ceil(float(dimensions[0]) / float(gridSpectral))) - 1)) // 2, dimensions[0], gridSpectral)
@@ -280,10 +281,10 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 					if not np.all(np.isnan(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]])): # +1 needed?
 						if interpolation == "linear" or interpolation == "cubic":
 							# Write value into grid point for later interpolation
-							rms_cube[z, y, x] *= GetRMS(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0) # +1 needed?
+							rms_cube[z, y, x] *= GetRMS(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]]/rms_cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0) # +1 needed?
 						else:
 							# Fill entire grid cell
-							rms_cube[grid[0]:grid[1], grid[2]:grid[3], grid[4]:grid[5]] *= GetRMS(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0) # +1 needed?
+							rms_cube[grid[0]:grid[1], grid[2]:grid[3], grid[4]:grid[5]] *= GetRMS(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]]/rms_cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0) # +1 needed?
 					del grid, window
 		
 		# Carry out interpolation if requested, taking NaNs into account
