@@ -223,16 +223,19 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 		# Make sure edges don't exceed cube size
 		err.ensure(y1 < y2 and x1 < x2, "Edge size exceeds cube size for at least one axis.")
 		
-		# Create empty cube (filled with NaN) to hold noise values
-		rms_cube = np.full(cube.shape, np.nan, dtype=cube.dtype)
-
+		# Create empty all-channels/single-pixel cube (filled with 1) to hold noise values along Z axis
+		rms_cube_z = np.ones((cube.shape[0],1,1), dtype=cube.dtype)
+		
 		# Measure noise across 2D z-planes
 		err.message("      Mapping Z noise variation channel by channel")
 		for i in range(dimensions[0]):
 			if not np.all(np.isnan(cube[i, y1:y2, x1:x2])):
 				rms = GetRMS(cube[i, y1:y2, x1:x2], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0)
 				if rms > 0:
-					rms_cube[i, :, :] = rms
+					rms_cube_z[i, :, :] = rms
+
+		# Divide data cube by Z RMS cube
+		cube /= rms_cube_z
 
 		# Measure noise across 3D XYZ subcubes each consisting of a 2D XY window and all Z channels
 
@@ -272,6 +275,9 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 		radiusWindowSpatial = windowSpatial // 2
 		radiusWindowSpectral = windowSpectral // 2
 		
+		# Create empty cube (filled with NaN) to hold noise values
+		rms_cube = np.full(cube.shape, np.nan, dtype=cube.dtype)
+		
 		# Determine RMS across window centred on grid cell
 		for z in gridPointsZ:
 			for y in gridPointsY:
@@ -281,10 +287,10 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 					if not np.all(np.isnan(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]])): # +1 needed?
 						if interpolation == "linear" or interpolation == "cubic":
 							# Write value into grid point for later interpolation
-							rms_cube[z, y, x] *= GetRMS(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]]/rms_cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0) # +1 needed?
+							rms_cube[z, y, x] = GetRMS(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0) # +1 needed?
 						else:
 							# Fill entire grid cell
-							rms_cube[grid[0]:grid[1], grid[2]:grid[3], grid[4]:grid[5]] *= GetRMS(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]]/rms_cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0) # +1 needed?
+							rms_cube[grid[0]:grid[1], grid[2]:grid[3], grid[4]:grid[5]] = GetRMS(cube[window[0]:window[1], window[2]:window[3], window[4]:window[5]], rmsMode=statistic, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=0) # +1 needed?
 					del grid, window
 		
 		# Carry out interpolation if requested, taking NaNs into account
@@ -325,12 +331,34 @@ def sigma_scale(cube, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0,
 							del interp_coords
 						del data_values, not_nan
 		
+			# Then along the spectral axis
+			if gridSpectral > 1:
+				for y in range(dimensions[1]):
+					for x in range(dimensions[2]):
+						data_values   = rms_cube[gridPointsZ, y, x]
+						not_nan = np.logical_not(np.isnan(data_values))
+						if any(not_nan):
+							interp_coords = np.arange(0, dimensions[0])
+							if interpolation == "cubic":
+								spline = InterpolatedUnivariateSpline(gridPointsZ[not_nan], data_values[not_nan])
+								rms_cube[0:dimensions[0], y, x] = spline(interp_coords)
+								del spline
+							else:
+								interp_values = np.interp(interp_coords, gridPointsZ[not_nan], data_values[not_nan])
+								rms_cube[0:dimensions[0], y, x] = interp_values
+								del interp_values
+							del interp_coords
+						del data_values, not_nan
+						
 		# Replace any invalid RMS values with NaN
 		with np.errstate(invalid="ignore"):
 			rms_cube[rms_cube <= 0] = np.nan
 		
-		# Divide data cube by RMS cube
+		# Divide data cube by XY RMS cube
 		cube /= rms_cube
+
+		# Multiply rms_cube by rms_cube_z to get the Z variation and absolute scale right in the final 3D noise cube
+		rms_cube *= rms_cube_z
 		
 	err.message("    Noise-scaled data cube generated.\n")
 
