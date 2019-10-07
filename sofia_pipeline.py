@@ -38,8 +38,6 @@ from sofia import CNHI
 from sofia import error as err
 from sofia import __version__ as sofia_version
 
-
-
 # --------------------------------
 # FUNCTION TO MONITOR MEMORY USAGE
 # --------------------------------
@@ -169,6 +167,12 @@ else:
 	outroot = outputDir + outroot
 
 if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
+
+# Transfer scaleNoise arguments to SCfind for the purpose of scaling the noise after each smoothing iteration in the S+C finder
+for pp in "scaleEachSCkernel,method,edgeX,edgeY,edgeZ,scaleX,scaleY,scaleZ,windowSpatial,windowSpectral,gridSpatial,gridSpectral,interpolation".split(','):
+        Parameters["SCfind"].update({pp:Parameters["scaleNoise"][pp]})
+del(Parameters["scaleNoise"]["scaleEachSCkernel"])
+
 
 
 # -------------------------------------------

@@ -13,7 +13,7 @@ from sofia.sigma_cube import sigma_scale
 # FUNCTION: Implementation of the S+C finder
 # ==========================================
 
-def SCfinder_mem(cube, mask, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.5, sizeFilter=0, maskScaleXY=2.0, maskScaleZ=2.0, kernelUnit="pixel", edgeMode="constant", rmsMode="negative", fluxRange="all", verbose=0, kernelNoiseScale=False, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0, edgeZ=0, method="1d2d", windowSpatial=20, windowSpectral=20, gridSpatial=0, gridSpectral=0, interpolation="none"):
+def SCfinder_mem(cube, mask, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.5, sizeFilter=0, maskScaleXY=2.0, maskScaleZ=2.0, kernelUnit="pixel", edgeMode="constant", rmsMode="negative", fluxRange="all", verbose=0, scaleEachSCkernel=False, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0, edgeZ=0, method="1d2d", windowSpatial=20, windowSpectral=20, gridSpatial=0, gridSpectral=0, interpolation="none"):
 	# Define a few constants
 	FWHM_CONST    = 2.0 * math.sqrt(2.0 * math.log(2.0))   # Conversion between sigma and FWHM of Gaussian function
 	MAX_PIX_CONST = 1.0e+6                                 # Maximum number of pixels for noise calculation; sampling is set accordingly
@@ -67,7 +67,7 @@ def SCfinder_mem(cube, mask, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.
 			cube_smooth[np.isnan(cube)] = np.nan
 		
 		# Per-kernel noise normalisation (Time consuming!)
-		if kernelNoiseScale:
+		if scaleEachSCkernel:
 			cube_smooth, noise_smooth = sigma_scale(cube_smooth, scaleX=scaleX, scaleY=scaleY, scaleZ=scaleZ, edgeX=edgeX, edgeY=edgeY, edgeZ=edgeZ, statistic=rmsMode, fluxRange=fluxRange, method=method, windowSpatial=windowSpatial, windowSpectral=windowSpectral, gridSpatial=gridSpatial, gridSpectral=gridSpectral, interpolation=interpolation)
 
 		# Calculate the RMS of the smoothed (possibly normalised) cube

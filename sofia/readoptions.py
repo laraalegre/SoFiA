@@ -160,6 +160,7 @@ def allowedDataTypes():
 	        "scaleNoise.gridSpatial": "int", \
 	        "scaleNoise.gridSpectral": "int", \
 	        "scaleNoise.interpolation": "string", \
+	        "scaleNoise.scaleEachSCkernel": "bool", \
 	        "filterArtefacts.threshold": "float", \
 	        "filterArtefacts.dilation": "int", \
 	        "SCfind.threshold": "float", \
@@ -172,19 +173,6 @@ def allowedDataTypes():
 	        "SCfind.kernels": "array", \
 	        "SCfind.kernelUnit": "string", \
 	        "SCfind.verbose": "bool", \
-	        "SCfind.kernelNoiseScale": "bool", \
-	        "SCfind.method": "string", \
-	        "SCfind.edgeX": "int", \
-	        "SCfind.edgeY": "int", \
-	        "SCfind.edgeZ": "int", \
-	        "SCfind.scaleX": "bool", \
-	        "SCfind.scaleY": "bool", \
-	        "SCfind.scaleZ": "bool", \
-	        "SCfind.windowSpatial": "int", \
-	        "SCfind.windowSpectral": "int", \
-	        "SCfind.gridSpatial": "int", \
-	        "SCfind.gridSpectral": "int", \
-	        "SCfind.interpolation": "string", \
 	        "CNHI.pReq": "float", \
 	        "CNHI.qReq": "float", \
 	        "CNHI.minScale": "int", \
