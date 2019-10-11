@@ -149,33 +149,33 @@ def add_wcs_coordinates(objects, catParNames, catParFormt, catParUnits, Paramete
 					header["crval%i" % (kk + 1)] -= 360
 
 			if header['naxis']==2:
-			        wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL])
-			        xy = objects[:, catParNames.index("x"):catParNames.index("x") + 2].astype(float)
-			        objects = np.concatenate((objects, wcsin.wcs_pix2world(xy, 0)), axis=1)
-			        catParUnits = tuple(list(catParUnits) + [str(cc).replace(" ", "") for cc in wcsin.wcs.cunit])
-			        catParNames = tuple(list(catParNames) + [(cc.split("--")[0]).lower() for cc in wcsin.wcs.ctype])
-			        catParFormt = tuple(list(catParFormt) + ["%15.7e", "%15.7e"])
+				wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL])
+				xy = objects[:, catParNames.index("x"):catParNames.index("x") + 2].astype(float)
+				objects = np.concatenate((objects, wcsin.wcs_pix2world(xy, 0)), axis=1)
+				catParUnits = tuple(list(catParUnits) + [str(cc).replace(" ", "") for cc in wcsin.wcs.cunit])
+				catParNames = tuple(list(catParNames) + [(cc.split("--")[0]).lower() for cc in wcsin.wcs.ctype])
+				catParFormt = tuple(list(catParFormt) + ["%15.7e", "%15.7e"])
                         else:
-			        wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL])
-			        xyz = objects[:, catParNames.index("x"):catParNames.index("x") + 3].astype(float)
-			        if "cellscal" in header and header["cellscal"] == "1/F":
-				        err.warning(
-					        "CELLSCAL keyword with value of 1/F found.\n"
-					        "Will account for varying pixel scale in WCS coordinate calculation.")
-				        x0, y0 = header["crpix1"] - 1, header["crpix2"] - 1
-				        # Will calculate the pixscale factor of each channel as:
-				        # pixscale = ref_frequency / frequency
-				        if header["ctype3"] == "VELO-HEL":
-					        pixscale = (1 - header["crval3"] / scipy.constants.c) / (1 - (((xyz[:, 2] + 1) - header["crpix3"]) * header["cdelt3"] + header["crval3"]) / scipy.constants.c)
-				        else:
-					        err.warning("Cannot convert 3rd axis coordinates to frequency. Ignoring the effect of CELLSCAL = 1/F.")
-					        pixscale = 1.0
-				        xyz[:, 0] = (xyz[:, 0] - x0) * pixscale + x0
-				        xyz[:, 1] = (xyz[:, 1] - y0) * pixscale + y0
-			        objects = np.concatenate((objects, wcsin.wcs_pix2world(xyz, 0)), axis=1)
-			        catParUnits = tuple(list(catParUnits) + [str(cc).replace(" ", "") for cc in wcsin.wcs.cunit])
-			        catParNames = tuple(list(catParNames) + [(cc.split("--")[0]).lower() for cc in wcsin.wcs.ctype])
-			        catParFormt = tuple(list(catParFormt) + ["%15.7e", "%15.7e", "%15.7e"])
+				wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL])
+				xyz = objects[:, catParNames.index("x"):catParNames.index("x") + 3].astype(float)
+				if "cellscal" in header and header["cellscal"] == "1/F":
+					err.warning(
+						"CELLSCAL keyword with value of 1/F found.\n"
+						"Will account for varying pixel scale in WCS coordinate calculation.")
+					x0, y0 = header["crpix1"] - 1, header["crpix2"] - 1
+					# Will calculate the pixscale factor of each channel as:
+					# pixscale = ref_frequency / frequency
+					if header["ctype3"] == "VELO-HEL":
+						pixscale = (1 - header["crval3"] / scipy.constants.c) / (1 - (((xyz[:, 2] + 1) - header["crpix3"]) * header["cdelt3"] + header["crval3"]) / scipy.constants.c)
+					else:
+						err.warning("Cannot convert 3rd axis coordinates to frequency. Ignoring the effect of CELLSCAL = 1/F.")
+						pixscale = 1.0
+					xyz[:, 0] = (xyz[:, 0] - x0) * pixscale + x0
+					xyz[:, 1] = (xyz[:, 1] - y0) * pixscale + y0
+				objects = np.concatenate((objects, wcsin.wcs_pix2world(xyz, 0)), axis=1)
+				catParUnits = tuple(list(catParUnits) + [str(cc).replace(" ", "") for cc in wcsin.wcs.cunit])
+				catParNames = tuple(list(catParNames) + [(cc.split("--")[0]).lower() for cc in wcsin.wcs.ctype])
+				catParFormt = tuple(list(catParFormt) + ["%15.7e", "%15.7e", "%15.7e"])
 		err.message("WCS coordinates added to catalogue.")
 
 		# Create IAU-compliant source name:
@@ -230,6 +230,6 @@ def add_wcs_coordinates(objects, catParNames, catParFormt, catParUnits, Paramete
 		catParFormt = tuple(list(catParFormt) + ["%30s"])
 	except:
 		err.warning("WCS conversion of parameters failed with the following error:")
-                err.warning("  {0:}".format(sys.exc_info()))
+		err.warning("  {0:}".format(sys.exc_info()))
 	
 	return (objects, catParNames, catParFormt, catParUnits)
