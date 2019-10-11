@@ -160,7 +160,7 @@ def allowedDataTypes():
 	        "scaleNoise.gridSpatial": "int", \
 	        "scaleNoise.gridSpectral": "int", \
 	        "scaleNoise.interpolation": "string", \
-	        "scaleNoise.scaleEachSCkernel": "bool", \
+	        "scaleNoise.perSCkernel": "bool", \
 	        "filterArtefacts.threshold": "float", \
 	        "filterArtefacts.dilation": "int", \
 	        "SCfind.threshold": "float", \
