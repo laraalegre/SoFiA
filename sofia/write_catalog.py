@@ -63,7 +63,7 @@ def write_catalog_from_array(mode, objects, catHeader, catUnits, catFormat, parL
 	modeIndex = availableModes.index(mode)
 	
 	if flagCompress: outName += ".gz"
-	err.message("Writing " + availableModes[modeIndex] + " catalogue: " + outName + ".")
+	err.message("Writing " + availableModes[modeIndex] + " catalogue: " + outName)
 	
 	# Exit if file exists and overwrite flag is set to false
 	func.check_overwrite(outName, flagOverwrite, fatal=True)

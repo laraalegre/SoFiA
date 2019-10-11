@@ -13,6 +13,7 @@ from astropy.io import fits
 from astropy import units as u
 from astropy.coordinates import Longitude, Latitude
 from sofia import error as err
+import sys
 
 
 # -------------------------------------
@@ -127,15 +128,11 @@ def add_wcs_coordinates(objects, catParNames, catParFormt, catParUnits, Paramete
 			header = fix_gipsy_header(header)
 			wcsin = Wcsprm(str(header))
 			wcsin.sptr("VOPT-F2W")
-			#if header["naxis"] == 4:
-			#	objects = np.concatenate((objects, wcsin.p2s(np.concatenate((objects[:, catParNames.index("x"):catParNames. index("x") + 3], np.zeros((objects.shape[0], 1))), axis=1), 0)["world"][:,:-1]), axis=1)
-			#else:
-			#	objects = np.concatenate((objects, wcsin.p2s(objects[:, catParNames.index("x"):catParNames.index("x") + 3], 0)["world"]), axis=1)
 			objects = np.concatenate((objects, wcsin.p2s(objects[:, catParNames.index("x"):catParNames.index("x") + 3], 0)["world"]), axis=1)
 			catParUnits = tuple(list(catParUnits) + [str(cc).replace(" ", "") for cc in wcsin.cunit])
 			catParNames = tuple(list(catParNames) + [(cc.split("--")[0]).lower() for cc in wcsin.ctype])
 			catParFormt = tuple(list(catParFormt) + ["%15.7e", "%15.7e", "%15.7e"])
-		
+
 		else:
 			# Constrain the RA axis reference value CRVAL_ to be between 0 and 360 deg
 			rafound = 0
@@ -150,36 +147,37 @@ def add_wcs_coordinates(objects, catParNames, catParFormt, catParUnits, Paramete
 				elif header["crval%i" % (kk + 1)] > 360:
 					err.warning("Subtracting 360 deg from RA reference value.")
 					header["crval%i" % (kk + 1)] -= 360
-			
-			#if header["naxis"] == 4: wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL, wcs.WCSSUB_STOKES])
-			#else: wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL])
-			wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL])
-			xyz = objects[:, catParNames.index("x"):catParNames.index("x") + 3].astype(float)
-			if "cellscal" in header and header["cellscal"] == "1/F":
-				err.warning(
-					"CELLSCAL keyword with value of 1/F found.\n"
-					"Will account for varying pixel scale in WCS coordinate calculation.")
-				x0, y0 = header["crpix1"] - 1, header["crpix2"] - 1
-				# Will calculate the pixscale factor of each channel as:
-				# pixscale = ref_frequency / frequency
-				if header["ctype3"] == "VELO-HEL":
-					pixscale = (1 - header["crval3"] / scipy.constants.c) / (1 - (((xyz[:, 2] + 1) - header["crpix3"]) * header["cdelt3"] + header["crval3"]) / scipy.constants.c)
-				else:
-					err.warning("Cannot convert 3rd axis coordinates to frequency. Ignoring the effect of CELLSCAL = 1/F.")
-					pixscale = 1.0
-				xyz[:, 0] = (xyz[:, 0] - x0) * pixscale + x0
-				xyz[:, 1] = (xyz[:, 1] - y0) * pixscale + y0
-			#if header["naxis"] == 4: objects = np.concatenate((objects, wcsin.wcs_pix2world(np.concatenate((xyz, np.zeros((objects.shape[0], 1))), axis=1), 0)[:, :-1]), axis=1)
-			#else: objects = np.concatenate((objects, wcsin.wcs_pix2world(xyz, 0)), axis=1)
-			objects = np.concatenate((objects, wcsin.wcs_pix2world(xyz, 0)), axis=1)
-			catParUnits = tuple(list(catParUnits) + [str(cc).replace(" ", "") for cc in wcsin.wcs.cunit])
-			catParNames = tuple(list(catParNames) + [(cc.split("--")[0]).lower() for cc in wcsin.wcs.ctype])
-			catParFormt = tuple(list(catParFormt) + ["%15.7e", "%15.7e", "%15.7e"])
-		#if header["naxis"] == 4:
-		#	catParUnits = catParUnits[:-1]
-		#	catParNames= catParNames[:-1]
+
+			if header['naxis']==2:
+			        wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL])
+			        xy = objects[:, catParNames.index("x"):catParNames.index("x") + 2].astype(float)
+			        objects = np.concatenate((objects, wcsin.wcs_pix2world(xy, 0)), axis=1)
+			        catParUnits = tuple(list(catParUnits) + [str(cc).replace(" ", "") for cc in wcsin.wcs.cunit])
+			        catParNames = tuple(list(catParNames) + [(cc.split("--")[0]).lower() for cc in wcsin.wcs.ctype])
+			        catParFormt = tuple(list(catParFormt) + ["%15.7e", "%15.7e"])
+                        else:
+			        wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL])
+			        xyz = objects[:, catParNames.index("x"):catParNames.index("x") + 3].astype(float)
+			        if "cellscal" in header and header["cellscal"] == "1/F":
+				        err.warning(
+					        "CELLSCAL keyword with value of 1/F found.\n"
+					        "Will account for varying pixel scale in WCS coordinate calculation.")
+				        x0, y0 = header["crpix1"] - 1, header["crpix2"] - 1
+				        # Will calculate the pixscale factor of each channel as:
+				        # pixscale = ref_frequency / frequency
+				        if header["ctype3"] == "VELO-HEL":
+					        pixscale = (1 - header["crval3"] / scipy.constants.c) / (1 - (((xyz[:, 2] + 1) - header["crpix3"]) * header["cdelt3"] + header["crval3"]) / scipy.constants.c)
+				        else:
+					        err.warning("Cannot convert 3rd axis coordinates to frequency. Ignoring the effect of CELLSCAL = 1/F.")
+					        pixscale = 1.0
+				        xyz[:, 0] = (xyz[:, 0] - x0) * pixscale + x0
+				        xyz[:, 1] = (xyz[:, 1] - y0) * pixscale + y0
+			        objects = np.concatenate((objects, wcsin.wcs_pix2world(xyz, 0)), axis=1)
+			        catParUnits = tuple(list(catParUnits) + [str(cc).replace(" ", "") for cc in wcsin.wcs.cunit])
+			        catParNames = tuple(list(catParNames) + [(cc.split("--")[0]).lower() for cc in wcsin.wcs.ctype])
+			        catParFormt = tuple(list(catParFormt) + ["%15.7e", "%15.7e", "%15.7e"])
 		err.message("WCS coordinates added to catalogue.")
-		
+
 		# Create IAU-compliant source name:
 		# WARNING: This currently assumes a regular, ≥ 2-dim. data cube where the first two axes are longitude and latitude.
 		n_src = objects.shape[0]
@@ -210,8 +208,8 @@ def add_wcs_coordinates(objects, catParNames, catParFormt, catParUnits, Paramete
 			iau_equinox = ""
 		
 		for src in xrange(n_src):
-			lon = objects[src][n_par - 3]
-			lat = objects[src][n_par - 2]
+			lon = objects[src][n_par - 2] if header['naxis']==2 else objects[src][n_par - 3]
+			lat = objects[src][n_par - 1] if header['naxis']==2 else objects[src][n_par - 2]
 			
 			if iau_coord == "equ":
 				ra = Longitude(lon, unit=u.deg)
@@ -231,6 +229,7 @@ def add_wcs_coordinates(objects, catParNames, catParFormt, catParUnits, Paramete
 		catParNames = tuple(list(catParNames) + ["name"])
 		catParFormt = tuple(list(catParFormt) + ["%30s"])
 	except:
-		err.warning("WCS conversion of parameters failed.")
+		err.warning("WCS conversion of parameters failed with the following error:")
+                err.warning("  {0:}".format(sys.exc_info()))
 	
 	return (objects, catParNames, catParFormt, catParUnits)
