@@ -50,7 +50,7 @@ def dilate(cube, mask, objects, cathead, Parameters):
 		if (otherobjs).sum():
 			# Ensure that objects with different source IDs within dilatePixMax, dilateChanMax are not
 			# included in the flux growth calculation
-			err.warning("Object {0:d} has possible overlapping objects within {1:d} pix, {2:d} chan.".format(sourceIDs[i], dilatePixMax, dilateChanMax))
+			err.warning("Object {0:d} has possible overlapping objects within {1:d} pix, {2:d} chan.".format(np.int(sourceIDs[i]), dilatePixMax, dilateChanMax))
 			objcube[(allmask > 0) * (allmask != sourceIDs[i])] = 0
 		
 		fluxes = []
@@ -85,7 +85,7 @@ def dilate(cube, mask, objects, cathead, Parameters):
 		# Only grow the mask of object sourceIDs[i] even when other objects are present in objmask
 		objmask[nd.morphology.binary_dilation(objmask==sourceIDs[i], structure=dilstruct).astype(int) == 1] = sourceIDs[i]
 		
-		err.message("Mask of source {0:d} dilated by {2:d} chan and then by {1:d} pix.".format(sourceIDs[i], dilpix, dilchan))
+		err.message("Mask of source {0:d} dilated by {2:d} chan and then by {1:d} pix.".format(np.int(sourceIDs[i]), dilpix, dilchan))
 		# Put back in objmask objects != sourceIDs[i] that may have been inside objmask before 
 		# dilation or may have been temporarily replaced by the dilated object sourceIDs[i]
 		if (otherobjs).sum():
