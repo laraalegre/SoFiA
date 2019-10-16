@@ -207,7 +207,7 @@ def add_wcs_coordinates(objects, catParNames, catParFormt, catParUnits, Paramete
 			iau_coord = ""
 			iau_equinox = ""
 		
-		for src in xrange(n_src):
+		for src in range(n_src):
 			lon = objects[src][n_par - 2] if header['naxis']==2 else objects[src][n_par - 3]
 			lat = objects[src][n_par - 1] if header['naxis']==2 else objects[src][n_par - 2]
 			
