@@ -231,5 +231,6 @@ def add_wcs_coordinates(objects, catParNames, catParFormt, catParUnits, Paramete
 	except:
 		err.warning("WCS conversion of parameters failed with the following error:")
 		err.warning("  {0:}".format(sys.exc_info()))
-	
+		err.warning("  at line {0:} of wcs_coordinates.py".format(sys.exc_info()[2].tb_lineno))
+
 	return (objects, catParNames, catParFormt, catParUnits)
