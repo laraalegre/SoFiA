@@ -155,7 +155,7 @@ def add_wcs_coordinates(objects, catParNames, catParFormt, catParUnits, Paramete
 				catParUnits = tuple(list(catParUnits) + [str(cc).replace(" ", "") for cc in wcsin.wcs.cunit])
 				catParNames = tuple(list(catParNames) + [(cc.split("--")[0]).lower() for cc in wcsin.wcs.ctype])
 				catParFormt = tuple(list(catParFormt) + ["%15.7e", "%15.7e"])
-                        else:
+			else:
 				wcsin = wcs.WCS(header, naxis=[wcs.WCSSUB_CELESTIAL, wcs.WCSSUB_SPECTRAL])
 				xyz = objects[:, catParNames.index("x"):catParNames.index("x") + 3].astype(float)
 				if "cellscal" in header and header["cellscal"] == "1/F":

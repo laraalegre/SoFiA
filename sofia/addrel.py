@@ -232,7 +232,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 			deltmax = delt.max()
 			
 			if deltmed / deltstd > -100 and doskellam and makePlot:
-				plt.hist(delt / deltstd, bins=np.arange(deltmin / deltstd, max(5.1, deltmax / deltstd), 0.01), cumulative=True, histtype="step", color=(min(1, float(max(1.,negPerBin) + kernelIter) / Nneg), 0,0), normed=True)
+				plt.hist(delt / deltstd, bins=np.arange(deltmin / deltstd, max(5.1, deltmax / deltstd), 0.01), cumulative=True, histtype="step", color=(min(1, float(max(1.,negPerBin) + kernelIter) / Nneg), 0,0), density=True)
 				deltplot.append([((max(1.,negPerBin) + kernelIter) / Nneg)**(1.0 / len(parCol)), deltmed / deltstd])
 						
 			if scaleKernel: grow_kernel = 0
@@ -267,7 +267,7 @@ def EstimateRel(data, pdfoutname, parNames, parSpace=["snr_sum", "snr_max", "n_p
 		plt.plot(np.arange(-10, 10, 0.01), stats.norm().cdf(np.arange(-10, 10, 0.01)), "k-")
 		plt.plot(np.arange(-10, 10, 0.01), stats.norm(scale=0.4).cdf(np.arange(-10, 10, 0.01)), "k:")
 		plt.legend(("Gaussian (sigma=1)", "Gaussian (sigma=0.4)"), loc="lower right", prop={"size":13})
-		plt.hist(delt / deltstd, bins=np.arange(deltmin / deltstd, max(5.1, deltmax / deltstd), 0.01), cumulative=True, histtype="step", color="r", normed=True)
+		plt.hist(delt / deltstd, bins=np.arange(deltmin / deltstd, max(5.1, deltmax / deltstd), 0.01), cumulative=True, histtype="step", color="r", density=True)
 		plt.xlim(-5, 5)
 		plt.ylim(0, 1)
 		plt.xlabel("(P-N)/sqrt(N+P)")
