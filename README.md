@@ -29,7 +29,8 @@ SoFiA:
   * Linux or Unix (e.g. Ubuntu, Mac OS, etc.)
   * Terminal with `bash` or `tcsh` (other shells should work as well)
 * Packages (Python):
-  * `Python` (= 2.7; including dev package)
+  * `Python` (≥ 2.7; including dev package; note that Python 3 should
+              work at this stage, but has not been fully tested yet.)
   * `NumPy` (≥ 1.8)
   * `SciPy` (≥ 0.7)
   * `Astropy` (≥ 0.2.5)
@@ -65,25 +66,28 @@ folder where the downloaded file was saved. Then follow the steps below.
 1. Unpack all files
 
    Download and unpack the zipped archive into a directory of your choice:
-
-   `unzip SoFiA-[version].zip`
-
+   ```
+   unzip SoFiA-[version].zip
+   ```
    or
-
-   `tar -xzvf SoFiA-[version].tar.gz`
-
+   ```
+   tar -xzvf SoFiA-[version].tar.gz
+   ```
    where `[version]` is the downloaded version of SoFiA, e.g. 1.0. This will 
    unpack all files into a directory called `SoFiA-[version]`.
 
 2. Enter the installation directory
-
-   `cd SoFiA-[version]`
-
-3. Compile and install the SoFiA pipeline and user interface
-
-   `python setup.py build --force`
-
-   (add `--no-gui=True` to install SoFiA *without* graphical user interface)
+   ```
+   cd SoFiA-[version]
+   ```
+3. Delete any existing `build` folder if necessary, then compile and install
+   the SoFiA pipeline and user interface
+   ```
+   rm -rf build
+   python setup.py build --force
+   ```
+   (Note: add `--no-gui=True` to the setup call to install SoFiA *without*
+   the graphical user interface.)
 
 4. Set up environment variables
 
@@ -94,9 +98,9 @@ folder where the downloaded file was saved. Then follow the steps below.
 5. Launch SoFiA
 
     Open a new terminal window and type:
-
-    `SoFiA &`
-
+    ```
+    SoFiA &
+    ```
 
 Problems
 --------
