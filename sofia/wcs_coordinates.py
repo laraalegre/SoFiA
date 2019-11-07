@@ -103,6 +103,11 @@ def fix_gipsy_header(header_orig):
 			for key in header:
 				if "CUNIT" in key and header[key] == "DEGREE":
 					header[key] = "deg"
+			## GIPSY header item DATE-OBS is a number rather than a string
+			## convert to a string
+			if "DATE-OBS" in header:
+				obsdate = header["DATE-OBS"]
+				header["DATE-OBS"] = str(obsdate)
 			err.message("Header repaired successfully.")
 			
 			return header
@@ -126,7 +131,8 @@ def add_wcs_coordinates(objects, catParNames, catParFormt, catParUnits, Paramete
 			err.message("GIPSY header found. Trying to convert to FITS standard.")
 			from astropy.wcs import Wcsprm
 			header = fix_gipsy_header(header)
-			wcsin = Wcsprm(str(header))
+			gipsyheader = str(header).encode("utf-8")
+			wcsin = Wcsprm(gipsyheader)
 			wcsin.sptr("VOPT-F2W")
 			objects = np.concatenate((objects, wcsin.p2s(objects[:, catParNames.index("x"):catParNames.index("x") + 3], 0)["world"]), axis=1)
 			catParUnits = tuple(list(catParUnits) + [str(cc).replace(" ", "") for cc in wcsin.cunit])
