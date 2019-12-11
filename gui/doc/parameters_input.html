@@ -276,7 +276,7 @@
     <h3>Optical Catalogue</h3>
     
     <p>
-      Sometimes it is not desirable to carry out a blind search of an entire data cube, but only small regions around the positions of known sources need to be search. This could be useful, e.g., to search for HI signals in the vicinity of known optical sources. To facilitate such a search mode, SoFiA offers the possibility to read in a source catalogue and automatically search for sources in small subcubes around the positions defined in the input catalogue.
+      Sometimes it is not desirable to carry out a blind search of an entire data cube, but only small regions around the positions of known sources need to be searched. This could be useful, e.g., to search for HI signals in the vicinity of known optical sources. To facilitate such a search mode, SoFiA offers the possibility to read in a source catalogue and automatically search for sources in small subcubes around the positions defined in the input catalogue.
     </p>
     
     <p>
@@ -293,6 +293,10 @@
     
     <p>
       In this example, <code>ra</code> and <code>dec</code> are given in degrees (the default unit for spatial coordinates in the FITS standard), while the spectral axis is given as velocity in units of m/s (which again is the default velocity unit in the FITS standard).
+    </p>
+    
+    <p>
+      <strong>Important:</strong> In order to use the optical finder from the command line interface, the <code>optical_find.py</code> script must be called instead of the standard <code>sofia_pipeline.py</code> script!
     </p>
     
     <p>
