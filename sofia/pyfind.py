@@ -5,6 +5,7 @@ import numpy as np
 from scipy import ndimage
 from sofia.functions import GetRMS
 from sofia import error as err
+from sofia.sigma_cube import sigma_scale
 
 
 
@@ -12,7 +13,7 @@ from sofia import error as err
 # FUNCTION: Implementation of the S+C finder
 # ==========================================
 
-def SCfinder_mem(cube, mask, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.5, sizeFilter=0, maskScaleXY=2.0, maskScaleZ=2.0, kernelUnit="pixel", edgeMode="constant", rmsMode="negative", fluxRange="all", verbose=0):
+def SCfinder_mem(cube, mask, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.5, sizeFilter=0, maskScaleXY=2.0, maskScaleZ=2.0, kernelUnit="pixel", edgeMode="constant", rmsMode="negative", fluxRange="all", verbose=0, perSCkernel=False, scaleX=False, scaleY=False, scaleZ=True, edgeX=0, edgeY=0, edgeZ=0, method="1d2d", windowSpatial=20, windowSpectral=20, gridSpatial=0, gridSpectral=0, interpolation="none"):
 	# Define a few constants
 	FWHM_CONST    = 2.0 * math.sqrt(2.0 * math.log(2.0))   # Conversion between sigma and FWHM of Gaussian function
 	MAX_PIX_CONST = 1.0e+6                                 # Maximum number of pixels for noise calculation; sampling is set accordingly
@@ -65,10 +66,15 @@ def SCfinder_mem(cube, mask, header, t0, kernels=[[0, 0, 0, "b"],], threshold=3.
 		if found_nan:
 			cube_smooth[np.isnan(cube)] = np.nan
 		
-		# Calculate the RMS of the smoothed cube:
+		# Per-kernel noise normalisation (Time consuming!)
+		if perSCkernel:
+			cube_smooth, noise_smooth = sigma_scale(cube_smooth, scaleX=scaleX, scaleY=scaleY, scaleZ=scaleZ, edgeX=edgeX, edgeY=edgeY, edgeZ=edgeZ, statistic=rmsMode, fluxRange=fluxRange, method=method, windowSpatial=windowSpatial, windowSpectral=windowSpectral, gridSpatial=gridSpatial, gridSpectral=gridSpectral, interpolation=interpolation)
+
+		# Calculate the RMS of the smoothed (possibly normalised) cube
 		rms_smooth = GetRMS(cube_smooth, rmsMode=rmsMode, fluxRange=fluxRange, zoomx=1, zoomy=1, zoomz=1, verbose=verbose, sample=sampleRms)
-		
+
 		# Add pixels above threshold to mask by setting bit 1
+		err.message("    Applying +/- {0:} sigma detection threshold".format(threshold))
 		with np.errstate(invalid="ignore"):
 			mask |= (np.absolute(cube_smooth) >= threshold * rms_smooth)
 			#mask = np.bitwise_or(mask, np.greater_equal(np.absolute(cube_smooth), threshold * rms_smooth))

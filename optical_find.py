@@ -280,7 +280,7 @@ if catalogue[-4:] != '.csv':
 # For the moment I require a .csv file, with the following order:
 # id, ra (degrees), dec (degrees) and z (units of cube)
 
-f = open(catalogue,'rb')
+f = open(catalogue,'rt')
 reader = csv.DictReader(f, skipinitialspace=True)
 cat = list(reader)
 f.close()

@@ -84,6 +84,7 @@ scaleNoise.windowSpectral       =       15
 scaleNoise.gridSpatial          =       0
 scaleNoise.gridSpectral         =       0
 scaleNoise.interpolation        =       none
+scaleNoise.perSCkernel          =       false
 
 
 # Filter artefacts

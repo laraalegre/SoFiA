@@ -381,7 +381,7 @@ def read_data(doSubcube, inFile, invertData, weightsFile, maskFile, sources, wei
 			
 			else:
 				print ("Loading mask cube: " + maskFile)
-				g = fits.open(maskFile, memmap=False)
+				g = fits.open(maskFile, memmap=False, do_not_scale_image_data=True)
 				dict_Mask_header = g[0].header
 				if dict_Mask_header["NAXIS"] == 3:
 					if dict_Mask_header["CRVAL1"] != dict_Header["CRVAL1"] or dict_Mask_header["CRVAL2"] != dict_Header["CRVAL2"] or dict_Mask_header["CRVAL3"] != dict_Header["CRVAL3"]:

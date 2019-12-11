@@ -69,6 +69,13 @@ def writeMask(cube, header, dictionary, filename, compress, flagOverwrite):
 	
 	# Check for overwrite flag:
 	if func.check_overwrite(name, flagOverwrite):
-		hdu.writeto(name, output_verify="warn", **__astropy_arg_overwrite__)
-	
+		if compress:
+			try:
+				hdu.writeto(name, output_verify="warn", **__astropy_arg_overwrite__)
+			except:
+				err.warning("Writing a compressed .FITS mask to disc failed. Will write it uncompressed")
+				hdu.writeto(name.replace('.gz',''), output_verify="warn", **__astropy_arg_overwrite__)
+		else:
+			hdu.writeto(name, output_verify="warn", **__astropy_arg_overwrite__)
+
 	return
