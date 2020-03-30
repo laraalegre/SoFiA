@@ -797,6 +797,7 @@ int Parametrization::fitBusyFunction()
 	int bestNoP = 8;
 	int nSeeds  = 1000;
 	int iterMax = 30;
+	int refineMax = 5000;
 	int verbose = 0;
 	
 	// Carry out the fitting:
@@ -804,6 +805,7 @@ int Parametrization::fitBusyFunction()
 	
 	// Repeat to refine fit:
 	busyFitSuccess = FitBusyFunc(spectrum.size(), &channels[0], &spectrum[0], &noiseSpectrum[0], &busyFitParameters[0], fitCov, bestNoP, -1, iterMax, verbose);
+	//busyFitSuccess = FitBusyFunc(spectrum.size(), &channels[0], &spectrum[0], &noiseSpectrum[0], &busyFitParameters[0], fitCov, bestNoP, -1, refineMax, verbose);
 	
 	// Determine observational parameters:
 	double **tmpPar = new double *[1];
