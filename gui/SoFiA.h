@@ -1,6 +1,6 @@
 /// ____________________________________________________________________ ///
 ///                                                                      ///
-/// SoFiA 1.3.2 (SoFiA.h) - Source Finding Application                   ///
+/// SoFiA 1.3.3 (SoFiA.h) - Source Finding Application                   ///
 /// Copyright (C) 2013-2019 Tobias Westmeier                             ///
 /// ____________________________________________________________________ ///
 ///                                                                      ///
@@ -32,7 +32,7 @@
 #ifndef PIPELINEINTERFACE_H
 #define PIPELINEINTERFACE_H
 
-#define SOFIA_VERSION_NUMBER "1.3.2"
+#define SOFIA_VERSION_NUMBER "1.3.3"
 
 #define SOFIA_DEFAULT_SETTINGS ":/SoFiA_default_input.txt"
 #define SOFIA_PARSET_EXTRAGALACTIC ":/parsets/SoFiA_parset_extragalactic.par"
