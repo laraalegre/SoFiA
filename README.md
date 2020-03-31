@@ -129,6 +129,15 @@ browser to open the index.html file located in the gui/doc/ sub-folder.
 Version history
 ---------------
 
+* SoFiA 1.3.2
+  * Released 31/03/2020
+  * Adds a new feature to apply noise normalisation during each iteration
+    of the S+C finder.
+  * Fixes several bugs that resulted in SoFiA crashing under various
+    circumstances.
+  * See release notes for details:
+    https://github.com/SoFiA-Admin/SoFiA/releases/tag/v1.3.2
+
 * SoFiA 1.3.0
   * Released 29/03/2019
   * Adds several new features, including quality flags, additional linker
@@ -246,7 +255,7 @@ SoFiA was created by the following people: Lars Flöer, Nadine Giese, Russell
 Jurek, Martin Meyer, Attila Popping, Paolo Serra, Tobias Westmeier, and 
 Benjamin Winkel.
 
-© 2019 The SoFiA Authors
+© 2020 The SoFiA Authors
 
 This programme is free software: you can redistribute it and/or modify it 
 under the terms of the GNU General Public License as published by the Free 
