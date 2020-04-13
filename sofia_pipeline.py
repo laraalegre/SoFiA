@@ -169,8 +169,9 @@ else:
 if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 # Transfer scaleNoise arguments to SCfind for the purpose of scaling the noise after each smoothing iteration in the S+C finder
-for pp in "perSCkernel,method,edgeX,edgeY,edgeZ,scaleX,scaleY,scaleZ,windowSpatial,windowSpectral,gridSpatial,gridSpectral,interpolation".split(','):
-        Parameters["SCfind"].update({pp:Parameters["scaleNoise"][pp]})
+if Parameters["steps"]["doScaleNoise"]:
+        for pp in "perSCkernel,method,edgeX,edgeY,edgeZ,scaleX,scaleY,scaleZ,windowSpatial,windowSpectral,gridSpatial,gridSpectral,interpolation".split(','):
+                Parameters["SCfind"].update({pp:Parameters["scaleNoise"][pp]})
 del(Parameters["scaleNoise"]["perSCkernel"])
 
 
