@@ -386,6 +386,12 @@ if Parameters["steps"]["doSCfind"] or Parameters["steps"]["doCNHI"] or Parameter
 	
 	err.message("Source finding complete.")
 
+
+
+# --------------------
+# ---- POSITIVITY ----
+# --------------------
+
 # Check if positivity flag is set; if so, remove negative pixels from mask:
 if Parameters["merge"]["positivity"]:
 	err.warning(
@@ -405,9 +411,20 @@ else:
 
 
 
+# -------------------------------------
+# ---- OUTPUT FOR DEBUGGING (MASK) ----
+# -------------------------------------
+
+if Parameters["steps"]["doDebug"] and NRdet:
+	err.print_progress_message("Writing binary mask cube for debugging", t0)
+	writemask.writeMask(mask, dict_Header, Parameters, outputMaskCube.replace('_mask.fits','_binmask.fits'), Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"])
+
+
+
 # -----------------
 # ---- MERGING ----
 # -----------------
+
 if Parameters["steps"]["doMerge"] and NRdet:
 	err.print_progress_message("Merging detections", t0)
 	objects = []
@@ -435,7 +452,7 @@ if Parameters["steps"]["doMerge"] and NRdet:
 
 if Parameters["steps"]["doDebug"] and Parameters["steps"]["doMerge"] and NRdet:
 	err.print_progress_message("Writing all-source mask cube for debugging", t0)
-	writemask.writeMask(mask, dict_Header, Parameters, "%s_mask.debug_all.fits" % outroot, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"])
+	writemask.writeMask(mask, dict_Header, Parameters, outputMaskCube.replace('_mask.fits','_allobjmask.fits'), Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"])
 
 
 
@@ -477,7 +494,7 @@ if Parameters["steps"]["doReliability"] and Parameters["steps"]["doMerge"] and N
 	# ---- CALCULATE RELIABILITY ----
 	err.print_progress_message("Determining reliability", t0)
 	objects, reliable = addrel.EstimateRel(np.array(objects), outroot, catParNames, **Parameters["reliability"])
-	err.message("The following reliable sources have been detected: " + str(reliable))
+	err.message("The following {0:d} reliable sources have been detected: {1:}".format(reliable.shape[0],reliable))
 	catParNames = tuple(list(catParNames) + ["n_pos",  "n_neg",  "rel"])
 	catParUnits = tuple(list(catParUnits) + ["-",      "-",      "-"])
 	catParFormt = tuple(list(catParFormt) + ["%12.3e", "%12.3e", "%12.6f"])
@@ -485,8 +502,8 @@ if Parameters["steps"]["doReliability"] and Parameters["steps"]["doMerge"] and N
 
 elif Parameters["steps"]["doMerge"] and NRdet:
 	err.print_progress_time(t0)
-	reliable = list(np.array(objects)[np.array(objects)[:,16] > 0,0].astype(int)) # select all positive sources
-	err.message("The following reliable sources have been detected: " + str(reliable))
+	reliable = list(np.array(objects)[np.array(objects)[:,catParNames.index('snr_sum')] > 0,0].astype(int)) # select all positive sources
+	err.message("The following {0:d} sources have been detected: {1:}".format(reliable.shape[0],reliable))
 	if Parameters["pipeline"]["trackMemory"]: print_memory_usage(t0)
 
 else:
@@ -496,13 +513,30 @@ else:
 
 
 
-# ------------------------------------------
-# ---- OUTPUT FOR DEBUGGING (CATALOGUE) ----
-# ------------------------------------------
+# -------------------------------------------
+# ---- OUTPUT FOR DEBUGGING (CATALOGUES) ----
+# -------------------------------------------
 
 if Parameters["steps"]["doDebug"] and Parameters["steps"]["doMerge"] and NRdet:
-	err.print_progress_message("Writing all-source debugging catalogue including all parameters relevant for the reliability calculation", t0)
-	write_catalog.write_catalog_from_array("ASCII", objects, catParNames, catParUnits, catParFormt, Parameters["writeCat"]["parameters"], outputCatAsciiDebug, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"], Parameters["parameters"]["getUncertainties"])
+	err.print_progress_message("Writing separate positive and negative reliability catalogues", t0)
+
+	outputCatAsciiPos = outputCatAscii.replace('_cat.ascii','_rel_poslogcat.ascii')
+	objectsPos=np.array(objects)[np.array(objects)[:,catParNames.index('snr_sum')] > 0]
+	posPars=['id','x','y','z']+Parameters["reliability"]["parSpace"]+['rel']
+	for ppar in posPars: # take log of pos pars
+		if ppar[:4]=='snr_':
+			objectsPos[:,catParNames.index(ppar)]=np.log10(np.abs(objectsPos[:,catParNames.index(ppar)]))
+	objectsPos = [list(item) for item in list(objectsPos)]
+	write_catalog.write_catalog_from_array("ASCII", objectsPos, catParNames, catParUnits, catParFormt, posPars, outputCatAsciiPos, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"], Parameters["parameters"]["getUncertainties"])
+
+	outputCatAsciiNeg = outputCatAscii.replace('_cat.ascii','_rel_neglogcat.ascii')
+	objectsNeg=np.array(objects)[np.array(objects)[:,catParNames.index('snr_sum')] < 0]
+	negPars=[kk.replace('max','min') for kk in posPars]
+	for npar in negPars: # take log of absolute value of neg pars
+		if npar[:4]=='snr_':
+			objectsNeg[:,catParNames.index(npar)]=np.log10(np.abs(objectsNeg[:,catParNames.index(npar)]))
+	objectsNeg = [list(item) for item in list(objectsNeg)]
+	write_catalog.write_catalog_from_array("ASCII", objectsNeg, catParNames, catParUnits, catParFormt, negPars, outputCatAsciiNeg, Parameters["writeCat"]["compress"], Parameters["writeCat"]["overwrite"], Parameters["parameters"]["getUncertainties"])
 
 
 
@@ -614,7 +648,7 @@ if Parameters["steps"]["doSmooth"] or Parameters["steps"]["doScaleNoise"] or Par
 # ----------------------------------------
 
 if Parameters["steps"]["doDebug"]:
-	err.print_progress_message("Writing pre-optimisation mask and moment maps for debugging", t0)
+	#err.print_progress_message("Writing pre-optimisation mask and moment maps for debugging", t0)
 	debug = 1
 	#writemask.writeMask(mask, dict_Header, Parameters, "%s_mask.debug_rel.fits" % outroot, Parameters["writeCat"]["compress"])
 	#mom0_Image = writemoment.writeMoment0(np_Cube, mask, outroot, debug, dict_Header, Parameters["writeCat"]["compress"])

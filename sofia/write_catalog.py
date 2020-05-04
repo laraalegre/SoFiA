@@ -217,7 +217,7 @@ def write_catalog_from_array(mode, objects, catHeader, catUnits, catFormat, parL
 			headerCol  += ("(%i)" % (colCount + 1)).rjust(lenCathead[index])
 			outFormat  += catFormat[index] + " "
 			colCount += 1
-		header += headerName[3:] + '\n' + headerUnit[3:] + '\n' + headerCol[3:]
+		header += headerName[3:] + '\n' + headerUnit[3:] + '\n' + headerCol[3:] + '\n' + headerName[3:]
 		
 		# Create catalogue
 		outObjects = []
